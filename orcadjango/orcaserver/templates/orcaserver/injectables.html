@@ -1,0 +1,9 @@
+{% if injectable_list %}
+    <ul>
+    {% for injectable in injectable_list %}
+        <li><a href="{{ injectable }}/">{{ injectable }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No injectables are available.</p>
+{% endif %}
