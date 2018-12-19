@@ -4,8 +4,8 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    # ex: /orca/injectables/
-    path('injectables/', views.injectables, name='injectables'),
-    path('injectables/<str:name>/', views.injectable,
+
+    path('injectables/', views.InjectablesView.as_view(), name='injectables'),
+    path('injectables/<str:name>/', views.InjectableView.as_view(),
          name='injectable'),
 ]

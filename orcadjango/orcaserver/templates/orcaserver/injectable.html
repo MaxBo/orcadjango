@@ -1,0 +1,8 @@
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+<p><strong> Injectable {{ view.name}} </strong></p>
+<form action='' method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Vote">
+</form>

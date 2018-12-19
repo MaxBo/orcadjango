@@ -1,7 +1,8 @@
-{% if injectable_list %}
+{% if injectable_dict %}
+    <p><strong> List of all Injectables and their current values </strong></p>
     <ul>
-    {% for injectable in injectable_list %}
-        <li><a href="{{ injectable }}/">{{ injectable }}</a></li>
+    {% for injectable, value in injectable_dict.items %}
+        <li><a href="{{ injectable }}/">{{ injectable }}: {{ value }}</a></li>
     {% endfor %}
     </ul>
 {% else %}
