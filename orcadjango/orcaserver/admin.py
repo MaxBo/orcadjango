@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django_sorting_field.utils import sort_by_order
 
 
 # Register your models here.

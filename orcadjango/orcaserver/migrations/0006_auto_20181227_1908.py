@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('orcaserver', '0005_picture'),
+        ('orcaserver', '0003_auto_20181225_1200'),
     ]
 
     operations = [
@@ -17,23 +17,6 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.TextField()),
             ],
-        ),
-        migrations.RemoveField(
-            model_name='carouselplugin',
-            name='carousel',
-        ),
-        migrations.RemoveField(
-            model_name='picture',
-            name='carousel',
-        ),
-        migrations.DeleteModel(
-            name='Carousel',
-        ),
-        migrations.DeleteModel(
-            name='CarouselPlugin',
-        ),
-        migrations.DeleteModel(
-            name='Picture',
         ),
         migrations.AddField(
             model_name='scenarios',

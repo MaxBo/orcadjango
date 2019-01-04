@@ -1,10 +1,8 @@
 from django import forms
-from django_sorting_field.fields import SortingFormField
 from .models import Scenarios, ScenarioList
 
 
 class ScenarioForm(forms.ModelForm):
-    order = SortingFormField()
     class Meta:
         model = Scenarios
         fields = ['name', 'order']

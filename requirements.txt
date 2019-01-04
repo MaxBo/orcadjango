@@ -1,4 +1,1 @@
 django>=2.0
-#django-sorting-field
--e git://github.com/schyffel/django-sorting-field.git#egg=django_sorting_field
-Pillow
