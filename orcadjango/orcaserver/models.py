@@ -5,7 +5,7 @@ class NameModel(models.Model):
     class Meta:
         abstract = True
 
-    def __repr__(self):
+    def __str__(self):
         return self.name
 
 
@@ -21,6 +21,9 @@ class Injectable(NameModel):
                                  null=True)
     value = models.TextField()
     changed = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.scenario} - {self.name}'
 
 
 class Steps(NameModel):
