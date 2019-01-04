@@ -39,10 +39,10 @@ class InjectablesView(BaseFormView, ListView):
         if action == 'Populate':
             #  enter to model
             for name in orca.list_injectables():
-                value = orca.get_injectable(name)
-                inj = Injectables.objects.get_or_create(name=name,
-                                                        value=value,
-                                                        changed=False)
+                inj, created = Injectables.objects.get_or_create(name=name)
+                inj.value = orca.get_injectable(name)
+                inj.changed = False
+                inj.save()
         return super().form_valid(form)
 
 
