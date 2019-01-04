@@ -1,9 +1,10 @@
 from collections import OrderedDict
 from django.http import HttpResponse
+from django.template import loader
 from django.views.generic import ListView
 from django.views.generic.edit import FormView, FormMixin, BaseFormView
 import orca
-from orcaserver.models import Injectables
+from orcaserver.models import Injectable, Scenario
 from orcaserver.forms import InjectableValueForm, InjectablesPopulateForm
 
 
@@ -18,11 +19,28 @@ def inj2():
 
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the index.")
+    template = loader.get_template('orcaserver/index.html')
+    return HttpResponse(template.render({}, request))
+
+class ScenarioMixin:
+    _backup = {}
+
+    def get_scenario(self):
+        """get the selected scenario"""
+        scenario_pk = self.request.session.get('scenario')
+        scenario = Scenario.objects.get(pk=scenario_pk)
+        return scenario
+
+    def backup_and_set_value(self, name, new_value):
+        #  backup original value
+        if not name in self._backup:
+            self._backup[name] = orca.get_raw_injectable(name)
+        # set to new value
+        orca.add_injectable(name, new_value)
 
 
-class InjectablesView(BaseFormView, ListView):
-    model = Injectables
+class InjectablesView(BaseFormView, ListView, ScenarioMixin):
+    model = Injectable
     template_name = 'orcaserver/injectables.html'
     context_object_name = 'injectable_dict'
     form_class = InjectablesPopulateForm
@@ -36,21 +54,40 @@ class InjectablesView(BaseFormView, ListView):
 
     def form_valid(self, form):
         action = self.request.POST.get('action')
+        scenario = self.get_scenario()
         if action == 'Populate':
             #  enter to model
             for name in orca.list_injectables():
-                inj, created = Injectables.objects.get_or_create(name=name)
+                inj, created = Injectable.objects.get_or_create(
+                    name=name,
+                    scenario=scenario)
                 inj.value = orca.get_injectable(name)
                 inj.changed = False
                 inj.save()
+        if action == 'Save':
+            #  save values for scenario
+            for name in orca.list_injectables():
+                inj, created = Injectable.objects.get_or_create(
+                    name=name,
+                    scenario=scenario)
+                inj.value = orca.get_injectable(name)
+                inj.save()
+
+        if action == 'Load':
+            #  save values for scenario
+            for name in orca.list_injectables():
+                inj, created = Injectable.objects.get_or_create(
+                    name=name,
+                    scenario=scenario)
+                self.backup_and_set_value(name, inj.value)
+
         return super().form_valid(form)
 
 
-class InjectableView(FormView):
+class InjectableView(FormView, ScenarioMixin):
     template_name = 'orcaserver/injectable.html'
     form_class = InjectableValueForm
     success_url = '/orca/injectables'
-    _backup = {}
 
     @property
     def name(self):
@@ -63,16 +100,15 @@ class InjectableView(FormView):
 
     def form_valid(self, form):
         action = self.request.POST.get('action')
+        scenario = self.get_scenario()
         if action == 'Change':
-            #  backup original value
-            if not self.name in self._backup:
-                self._backup[self.name] = orca.get_raw_injectable(self.name)
-            # set to new value
-            value = form.cleaned_data.get('value')
-            orca.add_injectable(self.name, value)
-            inj = Injectables.objects.get(name=self.name)
-            inj.value = value
-            inj.changed = True
+            new_value = form.cleaned_data.get('value')
+            self.backup_and_set_value(self.name, new_value)
+            inj = Injectable.objects.get(name=self.name,
+                                         scenario=scenario)
+            if new_value != inj.value:
+                inj.changed = True
+            inj.value = new_value
             inj.save
         elif action == 'Reset':
             # reset to backup
@@ -82,7 +118,8 @@ class InjectableView(FormView):
                                     value=wrapper._func,
                                     cache=wrapper.cache,
                                     cache_scope=wrapper.cache_scope)
-            inj = Injectables.objects.get(name=self.name)
+            inj = Injectable.objects.get(name=self.name,
+                                         scenario=scenario)
             inj.value = orca.get_injectable(self.name)
             inj.changed = False
             inj.save

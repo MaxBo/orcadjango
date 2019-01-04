@@ -2,9 +2,8 @@ from django.contrib import admin
 
 
 # Register your models here.
-from .models import Injectables, ScenarioList, Scenarios
+from .models import Injectable, Scenario
 
 
-admin.site.register(Injectables)
-admin.site.register(ScenarioList)
-admin.site.register(Scenarios)
+admin.site.register(Injectable)
+admin.site.register(Scenario)

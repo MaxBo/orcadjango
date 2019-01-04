@@ -1,11 +1,14 @@
 from django import forms
-from .models import Scenarios, ScenarioList
+from .models import Scenario
+
+def get_scenarios():
+    """get the id and the name of all scenarios"""
+    scenarios = ((c.id, c.name) for c in Scenario.objects.all())
+    return scenarios
 
 
-class ScenarioForm(forms.ModelForm):
-    class Meta:
-        model = Scenarios
-        fields = ['name', 'order']
+class ScenarioForm(forms.Form):
+    scenario = forms.ChoiceField(choices=get_scenarios)
 
 
 class InjectableValueForm(forms.Form):

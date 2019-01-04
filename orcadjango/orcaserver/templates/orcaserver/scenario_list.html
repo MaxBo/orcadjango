@@ -1,0 +1,10 @@
+{% if scenario_list %}
+    <p><strong> Select a Scenario </strong></p>
+        <form action='' method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" name="action" value="Select Scenario">
+    </form>
+{% else %}
+    <p>No scenarios are available.</p>
+{% endif %}
