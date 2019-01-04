@@ -55,7 +55,11 @@ ROOT_URLCONF = 'orcadjango.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(os.path.dirname(BASE_DIR),
+                              'src',
+                              'django-sorting-field',
+                              'django_sorting_field',
+                              'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'debug': True,

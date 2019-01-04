@@ -1,5 +1,10 @@
 {% if injectable_dict %}
     <p><strong> List of all Injectables and their current values </strong></p>
+    <form action='' method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" name="action" value="Populate">
+    </form>
     <ul>
     {% for injectable, value in injectable_dict.items %}
         <li><a href="{{ injectable }}/">{{ injectable }}: {{ value }}</a></li>
