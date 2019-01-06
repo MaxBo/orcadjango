@@ -1,26 +1,10 @@
 from collections import OrderedDict
-from django.http import HttpResponse
-from django.template import loader
 from django.views.generic import ListView
-from django.views.generic.edit import FormView, FormMixin, BaseFormView
+from django.views.generic.edit import FormView, BaseFormView
 import orca
 from orcaserver.models import Injectable, Scenario
 from orcaserver.forms import InjectableValueForm, InjectablesPopulateForm
 
-
-@orca.injectable()
-def inj1():
-    return 'INJ 1'
-
-
-@orca.injectable()
-def inj2():
-    return 'INJ 2'
-
-
-def index(request):
-    template = loader.get_template('orcaserver/index.html')
-    return HttpResponse(template.render({}, request))
 
 class ScenarioMixin:
     _backup = {}
@@ -33,7 +17,7 @@ class ScenarioMixin:
 
     def backup_and_set_value(self, name, new_value):
         #  backup original value
-        if not name in self._backup:
+        if name not in self._backup:
             self._backup[name] = orca.get_raw_injectable(name)
         # set to new value
         orca.add_injectable(name, new_value)

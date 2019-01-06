@@ -1,0 +1,25 @@
+{% if step_dict %}
+    <p><strong> List of all Steps </strong></p>
+    <form action='' method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" name="action" value="Populate">
+    </form>
+    <form action='' method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" name="action" value="Save">
+    </form>
+    <form action='' method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" name="action" value="Load">
+    </form>
+    <ul>
+    {% for name, step in step_dict.items %}
+        <li><a href="{{ name }}/">{{ name }}: {{ step }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No steps are available.</p>
+{% endif %}

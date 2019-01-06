@@ -26,7 +26,7 @@ class Injectable(NameModel):
         return f'{self.scenario} - {self.name}'
 
 
-class Steps(NameModel):
+class Step(NameModel):
     name = models.TextField()
     scenario = models.ForeignKey(Scenario, on_delete=models.CASCADE)
     started = models.DateTimeField()
