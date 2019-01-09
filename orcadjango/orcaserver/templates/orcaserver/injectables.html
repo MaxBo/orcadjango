@@ -15,10 +15,23 @@
       <input type="submit" name="action" value="Save" class="btn btn-primary">
       <input type="submit" name="action" value="Load" class="btn btn-primary">
     </form>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col" style="width: 1%;">injectable</th>
+          <th scope="col">value</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for injectable, value in injectable_dict.items %}
+        <tr>
+          <td>{{ injectable }}</td>
+          <td>{{ value }}<a style="margin-left: 10px;" href="{{ injectable }}/">edit</a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
     <ul>
-    {% for injectable, value in injectable_dict.items %}
-      <li><a href="{{ injectable }}/">{{ injectable }}: {{ value }}</a></li>
-    {% endfor %}
     </ul>
   {% else %}
     <p>No injectables are available.</p>

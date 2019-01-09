@@ -22,8 +22,13 @@ class ScenarioMixin:
         # set to new value
         orca.add_injectable(name, new_value)
 
+    def get_context_data(self, **kwargs):
+        kwargs = super().get_context_data(**kwargs)
+        kwargs['scenario_name'] = self.get_scenario().name
+        return kwargs
 
-class InjectablesView(BaseFormView, ListView, ScenarioMixin):
+
+class InjectablesView(ScenarioMixin, BaseFormView, ListView):
     model = Injectable
     template_name = 'orcaserver/injectables.html'
     context_object_name = 'injectable_dict'
@@ -68,7 +73,7 @@ class InjectablesView(BaseFormView, ListView, ScenarioMixin):
         return super().form_valid(form)
 
 
-class InjectableView(FormView, ScenarioMixin):
+class InjectableView(ScenarioMixin, FormView):
     template_name = 'orcaserver/injectable.html'
     form_class = InjectableValueForm
     success_url = '/orca/injectables'
