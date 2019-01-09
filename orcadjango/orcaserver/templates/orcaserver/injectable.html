@@ -1,9 +1,18 @@
+{% extends 'orcaserver/base.html' %}
 
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-<p><strong> Injectable {{ view.name}} </strong></p>
-<form action='' method="post">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" name="action" value="Change">
-    <input type="submit" name="action" value="Reset" />
-</form>
+{# Load the tag library #}
+{% load bootstrap4 %}
+
+{% block title %}
+    Injectable {{view.name}}
+{% endblock %}
+
+{% block content %}
+    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+    <form action='' method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <input type="submit" name="action" value="Change" class="btn btn-primary">
+        <input type="submit" name="action" value="Reset" class="btn btn-secondary">
+    </form>
+{% endblock %}

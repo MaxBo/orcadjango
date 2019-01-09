@@ -1,25 +1,27 @@
-{% if injectable_dict %}
-    <p><strong> List of all Injectables and their current values </strong></p>
+{% extends 'orcaserver/base.html' %}
+
+{% load bootstrap4 %}
+
+{% block title %}
+  List of all Injectables and their current values
+{% endblock %}
+
+{% block content %}
+  {% if injectable_dict %}
     <form action='' method="post">
-        {% csrf_token %}
-        {{ form }}
-        <input type="submit" name="action" value="Populate">
-    </form>
-    <form action='' method="post">
-        {% csrf_token %}
-        {{ form }}
-        <input type="submit" name="action" value="Save">
-    </form>
-    <form action='' method="post">
-        {% csrf_token %}
-        {{ form }}
-        <input type="submit" name="action" value="Load">
+      {% csrf_token %}
+      {% bootstrap_form form %}
+      <input type="submit" name="action" value="Populate" class="btn btn-primary">
+      <input type="submit" name="action" value="Save" class="btn btn-primary">
+      <input type="submit" name="action" value="Load" class="btn btn-primary">
     </form>
     <ul>
     {% for injectable, value in injectable_dict.items %}
-        <li><a href="{{ injectable }}/">{{ injectable }}: {{ value }}</a></li>
+      <li><a href="{{ injectable }}/">{{ injectable }}: {{ value }}</a></li>
     {% endfor %}
     </ul>
-{% else %}
+  {% else %}
     <p>No injectables are available.</p>
-{% endif %}
+  {% endif %}
+
+{% endblock %}
