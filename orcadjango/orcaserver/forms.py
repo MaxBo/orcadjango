@@ -30,10 +30,6 @@ def get_scenarios():
     return scenarios
 
 
-class ScenarioForm(forms.Form):
-    scenario = forms.ChoiceField(choices=get_scenarios)
-
-
 class InjectableValueForm(forms.Form):
     value = forms.CharField(label='Value', max_length=100)
 

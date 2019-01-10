@@ -1,4 +1,13 @@
 from django.core.management.commands.runserver import Command as BaseCommand
+import orca
+
+def load_module(module):
+    orca.clear_all()
+    __import__(module)
+    orca._python_module = module
+    orca._injectable_backup = {}
+    for inj in orca.list_injectables():
+        orca._injectable_backup[inj] = orca.get_injectable(inj)
 
 
 class Command(BaseCommand):
@@ -13,5 +22,5 @@ class Command(BaseCommand):
 
     def execute(self, *args, **options):
         python_module = options.pop('orca_python_module')
-        __import__(python_module)
+        load_module(python_module)
         return super().execute(*args, **options)

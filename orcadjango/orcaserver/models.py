@@ -12,6 +12,7 @@ class NameModel(models.Model):
 class Scenario(NameModel):
     """Scenario"""
     name = models.TextField()
+    module = models.TextField(default='')
 
 
 class Injectable(NameModel):

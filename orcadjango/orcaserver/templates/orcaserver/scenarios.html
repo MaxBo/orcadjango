@@ -9,7 +9,7 @@
 
   <form action='' method="post">
     {% csrf_token %}
-    <select class="form-control" name='scenario' style="margin-bottom: 10px;">
+    <select class="form-control" name='scenario' style="min-width: 200px; width: auto; margin-right: 10px; display: inline;">
     {% for scenario in scenarios %}
       <option value="{{ scenario.id }}" {% if scenario.id|stringformat:"i" == request.session.scenario %} selected="selected" {% endif %}>
         {{ scenario.name }}
@@ -24,7 +24,7 @@
   <form action='create/' method="post">
     <h4> Create Scenario </h4>
     {% csrf_token %}
-    <input class="form-control" style="margin-bottom: 10px;" name="name" placeholder="scenario name">
+    <input class="form-control" name="name" placeholder="scenario name" style="width: auto; margin-right: 10px; display: inline;">
     <input class="btn btn-primary" type="submit" value="Create">
   </form>
 
