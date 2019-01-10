@@ -12,7 +12,10 @@ class ScenarioMixin:
     def get_scenario(self):
         """get the selected scenario"""
         scenario_pk = self.request.session.get('scenario')
-        scenario = Scenario.objects.get(pk=scenario_pk)
+        try:
+            scenario = Scenario.objects.get(pk=scenario_pk)
+        except Scenario.DoesNotExist:
+            scenario = None
         return scenario
 
     def backup_and_set_value(self, name, new_value):
@@ -24,7 +27,8 @@ class ScenarioMixin:
 
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
-        kwargs['scenario_name'] = self.get_scenario().name
+        scenario = self.get_scenario()
+        kwargs['scenario_name'] = scenario.name if scenario else 'none'
         return kwargs
 
 

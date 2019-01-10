@@ -1,26 +1,38 @@
 from django.views.generic import ListView
-from django.views.generic.edit import FormView, FormMixin, BaseFormView
 from orcaserver.models import Scenario
 from orcaserver.forms import ScenarioForm
 from orcaserver.views import ScenarioMixin
+from django.views.generic.edit import BaseFormView
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.http import HttpResponseBadRequest
+import os
 
 
 class ScenariosView(ScenarioMixin, BaseFormView, ListView):
     model = Scenario
     form_class = ScenarioForm
-    success_url = '/scenarios'
-    template_name = 'orcaserver/scenario_list.html'
+    template_name = 'orcaserver/scenarios.html'
+    context_object_name = 'scenarios'
 
-    def form_valid(self, form):
-        """set the selected scenario as session attribute"""
-        action = self.request.POST.get('action')
-        if action == 'Select':
-            scenario_id = form.cleaned_data.get('scenario')
+    #def get_queryset(self):
+        #"""Return the injectables with their values."""
+        #qs = Scenario.objects.all()
+        #return qs
+
+    def post(self, request, *args, **kwargs):
+        scenario_id = request.POST.get('scenario')
+        if request.POST.get('select'):
             self.request.session['scenario'] = scenario_id
-        return super().form_valid(form)
+        elif request.POST.get('delete'):
+            Scenario.objects.get(id=scenario_id).delete()
+        return HttpResponseRedirect(request.path_info)
 
-    def get(self, request, *args, **kwargs):
-        """get the selected scenario from the session attribute"""
-        scenario_id = request.session.get('scenario')
-        self.initial['scenario'] = scenario_id
-        return super().get(request, *args, **kwargs)
+    def create(request):
+        if request.method == 'POST':
+            name = request.POST.get('name')
+            if not name:
+                return HttpResponseBadRequest('name can not be empty')
+            scenario = Scenario.objects.create(name=name)
+            request.session['scenario'] = scenario.id
+        return HttpResponseRedirect(reverse('scenarios'))
