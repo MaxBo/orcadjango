@@ -1,0 +1,18 @@
+#steps-available{
+  min-width: 200px;
+  min-height: 500px;
+  resize: both;
+}
+
+#steps-scenario{
+  min-width: 400px;
+  min-height: 500px;
+  border: 1px solid grey;
+}
+
+#add-steps-btn{
+  left: 0px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}

@@ -11,7 +11,7 @@
     {% csrf_token %}
     <select class="form-control" name='scenario' style="min-width: 200px; width: auto; margin-right: 10px; display: inline;">
     {% for scenario in scenarios %}
-      <option value="{{ scenario.id }}" {% if scenario.id|stringformat:"i" == request.session.scenario %} selected="selected" {% endif %}>
+      <option value="{{ scenario.id }}" {% if scenario.id|stringformat:"i" == request.session.scenario|stringformat:"i" %} selected="selected" {% endif %}>
         {{ scenario.name }}
       </option>
     {% endfor %}

@@ -30,7 +30,7 @@ class Injectable(NameModel):
 class Step(NameModel):
     name = models.TextField()
     scenario = models.ForeignKey(Scenario, on_delete=models.CASCADE)
-    started = models.DateTimeField()
-    finished = models.DateTimeField()
+    started = models.DateTimeField(null=True)
+    finished = models.DateTimeField(null=True)
     success = models.BooleanField(default=False)
     order = models.TextField(null=True)

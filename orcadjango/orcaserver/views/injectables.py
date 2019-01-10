@@ -4,7 +4,7 @@ from django.views.generic.edit import FormView, BaseFormView
 import orca
 from orcaserver.views import ScenarioMixin
 from orcaserver.models import Injectable, Scenario
-from orcaserver.forms import InjectableValueForm, InjectablesPopulateForm
+from orcaserver.forms import InjectableValueForm
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.urls import reverse
 
@@ -28,8 +28,9 @@ class InjectablesView(ScenarioMixin, ListView):
                 orig_value = orca._injectable_backup[inj.name]
                 inj.value = orig_value
                 inj.save()
-                orca.add_injectable(inj.name, orig_value)
+                #orca.add_injectable(inj.name, orig_value)
         return HttpResponseRedirect(request.path_info)
+
 
 class InjectableView(ScenarioMixin, FormView):
     template_name = 'orcaserver/injectable.html'
@@ -54,12 +55,12 @@ class InjectableView(ScenarioMixin, FormView):
                 inj.changed = True
             inj.value = new_value
             inj.save()
-            orca.add_injectable(inj.name, new_value)
+            #orca.add_injectable(inj.name, new_value)
 
         elif request.POST.get('reset'):
             orig_value = orca._injectable_backup[self.name]
             inj.value = orig_value
             inj.save()
-            orca.add_injectable(inj.name, orig_value)
+            #orca.add_injectable(inj.name, orig_value)
             return HttpResponseRedirect(request.path_info)
         return HttpResponseRedirect(reverse('injectables'))

@@ -1,5 +1,5 @@
 from django.views.generic import ListView
-from orcaserver.models import Scenario, Injectable
+from orcaserver.models import Scenario, Injectable, Step
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.urls import reverse
 import orca
@@ -27,9 +27,13 @@ class ScenarioMixin:
         return kwargs
 
 def create_injectables(scenario):
-    for inj in orca.list_injectables():
-        value = orca.get_injectable(inj)
-        Injectable.objects.create(name=inj, value=value, scenario=scenario)
+    for name in orca.list_injectables():
+        value = orca.get_injectable(name)
+        Injectable.objects.create(name=name, value=value, scenario=scenario)
+
+def create_steps(scenario):
+    for name in orca.list_steps():
+        Step.objects.create(name=name, scenario=scenario)
 
 
 class ScenariosView(ScenarioMixin, ListView):

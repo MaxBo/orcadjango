@@ -1,26 +1,38 @@
 {% extends 'orcaserver/base.html' %}
 {% load bootstrap4 %}
+{% load static %}
 
 {% block title %}
   List of all Steps
 {% endblock %}
 
 {% block content %}
-  {% if step_dict %}
-    <form action='' method="post">
-      {% csrf_token %}
-      {% bootstrap_form form %}
-      <input type="submit" name="action" value="Populate" class="btn btn-primary">
-      <input type="submit" name="action" value="Save" class="btn btn-primary">
-      <input type="submit" name="action" value="Load" class="btn btn-primary">
-    </form>
-    <ul>
-    {% for name, step in step_dict.items %}
-      <li><a href="{{ name }}/">{{ name }}: {{ step }}</a></li>
-    {% endfor %}
-    </ul>
+  <link rel="stylesheet" type="text/css" href="{% static 'css/steps.css' %}">
+  {% if steps_available %}
+  <div class="row">
+    <div class="col-md-auto">
+      <select id="steps-available" multiple>
+      {% for name, step in steps_available.items %}
+        <option>{{ name }}</option>
+      {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-auto">
+      <button id="add-steps-btn">&rarr;</button>
+    </div>
+    <div class="col-md-auto">
+      <div id="steps-scenario">
+      {% for step in steps_scenario %}
+        {{ step.name }}<br>
+      {% endfor %}
+      </div>
+    </div>
+      <!--<form action='run' method="post">-->
+        <!--{% csrf_token %}-->
+        <!--<input type="submit" name="action" value="Run" class="btn btn-primary">-->
+      <!--</form>-->
+  </div>
   {% else %}
-    <p>No steps are available.</p>
+  <p>no steps available.</p>
   {% endif %}
-  <input type="submit" name="action" value="Run" class="btn btn-primary">
 {% endblock %}
