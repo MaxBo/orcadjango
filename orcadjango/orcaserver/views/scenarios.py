@@ -9,16 +9,10 @@ from django.http import HttpResponseBadRequest
 import os
 
 
-class ScenariosView(ScenarioMixin, BaseFormView, ListView):
+class ScenariosView(ScenarioMixin, ListView):
     model = Scenario
-    form_class = ScenarioForm
     template_name = 'orcaserver/scenarios.html'
     context_object_name = 'scenarios'
-
-    #def get_queryset(self):
-        #"""Return the injectables with their values."""
-        #qs = Scenario.objects.all()
-        #return qs
 
     def post(self, request, *args, **kwargs):
         scenario_id = request.POST.get('scenario')
