@@ -13,7 +13,6 @@ class InjectablesView(ScenarioMixin, ListView):
     model = Injectable
     template_name = 'orcaserver/injectables.html'
     context_object_name = 'injectables'
-    success_url = '/injectables'
 
     def get_queryset(self):
         """Return the injectables with their values."""
@@ -22,37 +21,15 @@ class InjectablesView(ScenarioMixin, ListView):
         injectables = Injectable.objects.filter(name__in=inj, scenario=scenario)
         return injectables
 
-    #def form_valid(self, form):
-        #action = self.request.POST.get('action')
-        #scenario = self.get_scenario()
-        #if action == 'Populate':
-            ##  enter to model
-            #for name in orca.list_injectables():
-                #inj, created = Injectable.objects.get_or_create(
-                    #name=name,
-                    #scenario=scenario)
-                #inj.value = orca.get_injectable(name)
-                #inj.changed = False
-                #inj.save()
-        #if action == 'Save':
-            ##  save values for scenario
-            #for name in orca.list_injectables():
-                #inj, created = Injectable.objects.get_or_create(
-                    #name=name,
-                    #scenario=scenario)
-                #inj.value = orca.get_injectable(name)
-                #inj.save()
-
-        #if action == 'Load':
-            ##  save values for scenario
-            #for name in orca.list_injectables():
-                #inj, created = Injectable.objects.get_or_create(
-                    #name=name,
-                    #scenario=scenario)
-                #self.backup_and_set_value(name, inj.value)
-
-        #return super().form_valid(form)
-
+    def post(self, request, *args, **kwargs):
+        scenario_id = request.POST.get('scenario')
+        if request.POST.get('reset'):
+            for inj in self.get_queryset():
+                orig_value = orca._injectable_backup[inj.name]
+                inj.value = orig_value
+                inj.save()
+                orca.add_injectable(inj.name, orig_value)
+        return HttpResponseRedirect(request.path_info)
 
 class InjectableView(ScenarioMixin, FormView):
     template_name = 'orcaserver/injectable.html'
