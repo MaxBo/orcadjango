@@ -8,6 +8,8 @@
 
 {% block content %}
   <link rel="stylesheet" type="text/css" href="{% static 'css/steps.css' %}">
+  <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+  <script src="{% static 'js/jquery-ui.min.js' %}"></script>
   {% if steps_available %}
   <form action='' method="post">
     <div class="row">
@@ -23,9 +25,9 @@
       <input type="hidden" name="add_steps" id="add-steps">
       <div class="col-md-auto">
         <div id="btn-grp">
-          <input name="add" type="submit" value="&#8594;">
+          <input name="add" type="submit" value="&#8594;" title='add selected steps to scenario'>
           <br>
-          <input style="margin-top: 5px;" name="remove" type="submit" value="&#8592;">
+          <input style="margin-top: 5px;" name="remove" type="submit" value="&#8592;" title='remove selected steps from scenario'>
         </div>
       </div>
       <div class="col-md-auto">
@@ -102,7 +104,24 @@ function highlightRow(target){
     }
     input.value = inputStr;
   })
+  var fixHelperModified = function(e, tr) {
+      var $originals = tr.children();
+      var $helper = tr.clone();
+      $helper.children().each(function(index) {
+          $(this).width($originals.eq(index).width())
+      });
+      return $helper;
+  },
+      updateIndex = function(e, ui) {
+          $('td.index', ui.item.parent()).each(function (i) {
+              $(this).html(i + 1);
+          });
+      };
 
+  $("#steps-scenario tbody").sortable({
+      helper: fixHelperModified,
+      stop: updateIndex
+  }).disableSelection();
 })();
 </script>
 {% endblock %}
