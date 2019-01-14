@@ -10,9 +10,18 @@
   border: 1px solid grey;
 }
 
-#add-steps-btn{
+#btn-grp{
   left: 0px;
   position: absolute;
-  top: 50%;
   transform: translateY(-50%);
+  top: 50%;
+}
+
+tr {
+  cursor: pointer;
+}
+
+tr.selected {
+  background-color: #007bff;
+  color: white;
 }

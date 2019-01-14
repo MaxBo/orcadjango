@@ -4,7 +4,8 @@ from django.views.generic.edit import BaseFormView
 from django.shortcuts import render, HttpResponseRedirect
 import orca
 from orcaserver.views import ScenarioMixin
-from orcaserver.models import Step, Injectable
+from orcaserver.models import Step, Injectable, Scenario
+from django.urls import reverse
 
 def apply_injectables(scenario):
     names = orca.list_injectables()
@@ -28,8 +29,22 @@ class StepsView(ScenarioMixin, TemplateView):
 
     def post(self, request, *args, **kwargs):
         scenario_id = request.POST.get('scenario')
-        if request.POST.get('select'):
-            pass
+        if request.POST.get('add'):
+            steps = request.POST.get('add_steps', '').split(',')
+            scenario = self.get_scenario()
+            for step in steps:
+                if not step:
+                    continue
+                Step.objects.create(scenario=scenario,
+                                    name=step, order=10000)
+        elif request.POST.get('remove'):
+            steps = request.POST.get('remove_steps', '').split(',')
+            scenario = self.get_scenario()
+            for step_id in steps:
+                if not step_id:
+                    continue
+                step = Step.objects.get(id=step_id)
+                step.delete()
         elif request.POST.get('run'):
             steps = form.cleaned_data['steps']
             apply_injectables(self.get_scenario())

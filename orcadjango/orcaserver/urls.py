@@ -11,5 +11,5 @@ urlpatterns = [
     path('injectables/', views.InjectablesView.as_view(), name='injectables'),
     path('injectables/<str:name>/', views.InjectableView.as_view(),
          name='injectable'),
-    path('steps/', views.StepsView.as_view(), name='steps')
+    path('steps/', views.StepsView.as_view(), name='steps'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

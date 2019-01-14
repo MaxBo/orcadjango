@@ -3,36 +3,106 @@
 {% load static %}
 
 {% block title %}
-  List of all Steps
+  Steps
 {% endblock %}
 
 {% block content %}
   <link rel="stylesheet" type="text/css" href="{% static 'css/steps.css' %}">
   {% if steps_available %}
-  <div class="row">
-    <div class="col-md-auto">
-      <select id="steps-available" multiple>
-      {% for name, step in steps_available.items %}
-        <option>{{ name }}</option>
-      {% endfor %}
-      </select>
-    </div>
-    <div class="col-md-auto">
-      <button id="add-steps-btn">&rarr;</button>
-    </div>
-    <div class="col-md-auto">
-      <div id="steps-scenario">
-      {% for step in steps_scenario %}
-        {{ step.name }}<br>
-      {% endfor %}
+  <form action='' method="post">
+    <div class="row">
+      {% csrf_token %}
+      <div class="col-md-auto">
+        <h6>available</h6>
+        <select id="steps-available" multiple>
+        {% for name, step in steps_available.items %}
+          <option>{{ name }}</option>
+        {% endfor %}
+        </select>
+      </div>
+      <input type="hidden" name="add_steps" id="add-steps">
+      <div class="col-md-auto">
+        <div id="btn-grp">
+          <input name="add" type="submit" value="&#8594;">
+          <br>
+          <input style="margin-top: 5px;" name="remove" type="submit" value="&#8592;">
+        </div>
+      </div>
+      <div class="col-md-auto">
+        <h6>in scenario</h6>
+        <table class="table" id="steps-scenario">
+          <thead>
+            <tr>
+              <th class="index">No.</th>
+              <th style="display: none;">ID</th>
+              <th>Name</th>
+              <th>Started</th>
+              <th>Finished</th>
+              <th>Success</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for step in steps_scenario %}
+            <tr onclick="highlightRow(this)" data-id="{{ step.id }}">
+              <td class="index"> {{ forloop.counter0 }} </td>
+              <td style="display: none;"> {{ step.id }} </td>
+              <td> {{ step.name }} </td>
+              <td> {{ step.started }} </td>
+              <td> {{ step.finished }} </td>
+              <td> {{ step.success }} </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <input type="hidden" name="remove_steps" id="remove-steps">
       </div>
     </div>
-      <!--<form action='run' method="post">-->
-        <!--{% csrf_token %}-->
-        <!--<input type="submit" name="action" value="Run" class="btn btn-primary">-->
-      <!--</form>-->
-  </div>
+  </form>
   {% else %}
   <p>no steps available.</p>
   {% endif %}
+
+<script>
+
+<!--function addSelectedSteps(){-->
+  <!--var select = document.getElementById('steps-available');-->
+  <!--for (var i=0; i<select.selectedOptions.length; i++) {-->
+    <!--var selected = select.selectedOptions[i];-->
+    <!--addStep(selected.value);-->
+  <!--}-->
+<!--}-->
+
+function highlightRow(target){
+  var stepsTable = document.getElementById('steps-scenario'),
+      input = document.getElementById('remove-steps');
+  target.classList.toggle('selected');
+  var inputStr = '';
+  for (var i = 0; i < stepsTable.rows.length; i++){
+    var row = stepsTable.rows[i];
+    if (row.classList.contains('selected')){
+      var id = row.dataset['id'];
+      inputStr += id + ',';
+    }
+  }
+  input.value = inputStr;
+}
+
+(function() {
+
+  //var button = document.getElementById('add-steps-btn');
+  //button.addEventListener('click', addSelectedSteps);
+  var select = document.getElementById('steps-available'),
+      input = document.getElementById('add-steps'),
+      stepsTable = document.getElementById('selected-steps');
+  select.addEventListener('change', function(){
+    var inputStr = '';
+    for (var i=0; i < this.selectedOptions.length; i++) {
+      var selected = select.selectedOptions[i];
+      inputStr += selected.value + ',';
+    }
+    input.value = inputStr;
+  })
+
+})();
+</script>
 {% endblock %}
