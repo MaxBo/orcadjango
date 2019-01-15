@@ -10,6 +10,7 @@ from threading import Thread
 import time
 import contextlib
 import logging
+import json
 from django.utils import timezone
 from django.http import JsonResponse, HttpResponseNotFound
 
@@ -36,6 +37,12 @@ class StepsView(ScenarioMixin, TemplateView):
 
     @staticmethod
     def list(request):
+        if request.method == 'POST':
+            body = json.loads(request.body)
+            for item in body:
+                step = Step.objects.get(id=item['id'])
+                step.order = item['order']
+                step.save()
         scenario_id = request.session.get('scenario')
         if scenario_id is None:
             return HttpResponseNotFound('scenario not found')
@@ -56,6 +63,7 @@ class StepsView(ScenarioMixin, TemplateView):
                 'started': started,
                 'finished': finished,
                 'success': step.success,
+                'order': step.order,
             })
         return JsonResponse(steps_json, safe=False)
 

@@ -66,83 +66,96 @@
   {% endif %}
 
 <script>
+  var stepsTable = document.getElementById('steps-scenario'),
+      stepsUrl = '/steps/list/',
+      csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
 
-<!--function addSelectedSteps(){-->
-  <!--var select = document.getElementById('steps-available');-->
-  <!--for (var i=0; i<select.selectedOptions.length; i++) {-->
-    <!--var selected = select.selectedOptions[i];-->
-    <!--addStep(selected.value);-->
-  <!--}-->
-<!--}-->
-var stepsTable = document.getElementById('steps-scenario');
-
-function highlightRow(target){
-  var input = document.getElementById('remove-steps');
-  target.classList.toggle('selected');
-  var inputStr = '';
-  for (var i = 0; i < stepsTable.rows.length; i++){
-    var row = stepsTable.rows[i];
-    if (row.classList.contains('selected')){
-      var id = row.dataset['id'];
-      inputStr += id + ',';
-    }
-  }
-  input.value = inputStr;
-}
-
-function updateSteps(){
-  var url = '/steps/list';
-  fetch(url).then(data=>{return data.json()}).then(function(res){
-    res.forEach(function(step){
-      var row = stepsTable.querySelector('tr[data-id="' + step.id + '"]'),
-          startCell = row.querySelector('.start'),
-          finishCell = row.querySelector('.finish'),
-          successCell = row.querySelector('.success');
-      startCell.innerHTML = step.started;
-      finishCell.innerHTML = step.finished;
-      successCell.innerHTML = step.success;
-    })
-  })
-}
-
-(function() {
-
-  //var button = document.getElementById('add-steps-btn');
-  //button.addEventListener('click', addSelectedSteps);
-  var select = document.getElementById('steps-available'),
-      input = document.getElementById('add-steps'),
-      stepsTable = document.getElementById('selected-steps');
-  select.addEventListener('change', function(){
+  // highlight row in table on click
+  function highlightRow(target){
+    var input = document.getElementById('remove-steps');
+    target.classList.toggle('selected');
     var inputStr = '';
-    for (var i=0; i < this.selectedOptions.length; i++) {
-      var selected = select.selectedOptions[i];
-      inputStr += selected.value + ',';
+    for (var i = 0; i < stepsTable.rows.length; i++){
+      var row = stepsTable.rows[i];
+      if (row.classList.contains('selected')){
+        var id = row.dataset['id'];
+        inputStr += id + ',';
+      }
     }
     input.value = inputStr;
-  })
+  }
 
-  updateSteps();
-  setInterval(updateSteps, 2000);
+  // fetch and update steps in table
+  function updateSteps(){
+    fetch(stepsUrl).then(data=>{return data.json()}).then(function(res){
+      res.forEach(function(step){
+        var row = stepsTable.querySelector('tr[data-id="' + step.id + '"]'),
+            startCell = row.querySelector('.start'),
+            finishCell = row.querySelector('.finish'),
+            successCell = row.querySelector('.success');
+        startCell.innerHTML = step.started;
+        finishCell.innerHTML = step.finished;
+        successCell.innerHTML = step.success;
+      })
+    })
+  }
 
-  var fixHelperModified = function(e, tr) {
-          var $originals = tr.children();
-          var $helper = tr.clone();
-          $helper.children().each(function(index) {
-              $(this).width($originals.eq(index).width())
-          });
-          return $helper;
-      },
-      updateIndex = function(e, ui) {
-          $('td.index', ui.item.parent()).each(function (i) {
-              $(this).html(i);
-          });
-      };
+  //drag and drop of table rows
+  function tableDnD(){
+    function fixHelperModified(e, tr) {
+      var $originals = tr.children();
+      var $helper = tr.clone();
+      $helper.children().each(function(index) {
+          $(this).width($originals.eq(index).width())
+      });
+      return $helper;
+    };
+    function updateOrder(e, ui) {
+      var data = [],
+          rows = stepsTable.querySelectorAll('tbody tr'),
+          i = 0;
+      rows.forEach(function(row){
+        var index = row.querySelector('.index'),
+            id = row.dataset['id'];
+        index.innerHTML = i;
+        i += 1;
+        data.push({ id: id, order: i})
+      })
+      console.log(data)
+      fetch(stepsUrl, {
+        method: "POST",
+        body: JSON.stringify(data),
+        credentials: "same-origin",
+        headers: { "X-CSRFToken": csrfToken }
+      });
+    };
 
-  $("#steps-scenario tbody").sortable({
+    $("#steps-scenario tbody").sortable({
       helper: fixHelperModified,
-      stop: updateIndex
-  }).disableSelection();
+      stop: updateOrder
+    }).disableSelection();
 
-})();
+  }
+
+  (function() {
+
+    var select = document.getElementById('steps-available'),
+        input = document.getElementById('add-steps'),
+        stepsTable = document.getElementById('selected-steps');
+    select.addEventListener('change', function(){
+      var inputStr = '';
+      for (var i=0; i < this.selectedOptions.length; i++) {
+        var selected = select.selectedOptions[i];
+        inputStr += selected.value + ',';
+      }
+      input.value = inputStr;
+    })
+
+    // periodically update steps and their progress
+    updateSteps();
+    setInterval(updateSteps, 2000);
+
+    tableDnD();
+  })();
 </script>
 {% endblock %}
