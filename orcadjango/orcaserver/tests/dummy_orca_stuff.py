@@ -1,4 +1,5 @@
 import orca
+from time import sleep
 
 
 @orca.injectable()
@@ -14,9 +15,11 @@ def inj2():
 @orca.step()
 def step1():
     """dummy step"""
+    sleep(5)
 
 
 @orca.step()
 def step2():
     """another dummy step"""
+    sleep(5)
 

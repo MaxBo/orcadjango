@@ -49,14 +49,15 @@
               <td class="index"> {{ forloop.counter0 }} </td>
               <td style="display: none;"> {{ step.id }} </td>
               <td> {{ step.name }} </td>
-              <td> {{ step.started }} </td>
-              <td> {{ step.finished }} </td>
-              <td> {{ step.success }} </td>
+              <td class="start"> {{ step.started }} </td>
+              <td class="finish"> {{ step.finished }} </td>
+              <td class="success"> {{ step.success }} </td>
             </tr>
           {% endfor %}
           </tbody>
         </table>
-        <input type="hidden" name="remove_steps" id="remove-steps">
+        <input type="submit" name="run" class="btn btn-primary" value="Run">
+        <input type="hidden" name="selected_steps" id="remove-steps">
       </div>
     </div>
   </form>
@@ -73,10 +74,10 @@
     <!--addStep(selected.value);-->
   <!--}-->
 <!--}-->
+var stepsTable = document.getElementById('steps-scenario');
 
 function highlightRow(target){
-  var stepsTable = document.getElementById('steps-scenario'),
-      input = document.getElementById('remove-steps');
+  var input = document.getElementById('remove-steps');
   target.classList.toggle('selected');
   var inputStr = '';
   for (var i = 0; i < stepsTable.rows.length; i++){
@@ -87,6 +88,21 @@ function highlightRow(target){
     }
   }
   input.value = inputStr;
+}
+
+function updateSteps(){
+  var url = '/steps/list';
+  fetch(url).then(data=>{return data.json()}).then(function(res){
+    res.forEach(function(step){
+      var row = stepsTable.querySelector('tr[data-id="' + step.id + '"]'),
+          startCell = row.querySelector('.start'),
+          finishCell = row.querySelector('.finish'),
+          successCell = row.querySelector('.success');
+      startCell.innerHTML = step.started;
+      finishCell.innerHTML = step.finished;
+      successCell.innerHTML = step.success;
+    })
+  })
 }
 
 (function() {
@@ -104,17 +120,21 @@ function highlightRow(target){
     }
     input.value = inputStr;
   })
+
+  updateSteps();
+  setInterval(updateSteps, 2000);
+
   var fixHelperModified = function(e, tr) {
-      var $originals = tr.children();
-      var $helper = tr.clone();
-      $helper.children().each(function(index) {
-          $(this).width($originals.eq(index).width())
-      });
-      return $helper;
-  },
+          var $originals = tr.children();
+          var $helper = tr.clone();
+          $helper.children().each(function(index) {
+              $(this).width($originals.eq(index).width())
+          });
+          return $helper;
+      },
       updateIndex = function(e, ui) {
           $('td.index', ui.item.parent()).each(function (i) {
-              $(this).html(i + 1);
+              $(this).html(i);
           });
       };
 
@@ -122,6 +142,7 @@ function highlightRow(target){
       helper: fixHelperModified,
       stop: updateIndex
   }).disableSelection();
+
 })();
 </script>
 {% endblock %}

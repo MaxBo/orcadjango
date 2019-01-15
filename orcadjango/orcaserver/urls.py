@@ -12,4 +12,5 @@ urlpatterns = [
     path('injectables/<str:name>/', views.InjectableView.as_view(),
          name='injectable'),
     path('steps/', views.StepsView.as_view(), name='steps'),
+    path('steps/list/', views.StepsView.list)
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
