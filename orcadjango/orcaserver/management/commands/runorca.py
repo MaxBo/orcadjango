@@ -1,10 +1,13 @@
 from django.core.management.commands.runserver import Command as BaseCommand
 import orca
+import importlib
 
-def load_module(module):
+
+def load_module(module_name):
     orca.clear_all()
-    __import__(module)
-    orca._python_module = module
+    module = importlib.import_module(module_name)
+    importlib.reload(module)
+    orca._python_module = module_name
     orca._injectable_backup = {}
     for inj in orca.list_injectables():
         orca._injectable_backup[inj] = orca.get_injectable(inj)

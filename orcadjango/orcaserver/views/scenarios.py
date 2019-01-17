@@ -1,9 +1,8 @@
+import orca
 from django.views.generic import ListView
 from orcaserver.models import Scenario, Injectable, Step
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.urls import reverse
-import orca
-import os
 
 
 class ScenarioMixin:
@@ -32,16 +31,21 @@ overwritable_types = (str, bytes, int, float, complex,
 
 
 def create_injectables(scenario):
-    for name in orca.list_injectables():
-        value = orca.get_injectable(name)
+    injectable_list = orca.list_injectables()
+    for name in injectable_list:
         inj, created = Injectable.objects.get_or_create(name=name,
                                                         scenario=scenario)
+        value = orca._injectable_backup.get(name)
+        #  check if the original type is overwritable
+        inj.can_be_changed = isinstance(value, overwritable_types)
         if created:
             # for new injectables, set the initial value
             inj.value = value
-            #  and check if the original type is overwritable
-            inj.can_be_changed = isinstance(value, overwritable_types)
-            inj.save()
+        inj.save()
+
+    deleted_injectables = Injectable.objects.filter(scenario=scenario).\
+        exclude(name__in=injectable_list)
+    deleted_injectables.delete()
 
 
 def create_steps(scenario):
