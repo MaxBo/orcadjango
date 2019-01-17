@@ -18,7 +18,8 @@ class InjectablesView(ScenarioMixin, ListView):
         """Return the injectables with their values."""
         scenario = self.get_scenario()
         inj = orca.list_injectables()
-        injectables = Injectable.objects.filter(name__in=inj, scenario=scenario)
+        injectables = Injectable.objects.filter(name__in=inj,
+                                                scenario=scenario)
         return injectables
 
     def post(self, request, *args, **kwargs):
@@ -28,7 +29,6 @@ class InjectablesView(ScenarioMixin, ListView):
                 orig_value = orca._injectable_backup[inj.name]
                 inj.value = orig_value
                 inj.save()
-                #orca.add_injectable(inj.name, orig_value)
         return HttpResponseRedirect(request.path_info)
 
 
@@ -55,7 +55,6 @@ class InjectableView(ScenarioMixin, FormView):
                 inj.changed = True
             inj.value = new_value
             inj.save()
-            #orca.add_injectable(inj.name, new_value)
 
         elif request.POST.get('reset'):
             orig_value = orca._injectable_backup[self.name]

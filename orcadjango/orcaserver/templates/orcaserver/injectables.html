@@ -17,13 +17,23 @@
         <tr>
           <th scope="col" style="width: 1%;">injectable</th>
           <th scope="col">value</th>
+          <th scope="col">Edit</th>
         </tr>
       </thead>
       <tbody>
       {% for injectable in injectables %}
         <tr>
-          <td>{{ injectable.name }}</td>
-          <td>{{ injectable.value }}<a style="margin-left: 10px;" href="{{ injectable.name }}/">edit</a></td>
+          {% if injectable.can_be_changed %}
+            <td>{{ injectable.name }}</td>
+            <td>{{ injectable.value }}</td>
+            <td><a style="margin-left: 10px;" href="{{ injectable.name }}/">edit</a></td>
+          {% else %}
+            # <tr bgcolor="#999999">
+            <td>{{ injectable.name }}</td>
+            <td>{{ injectable.value }}</td>
+            <td></td>
+           # </tr>
+          {% endif %}
         </tr>
       {% endfor %}
       </tbody>

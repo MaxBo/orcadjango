@@ -26,10 +26,23 @@ class ScenarioMixin:
         kwargs['python_module'] = orca._python_module
         return kwargs
 
+
+overwritable_types = (str, bytes, int, float, complex,
+                      tuple, list, dict, set, bool, None.__class__)
+
+
 def create_injectables(scenario):
     for name in orca.list_injectables():
         value = orca.get_injectable(name)
-        Injectable.objects.create(name=name, value=value, scenario=scenario)
+        inj, created = Injectable.objects.get_or_create(name=name,
+                                                        scenario=scenario)
+        if created:
+            # for new injectables, set the initial value
+            inj.value = value
+            #  and check if the original type is overwritable
+            inj.can_be_changed = isinstance(value, overwritable_types)
+            inj.save()
+
 
 def create_steps(scenario):
     for name in orca.list_steps():
@@ -52,6 +65,9 @@ class ScenariosView(ScenarioMixin, ListView):
             self.request.session['scenario'] = scenario_id
         elif request.POST.get('delete'):
             Scenario.objects.get(id=scenario_id).delete()
+        elif request.POST.get('refresh'):
+            scenario = Scenario.objects.get(id=scenario_id)
+            create_injectables(scenario)
         return HttpResponseRedirect(request.path_info)
 
     def create(request):

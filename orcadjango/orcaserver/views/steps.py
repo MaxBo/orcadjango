@@ -19,17 +19,30 @@ def apply_injectables(scenario):
     names = orca.list_injectables()
     injectables = Injectable.objects.filter(name__in=names, scenario=scenario)
     for inj in injectables:
+        #  skip injectables which cannot be changed
+        if not (inj.changed or inj.can_be_changed):
+            continue
         #  get original type of injectable value (if not available, use string)
         original_type = type(orca._injectable_backup.get(inj.name, str))
         # compare to evaluation or value
-        try:
-            converted_value = ast.literal_eval(inj.value)
-            if not isinstance(converted_value, original_type):
-                #  try to cast the value using the original type
-                converted_value = original_type(inj.value)
-        except (SyntaxError, ValueError):
-            #  if casting does not work, use string
+        if issubclass(original_type, str):
             converted_value = inj.value
+        else:
+            try:
+                converted_value = ast.literal_eval(inj.value)
+                if not isinstance(converted_value, original_type):
+                    #  try to cast the value using the original type
+                    converted_value = original_type(inj.value)
+            except (SyntaxError, ValueError) as e:
+
+                # if casting does not work, raise warning
+                # and use original value
+                msg = (f'Injectable `{inj.name}` with value `{inj.value}` '
+                       f'could not be casted to type `{original_type}`.'
+                       f'Injectable Value was not overwritten.'
+                       f'Error message: {repr(e)}')
+                logger.warn(msg)
+                continue
         orca.add_injectable(inj.name, converted_value)
 
 
