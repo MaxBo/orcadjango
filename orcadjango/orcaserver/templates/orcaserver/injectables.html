@@ -22,19 +22,19 @@
       </thead>
       <tbody>
       {% for injectable in injectables %}
+        {% if injectable.can_be_changed %}
         <tr>
-          {% if injectable.can_be_changed %}
-            <td>{{ injectable.name }}</td>
-            <td>{{ injectable.value }}</td>
-            <td><a style="margin-left: 10px;" href="{{ injectable.name }}/">edit</a></td>
-          {% else %}
-            # <tr bgcolor="#999999">
-            <td>{{ injectable.name }}</td>
-            <td>{{ injectable.value }}</td>
-            <td></td>
-           # </tr>
-          {% endif %}
+          <td>{{ injectable.name }}</td>
+          <td>{{ injectable.value }}</td>
+          <td><a style="margin-left: 10px;" href="{{ injectable.name }}/">edit</a></td>
         </tr>
+        {% else %}
+        <tr style="background-color: lightgrey;">
+          <td>{{ injectable.name }}</td>
+          <td>{{ injectable.value }}</td>
+          <td></td>
+        </tr>
+        {% endif %}
       {% endfor %}
       </tbody>
     </table>
