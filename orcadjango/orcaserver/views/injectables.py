@@ -1,11 +1,10 @@
-from collections import OrderedDict
 from django.views.generic import ListView
-from django.views.generic.edit import FormView, BaseFormView
+from django.views.generic.edit import FormView
 import orca
 from orcaserver.views import ScenarioMixin
-from orcaserver.models import Injectable, Scenario
+from orcaserver.models import Injectable
 from orcaserver.forms import InjectableValueForm
-from django.http import HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 
@@ -60,6 +59,5 @@ class InjectableView(ScenarioMixin, FormView):
             orig_value = orca._injectable_backup[self.name]
             inj.value = orig_value
             inj.save()
-            #orca.add_injectable(inj.name, orig_value)
             return HttpResponseRedirect(request.path_info)
         return HttpResponseRedirect(reverse('injectables'))

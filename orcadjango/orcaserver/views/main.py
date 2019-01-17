@@ -2,7 +2,6 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from orcaserver.management.commands import runorca
-import orca
 
 from orcaserver.forms import OrcaFileForm
 

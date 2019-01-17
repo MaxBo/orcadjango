@@ -1,19 +1,20 @@
-from collections import OrderedDict
-from django.views.generic import TemplateView
-from django.views.generic.edit import BaseFormView
-from django.shortcuts import render, HttpResponseRedirect
-import orca
-from orcaserver.views import ScenarioMixin
-from orcaserver.models import Step, Injectable, Scenario
-from django.urls import reverse
-from threading import Thread
 import time
 import ast
-import contextlib
 import logging
 import json
+from collections import OrderedDict
+from django.views.generic import TemplateView
+from django.shortcuts import HttpResponseRedirect
 from django.utils import timezone
 from django.http import JsonResponse, HttpResponseNotFound
+import orca
+from orca import (get_step_table_names, get_step, add_injectable, clear_cache,
+                  write_tables, log_start_finish, iter_step, logger)
+
+from orcaserver.views import ScenarioMixin
+from orcaserver.models import Step, Injectable, Scenario
+from threading import Thread
+
 
 def apply_injectables(scenario):
     names = orca.list_injectables()
@@ -126,10 +127,10 @@ class StepsView(ScenarioMixin, TemplateView):
             thread.start()
         return HttpResponseRedirect(request.path_info)
 
-from orca import (get_step_table_names, get_step, add_injectable, clear_cache,
-                  write_tables, log_start_finish, iter_step, logger)
+
 _CS_STEP = 'steps'
 _CS_ITER = 'iteration'
+
 
 def run(steps, iter_vars=None, data_out=None, out_interval=1,
         out_base_tables=None, out_run_tables=None, compress=False,
@@ -231,7 +232,6 @@ def run(steps, iter_vars=None, data_out=None, out_interval=1,
                 step.finished = timezone.now()
                 step.save()
 
-
             clear_cache(scope=_CS_STEP)
 
         print(
@@ -242,6 +242,7 @@ def run(steps, iter_vars=None, data_out=None, out_interval=1,
         # write out the results for the current iteration
         if data_out:
             if (i - 1) % out_interval == 0 or i == max_i:
-                write_tables(data_out, out_run_tables, var, compress=compress, local=out_run_local)
+                write_tables(data_out, out_run_tables, var,
+                             compress=compress, local=out_run_local)
 
         clear_cache(scope=_CS_ITER)
