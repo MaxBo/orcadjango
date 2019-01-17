@@ -66,7 +66,7 @@ class ScenariosView(ScenarioMixin, ListView):
     def post(self, request, *args, **kwargs):
         scenario_id = request.POST.get('scenario')
         if request.POST.get('select'):
-            self.request.session['scenario'] = scenario_id
+            self.request.session['scenario'] = int(scenario_id)
         elif request.POST.get('delete'):
             Scenario.objects.get(id=scenario_id).delete()
         elif request.POST.get('refresh'):
