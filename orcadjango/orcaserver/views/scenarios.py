@@ -77,6 +77,21 @@ class ScenariosView(ScenarioMixin, ListView):
                 return HttpResponseBadRequest('name can not be empty')
             module = orca._python_module
             scenario = Scenario.objects.create(name=name, module=module)
-            request.session['scenario'] = scenario.id
             create_injectables(scenario)
+            if request.POST.get('clone'):
+                #  clone injectables and steps
+                old_scenario_id = request.session['scenario']
+                old_scenario = Scenario.objects.get(pk=old_scenario_id,
+                                                    module=module)
+                injectables = Injectable.objects.filter(scenario=old_scenario)
+                for inj in injectables:
+                    Injectable.objects.create(scenario=scenario,
+                                              value=inj.value,
+                                              changed=inj.changed)
+                steps = Step.objects.filter(scenario=old_scenario)
+                for step in steps:
+                    Step.objects.create(scenario=scenario,
+                                        name=step.name,
+                                        order=step.order)
+            request.session['scenario'] = scenario.id
         return HttpResponseRedirect(reverse('scenarios'))
