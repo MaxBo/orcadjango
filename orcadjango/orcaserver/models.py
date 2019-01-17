@@ -34,4 +34,4 @@ class Step(NameModel):
     started = models.DateTimeField(null=True)
     finished = models.DateTimeField(null=True)
     success = models.BooleanField(default=False)
-    order = models.TextField(null=True)
+    order = models.IntegerField(null=True)
