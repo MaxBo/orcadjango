@@ -20,7 +20,7 @@ class Injectable(NameModel):
     scenario = models.ForeignKey(Scenario,
                                  on_delete=models.CASCADE,
                                  null=True)
-    value = models.TextField()
+    value = models.TextField(null=True)
     changed = models.BooleanField(default=False)
     can_be_changed = models.BooleanField(default=True)
 
