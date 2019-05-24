@@ -25,7 +25,7 @@ SECRET_KEY = 'kfn+e0u++2*k6!r^^o(jlmd+40l*8qdk8(8cwb5dc$v9u9e-jc'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost']
 
 
 # Application definition
@@ -124,3 +124,14 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, "orcaserver", "static")
 STATIC_URL = '/static/'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'INFO',
+        },
+    },
+}
