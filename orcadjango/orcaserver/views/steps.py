@@ -42,7 +42,7 @@ def apply_injectables(scenario):
                        f'could not be casted to type `{original_type}`.'
                        f'Injectable Value was not overwritten.'
                        f'Error message: {repr(e)}')
-                logger.warn(msg)
+                logger.warning(msg)
                 continue
         orca.add_injectable(inj.name, converted_value)
 
