@@ -8,14 +8,17 @@ def load_module(module_name, module_set=None):
         orca._python_module = module_name
         orca.clear_all()
         orca._injectable_backup = {}
+        orca._injectable_function = {}
         module_set = {module_name}
     module = importlib.import_module(module_name)
     importlib.reload(module)
     for inj in orca.list_injectables():
         try:
             orca._injectable_backup[inj] = orca.get_injectable(inj)
+            orca._injectable_function[inj] = orca.orca._INJECTABLES[inj]
         except Exception:
             orca._injectable_backup[inj] = None
+            orca._injectable_function[inj] = None
 
     if hasattr(module, '__parent_modules__'):
         for module_name in module.__parent_modules__:
