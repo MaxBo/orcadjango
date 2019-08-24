@@ -26,7 +26,9 @@ def apply_injectables(scenario):
         #  get original type of injectable value (if not available, use string)
         original_type = type(orca._injectable_backup.get(inj.name, str))
         # compare to evaluation or value
-        if issubclass(original_type, str):
+        if inj.value is None:
+            converted_value = orca.get_injectable(inj.name)
+        elif issubclass(original_type, str):
             converted_value = inj.value
         else:
             try:

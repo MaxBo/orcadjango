@@ -87,6 +87,8 @@ class ScenariosView(ScenarioMixin, ListView):
                 old_scenario_id = request.session['scenario']
                 old_scenario = Scenario.objects.get(pk=old_scenario_id,
                                                     module=module)
+
+                # copy injectable values
                 injectables = Injectable.objects.filter(scenario=old_scenario)
                 for inj in injectables:
                     new_inj, created = Injectable.objects.get_or_create(
@@ -95,12 +97,15 @@ class ScenariosView(ScenarioMixin, ListView):
                     new_inj.value = inj.value
                     new_inj.changed = inj.changed
                     new_inj.save()
+
+                # copy steps
                 steps = Step.objects.filter(scenario=old_scenario)
                 for step in steps:
                     new_step, created = Step.objects.get_or_create(
                         scenario=scenario,
                         name=step.name)
                     new_step.order = step.order
+                    new_step.save()
 
             request.session['scenario'] = scenario.id
         return HttpResponseRedirect(reverse('scenarios'))

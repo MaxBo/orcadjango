@@ -60,4 +60,9 @@ class InjectableView(ScenarioMixin, FormView):
             inj.value = orig_value
             inj.save()
             return HttpResponseRedirect(request.path_info)
+
+        elif request.POST.get('clear'):
+            inj.value = None
+            inj.save()
+
         return HttpResponseRedirect(reverse('injectables'))

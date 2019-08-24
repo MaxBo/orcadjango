@@ -12,7 +12,10 @@ def load_module(module_name, module_set=None):
     module = importlib.import_module(module_name)
     importlib.reload(module)
     for inj in orca.list_injectables():
-        orca._injectable_backup[inj] = orca.get_injectable(inj)
+        try:
+            orca._injectable_backup[inj] = orca.get_injectable(inj)
+        except Exception:
+            orca._injectable_backup[inj] = None
 
     if hasattr(module, '__parent_modules__'):
         for module_name in module.__parent_modules__:
