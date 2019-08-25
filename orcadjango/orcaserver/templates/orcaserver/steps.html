@@ -41,6 +41,7 @@
               <th>Started</th>
               <th>Finished</th>
               <th>Success</th>
+              <th>Active</th>
             </tr>
           </thead>
           <tbody>
@@ -52,6 +53,11 @@
               <td class="start"> {{ step.started }} </td>
               <td class="finish"> {{ step.finished }} </td>
               <td class="success"> {{ step.success }} </td>
+              <td class="is_active">
+                <label>
+                  <input type="checkbox" {% if step.is_active %} checked {% endif %} id="toggle-active" onclick="toggleActive(this, step)">
+                </label>
+              </td>
             </tr>
           {% endfor %}
           </tbody>
@@ -68,6 +74,7 @@
 <script>
   var stepsTable = document.getElementById('steps-scenario'),
       stepsUrl = '/steps/list/',
+      stepUrl = '/steps/',
       csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
 
   // highlight row in table on click
@@ -83,6 +90,13 @@
       }
     }
     input.value = inputStr;
+  }
+
+  // toggle is_active in row
+  function toggleActiveRow(target, step){
+    var input = document.getElementById('toggle-active');
+    target.classList.toggle('is_active');
+    input.is_active = inputStr;
   }
 
   // fetch and update steps in table

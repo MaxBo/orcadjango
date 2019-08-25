@@ -13,6 +13,7 @@ from orca import (get_step_table_names, get_step, add_injectable, clear_cache,
 
 from orcaserver.views import ScenarioMixin
 from orcaserver.models import Step, Injectable, Scenario
+from django.core.exceptions import ObjectDoesNotExist
 from threading import Thread
 
 
@@ -55,6 +56,10 @@ def apply_injectables(scenario):
 
 class StepsView(ScenarioMixin, TemplateView):
     template_name = 'orcaserver/steps.html'
+
+    @property
+    def id(self):
+        return self.kwargs.get('id')
 
     def get_context_data(self, **kwargs):
         steps_available = OrderedDict(((name, orca.get_step(name))
@@ -133,6 +138,17 @@ class StepsView(ScenarioMixin, TemplateView):
             thread.start()
         return HttpResponseRedirect(request.path_info)
 
+    # to do for updating is_active
+    @staticmethod
+    def detail(request, *args, **kwargs):
+        step_id = kwargs.get('id')
+        if request.method == 'GET':
+            try:
+                step = Step.objects.get(id=step_id)
+            except ObjectDoesNotExist:
+                return JsonResponse({}, safe=False)
+            step_json = step.values()
+            return JsonResponse(step_json, safe=False)
 
 _CS_STEP = 'steps'
 _CS_ITER = 'iteration'

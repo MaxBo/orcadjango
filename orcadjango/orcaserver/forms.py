@@ -1,5 +1,6 @@
 import orca
 from django import forms
+from .models import Step
 
 
 def get_python_module():
@@ -21,3 +22,16 @@ class OrcaFileForm(forms.Form):
 
 class InjectableValueForm(forms.Form):
     value = forms.CharField(label='Value', max_length=100)
+
+
+class StepForm(forms.ModelForm):
+    class Meta:
+        model = Step
+        exclude = ()
+        widgets={
+            'is_active': forms.RadioSelect(
+                attrs={
+                    'class':'custom-control-input custom-control-label',
+                }
+            ),
+        }
