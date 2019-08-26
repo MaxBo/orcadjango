@@ -124,7 +124,8 @@ class StepsView(ScenarioMixin, TemplateView):
             selected = request.POST.get('selected_steps')
             if selected:
                 steps = Step.objects.filter(
-                    id__in=selected.rstrip(',').split(','))
+                    id__in=selected.rstrip(',').split(',')).\
+                    filter(active=True)
             else:
                 steps = Step.objects.filter(scenario=self.get_scenario())
             steps = steps.order_by('order')
@@ -142,13 +143,16 @@ class StepsView(ScenarioMixin, TemplateView):
     @staticmethod
     def detail(request, *args, **kwargs):
         step_id = kwargs.get('id')
-        if request.method == 'GET':
+        if request.method == 'PATCH':
             try:
                 step = Step.objects.get(id=step_id)
             except ObjectDoesNotExist:
                 return JsonResponse({}, safe=False)
-            step_json = step.values()
-            return JsonResponse(step_json, safe=False)
+            body = json.loads(request.body)
+            is_active = body.get('is_active')
+            step.active = is_active
+            step.save()
+            return JsonResponse({}, safe=False)
 
 _CS_STEP = 'steps'
 _CS_ITER = 'iteration'

@@ -55,7 +55,7 @@
               <td class="success"> {{ step.success }} </td>
               <td class="is_active">
                 <label>
-                  <input type="checkbox" {% if step.is_active %} checked {% endif %} id="toggle-active" onclick="toggleActive(this, step)">
+                  <input type="checkbox" {% if step.is_active %} checked {% endif %} id="toggle-active" onclick="toggleActiveRow(this, {{ step.id }})">
                 </label>
               </td>
             </tr>
@@ -75,6 +75,7 @@
   var stepsTable = document.getElementById('steps-scenario'),
       stepsUrl = '/steps/list/',
       stepUrl = '/steps/',
+      stepDetailUrl = '/steps/detail/',
       csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
 
   // highlight row in table on click
@@ -93,10 +94,16 @@
   }
 
   // toggle is_active in row
-  function toggleActiveRow(target, step){
-    var input = document.getElementById('toggle-active');
-    target.classList.toggle('is_active');
-    input.is_active = inputStr;
+  function toggleActiveRow(checkbox, stepId){
+      console.log(checkbox)
+      var data = {is_active: checkbox.checked}
+      console.log(data)
+      fetch(stepDetailUrl+stepId+'/', {
+        method: "PATCH",
+        body: JSON.stringify(data),
+        credentials: "same-origin",
+        headers: { "X-CSRFToken": csrfToken }
+      });
   }
 
   // fetch and update steps in table
