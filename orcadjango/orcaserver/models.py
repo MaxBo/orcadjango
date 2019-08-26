@@ -35,3 +35,4 @@ class Step(NameModel):
     finished = models.DateTimeField(null=True)
     success = models.BooleanField(default=False)
     order = models.IntegerField(null=True)
+    active = models.BooleanField(default=True)
