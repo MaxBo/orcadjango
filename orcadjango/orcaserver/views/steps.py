@@ -101,6 +101,7 @@ class StepsView(ScenarioMixin, TemplateView):
                 'finished': finished,
                 'success': step.success,
                 'order': step.order,
+                'is_active': step.active,
             })
         return JsonResponse(steps_json, safe=False)
 
@@ -127,7 +128,8 @@ class StepsView(ScenarioMixin, TemplateView):
                     id__in=selected.rstrip(',').split(',')).\
                     filter(active=True)
             else:
-                steps = Step.objects.filter(scenario=self.get_scenario())
+                steps = Step.objects.filter(scenario=self.get_scenario()).\
+                    filter(active=True)
             steps = steps.order_by('order')
             for step in steps:
                 step.started = None

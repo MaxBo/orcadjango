@@ -55,7 +55,7 @@
               <td class="success"> {{ step.success }} </td>
               <td class="is_active">
                 <label>
-                  <input type="checkbox" {% if step.is_active %} checked {% endif %} id="toggle-active" onclick="toggleActiveRow(this, {{ step.id }})">
+                  <input type="checkbox" {% if step.active %} checked {% endif %} id="toggle-active" onclick="toggleActiveRow(this, {{ step.id }})">
                 </label>
               </td>
             </tr>
