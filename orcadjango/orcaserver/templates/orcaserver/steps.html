@@ -18,7 +18,7 @@
         <h6>available</h6>
         <select id="steps-available" multiple>
         {% for name, step in steps_available.items %}
-          <option>{{ name }}</option>
+          <option title="{{ step }}"> {{ name }} </option>
         {% endfor %}
         </select>
       </div>
@@ -174,7 +174,7 @@
 
     // periodically update steps and their progress
     updateSteps();
-    setInterval(updateSteps, 2000);
+    setInterval(updateSteps, 10000);
 
     tableDnD();
   })();

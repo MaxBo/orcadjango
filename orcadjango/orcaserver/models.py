@@ -23,6 +23,7 @@ class Injectable(NameModel):
     value = models.TextField(null=True)
     changed = models.BooleanField(default=False)
     can_be_changed = models.BooleanField(default=True)
+    docstring = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f'{self.scenario} - {self.name}'
@@ -36,3 +37,4 @@ class Step(NameModel):
     success = models.BooleanField(default=False)
     order = models.IntegerField(null=True)
     active = models.BooleanField(default=True)
+    docstring = models.TextField(null=True, blank=True)

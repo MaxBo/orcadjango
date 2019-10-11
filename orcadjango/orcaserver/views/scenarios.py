@@ -41,6 +41,9 @@ def create_injectables(scenario):
         if created:
             # for new injectables, set the initial value
             inj.value = value
+        funcwrapper = orca._injectable_function.get(name)
+        if isinstance(funcwrapper, orca.orca._InjectableFuncWrapper):
+            inj.docstring = funcwrapper._func.__doc__
         inj.save()
 
     deleted_injectables = Injectable.objects.filter(scenario=scenario).\
@@ -96,6 +99,7 @@ class ScenariosView(ScenarioMixin, ListView):
                         name=inj.name)
                     new_inj.value = inj.value
                     new_inj.changed = inj.changed
+                    new_inj.docstring = inj.docstring
                     new_inj.save()
 
                 # copy steps

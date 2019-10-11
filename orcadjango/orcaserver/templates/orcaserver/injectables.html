@@ -16,6 +16,7 @@
       <thead>
         <tr>
           <th scope="col" style="width: 1%;">injectable</th>
+          <th scope="col">description</th>
           <th scope="col">value</th>
           <th scope="col">Edit</th>
         </tr>
@@ -25,12 +26,14 @@
         {% if injectable.can_be_changed %}
         <tr>
           <td>{{ injectable.name }}</td>
+          <td>{{ injectable.docstring }}</td>
           <td>{{ injectable.value }}</td>
           <td><a style="margin-left: 10px;" href="{{ injectable.name }}/">edit</a></td>
         </tr>
         {% else %}
         <tr style="background-color: lightgrey;">
           <td>{{ injectable.name }}</td>
+          <td>{{ injectable.docstring }}</td>
           <td>{{ injectable.value }}</td>
           <td></td>
         </tr>
