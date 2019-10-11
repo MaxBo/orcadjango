@@ -24,6 +24,7 @@ class Injectable(NameModel):
     changed = models.BooleanField(default=False)
     can_be_changed = models.BooleanField(default=True)
     docstring = models.TextField(null=True, blank=True)
+    module = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f'{self.scenario} - {self.name}'

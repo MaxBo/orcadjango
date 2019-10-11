@@ -15,6 +15,7 @@
     <table class="table">
       <thead>
         <tr>
+          <th scope="col">module</th>
           <th scope="col" style="width: 1%;">injectable</th>
           <th scope="col">description</th>
           <th scope="col">value</th>
@@ -25,6 +26,7 @@
       {% for injectable in injectables %}
         {% if injectable.can_be_changed %}
         <tr>
+          <td>{{ injectable.module }}</td>
           <td>{{ injectable.name }}</td>
           <td>{{ injectable.docstring }}</td>
           <td>{{ injectable.value }}</td>
@@ -32,6 +34,7 @@
         </tr>
         {% else %}
         <tr style="background-color: lightgrey;">
+          <td>{{ injectable.module }}</td>
           <td>{{ injectable.name }}</td>
           <td>{{ injectable.docstring }}</td>
           <td>{{ injectable.value }}</td>

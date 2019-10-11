@@ -18,7 +18,8 @@ class InjectablesView(ScenarioMixin, ListView):
         scenario = self.get_scenario()
         inj = orca.list_injectables()
         injectables = Injectable.objects.filter(name__in=inj,
-                                                scenario=scenario)
+                                                scenario=scenario)\
+                                        .order_by('module', 'name')
         return injectables
 
     def post(self, request, *args, **kwargs):

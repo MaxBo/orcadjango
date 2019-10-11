@@ -21,7 +21,7 @@ class OrcaFileForm(forms.Form):
 
 
 class InjectableValueForm(forms.Form):
-    value = forms.CharField(label='Value', max_length=100)
+    value = forms.CharField(label='Value', max_length=255)
 
 
 class StepForm(forms.ModelForm):
