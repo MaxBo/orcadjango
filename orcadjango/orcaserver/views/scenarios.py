@@ -88,7 +88,9 @@ class ScenariosView(ScenarioMixin, ListView):
             create_injectables(scenario)
             if request.POST.get('clone'):
                 #  clone injectables and steps
-                old_scenario_id = request.session['scenario']
+                old_scenario_id = request.session.get('scenario')
+                if old_scenario_id is None:
+                    return HttpResponseBadRequest('No Scenario selected yet that could be cloned')
                 old_scenario = Scenario.objects.get(pk=old_scenario_id,
                                                     module=module)
 
