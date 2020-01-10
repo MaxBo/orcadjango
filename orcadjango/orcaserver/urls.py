@@ -1,17 +1,21 @@
 from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 
 from . import views
 
 urlpatterns = [
     path('', views.get_python_file, name='index'),
-    path('scenarios/', views.ScenariosView.as_view(), name='scenarios'),
-    path('scenarios/create/', views.ScenariosView.create),
-    path('injectables/', views.InjectablesView.as_view(), name='injectables'),
-    path('injectables/<str:name>/', views.InjectableView.as_view(),
+    path('scenarios/', login_required(views.ScenariosView.as_view()),
+         name='scenarios'),
+    path('scenarios/create/', login_required(views.ScenariosView.create)),
+    path('injectables/', login_required(views.InjectablesView.as_view()),
+         name='injectables'),
+    path('injectables/<str:name>/',
+         login_required(views.InjectableView.as_view()),
          name='injectable'),
-    path('steps/', views.StepsView.as_view(), name='steps'),
-    path('steps/list/', views.StepsView.list),
-    path('steps/detail/<str:id>/', views.StepsView.detail),
+    path('steps/', login_required(views.StepsView.as_view()), name='steps'),
+    path('steps/list/', login_required(views.StepsView.list)),
+    path('steps/detail/<str:id>/', login_required(views.StepsView.detail)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
