@@ -2,11 +2,16 @@ from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
+from django.views.generic import TemplateView
 
 from . import views
 
 urlpatterns = [
-    path('', views.get_python_file, name='index'),
+    path('', TemplateView.as_view(template_name='orcaserver/index.html'),
+         name='index'),
+    path('settings/', staff_member_required(views.SettingsView.as_view()),
+         name='settings'),
     path('scenarios/', login_required(views.ScenariosView.as_view()),
          name='scenarios'),
     path('scenarios/create/', login_required(views.ScenariosView.create)),

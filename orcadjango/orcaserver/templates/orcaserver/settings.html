@@ -1,0 +1,14 @@
+{% extends 'orcaserver/base.html' %}
+{% load bootstrap4 %}
+
+{% block title %}
+  Select the base module
+{% endblock %}
+
+{% block content %}
+  <form action='' method="post">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    <input type="submit" name="action" value="Import/Reload" class="btn btn-primary">
+  </form>
+{% endblock %}

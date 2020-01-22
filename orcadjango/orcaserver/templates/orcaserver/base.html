@@ -16,6 +16,11 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
+        {% if user.is_superuser %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'settings' %}"><i>Settings</i></a>
+        </li>
+        {% endif %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'scenarios' %}">Scenario</a>
         </li>
@@ -44,7 +49,7 @@
   <div style="padding-left: 30px;">
     {% if python_module %}
       <div class="row">
-        module &nbsp;<a href='/'><i> {{ python_module }} </i></a>
+        module &nbsp;<a href='/settings'><i> {{ python_module }} </i></a>
       </div>
     {% endif %}
     {% if scenario_name %}
