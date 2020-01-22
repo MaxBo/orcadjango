@@ -58,8 +58,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(os.path.dirname(BASE_DIR),
-                              'src',
-                              'templates')],
+                              'orcadjango', 'orcaserver', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'debug': True,
@@ -86,6 +85,7 @@ DATABASES = {
     }
 }
 
+LOGIN_REDIRECT_URL = '/'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators

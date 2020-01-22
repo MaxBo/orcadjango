@@ -1,10 +1,5 @@
 {% extends 'orcaserver/base.html' %}
 {% load bootstrap4 %}
-
 {% block content %}
-  <form action='' method="post">
-    {% csrf_token %}
-    {% bootstrap_form form %}
-    <input type="submit" name="action" value="Import/Reload" class="btn btn-primary">
-  </form>
+Welcome
 {% endblock %}
