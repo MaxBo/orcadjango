@@ -62,9 +62,10 @@ class StepsView(ScenarioMixin, TemplateView):
         return self.kwargs.get('id')
 
     def get_context_data(self, **kwargs):
-        steps_available = OrderedDict(((name, orca.get_step(name)._func.__doc__)
-                                       for name in orca.list_steps()))
         scenario = self.get_scenario()
+        steps = OrderedDict(((name, orca.get_step(name)._func.__doc__)
+                             for name in orca.list_steps()))
+        steps_available = steps if scenario else {}
         steps_scenario = Step.objects.filter(
             scenario=scenario).order_by('order')
         kwargs = super().get_context_data(**kwargs)
