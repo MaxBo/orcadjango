@@ -28,13 +28,13 @@ def inj_dict():
 
 
 @orca.step()
-def step1():
+def step1(inj_list):
     """dummy step"""
     sleep(5)
 
 
 @orca.step()
-def step2():
+def step2(inj1, inj2):
     """another dummy step"""
     sleep(5)
 

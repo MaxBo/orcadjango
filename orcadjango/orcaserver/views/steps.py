@@ -15,6 +15,8 @@ from orcaserver.views import ScenarioMixin
 from orcaserver.models import Step, Injectable, Scenario
 from django.core.exceptions import ObjectDoesNotExist
 from threading import Thread
+from django.urls import reverse
+import json
 
 
 def apply_injectables(scenario):
@@ -88,7 +90,21 @@ class StepsView(ScenarioMixin, TemplateView):
         steps_scenario = Step.objects.filter(
             scenario=scenario).order_by('order')
         steps_json = []
+        injectables_available = orca.list_injectables()
         for step in steps_scenario:
+            func = orca.get_step(step.name)
+            inj_names = func._func.__code__.co_varnames
+            injectables = []
+            for name in inj_names:
+                if name not in injectables_available:
+                    continue
+                inj = Injectable.objects.get(name=name, scenario=scenario)
+                injectables.append({
+                    'id': inj.id,
+                    'name': name,
+                    'value': inj.value,
+                    'url': f"{reverse('injectables')}{name}",
+                })
             started = step.started
             finished = step.finished
             if started:
@@ -103,6 +119,7 @@ class StepsView(ScenarioMixin, TemplateView):
                 'success': step.success,
                 'order': step.order,
                 'is_active': step.active,
+                'injectables': injectables
             })
         return JsonResponse(steps_json, safe=False)
 
