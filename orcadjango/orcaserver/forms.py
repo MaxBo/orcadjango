@@ -1,5 +1,6 @@
 import orca
 from django import forms
+from django.conf import settings
 from .models import Step
 
 
@@ -7,7 +8,7 @@ def get_python_module():
     """return the default python module"""
     module_name = getattr(orca,
                           '_python_module',
-                          'orcaserver.tests.dummy_orca_stuff')
+                          settings.ORCA_MODULE)
     return module_name
 
 
