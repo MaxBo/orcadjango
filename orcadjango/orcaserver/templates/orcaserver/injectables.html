@@ -3,7 +3,11 @@
 {% load bootstrap4 %}
 
 {% block title %}
-  List of all Injectables and their current values
+  {% if request.session.scenario %}
+    List of all Injectables and their current values
+  {% else %}
+    No scenario selected
+  {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -47,7 +51,7 @@
     <ul>
     </ul>
   {% else %}
-    <p>No injectables are available.</p>
+    <p>no injectables available</p>
   {% endif %}
 
 {% endblock %}

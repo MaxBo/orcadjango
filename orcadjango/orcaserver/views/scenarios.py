@@ -3,27 +3,7 @@ from django.views.generic import ListView
 from orcaserver.models import Scenario, Injectable, Step
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.urls import reverse
-
-
-class ScenarioMixin:
-    _backup = {}
-
-    def get_scenario(self):
-        """get the selected scenario"""
-        scenario_pk = self.request.session.get('scenario')
-        try:
-            scenario = Scenario.objects.get(pk=scenario_pk,
-                                            module=orca._python_module)
-        except Scenario.DoesNotExist:
-            scenario = None
-        return scenario
-
-    def get_context_data(self, **kwargs):
-        kwargs = super().get_context_data(**kwargs)
-        scenario = self.get_scenario()
-        kwargs['scenario_name'] = scenario.name if scenario else 'none'
-        kwargs['python_module'] = orca._python_module
-        return kwargs
+from orcaserver.views import ProjectMixin
 
 
 overwritable_types = (str, bytes, int, float, complex,
@@ -58,14 +38,15 @@ def create_steps(scenario):
         Step.objects.create(name=name, scenario=scenario)
 
 
-class ScenariosView(ScenarioMixin, ListView):
+class ScenariosView(ProjectMixin, ListView):
     model = Scenario
     template_name = 'orcaserver/scenarios.html'
     context_object_name = 'scenarios'
 
     def get_queryset(self):
         """Return the injectables with their values."""
-        scenarios = Scenario.objects.filter(module=orca._python_module)
+        project = self.request.session.get('project')
+        scenarios = Scenario.objects.filter(project=project)
         return scenarios
 
     def post(self, request, *args, **kwargs):

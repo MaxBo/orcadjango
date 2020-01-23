@@ -3,7 +3,11 @@
 {% load static %}
 
 {% block title %}
-  Steps
+  {% if request.session.scenario %}
+    Steps
+  {% else %}
+    No scenario selected
+  {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -70,7 +74,7 @@
     </div>
   </form>
   {% else %}
-  <p>no steps available.</p>
+  <p>no steps available</p>
   {% endif %}
 
 <script>

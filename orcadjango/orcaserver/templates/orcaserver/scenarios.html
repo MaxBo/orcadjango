@@ -1,11 +1,17 @@
 {% extends 'orcaserver/base.html' %}
 {% load bootstrap4 %}
 
+
 {% block title %}
-  Select a scenario
+  {% if request.session.project %}
+    Select a scenario
+  {% else %}
+    No project selected
+  {% endif %}
 {% endblock %}
 
 {% block content %}
+  {% if request.session.project %}
 
   <form action='' method="post">
     {% csrf_token %}
@@ -30,4 +36,5 @@
     <input class="btn btn-secondary" type="submit" value="Clone Current", name='clone'>
   </form>
 
+  {% endif %}
 {% endblock %}

@@ -12,6 +12,8 @@ urlpatterns = [
          name='index'),
     path('settings/', staff_member_required(views.SettingsView.as_view()),
          name='settings'),
+    path('projects/', login_required(views.ProjectView.as_view()),
+         name='projects'),
     path('scenarios/', login_required(views.ScenariosView.as_view()),
          name='scenarios'),
     path('scenarios/create/', login_required(views.ScenariosView.create)),

@@ -11,7 +11,7 @@ import orca
 from orca import (get_step_table_names, get_step, add_injectable, clear_cache,
                   write_tables, log_start_finish, iter_step, logger)
 
-from orcaserver.views import ScenarioMixin
+from orcaserver.views import ProjectMixin
 from orcaserver.models import Step, Injectable, Scenario
 from django.core.exceptions import ObjectDoesNotExist
 from threading import Thread
@@ -56,7 +56,7 @@ def apply_injectables(scenario):
         orca.add_injectable(inj.name, converted_value)
 
 
-class StepsView(ScenarioMixin, TemplateView):
+class StepsView(ProjectMixin, TemplateView):
     template_name = 'orcaserver/steps.html'
 
     @property

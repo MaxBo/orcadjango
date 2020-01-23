@@ -1,14 +1,14 @@
 from django.views.generic import ListView
 from django.views.generic.edit import FormView
 import orca
-from orcaserver.views import ScenarioMixin
+from orcaserver.views import ProjectMixin
 from orcaserver.models import Injectable
 from orcaserver.forms import InjectableValueForm
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 
-class InjectablesView(ScenarioMixin, ListView):
+class InjectablesView(ProjectMixin, ListView):
     model = Injectable
     template_name = 'orcaserver/injectables.html'
     context_object_name = 'injectables'
@@ -31,7 +31,7 @@ class InjectablesView(ScenarioMixin, ListView):
         return HttpResponseRedirect(request.path_info)
 
 
-class InjectableView(ScenarioMixin, FormView):
+class InjectableView(ProjectMixin, FormView):
     template_name = 'orcaserver/injectable.html'
     form_class = InjectableValueForm
 
