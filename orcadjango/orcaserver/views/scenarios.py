@@ -45,6 +45,7 @@ def create_injectables(scenario):
         if isinstance(funcwrapper, orca.orca._InjectableFuncWrapper):
             inj.docstring = funcwrapper._func.__doc__
             inj.module = funcwrapper._func.__module__
+            inj.groupname = getattr(funcwrapper,  'groupname')
         inj.save()
 
     deleted_injectables = Injectable.objects.filter(scenario=scenario).\
