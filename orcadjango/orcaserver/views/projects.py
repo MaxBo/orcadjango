@@ -40,7 +40,7 @@ class ProjectMixin:
         return kwargs
 
 
-class ProjectView(ListView):
+class ProjectView(ProjectMixin, ListView):
     model = Project
     template_name = 'orcaserver/projects.html'
     context_object_name = 'scenarios'
