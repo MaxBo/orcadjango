@@ -50,6 +50,7 @@
     </div>
   </nav>
   <div style="padding-left: 30px;">
+      {% if show_project_settings %}
       <div class="row">
         module &nbsp;<a href='/settings'><i>{% if python_module %} {{ python_module }} {% else %} None {% endif %}</i></a>
       </div>
@@ -59,6 +60,7 @@
       <div class="row">
         scenario &nbsp;<a href='/scenarios'><h4><i>{% if active_scenario %} {{ active_scenario.name }} {% else %} None {% endif %}</i></h4></a>
       </div>
+      {% endif %}
   </div>
   <div class="row" style="padding-left: 30px; margin-top: 20px;">
     <div class="col-md-2">

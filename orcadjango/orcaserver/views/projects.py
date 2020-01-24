@@ -43,6 +43,7 @@ class ProjectMixin:
         kwargs['active_project'] = project
         kwargs['active_scenario'] = scenario
         kwargs['python_module'] = orca._python_module
+        kwargs['show_project_settings'] = True
         return kwargs
 
 

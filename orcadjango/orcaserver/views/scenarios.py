@@ -25,7 +25,7 @@ def create_injectables(scenario):
         if isinstance(funcwrapper, orca.orca._InjectableFuncWrapper):
             inj.docstring = funcwrapper._func.__doc__
             inj.module = funcwrapper._func.__module__
-            inj.groupname = getattr(funcwrapper,  'groupname')
+            inj.groupname = getattr(funcwrapper, 'groupname', None)
         inj.save()
 
     deleted_injectables = Injectable.objects.filter(scenario=scenario).\
@@ -66,8 +66,8 @@ class ScenariosView(ProjectMixin, ListView):
             name = request.POST.get('name')
             if not name:
                 return HttpResponseBadRequest('name can not be empty')
-            module = orca._python_module
-            scenario = Scenario.objects.create(name=name, module=module)
+            project_pk = request.session.get('project')
+            scenario = Scenario.objects.create(name=name, project_id=project_pk)
             create_injectables(scenario)
             if request.POST.get('clone'):
                 #  clone injectables and steps

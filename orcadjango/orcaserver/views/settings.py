@@ -1,10 +1,11 @@
 from django.views.generic import FormView
 
 from orcaserver.forms import OrcaFileForm
+from orcaserver.views import ProjectMixin
 from orcaserver.management.commands import runorca
 
 
-class SettingsView(FormView):
+class SettingsView(ProjectMixin, FormView):
     template_name = 'orcaserver/settings.html'
     form_class = OrcaFileForm
     success_url = '/scenarios'
