@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.gis.db.models import MultiPolygonField
 
 
 class NameModel(models.Model):
@@ -9,10 +10,21 @@ class NameModel(models.Model):
         return self.name
 
 
+class Project(NameModel):
+    name = models.TextField()
+    description = models.TextField()
+    module = models.TextField(default='')
+
+
+class GeoProject(Project):
+    srid = models.IntegerField()
+    bbox = MultiPolygonField()
+
+
 class Scenario(NameModel):
     """Scenario"""
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
     name = models.TextField()
-    module = models.TextField(default='')
 
 
 class Injectable(NameModel):
@@ -25,6 +37,7 @@ class Injectable(NameModel):
     can_be_changed = models.BooleanField(default=True)
     docstring = models.TextField(null=True, blank=True)
     module = models.TextField(null=True, blank=True)
+    groupname = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f'{self.scenario} - {self.name}'

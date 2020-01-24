@@ -3,18 +3,22 @@
 {% load static %}
 
 {% block title %}
-  Steps
+  {% if request.session.scenario %}
+    Steps
+  {% else %}
+    No scenario selected
+  {% endif %}
 {% endblock %}
 
 {% block content %}
-  <link rel="stylesheet" type="text/css" href="{% static 'css/steps.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/site.css' %}">
   <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
   <script src="{% static 'js/jquery-ui.min.js' %}"></script>
   {% if steps_available %}
   <form action='' method="post">
     <div class="row">
       {% csrf_token %}
-      <div class="col-md-auto">
+      <div class="col-md-3">
         <h6>available</h6>
         <select id="steps-available" multiple>
         {% for name, step in steps_available.items %}
@@ -23,14 +27,14 @@
         </select>
       </div>
       <input type="hidden" name="add_steps" id="add-steps">
-      <div class="col-md-auto">
+      <div class="col-md-1">
         <div id="btn-grp">
           <input name="add" type="submit" value="&#8594;" title='add selected steps to scenario'>
           <br>
           <input style="margin-top: 5px;" name="remove" type="submit" value="&#8592;" title='remove selected steps from scenario'>
         </div>
       </div>
-      <div class="col-md-auto">
+      <div class="col-md-8">
         <h6>in scenario</h6>
         <table class="table" id="steps-scenario">
           <thead>
@@ -70,7 +74,7 @@
     </div>
   </form>
   {% else %}
-  <p>no steps available.</p>
+  <p>no steps available</p>
   {% endif %}
 
 <script>

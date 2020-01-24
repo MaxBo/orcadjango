@@ -3,27 +3,7 @@ from django.views.generic import ListView
 from orcaserver.models import Scenario, Injectable, Step
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.urls import reverse
-
-
-class ScenarioMixin:
-    _backup = {}
-
-    def get_scenario(self):
-        """get the selected scenario"""
-        scenario_pk = self.request.session.get('scenario')
-        try:
-            scenario = Scenario.objects.get(pk=scenario_pk,
-                                            module=orca._python_module)
-        except Scenario.DoesNotExist:
-            scenario = None
-        return scenario
-
-    def get_context_data(self, **kwargs):
-        kwargs = super().get_context_data(**kwargs)
-        scenario = self.get_scenario()
-        kwargs['scenario_name'] = scenario.name if scenario else 'none'
-        kwargs['python_module'] = orca._python_module
-        return kwargs
+from orcaserver.views import ProjectMixin
 
 
 overwritable_types = (str, bytes, int, float, complex,
@@ -45,6 +25,7 @@ def create_injectables(scenario):
         if isinstance(funcwrapper, orca.orca._InjectableFuncWrapper):
             inj.docstring = funcwrapper._func.__doc__
             inj.module = funcwrapper._func.__module__
+            inj.groupname = getattr(funcwrapper, 'groupname', None)
         inj.save()
 
     deleted_injectables = Injectable.objects.filter(scenario=scenario).\
@@ -57,25 +38,27 @@ def create_steps(scenario):
         Step.objects.create(name=name, scenario=scenario)
 
 
-class ScenariosView(ScenarioMixin, ListView):
+class ScenariosView(ProjectMixin, ListView):
     model = Scenario
     template_name = 'orcaserver/scenarios.html'
     context_object_name = 'scenarios'
 
     def get_queryset(self):
         """Return the injectables with their values."""
-        scenarios = Scenario.objects.filter(module=orca._python_module)
+        project = self.request.session.get('project')
+        scenarios = Scenario.objects.filter(project=project)
         return scenarios
 
     def post(self, request, *args, **kwargs):
         scenario_id = request.POST.get('scenario')
-        if request.POST.get('select'):
-            self.request.session['scenario'] = int(scenario_id)
-        elif request.POST.get('delete'):
-            Scenario.objects.get(id=scenario_id).delete()
-        elif request.POST.get('refresh'):
-            scenario = Scenario.objects.get(id=scenario_id)
-            create_injectables(scenario)
+        if scenario_id:
+            if request.POST.get('select'):
+                self.request.session['scenario'] = int(scenario_id)
+            elif request.POST.get('delete'):
+                Scenario.objects.get(id=scenario_id).delete()
+            elif request.POST.get('refresh'):
+                scenario = Scenario.objects.get(id=scenario_id)
+                create_injectables(scenario)
         return HttpResponseRedirect(request.path_info)
 
     def create(request):
@@ -83,8 +66,8 @@ class ScenariosView(ScenarioMixin, ListView):
             name = request.POST.get('name')
             if not name:
                 return HttpResponseBadRequest('name can not be empty')
-            module = orca._python_module
-            scenario = Scenario.objects.create(name=name, module=module)
+            project_pk = request.session.get('project')
+            scenario = Scenario.objects.create(name=name, project_id=project_pk)
             create_injectables(scenario)
             if request.POST.get('clone'):
                 #  clone injectables and steps
