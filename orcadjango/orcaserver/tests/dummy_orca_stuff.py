@@ -6,22 +6,27 @@ import logging
 logger = logging.getLogger('Test')
 logger.addHandler(logging.StreamHandler())
 
+@group(groupname='strings')
 @orca.injectable()
 def inj1() -> str:
     return 'INJ 1'
 
+@group(groupname='strings')
 @orca.injectable()
 def inj2():
     return 'INJ 2'
 
+@group(groupname='ints')
 @orca.injectable()
 def inj_int() -> int:
     return 42
 
+@group(groupname='ints')
 @orca.injectable()
 def inj_list() -> List[int]:
     return [2, 3, 66]
 
+@group(groupname='das dict')
 @orca.injectable()
 def inj_dict():
     return dict(a=1, b=-1)

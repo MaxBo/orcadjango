@@ -1,6 +1,7 @@
 from django.views.generic import ListView
 from django.views.generic.edit import FormView
 import orca
+import numpy as np
 from orcaserver.views import ProjectMixin
 from orcaserver.models import Injectable
 from orcaserver.forms import InjectableValueForm
@@ -11,7 +12,7 @@ from django.urls import reverse
 class InjectablesView(ProjectMixin, ListView):
     model = Injectable
     template_name = 'orcaserver/injectables.html'
-    context_object_name = 'injectables'
+    context_object_name = 'grouped_injectables'
 
     def get_queryset(self):
         """Return the injectables with their values."""
@@ -19,8 +20,13 @@ class InjectablesView(ProjectMixin, ListView):
         inj = orca.list_injectables()
         injectables = Injectable.objects.filter(name__in=inj,
                                                 scenario=scenario)\
-                                        .order_by('module', 'name')
-        return injectables
+                                        .order_by('groupname', 'name')
+        # distinct() fails here
+        groups = np.unique(injectables.values_list('groupname', flat=True))
+        grouped = {}
+        for group in groups:
+            grouped[group] = injectables.filter(groupname=group)
+        return grouped
 
     def post(self, request, *args, **kwargs):
         if request.POST.get('reset'):
