@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-  {% if injectables %}
+  {% if grouped_injectables %}
     <form action='' method="post">
       {% csrf_token %}
       <input type="submit" name="reset" value="Reset all" class="btn btn-warning">
@@ -19,29 +19,26 @@
     <table class="table">
       <thead>
         <tr>
-          <th scope="col" style="width: 1%;">injectable</th>
-          <th scope="col">description</th>
-          <th scope="col">value</th>
+          <th scope="col">Group</th>
+          <th scope="col">injectable</th>
+          <th scope="col">Description</th>
+          <th scope="col">Value</th>
           <th scope="col">Edit</th>
         </tr>
       </thead>
       <tbody>
-      {% for injectable in injectables %}
-        {% if injectable.can_be_changed %}
-        <tr>
-          <td>{{ injectable.name }}</td>
-          <td>{{ injectable.docstring }}</td>
-          <td>{{ injectable.value }}</td>
-          <td><a style="margin-left: 10px;" href="{{ injectable.name }}/">edit</a></td>
-        </tr>
-        {% else %}
-        <tr style="background-color: lightgrey;">
-          <td>{{ injectable.name }}</td>
-          <td>{{ injectable.docstring }}</td>
-          <td>{{ injectable.value }}</td>
-          <td></td>
-        </tr>
-        {% endif %}
+      {% for groupname, injectables in grouped_injectables.items %}
+        {% for injectable in injectables %}
+          <tr {% if not injectable.can_be_changed %} style="background-color: lightgrey;" {% endif %}>
+            <td style="border-bottom-style: hidden;"> {% if forloop.counter0 == 0 %} <b>{{ groupname }}</b> {% endif %} </td>
+            <td>{{ injectable.name }}</td>
+            <td>{{ injectable.docstring }}</td>
+            <td>{{ injectable.value }}</td>
+            {% if injectable.can_be_changed %}
+            <td><a style="margin-left: 10px;" href="{{ injectable.name }}/">edit</a></td>
+            {% endif %}
+          </tr>
+        {% endfor %}
       {% endfor %}
       </tbody>
     </table>

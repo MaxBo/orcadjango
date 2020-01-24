@@ -62,6 +62,7 @@ class ProjectView(ProjectMixin, ListView):
         if project_id:
             if request.POST.get('select'):
                 self.request.session['project'] = int(project_id)
+                self.request.session['scenario'] = None
             elif request.POST.get('delete'):
                 Project.objects.get(id=project_id).delete()
         return HttpResponseRedirect(request.path_info)

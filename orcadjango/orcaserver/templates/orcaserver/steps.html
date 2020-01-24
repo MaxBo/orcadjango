@@ -10,93 +10,118 @@
   {% endif %}
 {% endblock %}
 
+
+{% block left-content %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/site.css' %}">
+{% if steps_available %}
+<div class="col-md-3" style="padding: 2em;">
+  <h6>available</h6>
+  <div style="max-height: 800px; overflow-y: scroll;">
+    <table class="table" id="steps-available">
+      <thead>
+        <tr>
+          <th>Group</th>
+          <th>Name</th>
+          <th>Description</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for group, steps in steps_available.items %}
+        {% for step in steps %}
+          <tr onclick="highlightRow(this)" data-step="{{ step.name }}">
+            <td style="border-bottom-style: hidden;"> {% if forloop.counter0 == 0 %} <b>{{ group }}</b> {% endif %} </td>
+            <td> {{ step.name }} </td>
+            <td> {{ step.description }} </td>
+          </tr>
+        {% endfor %}
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <form action='' method="post" style="float: right; margin-top: 10px;">
+    {% csrf_token %}
+    <input type='hidden' name="steps" id="selected-steps">
+    <input class="btn btn-secondary" type="submit" name='add' value="Add >>"/>
+  </form>
+</div>
+{% endif %}
+{% endblock %}
+
 {% block content %}
-  <link rel="stylesheet" type="text/css" href="{% static 'css/site.css' %}">
   <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
   <script src="{% static 'js/jquery-ui.min.js' %}"></script>
   {% if steps_available %}
-  <form action='' method="post">
-    <div class="row">
+    <h6 style="float: left;">in scenario</h6> &nbsp;&nbsp;(change order by dragging and dropping)
+    <table class="table" id="steps-scenario">
+      <thead>
+        <tr>
+          <th class="index">No.</th>
+          <th style="display: none;">ID</th>
+          <th>Name</th>
+          <th>Injectables</th>
+          <th>Started</th>
+          <th>Finished</th>
+          <th>Success</th>
+          <th>Active</th>
+          <th>Remove</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for step in steps_scenario %}
+        <tr data-id="{{ step.id }}">
+          <td class="index"> {{ forloop.counter0 }} </td>
+          <td style="display: none;"> {{ step.id }} </td>
+          <td> {{ step.name }} </td>
+          <td class="injectables"> {{ step.injectables }} </td>
+          <td class="start"> {{ step.started }} </td>
+          <td class="finish"> {{ step.finished }} </td>
+          <td class="success"> {{ step.success }} </td>
+          <td class="is_active">
+            <label>
+              <input type="checkbox" {% if step.active %} checked {% endif %} id="toggle-active" onclick="toggleActiveRow(this, {{ step.id }})" style="transform: scale(2); margin: 0.5em;">
+            </label>
+          </td>
+          <td>
+            <form action='' method="post">
+              {% csrf_token %}
+              <input type="hidden" name="step" value="{{step.id}}">
+              <input title="Remove Step" type="submit" name="remove" class="btn btn-outline-danger" value="X" style="padding: .35rem .6rem; line-height: 1;">
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <form action='' method="post">
       {% csrf_token %}
-      <div class="col-md-3">
-        <h6>available</h6>
-        <select id="steps-available" multiple>
-        {% for name, step in steps_available.items %}
-          <option title="{{ step }}"> {{ name }} </option>
-        {% endfor %}
-        </select>
-      </div>
-      <input type="hidden" name="add_steps" id="add-steps">
-      <div class="col-md-1">
-        <div id="btn-grp">
-          <input name="add" type="submit" value="&#8594;" title='add selected steps to scenario'>
-          <br>
-          <input style="margin-top: 5px;" name="remove" type="submit" value="&#8592;" title='remove selected steps from scenario'>
-        </div>
-      </div>
-      <div class="col-md-8">
-        <h6>in scenario</h6>
-        <table class="table" id="steps-scenario">
-          <thead>
-            <tr>
-              <th class="index">No.</th>
-              <th style="display: none;">ID</th>
-              <th>Name</th>
-              <th>Injectables</th>
-              <th>Started</th>
-              <th>Finished</th>
-              <th>Success</th>
-              <th>Active</th>
-            </tr>
-          </thead>
-          <tbody>
-          {% for step in steps_scenario %}
-            <tr onclick="highlightRow(this)" data-id="{{ step.id }}">
-              <td class="index"> {{ forloop.counter0 }} </td>
-              <td style="display: none;"> {{ step.id }} </td>
-              <td> {{ step.name }} </td>
-              <td class="injectables"> {{ step.injectables }} </td>
-              <td class="start"> {{ step.started }} </td>
-              <td class="finish"> {{ step.finished }} </td>
-              <td class="success"> {{ step.success }} </td>
-              <td class="is_active">
-                <label>
-                  <input type="checkbox" {% if step.active %} checked {% endif %} id="toggle-active" onclick="toggleActiveRow(this, {{ step.id }})">
-                </label>
-              </td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
-        <input type="submit" name="run" class="btn btn-primary" value="Run">
-        <input type="hidden" name="selected_steps" id="remove-steps">
-      </div>
-    </div>
-  </form>
+      <input type="submit" name="run" class="btn btn-primary" value="Run Steps" style="float: right;">
+    </form>
   {% else %}
   <p>no steps available</p>
   {% endif %}
 
 <script>
   var stepsTable = document.getElementById('steps-scenario'),
+      stepsAvailableTable = document.getElementById('steps-available'),
       stepsUrl = '/steps/list/',
       stepUrl = '/steps/',
       stepDetailUrl = '/steps/detail/',
-      csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+      csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value,
+      stepsInput = document.getElementById('selected-steps');
 
   // highlight row in table on click
   function highlightRow(target){
-    var input = document.getElementById('remove-steps');
     target.classList.toggle('selected');
     var inputStr = '';
-    for (var i = 0; i < stepsTable.rows.length; i++){
-      var row = stepsTable.rows[i];
+    for(row of stepsAvailableTable.rows){
+        console.log(row)
       if (row.classList.contains('selected')){
-        var id = row.dataset['id'];
-        inputStr += id + ',';
+        var step = row.dataset['step'];
+        inputStr += step + ',';
       }
     }
-    input.value = inputStr;
+    stepsInput.value = inputStr;
   }
 
   // toggle is_active in row
@@ -177,19 +202,6 @@
   }
 
   (function() {
-
-    var select = document.getElementById('steps-available'),
-        input = document.getElementById('add-steps'),
-        stepsTable = document.getElementById('selected-steps');
-    select.addEventListener('change', function(){
-      var inputStr = '';
-      for (var i=0; i < this.selectedOptions.length; i++) {
-        var selected = select.selectedOptions[i];
-        inputStr += selected.value + ',';
-      }
-      input.value = inputStr;
-    })
-
     // periodically update steps and their progress
     updateSteps();
     setInterval(updateSteps, 10000);

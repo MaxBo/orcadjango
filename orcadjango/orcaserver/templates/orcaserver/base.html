@@ -1,6 +1,7 @@
 {% load bootstrap4 %}
 {% bootstrap_css %}
 {% bootstrap_javascript jquery='full' %}
+{% load static %}
 
 <head>
   <title>OrcaDjango</title>
@@ -9,6 +10,7 @@
 <body>
 {% bootstrap_messages %}
 {% block bootstrap4_content %}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/site.css' %}">
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="/">OrcaDjango</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,20 +64,23 @@
       </div>
       {% endif %}
   </div>
-  <div class="row" style="padding-left: 30px; margin-top: 20px;">
+  <div class="row" style="margin-top: 20px;">
+
+    {% block left-content %}
     <div class="col-md-2">
-      {% block left-content %}{% endblock %}
     </div>
-    <div class="col-md-7">
+    {% endblock %}
+    <div class="col-md-6">
       <h4>{% block title %}{% endblock %}</h4>
 
       {% autoescape off %}{% bootstrap_messages %}{% endautoescape %}
 
       {% block content %}{% endblock %}
     </div>
-    <div class="col-md-2">
-      {% block right-content %}{% endblock %}
+    {% block right-content %}
+    <div class="col-md-3">
     </div>
+    {% endblock %}
   </div>
 
 {% endblock %}
