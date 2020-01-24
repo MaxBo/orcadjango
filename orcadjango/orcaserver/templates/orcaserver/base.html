@@ -50,32 +50,29 @@
     </div>
   </nav>
   <div style="padding-left: 30px;">
-    {% if python_module %}
       <div class="row">
-        module &nbsp;<a href='/settings'><i> {{ python_module }} </i></a>
+        module &nbsp;<a href='/settings'><i>{% if python_module %} {{ python_module }} {% else %} None {% endif %}</i></a>
       </div>
-    {% endif %}
-    {% if project_name %}
       <div class="row">
-        project &nbsp;<a href='/projects'><h4><i>{{ project_name }}</i></h4></a>
+        project &nbsp;<a href='/projects'><h4><i>{% if active_project %} {{ active_project.name }} {% else %} None {% endif %}</i></h4></a>
       </div>
-    {% endif %}
-    {% if scenario_name %}
       <div class="row">
-        scenario &nbsp;<a href='/scenarios'><h4><i>{{ scenario_name }}</i></h4></a>
+        scenario &nbsp;<a href='/scenarios'><h4><i>{% if active_scenario %} {{ active_scenario.name }} {% else %} None {% endif %}</i></h4></a>
       </div>
-    {% endif %}
   </div>
   <div class="row" style="padding-left: 30px; margin-top: 20px;">
-    <div class="col-md-3">
-      {% block left %}{% endblock %}
+    <div class="col-md-2">
+      {% block left-content %}{% endblock %}
     </div>
-    <div class="col-md-8">
+    <div class="col-md-7">
       <h4>{% block title %}{% endblock %}</h4>
 
       {% autoescape off %}{% bootstrap_messages %}{% endautoescape %}
 
       {% block content %}{% endblock %}
+    </div>
+    <div class="col-md-2">
+      {% block right-content %}{% endblock %}
     </div>
   </div>
 

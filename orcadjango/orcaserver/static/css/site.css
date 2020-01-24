@@ -22,6 +22,6 @@ tr {
 }
 
 tr.selected {
-  background-color: #007bff;
+  background-color: #87c1ff;
   color: white;
 }

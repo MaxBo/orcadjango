@@ -6,14 +6,49 @@
   Select a project
 {% endblock %}
 
-{% block left %}
-  fgdsfsdfdsffds
-{% endblock %}
-
 {% block content %}
-hgfhgfghfhgf
-  <!--
-    http://localhost:8001/admin/orcaserver/geoproject/add/
-    http://localhost:8001/admin/orcaserver/geoproject/1/change/
-  -->
+<link rel="stylesheet" type="text/css" href="{% static 'css/site.css' %}">
+<table class="table" id="projects">
+  <thead>
+    <tr>
+      <th style="display: none;">ID</th>
+      <th>Name</th>
+      <th>Description</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for project in projects %}
+    <tr onclick="highlightRow(this)" data-id="{{ project.id }}">
+      <td style="display: none;"> {{ project.id }} </td>
+      <td> {{ project.name }} </td>
+      <td> {{ project.description }} </td>
+      <td>
+        <a href="/admin/orcaserver/project/{{project.id}}/change/" target="_blank">edit</a>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<form action='' method="post">
+  {% csrf_token %}
+  <input name="project" style="display: None"/>
+  <input class="btn btn-primary" type="submit" name="select" value="Select"/>
+  <input class="btn btn-danger" type="submit" name="delete" value="Delete" style="float: right;"/>
+  <a class="btn btn-secondary" href="/admin/orcaserver/project/add/" target="_blank" style="float: right; margin-right: 5px;">Add</a>
+</form>
+
+<script>
+  var table = document.getElementById('projects'),
+      projectInput = document.querySelector('input[name="project"]');
+  // highlight row in table on click
+  function highlightRow(target){
+    for(row of table.rows){
+      if (row!=target) row.classList.remove('selected');
+    }
+    target.classList.toggle('selected');
+    projectInput.value = target.classList.contains('selected') ? target.dataset['id'] : null;
+  }
+</script>
+
 {% endblock %}

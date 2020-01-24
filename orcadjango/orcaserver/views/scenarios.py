@@ -51,13 +51,14 @@ class ScenariosView(ProjectMixin, ListView):
 
     def post(self, request, *args, **kwargs):
         scenario_id = request.POST.get('scenario')
-        if request.POST.get('select'):
-            self.request.session['scenario'] = int(scenario_id)
-        elif request.POST.get('delete'):
-            Scenario.objects.get(id=scenario_id).delete()
-        elif request.POST.get('refresh'):
-            scenario = Scenario.objects.get(id=scenario_id)
-            create_injectables(scenario)
+        if scenario_id:
+            if request.POST.get('select'):
+                self.request.session['scenario'] = int(scenario_id)
+            elif request.POST.get('delete'):
+                Scenario.objects.get(id=scenario_id).delete()
+            elif request.POST.get('refresh'):
+                scenario = Scenario.objects.get(id=scenario_id)
+                create_injectables(scenario)
         return HttpResponseRedirect(request.path_info)
 
     def create(request):

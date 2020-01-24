@@ -1,12 +1,18 @@
 import orca
 from django.views.generic import ListView
-from django.contrib.gis import forms
-# from orcaserver.models import Scenario, Injectable, Step
-#from django.http import HttpResponseRedirect, HttpResponseBadRequest
-#from django.urls import reverse
-
+from django.http import HttpResponseRedirect
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from orcaserver.models import Scenario, Project, GeoProject
+
+@receiver(post_save, sender=GeoProject)
+@receiver(post_save, sender=Project)
+def create_project(sender, instance, created, **kwargs):
+    """Create a matching profile whenever a user object is created."""
+    if created:
+        instance.module = orca._python_module
+        instance.save()
 
 
 class ProjectMixin:
@@ -34,8 +40,8 @@ class ProjectMixin:
         kwargs = super().get_context_data(**kwargs)
         project = self.get_project()
         scenario = self.get_scenario()
-        kwargs['project_name'] = project.name if scenario else 'none'
-        kwargs['scenario_name'] = scenario.name if scenario else 'none'
+        kwargs['active_project'] = project
+        kwargs['active_scenario'] = scenario
         kwargs['python_module'] = orca._python_module
         return kwargs
 
@@ -43,12 +49,21 @@ class ProjectMixin:
 class ProjectView(ProjectMixin, ListView):
     model = Project
     template_name = 'orcaserver/projects.html'
-    context_object_name = 'scenarios'
+    context_object_name = 'projects'
 
     def get_queryset(self):
         """Return the injectables with their values."""
         projects = self.model.objects.filter(module=orca._python_module)
         return projects
+
+    def post(self, request, *args, **kwargs):
+        project_id = request.POST.get('project')
+        if project_id:
+            if request.POST.get('select'):
+                self.request.session['project'] = int(project_id)
+            elif request.POST.get('delete'):
+                Project.objects.get(id=project_id).delete()
+        return HttpResponseRedirect(request.path_info)
 
 
 class GeoProjectView(ProjectView):
