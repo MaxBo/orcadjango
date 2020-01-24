@@ -10,6 +10,9 @@
 {% endblock %}
 
 {% block content %}
+<div class="col-md-2">
+</div>
+<div class="col-md-7">
   {% if request.session.project %}
 
   <form action='' method="post">
@@ -36,4 +39,5 @@
   </form>
 
   {% endif %}
+</div>
 {% endblock %}

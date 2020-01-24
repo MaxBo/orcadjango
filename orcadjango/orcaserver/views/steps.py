@@ -65,13 +65,18 @@ class StepsView(ProjectMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         scenario = self.get_scenario()
-        steps = OrderedDict(((name, orca.get_step(name)._func.__doc__)
-                             for name in orca.list_steps()))
-        steps_available = steps if scenario else {}
+        steps_grouped = {}
+        for name in orca.list_steps():
+            wrapper = orca.get_step(name)
+            group = wrapper.groupname or '-'
+            steps_grouped.setdefault(group, []).append({
+                'name': name,
+                'description': wrapper._func.__doc__,
+            })
         steps_scenario = Step.objects.filter(
             scenario=scenario).order_by('order')
         kwargs = super().get_context_data(**kwargs)
-        kwargs['steps_available'] = steps_available
+        kwargs['steps_available'] = steps_grouped if scenario else []
         kwargs['steps_scenario'] = steps_scenario
         return kwargs
 
@@ -126,19 +131,16 @@ class StepsView(ProjectMixin, TemplateView):
     def post(self, request, *args, **kwargs):
         scenario = self.get_scenario()
         if request.POST.get('add'):
-            steps = request.POST.get('add_steps', '').split(',')
+            steps = request.POST.get('steps', '').split(',')
             for step in steps:
                 if not step:
                     continue
                 Step.objects.create(scenario=scenario,
                                     name=step, order=10000)
         elif request.POST.get('remove'):
-            steps = request.POST.get('selected_steps', '').split(',')
-            for step_id in steps:
-                if not step_id:
-                    continue
-                step = Step.objects.get(id=step_id)
-                step.delete()
+            step_id = request.POST.get('step')
+            step = Step.objects.get(id=step_id)
+            step.delete()
         elif request.POST.get('run'):
             selected = request.POST.get('selected_steps')
             if selected:
