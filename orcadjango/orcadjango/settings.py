@@ -44,7 +44,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'orcaserver',
-    'bootstrap4'
+    'bootstrap4',
+    'wslog',
+    'channels'
 ]
 
 MIDDLEWARE = [
@@ -78,7 +80,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'orcadjango.wsgi.application'
+ASGI_APPLICATION = 'orcadjango.routing.application'
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases

@@ -48,6 +48,27 @@
 {% endif %}
 {% endblock %}
 
+{% block right-content %}
+<div class="col-md-2" style="padding: 2em;">
+  <textarea id="wslog" cols="100" rows="20"></textarea>
+
+  <script>
+    var chatSocket = new WebSocket(
+        'ws://' + window.location.host +
+        '/ws/log/' + {{ request.session.scenario }} + '/');
+
+    chatSocket.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        var message = data['message'];
+        document.querySelector('#wslog').value += (message + '\n');
+    };
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+  </script>
+</div>
+{% endblock %}
+
 {% block content %}
   <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
   <script src="{% static 'js/jquery-ui.min.js' %}"></script>

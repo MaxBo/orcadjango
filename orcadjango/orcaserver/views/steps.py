@@ -2,9 +2,9 @@ import time
 import ast
 import logging
 import json
-from collections import OrderedDict
 from django.views.generic import TemplateView
 from django.shortcuts import HttpResponseRedirect
+from django.http import HttpResponse
 from django.utils import timezone
 from django.http import JsonResponse, HttpResponseNotFound
 import orca
@@ -14,7 +14,6 @@ from orca import (get_step_table_names, get_step, add_injectable, clear_cache,
 from orcaserver.views import ProjectMixin
 from orcaserver.models import Step, Injectable, Scenario
 from django.core.exceptions import ObjectDoesNotExist
-from threading import Thread
 from django.urls import reverse
 import json
 
@@ -54,7 +53,6 @@ def apply_injectables(scenario):
                 logger.warning(msg)
                 continue
         orca.add_injectable(inj.name, converted_value)
-
 
 class StepsView(ProjectMixin, TemplateView):
     template_name = 'orcaserver/steps.html'
@@ -142,23 +140,24 @@ class StepsView(ProjectMixin, TemplateView):
             step = Step.objects.get(id=step_id)
             step.delete()
         elif request.POST.get('run'):
-            selected = request.POST.get('selected_steps')
-            if selected:
-                steps = Step.objects.filter(
-                    id__in=selected.rstrip(',').split(',')).\
-                    filter(active=True)
-            else:
-                steps = Step.objects.filter(scenario=self.get_scenario()).\
-                    filter(active=True)
-            steps = steps.order_by('order')
-            for step in steps:
-                step.started = None
-                step.finished = None
-                step.success = False
-                step.save()
-            apply_injectables(self.get_scenario())
-            thread = Thread(target=run, args=(steps, ))
-            thread.start()
+            pass
+            #selected = request.POST.get('selected_steps')
+            #if selected:
+                #steps = Step.objects.filter(
+                    #id__in=selected.rstrip(',').split(',')).\
+                    #filter(active=True)
+            #else:
+                #steps = Step.objects.filter(scenario=self.get_scenario()).\
+                    #filter(active=True)
+            #steps = steps.order_by('order')
+            #for step in steps:
+                #step.started = None
+                #step.finished = None
+                #step.success = False
+                #step.save()
+            #apply_injectables(self.get_scenario())
+            #thread = Thread(target=run, args=(steps, ))
+            #thread.start()
         return HttpResponseRedirect(request.path_info)
 
     # to do for updating is_active
@@ -175,6 +174,14 @@ class StepsView(ProjectMixin, TemplateView):
             step.active = is_active
             step.save()
             return JsonResponse({}, safe=False)
+
+    def run(request):
+        import channels.layers
+        from asgiref.sync import async_to_sync
+        channel_layer = channels.layers.get_channel_layer()
+        async_to_sync(channel_layer.send)('log_3', {'type': 'hello'})
+        return HttpResponse(status=200)
+
 
 _CS_STEP = 'steps'
 _CS_ITER = 'iteration'

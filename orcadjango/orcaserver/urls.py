@@ -23,6 +23,7 @@ urlpatterns = [
          login_required(views.InjectableView.as_view()),
          name='injectable'),
     path('steps/', login_required(views.StepsView.as_view()), name='steps'),
+    path('steps/run/', login_required(views.StepsView.run)),
     path('steps/list/', login_required(views.StepsView.list)),
     path('steps/detail/<str:id>/', login_required(views.StepsView.detail)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

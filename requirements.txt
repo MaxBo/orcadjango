@@ -1,3 +1,6 @@
 django>=2.0
 orca
 django-bootstrap4
+psycopg2
+channels
+channels_redis
