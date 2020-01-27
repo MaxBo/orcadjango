@@ -49,8 +49,8 @@
 {% endblock %}
 
 {% block right-content %}
-<div class="col-md-2" style="padding: 2em;">
-  <textarea id="wslog" cols="100" rows="20"></textarea>
+<div class="col-md-3" style="padding: 2em;">
+  <textarea id="wslog" style="width: 100%" rows="50"></textarea>
 
   <script>
     var chatSocket = new WebSocket(
@@ -114,10 +114,7 @@
       {% endfor %}
       </tbody>
     </table>
-    <form action='' method="post">
-      {% csrf_token %}
-      <input type="submit" name="run" class="btn btn-primary" value="Run Steps" style="float: right;">
-    </form>
+    <button type="submit" onclick="runScenario()" class="btn btn-primary" style="float: right;">Run Steps</button>
   {% else %}
   <p>no steps available</p>
   {% endif %}
@@ -136,7 +133,6 @@
     target.classList.toggle('selected');
     var inputStr = '';
     for(row of stepsAvailableTable.rows){
-        console.log(row)
       if (row.classList.contains('selected')){
         var step = row.dataset['step'];
         inputStr += step + ',';
@@ -147,12 +143,18 @@
 
   // toggle is_active in row
   function toggleActiveRow(checkbox, stepId){
-      console.log(checkbox)
-      var data = {is_active: checkbox.checked}
-      console.log(data)
+      var data = {is_active: checkbox.checked};
       fetch(stepDetailUrl+stepId+'/', {
         method: "PATCH",
         body: JSON.stringify(data),
+        credentials: "same-origin",
+        headers: { "X-CSRFToken": csrfToken }
+      });
+  }
+
+  function runScenario(){
+    fetch('/steps/run/', {
+        method: "POST",
         credentials: "same-origin",
         headers: { "X-CSRFToken": csrfToken }
       });
@@ -225,8 +227,7 @@
   (function() {
     // periodically update steps and their progress
     updateSteps();
-    setInterval(updateSteps, 10000);
-
+    <!--setInterval(updateSteps, 10000);-->
     tableDnD();
   })();
 </script>

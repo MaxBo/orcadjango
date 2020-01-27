@@ -7,6 +7,8 @@ from django.shortcuts import HttpResponseRedirect
 from django.http import HttpResponse
 from django.utils import timezone
 from django.http import JsonResponse, HttpResponseNotFound
+import channels.layers
+from asgiref.sync import async_to_sync
 import orca
 from orca import (get_step_table_names, get_step, add_injectable, clear_cache,
                   write_tables, log_start_finish, iter_step, logger)
@@ -15,8 +17,22 @@ from orcaserver.views import ProjectMixin
 from orcaserver.models import Step, Injectable, Scenario
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
+from threading import Thread
 import json
 
+
+class ScenarioHandler(logging.StreamHandler):
+    def __init__(self, scenario,  *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.scenario = scenario
+
+    def emit(self, record):
+        channel_layer = channels.layers.get_channel_layer()
+        group = f'log_{self.scenario.id}'
+        async_to_sync(channel_layer.group_send)(group, {
+            'message': record.message,
+            'type': 'log_message'
+        })
 
 def apply_injectables(scenario):
     names = orca.list_injectables()
@@ -141,23 +157,6 @@ class StepsView(ProjectMixin, TemplateView):
             step.delete()
         elif request.POST.get('run'):
             pass
-            #selected = request.POST.get('selected_steps')
-            #if selected:
-                #steps = Step.objects.filter(
-                    #id__in=selected.rstrip(',').split(',')).\
-                    #filter(active=True)
-            #else:
-                #steps = Step.objects.filter(scenario=self.get_scenario()).\
-                    #filter(active=True)
-            #steps = steps.order_by('order')
-            #for step in steps:
-                #step.started = None
-                #step.finished = None
-                #step.success = False
-                #step.save()
-            #apply_injectables(self.get_scenario())
-            #thread = Thread(target=run, args=(steps, ))
-            #thread.start()
         return HttpResponseRedirect(request.path_info)
 
     # to do for updating is_active
@@ -175,11 +174,29 @@ class StepsView(ProjectMixin, TemplateView):
             step.save()
             return JsonResponse({}, safe=False)
 
-    def run(request):
-        import channels.layers
-        from asgiref.sync import async_to_sync
-        channel_layer = channels.layers.get_channel_layer()
-        async_to_sync(channel_layer.send)('log_3', {'type': 'hello'})
+    @classmethod
+    def run(cls, request):
+        scenario_id = request.session.get('scenario')
+        if not scenario_id:
+            return
+        scenario = Scenario.objects.get(id=scenario_id)
+        message = f'Running Steps for scenario "{scenario.name}"'
+
+        logger = logging.getLogger('Test')
+        logger.addHandler(ScenarioHandler(scenario))
+        logger.setLevel(logging.INFO)
+        logger.info(message)
+
+        active_steps = Step.objects.filter(scenario=scenario, active=True)
+        steps = active_steps.order_by('order')
+        for step in steps:
+            step.started = None
+            step.finished = None
+            step.success = False
+            step.save()
+        apply_injectables(scenario)
+        thread = Thread(target=run, args=(steps, ))
+        thread.start()
         return HttpResponse(status=200)
 
 
@@ -252,6 +269,7 @@ def run(steps, iter_vars=None, data_out=None, out_interval=1,
         write_tables(data_out, out_base_tables, 'base', compress=compress,
                      local=out_base_local)
 
+    logger = logging.getLogger('Test')
     # run the steps
     for i, var in enumerate(iter_vars, start=1):
         add_injectable('iter_var', var)
