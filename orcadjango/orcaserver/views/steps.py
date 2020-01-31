@@ -195,13 +195,51 @@ class StepsView(ProjectMixin, TemplateView):
             step.success = False
             step.save()
         apply_injectables(scenario)
-        thread = Thread(target=run, args=(steps, ))
+        thread = ThreadWithException(target=run, args=(steps, ))
         thread.start()
+        from time import sleep
+        sleep(1)
+        thread.raise_exception()
+
         return HttpResponse(status=200)
 
 
 _CS_STEP = 'steps'
 _CS_ITER = 'iteration'
+
+import ctypes
+import threading
+class ThreadWithException(Thread):
+
+    #def run(self):
+
+        #from orcaserver.tests.dummy_orca_stuff import step2
+        ### target function of the thread class
+        #try:
+            #step2(1, 2)
+            ##while True:
+                ##print('running ' + self.name)
+        #except Exception as e:
+            #print(str(e))
+        #finally:
+            #print('ended')
+
+    def get_id(self):
+
+        # returns id of the respective thread
+        if hasattr(self, '_thread_id'):
+            return self._thread_id
+        for id, thread in threading._active.items():
+            if thread is self:
+                return id
+
+    def raise_exception(self):
+        thread_id = self.get_id()
+        res = ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id,
+                                                         ctypes.py_object(ValueError))
+        if res > 1:
+            ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, 0)
+            print('Exception raise failure')
 
 
 def run(steps, iter_vars=None, data_out=None, out_interval=1,

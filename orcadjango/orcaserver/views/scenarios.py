@@ -74,8 +74,7 @@ class ScenariosView(ProjectMixin, ListView):
                 old_scenario_id = request.session.get('scenario')
                 if old_scenario_id is None:
                     return HttpResponseBadRequest('No Scenario selected yet that could be cloned')
-                old_scenario = Scenario.objects.get(pk=old_scenario_id,
-                                                    module=module)
+                old_scenario = Scenario.objects.get(pk=old_scenario_id)
 
                 # copy injectable values
                 injectables = Injectable.objects.filter(scenario=old_scenario)
