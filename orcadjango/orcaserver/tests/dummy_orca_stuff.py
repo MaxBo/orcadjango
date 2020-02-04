@@ -3,7 +3,7 @@ from typing import List
 from time import sleep
 from orcadjango.decorators import group
 import logging
-logger = logging.getLogger('Orca')
+logger = logging.getLogger('OrcaLog')
 logger.addHandler(logging.StreamHandler())
 
 @group(groupname='strings')
