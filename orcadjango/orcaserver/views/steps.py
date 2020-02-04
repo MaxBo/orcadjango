@@ -1,23 +1,34 @@
-import time
 import ast
 import logging
 import json
-from collections import OrderedDict
 from django.views.generic import TemplateView
 from django.shortcuts import HttpResponseRedirect
-from django.utils import timezone
+from django.http import HttpResponse
 from django.http import JsonResponse, HttpResponseNotFound
+import channels.layers
+from asgiref.sync import async_to_sync
 import orca
-from orca import (get_step_table_names, get_step, add_injectable, clear_cache,
-                  write_tables, log_start_finish, iter_step, logger)
 
+from orcaserver.threading import OrcaManager
 from orcaserver.views import ProjectMixin
 from orcaserver.models import Step, Injectable, Scenario
 from django.core.exceptions import ObjectDoesNotExist
-from threading import Thread
 from django.urls import reverse
 import json
 
+
+class ScenarioHandler(logging.StreamHandler):
+    def __init__(self, scenario,  *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.scenario = scenario
+
+    def emit(self, record):
+        channel_layer = channels.layers.get_channel_layer()
+        group = f'log_{self.scenario.id}'
+        async_to_sync(channel_layer.group_send)(group, {
+            'message': record.message,
+            'type': 'log_message'
+        })
 
 def apply_injectables(scenario):
     names = orca.list_injectables()
@@ -51,7 +62,7 @@ def apply_injectables(scenario):
                        f'could not be casted to type `{original_type}`.'
                        f'Injectable Value was not overwritten.'
                        f'Error message: {repr(e)}')
-                logger.warning(msg)
+                orca.logger.warning(msg)
                 continue
         orca.add_injectable(inj.name, converted_value)
 
@@ -142,23 +153,7 @@ class StepsView(ProjectMixin, TemplateView):
             step = Step.objects.get(id=step_id)
             step.delete()
         elif request.POST.get('run'):
-            selected = request.POST.get('selected_steps')
-            if selected:
-                steps = Step.objects.filter(
-                    id__in=selected.rstrip(',').split(',')).\
-                    filter(active=True)
-            else:
-                steps = Step.objects.filter(scenario=self.get_scenario()).\
-                    filter(active=True)
-            steps = steps.order_by('order')
-            for step in steps:
-                step.started = None
-                step.finished = None
-                step.success = False
-                step.save()
-            apply_injectables(self.get_scenario())
-            thread = Thread(target=run, args=(steps, ))
-            thread.start()
+            pass
         return HttpResponseRedirect(request.path_info)
 
     # to do for updating is_active
@@ -176,121 +171,46 @@ class StepsView(ProjectMixin, TemplateView):
             step.save()
             return JsonResponse({}, safe=False)
 
-_CS_STEP = 'steps'
-_CS_ITER = 'iteration'
+    @classmethod
+    def status(cls, request):
+        manager = OrcaManager()
+        status = {
+            'running': manager.is_running,
+            'last_user': manager.user,
+            'last_start': manager.start_time,
+        }
+        return JsonResponse(status)
 
+    @classmethod
+    def run(cls, request):
+        scenario_id = request.session.get('scenario')
+        if not scenario_id:
+            return
+        scenario = Scenario.objects.get(id=scenario_id)
+        message = f'Running Steps for scenario "{scenario.name}"'
 
-def run(steps, iter_vars=None, data_out=None, out_interval=1,
-        out_base_tables=None, out_run_tables=None, compress=False,
-        out_base_local=True, out_run_local=True):
-    """
-    Run steps in series, optionally repeatedly over some sequence.
-    The current iteration variable is set as a global injectable
-    called ``iter_var``.
+        logger = logging.getLogger('OrcaLog')
+        logger.addHandler(ScenarioHandler(scenario))
+        logger.setLevel(logging.DEBUG)
+        logger.info(message)
 
-    Parameters
-    ----------
-    steps : list of Step
-    iter_vars : iterable, optional
-        The values of `iter_vars` will be made available as an injectable
-        called ``iter_var`` when repeatedly running `steps`.
-    data_out : str, optional
-        An optional filename to which all tables injected into any step
-        in `steps` will be saved every `out_interval` iterations.
-        File will be a pandas HDF data store.
-    out_interval : int, optional
-        Iteration interval on which to save data to `data_out`. For example,
-        2 will save out every 2 iterations, 5 every 5 iterations.
-        Default is every iteration.
-        The results of the first and last iterations are always included.
-        The input (base) tables are also included and prefixed with `base/`,
-        these represent the state of the system before any steps have been
-        executed.
-        The interval is defined relative to the first iteration. For example,
-        a run begining in 2015 with an out_interval of 2, will write out
-        results for 2015, 2017, etc.
-    out_base_tables: list of str, optional, default None
-        List of base tables to write. If not provided, tables injected
-        into 'steps' will be written.
-    out_run_tables: list of str, optional, default None
-        List of run tables to write. If not provided, tables injected
-        into 'steps' will be written.
-    compress: boolean, optional, default False
-        Whether to compress output file using standard HDF5 zlib compression.
-        Compression yields much smaller files using slightly more CPU.
-    out_base_local: boolean, optional, default True
-        For tables in out_base_tables, whether to store only local columns (True)
-        or both, local and computed columns (False).
-    out_run_local: boolean, optional, default True
-        For tables in out_run_tables, whether to store only local columns (True)
-        or both, local and computed columns (False).
-    """
-    iter_vars = iter_vars or [None]
-    max_i = len(iter_vars)
-    step_names = [step.name for step in steps]
+        active_steps = Step.objects.filter(scenario=scenario, active=True)
+        steps = active_steps.order_by('order')
+        for step in steps:
+            step.started = None
+            step.finished = None
+            step.success = False
+            step.save()
+        apply_injectables(scenario)
+        manager = OrcaManager()
+        if manager.is_running:
+            return
+        manager.start(steps=steps, logger=logger,
+                      user=request.user)
+        return HttpResponse(status=200)
 
-    # get the tables to write out
-    if out_base_tables is None or out_run_tables is None:
-        step_tables = get_step_table_names(step_names)
-
-        if out_base_tables is None:
-            out_base_tables = step_tables
-
-        if out_run_tables is None:
-            out_run_tables = step_tables
-
-    # write out the base (inputs)
-    if data_out:
-        add_injectable('iter_var', iter_vars[0])
-        write_tables(data_out, out_base_tables, 'base', compress=compress,
-                     local=out_base_local)
-
-    # run the steps
-    for i, var in enumerate(iter_vars, start=1):
-        add_injectable('iter_var', var)
-
-        if var is not None:
-            print('Running iteration {} with iteration value {!r}'.format(
-                i, var))
-            logger.debug(
-                'running iteration {} with iteration value {!r}'.format(
-                    i, var))
-
-        t1 = time.time()
-        for j, step in enumerate(steps):
-            step_name = step.name
-            add_injectable('iter_step', iter_step(j, step_name))
-            print('Running step {!r}'.format(step_name))
-            with log_start_finish(
-                    'run step {!r}'.format(step_name), logger,
-                    logging.INFO):
-                step_func = get_step(step_name)
-                t2 = time.time()
-                step.started = timezone.now()
-                step.save()
-                try:
-                    step_func()
-                    step.success = True
-                except Exception as e:
-                    step.success = False
-                    raise e
-                end = time.time() - t2
-                print("Time to execute step '{}': {:.2f} s".format(
-                      step_name, end))
-                step.finished = timezone.now()
-                step.save()
-
-            clear_cache(scope=_CS_STEP)
-
-        print(
-            ('Total time to execute iteration {} '
-             'with iteration value {!r}: '
-             '{:.2f} s').format(i, var, time.time() - t1))
-
-        # write out the results for the current iteration
-        if data_out:
-            if (i - 1) % out_interval == 0 or i == max_i:
-                write_tables(data_out, out_run_tables, var,
-                             compress=compress, local=out_run_local)
-
-        clear_cache(scope=_CS_ITER)
+    @classmethod
+    def abort(cls, request):
+        manager = OrcaManager()
+        manager.abort()
+        return HttpResponse(status=200)
