@@ -27,5 +27,5 @@ urlpatterns = [
     path('steps/abort/', login_required(views.StepsView.abort)),
     path('steps/list/', login_required(views.StepsView.list)),
     path('steps/detail/<str:id>/', login_required(views.StepsView.detail)),
-    path('status/', login_required(views.StepsView.status)),
+    path('steps/status/', login_required(views.StepsView.status)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

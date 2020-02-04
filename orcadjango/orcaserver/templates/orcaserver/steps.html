@@ -50,21 +50,26 @@
 
 {% block right-content %}
 <div class="col-md-3" style="padding: 2em;">
-  <textarea id="wslog" style="width: 100%" rows="50"></textarea>
-
+  <textarea id="wslog" style="width: 100%; height: 30em;"></textarea>
+  <button onclick="clearLog()" class="btn btn-secondary" style="margin: 10px; float: right;">Clear</button>
   <script>
     var chatSocket = new WebSocket(
-        'ws://' + window.location.host +
-        '/ws/log/' + {{ request.session.scenario }} + '/');
+        'ws://' + window.location.host + '/ws/log/orca/'),
+        logArea = document.querySelector('#wslog');
 
     chatSocket.onmessage = function(e) {
         var data = JSON.parse(e.data);
         var message = data['message'];
-        document.querySelector('#wslog').value += (message + '\n');
+        logArea.value += (message + '\n');
+        logArea.scrollTop = logArea.scrollHeight;
     };
+
     chatSocket.onclose = function(e) {
         console.error('Chat socket closed unexpectedly');
     };
+
+    function clearLog(){ logArea.value = '' };
+
   </script>
 </div>
 {% endblock %}
@@ -153,11 +158,17 @@
   }
 
   function runScenario(){
-    fetch('/steps/run/', {
-        method: "POST",
-        credentials: "same-origin",
-        headers: { "X-CSRFToken": csrfToken }
-      });
+    updateStatus().then(function(res){
+      console.log(res)
+      if (!res.running){
+          fetch('/steps/run/', {
+              method: "POST",
+              credentials: "same-origin",
+              headers: { "X-CSRFToken": csrfToken }
+            });
+        }
+      else alert('Orca is already running! Abort it or wait.')
+    })
   }
 
   // fetch and update steps in table
@@ -208,7 +219,6 @@
         i += 1;
         data.push({ id: id, order: i})
       })
-      console.log(data)
       fetch(stepsUrl, {
         method: "POST",
         body: JSON.stringify(data),
@@ -227,7 +237,7 @@
   (function() {
     // periodically update steps and their progress
     updateSteps();
-    <!--setInterval(updateSteps, 10000);-->
+    setInterval(updateSteps, 10000);
     tableDnD();
   })();
 </script>

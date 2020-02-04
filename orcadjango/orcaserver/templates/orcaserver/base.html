@@ -51,18 +51,23 @@
       </p>
     </div>
   </nav>
-  <div style="padding-left: 30px;">
-      {% if show_project_settings %}
-      <div class="row">
-        module &nbsp;<a href='/settings'><i>{% if python_module %} {{ python_module }} {% else %} None {% endif %}</i></a>
-      </div>
-      <div class="row">
-        project &nbsp;<a href='/projects'><h4><i>{% if active_project %} {{ active_project.name }} {% else %} None {% endif %}</i></h4></a>
-      </div>
-      <div class="row">
-        scenario &nbsp;<a href='/scenarios'><h4><i>{% if active_scenario %} {{ active_scenario.name }} {% else %} None {% endif %}</i></h4></a>
-      </div>
-      {% endif %}
+  <div class="row" style="padding-left: 30px;">
+    <div class="col-md-8">
+        {% if show_project_settings %}
+        <div class="row">
+          module &nbsp;<a href='/settings'><i>{% if python_module %} {{ python_module }} {% else %} None {% endif %}</i></a>
+        </div>
+        <div class="row">
+          project &nbsp;<a href='/projects'><h4><i>{% if active_project %} {{ active_project.name }} {% else %} None {% endif %}</i></h4></a>
+        </div>
+        <div class="row">
+          scenario &nbsp;<a href='/scenarios'><h4><i>{% if active_scenario %} {{ active_scenario.name }} {% else %} None {% endif %}</i></h4></a>
+        </div>
+        {% endif %}
+    </div>
+    <div class="col-md-4" style="padding-right: 60px;">
+      <a style="float: right;"> <b> Status: </b> <label id="status-label"></label> </a>
+    </div>
   </div>
   <div class="row" style="margin-top: 20px;">
 
@@ -82,6 +87,30 @@
     </div>
     {% endblock %}
   </div>
-
 {% endblock %}
 </body>
+
+<script>
+  var statusUrl = '/steps/status/',
+      statusLabel = document.getElementById('status-label'),
+      status;
+
+  function updateStatus(){
+    return new Promise((resolve, reject) => {
+      fetch(statusUrl).then(data=>{return data.json()}).then(function(res){
+        status = res;
+        statusLabel.innerHTML = res.text;
+        var color = (res.running) ? 'red' : 'green';
+        statusLabel.parentNode.style.color = color;
+        resolve(res)
+      }, function(){reject(res)})
+    })
+  }
+
+  (function() {
+    // periodically update status
+    updateStatus();
+    setInterval(updateStatus, 5000);
+    tableDnD();
+  })();
+</script>
