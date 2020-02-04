@@ -130,6 +130,7 @@ class OrcaManager(Singleton):
             For tables in out_run_tables, whether to store only local columns (True)
             or both, local and computed columns (False).
         """
+        logger = logging.getLogger('OrcaLog')
         try:
             iter_vars = iter_vars or [None]
             max_i = len(iter_vars)
@@ -151,7 +152,6 @@ class OrcaManager(Singleton):
                 write_tables(data_out, out_base_tables, 'base', compress=compress,
                              local=out_base_local)
 
-            logger = logging.getLogger('OrcaLog')
             # run the steps
             for i, var in enumerate(iter_vars, start=1):
                 add_injectable('iter_var', var)
@@ -199,5 +199,6 @@ class OrcaManager(Singleton):
                                      compress=compress, local=out_run_local)
 
                 clear_cache(scope=_CS_ITER)
+            logger.info('orca run finished')
         except Abort:
-            return
+            logger.info('orca run aborted')
