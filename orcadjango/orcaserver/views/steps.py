@@ -9,7 +9,7 @@ import channels.layers
 from asgiref.sync import async_to_sync
 import orca
 
-from orcaserver.threading import OrcaThreadSingleton
+from orcaserver.threading import OrcaManager
 from orcaserver.views import ProjectMixin
 from orcaserver.models import Step, Injectable, Scenario
 from django.core.exceptions import ObjectDoesNotExist
@@ -171,9 +171,15 @@ class StepsView(ProjectMixin, TemplateView):
             step.save()
             return JsonResponse({}, safe=False)
 
-    #@classmethod
-    #def status(cls, request):
-        #thread = OrcaThreadSingleton()
+    @classmethod
+    def status(cls, request):
+        manager = OrcaManager()
+        status = {
+            'running': manager.is_running,
+            'last_user': manager.user,
+            'last_start': manager.start_time,
+        }
+        return JsonResponse(status)
 
     @classmethod
     def run(cls, request):
@@ -185,7 +191,7 @@ class StepsView(ProjectMixin, TemplateView):
 
         logger = logging.getLogger('OrcaLog')
         logger.addHandler(ScenarioHandler(scenario))
-        logger.setLevel(logging.INFO)
+        logger.setLevel(logging.DEBUG)
         logger.info(message)
 
         active_steps = Step.objects.filter(scenario=scenario, active=True)
@@ -196,15 +202,15 @@ class StepsView(ProjectMixin, TemplateView):
             step.success = False
             step.save()
         apply_injectables(scenario)
-        thread = OrcaThreadSingleton()
-        if thread.isAlive():
+        manager = OrcaManager()
+        if manager.is_running:
             return
-        thread.start(steps=steps, logger=logger,
-                     user=request.session.get('user'))
+        manager.start(steps=steps, logger=logger,
+                      user=request.user)
         return HttpResponse(status=200)
 
     @classmethod
     def abort(cls, request):
-        thread = OrcaThreadSingleton()
-        thread.abort()
+        manager = OrcaManager()
+        manager.abort()
         return HttpResponse(status=200)

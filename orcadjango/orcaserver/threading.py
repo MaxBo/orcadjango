@@ -25,6 +25,9 @@ class Singleton(object):
 class InUseError(Exception):
     ''''''
 
+class Abort(Exception):
+    ''''''
+
 
 class AbortableThread(threading.Thread):
 
@@ -39,30 +42,48 @@ class AbortableThread(threading.Thread):
     def abort(self):
         thread_id = self.get_id()
         res = ctypes.pythonapi.PyThreadState_SetAsyncExc(
-            thread_id, ctypes.py_object(ValueError))
+            thread_id, ctypes.py_object(Abort))
         if res > 1:
             ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, 0)
             print('Exception raise failure')
 
 
-class OrcaThreadSingleton(AbortableThread):
-    __instance = None
-
+class Singleton(object):
+    """Singleton Mixin"""
+    _instance_dict = {}
     def __new__(cls, *args, **kwargs):
-        if cls.__instance == None:
-            cls.__instance = super(OrcaThreadSingleton, cls).__new__(
-                cls, *args, **kwargs)
-            # easy way to pass arguments to run
-            cls._target = cls.run
-        return cls.__instance
+        key = str(hash(cls))
+        if not key in cls._instance_dict:
+            cls._instance_dict[key] = \
+                super(Singleton, cls).__new__(cls, *args, **kwargs)
+        return cls._instance_dict[key]
+
+
+class OrcaManager(Singleton):
+    user = ''
+    start_time = ''
+    running = False
+    # easy way to pass arguments to run
+    #_target = run
+    thread = None
 
     def start(self, steps, user=None, logger=logging.getLogger('OrcaLog')):
-        if self.isAlive():
+        if self.thread and self.thread.isAlive():
             raise InUseError('Thread is already running')
+        self.thread = AbortableThread(target=self.run)
         self.steps = steps
-        self.user = user
+        self.user = user.get_username() if user else 'unknown'
         self.logger = logger
-        super().start()
+        self.start_time = timezone.now()
+        self.thread.start()
+
+    def abort(self):
+        if self.thread:
+            self.thread.abort()
+
+    @property
+    def is_running(self):
+        return self.thread.isAlive() if self.thread else False
 
     def run(self, iter_vars=None, data_out=None,
             out_interval=1, out_base_tables=None, out_run_tables=None,
@@ -109,73 +130,74 @@ class OrcaThreadSingleton(AbortableThread):
             For tables in out_run_tables, whether to store only local columns (True)
             or both, local and computed columns (False).
         """
-        iter_vars = iter_vars or [None]
-        max_i = len(iter_vars)
-        step_names = [step.name for step in self.steps]
+        try:
+            iter_vars = iter_vars or [None]
+            max_i = len(iter_vars)
+            step_names = [step.name for step in self.steps]
 
-        # get the tables to write out
-        if out_base_tables is None or out_run_tables is None:
-            step_tables = get_step_table_names(step_names)
+            # get the tables to write out
+            if out_base_tables is None or out_run_tables is None:
+                step_tables = get_step_table_names(step_names)
 
-            if out_base_tables is None:
-                out_base_tables = step_tables
+                if out_base_tables is None:
+                    out_base_tables = step_tables
 
-            if out_run_tables is None:
-                out_run_tables = step_tables
+                if out_run_tables is None:
+                    out_run_tables = step_tables
 
-        # write out the base (inputs)
-        if data_out:
-            add_injectable('iter_var', iter_vars[0])
-            write_tables(data_out, out_base_tables, 'base', compress=compress,
-                         local=out_base_local)
-
-        logger = logging.getLogger('OrcaLog')
-        # run the steps
-        for i, var in enumerate(iter_vars, start=1):
-            add_injectable('iter_var', var)
-
-            if var is not None:
-                print('Running iteration {} with iteration value {!r}'.format(
-                    i, var))
-                logger.debug(
-                    'running iteration {} with iteration value {!r}'.format(
-                        i, var))
-
-            t1 = time.time()
-            for j, step in enumerate(self.steps):
-                step_name = step.name
-                add_injectable('iter_step', iter_step(j, step_name))
-                print('Running step {!r}'.format(step_name))
-                with log_start_finish(
-                        'run step {!r}'.format(step_name), logger,
-                        logging.INFO):
-                    step_func = get_step(step_name)
-                    t2 = time.time()
-                    step.started = timezone.now()
-                    step.save()
-                    try:
-                        step_func()
-                        step.success = True
-                    except Exception as e:
-                        step.success = False
-                        raise e
-                    end = time.time() - t2
-                    print("Time to execute step '{}': {:.2f} s".format(
-                          step_name, end))
-                    step.finished = timezone.now()
-                    step.save()
-
-                clear_cache(scope=_CS_STEP)
-
-            print(
-                ('Total time to execute iteration {} '
-                 'with iteration value {!r}: '
-                 '{:.2f} s').format(i, var, time.time() - t1))
-
-            # write out the results for the current iteration
+            # write out the base (inputs)
             if data_out:
-                if (i - 1) % out_interval == 0 or i == max_i:
-                    write_tables(data_out, out_run_tables, var,
-                                 compress=compress, local=out_run_local)
+                add_injectable('iter_var', iter_vars[0])
+                write_tables(data_out, out_base_tables, 'base', compress=compress,
+                             local=out_base_local)
 
-            clear_cache(scope=_CS_ITER)
+            logger = logging.getLogger('OrcaLog')
+            # run the steps
+            for i, var in enumerate(iter_vars, start=1):
+                add_injectable('iter_var', var)
+
+                if var is not None:
+                    logger.debug(
+                        'running iteration {} with iteration value {!r}'.format(
+                            i, var))
+
+                t1 = time.time()
+                for j, step in enumerate(self.steps):
+                    step_name = step.name
+                    add_injectable('iter_step', iter_step(j, step_name))
+                    print('Running step {!r}'.format(step_name))
+                    with log_start_finish(
+                            'run step {!r}'.format(step_name), logger,
+                            logging.INFO):
+                        step_func = get_step(step_name)
+                        t2 = time.time()
+                        step.started = timezone.now()
+                        step.save()
+                        try:
+                            step_func()
+                            step.success = True
+                        except Exception as e:
+                            step.success = False
+                            raise e
+                        end = time.time() - t2
+                        print("Time to execute step '{}': {:.2f} s".format(
+                              step_name, end))
+                        step.finished = timezone.now()
+                        step.save()
+
+                    clear_cache(scope=_CS_STEP)
+
+                logger.debug(
+                    ('Total time to execute iteration {} '
+                     'with iteration value {!r}: '
+                     '{:.2f} s').format(i, var, time.time() - t1))
+
+                # write out the results for the current iteration
+                if data_out:
+                    if (i - 1) % out_interval == 0 or i == max_i:
+                        write_tables(data_out, out_run_tables, var,
+                                     compress=compress, local=out_run_local)
+
+                clear_cache(scope=_CS_ITER)
+        except Abort:
+            return
