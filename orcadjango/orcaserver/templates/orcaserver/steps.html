@@ -55,7 +55,7 @@
   <script>
     var chatSocket = new WebSocket(
         'ws://' + window.location.host +
-        '/ws/log/' + {{ request.session.scenario }} + '/');
+        '/ws/log/orca/');
 
     chatSocket.onmessage = function(e) {
         var data = JSON.parse(e.data);
@@ -153,11 +153,17 @@
   }
 
   function runScenario(){
-    fetch('/steps/run/', {
-        method: "POST",
-        credentials: "same-origin",
-        headers: { "X-CSRFToken": csrfToken }
-      });
+    updateStatus().then(function(res){
+      console.log(res)
+      if (!res.running){
+          fetch('/steps/run/', {
+              method: "POST",
+              credentials: "same-origin",
+              headers: { "X-CSRFToken": csrfToken }
+            });
+        }
+      else alert('Orca is already running! Abort it or wait.')
+    })
   }
 
   // fetch and update steps in table
@@ -208,7 +214,6 @@
         i += 1;
         data.push({ id: id, order: i})
       })
-      console.log(data)
       fetch(stepsUrl, {
         method: "POST",
         body: JSON.stringify(data),
@@ -227,7 +232,7 @@
   (function() {
     // periodically update steps and their progress
     updateSteps();
-    <!--setInterval(updateSteps, 10000);-->
+    setInterval(updateSteps, 10000);
     tableDnD();
   })();
 </script>

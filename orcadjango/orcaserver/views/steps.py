@@ -17,18 +17,28 @@ from django.urls import reverse
 import json
 
 
-class ScenarioHandler(logging.StreamHandler):
-    def __init__(self, scenario,  *args, **kwargs):
+class OrcaChannelHandler(logging.StreamHandler):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.scenario = scenario
+        self.group = 'log_orca'
 
     def emit(self, record):
         channel_layer = channels.layers.get_channel_layer()
-        group = f'log_{self.scenario.id}'
-        async_to_sync(channel_layer.group_send)(group, {
+        async_to_sync(channel_layer.group_send)(self.group, {
             'message': record.message,
             'type': 'log_message'
         })
+
+
+class ScenarioHandler(OrcaChannelHandler):
+    def __init__(self, scenario,  *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.group = f'log_{self.scenario.id}'
+
+logger = logging.getLogger('OrcaLog')
+logger.addHandler(OrcaChannelHandler())
+logger.setLevel(logging.DEBUG)
+
 
 def apply_injectables(scenario):
     names = orca.list_injectables()
@@ -174,8 +184,11 @@ class StepsView(ProjectMixin, TemplateView):
     @classmethod
     def status(cls, request):
         manager = OrcaManager()
+        status_text = f'currently run by user "{manager.user}"'\
+            if manager.is_running else 'not in use'
         status = {
             'running': manager.is_running,
+            'text': status_text,
             'last_user': manager.user,
             'last_start': manager.start_time,
         }
@@ -189,9 +202,6 @@ class StepsView(ProjectMixin, TemplateView):
         scenario = Scenario.objects.get(id=scenario_id)
         message = f'Running Steps for scenario "{scenario.name}"'
 
-        logger = logging.getLogger('OrcaLog')
-        logger.addHandler(ScenarioHandler(scenario))
-        logger.setLevel(logging.DEBUG)
         logger.info(message)
 
         active_steps = Step.objects.filter(scenario=scenario, active=True)
@@ -204,7 +214,7 @@ class StepsView(ProjectMixin, TemplateView):
         apply_injectables(scenario)
         manager = OrcaManager()
         if manager.is_running:
-            return
+            return HttpResponse(status=400)
         manager.start(steps=steps, logger=logger,
                       user=request.user)
         return HttpResponse(status=200)
