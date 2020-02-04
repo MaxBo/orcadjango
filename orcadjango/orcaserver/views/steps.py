@@ -223,3 +223,7 @@ class StepsView(ProjectMixin, TemplateView):
         manager = OrcaManager()
         manager.abort()
         return HttpResponse(status=200)
+
+
+class StatusView(ProjectMixin, TemplateView):
+    template_name = 'orcaserver/status.html'
