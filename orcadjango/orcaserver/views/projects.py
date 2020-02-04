@@ -3,6 +3,7 @@ from django.views.generic import ListView
 from django.http import HttpResponseRedirect
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.urls import reverse
 
 from orcaserver.models import Scenario, Project, GeoProject
 
@@ -63,6 +64,7 @@ class ProjectView(ProjectMixin, ListView):
             if request.POST.get('select'):
                 self.request.session['project'] = int(project_id)
                 self.request.session['scenario'] = None
+                return HttpResponseRedirect(reverse('scenarios'))
             elif request.POST.get('delete'):
                 Project.objects.get(id=project_id).delete()
         return HttpResponseRedirect(request.path_info)

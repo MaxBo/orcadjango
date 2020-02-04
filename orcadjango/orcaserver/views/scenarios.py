@@ -54,6 +54,7 @@ class ScenariosView(ProjectMixin, ListView):
         if scenario_id:
             if request.POST.get('select'):
                 self.request.session['scenario'] = int(scenario_id)
+                return HttpResponseRedirect(reverse('injectables'))
             elif request.POST.get('delete'):
                 Scenario.objects.get(id=scenario_id).delete()
             elif request.POST.get('refresh'):
@@ -69,6 +70,7 @@ class ScenariosView(ProjectMixin, ListView):
             project_pk = request.session.get('project')
             scenario = Scenario.objects.create(name=name, project_id=project_pk)
             create_injectables(scenario)
+            request.session['scenario'] = scenario.id
             if request.POST.get('clone'):
                 #  clone injectables and steps
                 old_scenario_id = request.session.get('scenario')
@@ -97,5 +99,4 @@ class ScenariosView(ProjectMixin, ListView):
                     new_step.order = step.order
                     new_step.save()
 
-            request.session['scenario'] = scenario.id
         return HttpResponseRedirect(reverse('scenarios'))
