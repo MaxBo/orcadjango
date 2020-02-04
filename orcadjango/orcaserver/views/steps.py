@@ -39,7 +39,6 @@ logger = logging.getLogger('OrcaLog')
 logger.addHandler(OrcaChannelHandler())
 logger.setLevel(logging.DEBUG)
 
-
 def apply_injectables(scenario):
     names = orca.list_injectables()
     injectables = Injectable.objects.filter(name__in=names, scenario=scenario)
