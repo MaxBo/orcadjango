@@ -2,6 +2,7 @@ from django.views.generic import ListView
 from django.views.generic.edit import FormView
 import orca
 import numpy as np
+from collections import OrderedDict
 from orcaserver.views import ProjectMixin
 from orcaserver.models import Injectable
 from orcaserver.forms import InjectableValueForm
@@ -20,12 +21,12 @@ class InjectablesView(ProjectMixin, ListView):
         inj = orca.list_injectables()
         injectables = Injectable.objects.filter(name__in=inj,
                                                 scenario=scenario)\
-                                        .order_by('groupname', 'name')
+            .order_by('groupname', 'name')
         # distinct() fails here
         groups = np.unique(injectables.values_list('groupname', flat=True))
-        grouped = {}
+        grouped = OrderedDict()
         for group in groups:
-            grouped[group] = injectables.filter(groupname=group)
+            grouped[group] = injectables.filter(groupname=group).order_by('order')
         return grouped
 
     def post(self, request, *args, **kwargs):

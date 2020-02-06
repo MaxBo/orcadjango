@@ -8,6 +8,7 @@ from django.http import JsonResponse, HttpResponseNotFound
 import channels.layers
 from asgiref.sync import async_to_sync
 import orca
+from collections import OrderedDict
 
 from orcaserver.threading import OrcaManager
 from orcaserver.views import ProjectMixin
@@ -25,19 +26,21 @@ class OrcaChannelHandler(logging.StreamHandler):
     def emit(self, record):
         channel_layer = channels.layers.get_channel_layer()
         async_to_sync(channel_layer.group_send)(self.group, {
-            'message': record.message,
+            'message': record.getMessage(),
             'type': 'log_message'
         })
 
 
 class ScenarioHandler(OrcaChannelHandler):
-    def __init__(self, scenario,  *args, **kwargs):
+    def __init__(self, scenario, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.group = f'log_{self.scenario.id}'
+
 
 logger = logging.getLogger('OrcaLog')
 logger.addHandler(OrcaChannelHandler())
 logger.setLevel(logging.DEBUG)
+
 
 def apply_injectables(scenario):
     names = orca.list_injectables()
@@ -85,14 +88,20 @@ class StepsView(ProjectMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         scenario = self.get_scenario()
-        steps_grouped = {}
+        steps_grouped = OrderedDict()
         for name in orca.list_steps():
             wrapper = orca.get_step(name)
             group = wrapper.groupname or '-'
+            order = wrapper.order or None
             steps_grouped.setdefault(group, []).append({
                 'name': name,
                 'description': wrapper._func.__doc__,
+                'order': order,
             })
+        # order the steps inside the groups
+        for group, steps_group in steps_grouped.items():
+            steps_grouped[group] = sorted(steps_group, key=lambda x: x['order'])
+
         steps_scenario = Step.objects.filter(
             scenario=scenario).order_by('order')
         kwargs = super().get_context_data(**kwargs)

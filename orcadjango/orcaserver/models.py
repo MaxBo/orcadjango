@@ -38,6 +38,7 @@ class Injectable(NameModel):
     docstring = models.TextField(null=True, blank=True)
     module = models.TextField(null=True, blank=True)
     groupname = models.TextField(null=True, blank=True)
+    order = models.IntegerField(null=True)
 
     def __str__(self):
         return f'{self.scenario} - {self.name}'

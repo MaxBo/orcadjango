@@ -26,6 +26,7 @@ def create_injectables(scenario):
             inj.docstring = funcwrapper._func.__doc__
             inj.module = funcwrapper._func.__module__
             inj.groupname = getattr(funcwrapper, 'groupname', None)
+            inj.order = getattr(funcwrapper, 'order', None)
         inj.save()
 
     deleted_injectables = Injectable.objects.filter(scenario=scenario).\
