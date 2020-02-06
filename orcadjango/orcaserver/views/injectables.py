@@ -31,10 +31,12 @@ class InjectablesView(ProjectMixin, ListView):
 
     def post(self, request, *args, **kwargs):
         if request.POST.get('reset'):
-            for inj in self.get_queryset():
-                orig_value = orca._injectable_backup[inj.name]
-                inj.value = orig_value
-                inj.save()
+            qs = self.get_queryset()
+            for group, injectables in qs.items():
+                for inj in injectables:
+                    orig_value = orca._injectable_backup[inj.name]
+                    inj.value = orig_value
+                    inj.save()
         return HttpResponseRedirect(request.path_info)
 
 
