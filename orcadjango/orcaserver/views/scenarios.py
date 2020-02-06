@@ -1,4 +1,5 @@
 import orca
+import typing
 from django.views.generic import ListView
 from orcaserver.models import Scenario, Injectable, Step
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
@@ -26,6 +27,13 @@ def create_injectables(scenario):
         funcwrapper = orca._injectable_function.get(name)
         if isinstance(funcwrapper, orca.orca._InjectableFuncWrapper):
             inj.docstring = funcwrapper._func.__doc__
+            #  Datatype from annotations:
+            returntype = funcwrapper._func.__annotations__.get('return')
+            if returntype:
+                if isinstance(returntype, typing._GenericAlias):
+                    inj.datatype = str(returntype)
+                else:
+                    inj.datatype = returntype.__name__
             inj.module = funcwrapper._func.__module__
             inj.groupname = getattr(funcwrapper, 'groupname', '')
             inj.order = getattr(funcwrapper, 'order', 1)
