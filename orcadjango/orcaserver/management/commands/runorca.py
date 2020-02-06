@@ -27,7 +27,6 @@ def load_module(module_name, module_set=None):
                 module_set.add(module_name)
 
 
-
 class Command(BaseCommand):
     def add_arguments(self, parser):
         super().add_arguments(parser)

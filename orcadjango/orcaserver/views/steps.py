@@ -91,8 +91,8 @@ class StepsView(ProjectMixin, TemplateView):
         steps_grouped = OrderedDict()
         for name in orca.list_steps():
             wrapper = orca.get_step(name)
-            group = wrapper.groupname or '-'
-            order = wrapper.order or None
+            group = getattr(wrapper, 'groupname', '-')
+            order = getattr(wrapper, 'order', 1)
             steps_grouped.setdefault(group, []).append({
                 'name': name,
                 'description': wrapper._func.__doc__,

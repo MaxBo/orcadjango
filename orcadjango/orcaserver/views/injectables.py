@@ -23,7 +23,7 @@ class InjectablesView(ProjectMixin, ListView):
                                                 scenario=scenario)\
             .order_by('groupname', 'name')
         # distinct() fails here
-        groups = np.unique(injectables.values_list('groupname', flat=True))
+        groups = set(injectables.values_list('groupname', flat=True))
         grouped = OrderedDict()
         for group in groups:
             grouped[group] = injectables.filter(groupname=group).order_by('order')
