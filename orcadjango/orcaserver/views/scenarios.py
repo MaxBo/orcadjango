@@ -25,7 +25,7 @@ def create_injectables(scenario):
         if isinstance(funcwrapper, orca.orca._InjectableFuncWrapper):
             inj.docstring = funcwrapper._func.__doc__
             inj.module = funcwrapper._func.__module__
-            inj.groupname = getattr(funcwrapper, 'groupname', None)
+            inj.groupname = getattr(funcwrapper, 'groupname', '')
             inj.order = getattr(funcwrapper, 'order', 1)
         inj.save()
 

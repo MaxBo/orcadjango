@@ -37,7 +37,7 @@ class Injectable(NameModel):
     can_be_changed = models.BooleanField(default=True)
     docstring = models.TextField(null=True, blank=True)
     module = models.TextField(null=True, blank=True)
-    groupname = models.TextField(null=True, blank=True)
+    groupname = models.TextField(null=False, blank=False, default='')
     order = models.IntegerField(null=False, default=1)
 
     def __str__(self):

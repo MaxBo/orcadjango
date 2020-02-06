@@ -36,6 +36,8 @@
             <td>{{ injectable.value }}</td>
             {% if injectable.can_be_changed %}
             <td><a style="margin-left: 10px;" href="{{ injectable.name }}/">edit</a></td>
+            {% else %}
+            <td><a style="margin-left: 10px;" href="{{ injectable.name }}/">view</a></td>
             {% endif %}
           </tr>
         {% endfor %}
