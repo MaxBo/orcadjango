@@ -1,6 +1,8 @@
 import orca
 from typing import List
 from time import sleep
+import pandas as pd
+import xarray as xr
 from orcadjango.decorators import group
 import logging
 logger = logging.getLogger('OrcaLog')
@@ -35,6 +37,31 @@ def inj_list() -> List[int]:
 @orca.injectable()
 def inj_dict():
     return dict(a=1, b=-1)
+
+
+@group('data')
+@orca.injectable()
+def dataframe() -> pd.DataFrame:
+    """Pandas Dataframe"""
+    df = pd.DataFrame([['AAA', 3, 5.6], ['BBB', 6, -4.3]],
+                      columns=['Col1', 'Col2', 'Col3'])
+    return df
+
+
+@group('data')
+@orca.injectable()
+def dataset(dataframe: pd.DataFrame) -> xr.Dataset:
+    """xarray.Dataset"""
+    ds = dataframe.to_xarray()
+    return ds
+
+
+@group('data')
+@orca.injectable()
+def dataarray(dataset: xr.Dataset) -> xr.DataArray:
+    """xarray.DataArray"""
+    da = dataset['Col1']
+    return da
 
 
 from contextlib import ContextDecorator

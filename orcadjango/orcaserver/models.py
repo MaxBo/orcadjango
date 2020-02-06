@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.gis.db.models import MultiPolygonField
+import pandas as pd
+import xarray as xr
+import orca
 
 
 class NameModel(models.Model):
@@ -39,9 +42,21 @@ class Injectable(NameModel):
     module = models.TextField(null=True, blank=True)
     groupname = models.TextField(null=False, blank=False, default='')
     order = models.IntegerField(null=False, default=1)
+    datatype = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f'{self.scenario} - {self.name}'
+
+    @property
+    def repr_html(self):
+        """HTML-representation of the value according to the type"""
+        if self.datatype == 'DataFrame':
+            value = orca.get_injectable(self.name)
+            return value.to_html()
+        if self.datatype in ['DataArray', 'Dataset']:
+            value = orca.get_injectable(self.name)
+            return value._repr_html_()
+        return str(self.value)
 
 
 class Step(NameModel):

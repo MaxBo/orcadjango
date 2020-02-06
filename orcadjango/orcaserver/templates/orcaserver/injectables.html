@@ -21,6 +21,7 @@
         <tr>
           <th scope="col">Group</th>
           <th scope="col">injectable</th>
+          <th scope="col">Datatype</th>
           <th scope="col">Description</th>
           <th scope="col">Value</th>
           <th scope="col">Edit</th>
@@ -32,8 +33,9 @@
           <tr {% if not injectable.can_be_changed %} style="background-color: lightgrey;" {% endif %}>
             <td style="border-bottom-style: hidden;"> {% if forloop.counter0 == 0 %} <b>{{ groupname }}</b> {% endif %} </td>
             <td>{{ injectable.name }}</td>
+            <td>{{ injectable.datatype }}</td>
             <td>{{ injectable.docstring }}</td>
-            <td>{{ injectable.value }}</td>
+            <td>{{ injectable.repr_html }}</td>
             {% if injectable.can_be_changed %}
             <td><a style="margin-left: 10px;" href="{{ injectable.name }}/">edit</a></td>
             {% else %}

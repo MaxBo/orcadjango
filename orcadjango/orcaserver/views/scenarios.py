@@ -16,11 +16,13 @@ def create_injectables(scenario):
         inj, created = Injectable.objects.get_or_create(name=name,
                                                         scenario=scenario)
         value = orca._injectable_backup.get(name)
-        #  check if the original type is overwritable
-        inj.can_be_changed = isinstance(value, overwritable_types)
+        inj.datatype = type(value).__name__
         if created:
             # for new injectables, set the initial value
             inj.value = value
+
+        #  check if the original type is overwritable
+        inj.can_be_changed = isinstance(value, overwritable_types)
         funcwrapper = orca._injectable_function.get(name)
         if isinstance(funcwrapper, orca.orca._InjectableFuncWrapper):
             inj.docstring = funcwrapper._func.__doc__
