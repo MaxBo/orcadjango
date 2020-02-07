@@ -4,8 +4,6 @@ from django.views.generic import TemplateView
 from django.shortcuts import HttpResponseRedirect
 from django.http import HttpResponse
 from django.http import JsonResponse, HttpResponseNotFound
-import channels.layers
-from asgiref.sync import async_to_sync
 import orca
 from collections import OrderedDict
 
@@ -16,29 +14,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 import json
 
-
-class OrcaChannelHandler(logging.StreamHandler):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.group = 'log_orca'
-
-    def emit(self, record):
-        channel_layer = channels.layers.get_channel_layer()
-        async_to_sync(channel_layer.group_send)(self.group, {
-            'message': record.getMessage(),
-            'type': 'log_message'
-        })
-
-
-class ScenarioHandler(OrcaChannelHandler):
-    def __init__(self, scenario, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.group = f'log_{self.scenario.id}'
-
-
 logger = logging.getLogger('OrcaLog')
-# logger.addHandler(OrcaChannelHandler())
-# logger.setLevel(logging.DEBUG)
 
 
 def apply_injectables(scenario):
@@ -51,7 +27,7 @@ def apply_injectables(scenario):
         try:
             converted_value = inj.validate_value()
         except InjectableConversionError as e:
-            logger.warn(msg)
+            logger.warn(str(e))
             continue
         orca.add_injectable(inj.name, converted_value)
 
