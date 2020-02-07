@@ -37,8 +37,8 @@ class ScenarioHandler(OrcaChannelHandler):
 
 
 logger = logging.getLogger('OrcaLog')
-logger.addHandler(OrcaChannelHandler())
-logger.setLevel(logging.DEBUG)
+# logger.addHandler(OrcaChannelHandler())
+# logger.setLevel(logging.DEBUG)
 
 
 def apply_injectables(scenario):
