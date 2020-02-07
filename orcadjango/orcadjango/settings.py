@@ -31,7 +31,7 @@ ALLOWED_HOSTS = ['localhost']
 
 if os.name == 'nt':
     path = os.path.join(sys.prefix, 'Library')
-    os.environ['GDAL_DATA'] = os.path.join('path', 'share', 'gdal')
+    os.environ['GDAL_DATA'] = os.path.join(path, 'share', 'gdal')
 
 # Application definition
 
