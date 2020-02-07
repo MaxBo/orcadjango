@@ -17,7 +17,8 @@ def create_injectables(scenario):
         inj, created = Injectable.objects.get_or_create(name=name,
                                                         scenario=scenario)
         value = orca._injectable_backup.get(name)
-        inj.datatype = type(value).__name__
+        datatype_class = type(value)
+        inj.datatype = datatype_class.__name__
         if created:
             # for new injectables, set the initial value
             inj.value = value
@@ -31,12 +32,15 @@ def create_injectables(scenario):
             returntype = funcwrapper._func.__annotations__.get('return')
             if returntype:
                 if isinstance(returntype, typing._GenericAlias):
+                    datatype_class = returntype.__origin__
                     inj.datatype = str(returntype)
                 else:
+                    datatype_class = returntype
                     inj.datatype = returntype.__name__
             inj.module = funcwrapper._func.__module__
             inj.groupname = getattr(funcwrapper, 'groupname', '')
             inj.order = getattr(funcwrapper, 'order', 1)
+        inj.data_class = f'{datatype_class.__module__}.{datatype_class.__name__}'
         inj.save()
 
     deleted_injectables = Injectable.objects.filter(scenario=scenario).\

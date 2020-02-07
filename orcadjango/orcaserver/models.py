@@ -3,6 +3,8 @@ from django.contrib.gis.db.models import MultiPolygonField
 import pandas as pd
 import xarray as xr
 import orca
+import ast
+import importlib
 
 
 class NameModel(models.Model):
@@ -30,6 +32,10 @@ class Scenario(NameModel):
     name = models.TextField()
 
 
+class InjectableConversionError(ValueError):
+    """exception raised when the conversion of an injectable fails"""
+
+
 class Injectable(NameModel):
     name = models.TextField()
     scenario = models.ForeignKey(Scenario,
@@ -43,6 +49,8 @@ class Injectable(NameModel):
     groupname = models.TextField(null=False, blank=False, default='')
     order = models.IntegerField(null=False, default=1)
     datatype = models.TextField(null=True, blank=True)
+    data_class = models.TextField(null=True, blank=True)
+    valid = models.BooleanField(null=False, default=True)
 
     def __str__(self):
         return f'{self.scenario} - {self.name}'
@@ -57,6 +65,39 @@ class Injectable(NameModel):
             value = orca.get_injectable(self.name)
             return value._repr_html_()
         return str(self.value)
+
+    def validate_value(self):
+        """validate the value of the injectable"""
+        #  get original type of injectable value (if not available, use string)
+        module_class = self.data_class.split('.')
+        module_name = '.'.join(module_class[:-1])
+        classname = module_class[-1]
+        original_type = getattr(importlib.import_module(module_name), classname, str)
+        # compare to evaluation or value
+        if self.value is None:
+            func = orca._injectable_function.get(self.name)
+            if func:
+                converted_value = func()
+            else:
+                converted_value = orca.get_injectable(self.name)
+        elif issubclass(original_type, str):
+            converted_value = self.value
+        else:
+            try:
+                converted_value = ast.literal_eval(self.value)
+                if not isinstance(converted_value, original_type):
+                    #  try to cast the value using the original type
+                    converted_value = original_type(self.value)
+            except (SyntaxError, ValueError) as e:
+
+                # if casting does not work, raise warning
+                # and use original value
+                msg = (f'Injectable `{self.name}` with value `{self.value}` '
+                       f'could not be casted to type `{original_type.__name__}`.'
+                       f'Injectable Value was not overwritten.'
+                       f'Error message: {repr(e)}')
+                raise InjectableConversionError(msg)
+        return converted_value
 
 
 class Step(NameModel):

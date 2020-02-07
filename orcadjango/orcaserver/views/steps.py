@@ -1,4 +1,3 @@
-import ast
 import logging
 import json
 from django.views.generic import TemplateView
@@ -12,7 +11,7 @@ from collections import OrderedDict
 
 from orcaserver.threading import OrcaManager
 from orcaserver.views import ProjectMixin
-from orcaserver.models import Step, Injectable, Scenario
+from orcaserver.models import Step, Injectable, Scenario, InjectableConversionError
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 import json
@@ -49,33 +48,11 @@ def apply_injectables(scenario):
         #  skip injectables which cannot be changed
         if not (inj.changed or inj.can_be_changed):
             continue
-        #  get original type of injectable value (if not available, use string)
-        original_type = type(orca._injectable_backup.get(inj.name, str))
-        # compare to evaluation or value
-        if inj.value is None:
-            func = orca._injectable_function.get(inj.name)
-            if func:
-                converted_value = func()
-            else:
-                converted_value = orca.get_injectable(inj.name)
-        elif issubclass(original_type, str):
-            converted_value = inj.value
-        else:
-            try:
-                converted_value = ast.literal_eval(inj.value)
-                if not isinstance(converted_value, original_type):
-                    #  try to cast the value using the original type
-                    converted_value = original_type(inj.value)
-            except (SyntaxError, ValueError) as e:
-
-                # if casting does not work, raise warning
-                # and use original value
-                msg = (f'Injectable `{inj.name}` with value `{inj.value}` '
-                       f'could not be casted to type `{original_type}`.'
-                       f'Injectable Value was not overwritten.'
-                       f'Error message: {repr(e)}')
-                orca.logger.warning(msg)
-                continue
+        try:
+            converted_value = validate_value(inj)
+        except InjectableConversionError as e:
+            logger.warn(msg)
+            continue
         orca.add_injectable(inj.name, converted_value)
 
 

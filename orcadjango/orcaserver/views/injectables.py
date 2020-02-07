@@ -4,7 +4,7 @@ import orca
 import numpy as np
 from collections import OrderedDict
 from orcaserver.views import ProjectMixin
-from orcaserver.models import Injectable
+from orcaserver.models import Injectable, InjectableConversionError
 from orcaserver.forms import InjectableValueForm
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -55,18 +55,20 @@ class InjectableView(ProjectMixin, FormView):
         return {'value': inj.value, }
 
     def post(self, request, *args, **kwargs):
-        inj = Injectable.objects.get(name=self.name,
-                                     scenario=self.get_scenario())
+        inj: Injectable = Injectable.objects.get(name=self.name,
+                                                 scenario=self.get_scenario())
         if request.POST.get('change'):
             new_value = request.POST.get('value')
             if new_value != inj.value:
                 inj.changed = True
+            self.validate_value(inj)
             inj.value = new_value
             inj.save()
 
         elif request.POST.get('reset'):
             orig_value = orca._injectable_backup[self.name]
             inj.value = orig_value
+            self.validate_value(inj)
             inj.save()
             return HttpResponseRedirect(request.path_info)
 
@@ -76,3 +78,12 @@ class InjectableView(ProjectMixin, FormView):
 
         redirect = request.GET.get('next', reverse('injectables'))
         return HttpResponseRedirect(redirect)
+
+    def validate_value(self, inj: Injectable):
+        try:
+            _ = inj.validate_value()
+        except InjectableConversionError as e:
+            inj.valid = False
+        else:
+            inj.valid = True
+
