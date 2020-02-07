@@ -49,7 +49,7 @@ def apply_injectables(scenario):
         if not (inj.changed or inj.can_be_changed):
             continue
         try:
-            converted_value = validate_value(inj)
+            converted_value = inj.validate_value()
         except InjectableConversionError as e:
             logger.warn(msg)
             continue
