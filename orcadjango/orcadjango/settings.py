@@ -16,7 +16,7 @@ import sys
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-ORCA_MODULE = 'orcaserver.tests.dummy_orca_stuff'
+ORCA_MODULE = os.environ.get('ORCA_MODULE', 'orcaserver.tests.dummy_orca_stuff')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'orcaserver',
     'bootstrap4',
     'wslog',
-    'channels'
+    'channels',
 ]
 
 MIDDLEWARE = [
