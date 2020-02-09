@@ -100,6 +100,5 @@ def step1(inj_list):
 def step_dict(inj_dict):
     """another dummy step with dict"""
     for k, v in inj_dict.items():
-        logger.disabled = False
         logger.info(f'{k}: {v}')
         sleep(1)

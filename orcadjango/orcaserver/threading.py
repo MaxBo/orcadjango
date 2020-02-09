@@ -25,6 +25,7 @@ class Singleton(object):
 class InUseError(Exception):
     ''''''
 
+
 class Abort(Exception):
     ''''''
 
@@ -51,6 +52,7 @@ class AbortableThread(threading.Thread):
 class Singleton(object):
     """Singleton Mixin"""
     _instance_dict = {}
+
     def __new__(cls, *args, **kwargs):
         key = str(hash(cls))
         if not key in cls._instance_dict:
@@ -66,8 +68,9 @@ class OrcaManager(Singleton):
     # easy way to pass arguments to run
     #_target = run
     thread = None
+    logger = logging.getLogger('OrcaLog')
 
-    def start(self, steps, user=None, logger=logging.getLogger('OrcaLog')):
+    def start(self, steps, user=None, logger=logger):
         if self.thread and self.thread.isAlive():
             raise InUseError('Thread is already running')
         self.thread = AbortableThread(target=self.run)
