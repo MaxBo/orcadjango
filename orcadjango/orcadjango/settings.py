@@ -16,7 +16,7 @@ import sys
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-ORCA_MODULE = 'orcaserver.tests.dummy_orca_stuff'
+ORCA_MODULE = os.environ.get('ORCA_MODULE', 'orcaserver.tests.dummy_orca_stuff')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -31,7 +31,7 @@ ALLOWED_HOSTS = ['localhost']
 
 if os.name == 'nt':
     path = os.path.join(sys.prefix, 'Library')
-    os.environ['GDAL_DATA'] = os.path.join('path', 'share', 'gdal')
+    os.environ['GDAL_DATA'] = os.path.join(path, 'share', 'gdal')
 
 # Application definition
 
@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'orcaserver',
     'bootstrap4',
     'wslog',
-    'channels'
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -149,6 +149,17 @@ LOGGING = {
         'console': {
             'class': 'logging.StreamHandler',
             'level': 'INFO',
+        },
+        'websocket': {
+            'level': 'DEBUG',
+            'class': 'orcadjango.loggers.OrcaChannelHandler',
+        },
+    },
+    'loggers': {
+        'OrgaLog': {
+            'handlers': ['websocket'],
+            'level': 'DEBUG',
+            'propagate': True,
         },
     },
 }

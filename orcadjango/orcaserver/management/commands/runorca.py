@@ -1,4 +1,4 @@
-from django.core.management.commands.runserver import Command as BaseCommand
+
 import orca
 import importlib
 
@@ -19,24 +19,10 @@ def load_module(module_name, module_set=None):
         except Exception as e:
             orca._injectable_backup[inj] = repr(e)
 
-    if hasattr(module, '__parent_modules__'):
-        for module_name in module.__parent_modules__:
-            if not module_name in module_set:
-                load_module(module_name, module_set)
-                module_set.add(module_name)
-
-
-class Command(BaseCommand):
-    def add_arguments(self, parser):
-        super().add_arguments(parser)
-        parser.add_argument(
-            '--orca_python_module',
-            help='python module that imports the '
-            'orca steps,tables and injectables',
-            default='orcaserver.tests.dummy_orca_stuff',
-        )
-
-    def execute(self, *args, **options):
-        python_module = options.pop('orca_python_module')
-        load_module(python_module)
-        return super().execute(*args, **options)
+    # reload the parent modules
+    parent_modules = getattr(module, '__parent_modules__', [])
+    for module_name in parent_modules:
+        #  if the are not reloaded yet
+        if not module_name in module_set:
+            load_module(module_name, module_set)
+            module_set.add(module_name)
