@@ -33,10 +33,10 @@
       {% for groupname, injectables in grouped_injectables.items %}
         {% for injectable in injectables %}
           <tr
-          {% if not injectable.can_be_changed %}
-            style="background-color: lightgrey;"
-          {% elif not injectable.valid %}
+          {% if not injectable.valid %}
             style="background-color: plum;"
+          {% elif not injectable.can_be_changed %}
+            style="background-color: lightgrey;"
           {% endif %}
           >
             <td style="border-bottom-style: hidden;"> {% if forloop.counter0 == 0 %} <b>{{ groupname }}</b> {% endif %} </td>
