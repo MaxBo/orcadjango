@@ -29,7 +29,8 @@ def apply_injectables(scenario):
         except InjectableConversionError as e:
             logger.warn(str(e))
             continue
-        orca.add_injectable(inj.name, converted_value)
+        if inj.can_be_changed:
+            orca.add_injectable(inj.name, converted_value)
 
 
 class StepsView(ProjectMixin, TemplateView):

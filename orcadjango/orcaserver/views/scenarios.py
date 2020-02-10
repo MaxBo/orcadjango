@@ -5,6 +5,7 @@ from orcaserver.models import Scenario, Injectable, Step
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.urls import reverse
 from orcaserver.views import ProjectMixin
+from orcaserver.views.steps import apply_injectables
 
 
 overwritable_types = (str, bytes, int, float, complex,
@@ -72,6 +73,8 @@ class ScenariosView(ProjectMixin, ListView):
         if scenario_id:
             if request.POST.get('select'):
                 self.request.session['scenario'] = int(scenario_id)
+                scenario = Scenario.objects.get(pk=scenario_id)
+                apply_injectables(scenario)
                 return HttpResponseRedirect(reverse('injectables'))
             elif request.POST.get('delete'):
                 Scenario.objects.get(id=scenario_id).delete()

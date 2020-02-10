@@ -56,15 +56,24 @@ class Injectable(NameModel):
         return f'{self.scenario} - {self.name}'
 
     @property
+    def calculated_value(self):
+        """The calculated value"""
+        if self.can_be_changed:
+            return self.value
+        return orca.get_injectable(self.name)
+
+    @property
     def repr_html(self):
         """HTML-representation of the value according to the type"""
         if self.datatype == 'DataFrame':
-            value = orca.get_injectable(self.name)
-            return value.to_html()
+            return self.calculated_value.to_html()
         if self.datatype in ['DataArray', 'Dataset']:
-            value = orca.get_injectable(self.name)
-            return value._repr_html_()
-        return str(self.value)
+            return self.calculated_value._repr_html_()
+        try:
+            ret = str(self.calculated_value)
+        except Exception as e:
+            ret = repr(e)
+        return ret
 
     def validate_value(self, value=None):
         """validate the value of the injectable"""
