@@ -43,6 +43,8 @@ def create_injectables(scenario):
             inj.order = getattr(funcwrapper, 'order', 1)
         inj.data_class = f'{datatype_class.__module__}.{datatype_class.__name__}'
         inj.save()
+        if inj.can_be_changed:
+            orca.add_injectable(inj.name, inj.value)
 
     deleted_injectables = Injectable.objects.filter(scenario=scenario).\
         exclude(name__in=injectable_list)
