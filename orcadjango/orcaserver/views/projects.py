@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
+from django.conf import settings
 
 from orcaserver.models import Scenario, Project, GeoProject
 
@@ -25,7 +26,12 @@ class ProjectMixin:
         try:
             project = Project.objects.get(pk=project_pk)
         except Project.DoesNotExist:
-            project = None
+            projects = Project.objects.filter(module=settings.ORCA_MODULE)
+            if projects:
+                project = projects.first()
+                self.request.session['project'] = project.pk
+            else:
+                project = None
         return project
 
     def get_scenario(self):
@@ -34,7 +40,13 @@ class ProjectMixin:
         try:
             scenario = Scenario.objects.get(pk=scenario_pk)
         except Scenario.DoesNotExist:
-            scenario = None
+            project_pk = self.request.session.get('project')
+            scenarios = Scenario.objects.filter(project_id=project_pk)
+            if scenarios:
+                scenario = scenarios.first()
+                self.request.session['scenario'] = scenario.pk
+            else:
+                scenario = None
         return scenario
 
     def get_context_data(self, **kwargs):
