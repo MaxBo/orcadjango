@@ -66,33 +66,35 @@ class Injectable(NameModel):
             return value._repr_html_()
         return str(self.value)
 
-    def validate_value(self):
+    def validate_value(self, value=None):
         """validate the value of the injectable"""
         #  get original type of injectable value (if not available, use string)
         module_class = self.data_class.split('.')
         module_name = '.'.join(module_class[:-1])
         classname = module_class[-1]
         original_type = getattr(importlib.import_module(module_name), classname, str)
+        if value is None:
+            value = self.value
         # compare to evaluation or value
-        if self.value is None:
+        if value is None:
             func = orca._injectable_function.get(self.name)
             if func:
                 converted_value = func()
             else:
                 converted_value = orca.get_injectable(self.name)
         elif issubclass(original_type, str):
-            converted_value = self.value
+            converted_value = value
         else:
             try:
-                converted_value = ast.literal_eval(self.value)
+                converted_value = ast.literal_eval(value)
                 if not isinstance(converted_value, original_type):
                     #  try to cast the value using the original type
-                    converted_value = original_type(self.value)
+                    converted_value = original_type(value)
             except (SyntaxError, ValueError) as e:
 
                 # if casting does not work, raise warning
                 # and use original value
-                msg = (f'Injectable `{self.name}` with value `{self.value}` '
+                msg = (f'Injectable `{self.name}` with value `{value}` '
                        f'could not be casted to type `{original_type.__name__}`.'
                        f'Injectable Value was not overwritten.'
                        f'Error message: {repr(e)}')

@@ -2,6 +2,7 @@ import orca
 from django import forms
 from django.conf import settings
 from .models import Step
+from orcaserver.models import Injectable, InjectableConversionError
 
 
 def get_python_module():
@@ -23,6 +24,19 @@ class OrcaFileForm(forms.Form):
 
 class InjectableValueForm(forms.Form):
     value = forms.CharField(label='Value', max_length=255)
+
+    def __init__(self, *args, **kwargs):
+        self.injectable = kwargs.pop('injectable', None)
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        value = self.cleaned_data['value']
+
+        try:
+            _ = self.injectable.validate_value(value=value)
+        except InjectableConversionError as e:
+            self.add_error('value', str(e))
+            raise forms.ValidationError(str(e))
 
 
 class StepForm(forms.ModelForm):

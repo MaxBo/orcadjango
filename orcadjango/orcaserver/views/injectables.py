@@ -4,9 +4,9 @@ import orca
 import numpy as np
 from collections import OrderedDict
 from orcaserver.views import ProjectMixin
-from orcaserver.models import Injectable, InjectableConversionError
+from orcaserver.models import Injectable
 from orcaserver.forms import InjectableValueForm
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 
 
@@ -60,28 +60,18 @@ class InjectableView(ProjectMixin, FormView):
         return {'value': inj.value, }
 
     def post(self, request, *args, **kwargs):
-        inj: Injectable = Injectable.objects.get(name=self.name,
-                                                 scenario=self.get_scenario())
-        if request.POST.get('change'):
-            new_value = request.POST.get('value')
-            if new_value != inj.value:
-                inj.changed = True
-                inj.value = new_value
-            self.validate_value(inj)
-            inj.save()
-            if inj.can_be_changed:
-                orca.add_injectable(inj.name, new_value)
+        inj = Injectable.objects.get(name=self.name,
+                                     scenario=self.get_scenario())
+        if not inj.can_be_changed:
+            return HttpResponse(status=403)
 
-        elif request.POST.get('reset'):
-            orig_value = orca._injectable_backup[self.name]
-            if inj.can_be_changed:
-                orig_value = orca._injectable_backup[inj.name]
-                orca.add_injectable(inj.name, orig_value)
-            else:
-                orig_value = orca.get_injectable(inj.name)
-            inj.value = orig_value
-            self.validate_value(inj)
+        if request.POST.get('change'):
+            return super().post(request, *args, **kwargs)
+
+        if request.POST.get('reset'):
+            inj.value = orca._injectable_backup[inj.name]
             inj.save()
+            orca.add_injectable(inj.name, inj.value)
             return HttpResponseRedirect(request.path_info)
 
         elif request.POST.get('clear'):
@@ -91,11 +81,26 @@ class InjectableView(ProjectMixin, FormView):
         redirect = request.GET.get('next', reverse('injectables'))
         return HttpResponseRedirect(redirect)
 
-    def validate_value(self, inj: Injectable):
-        try:
-            _ = inj.validate_value()
-        except InjectableConversionError as e:
-            inj.valid = False
-        else:
-            inj.valid = True
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['injectable'] = Injectable.objects.get(
+            name=self.name, scenario=self.get_scenario())
+        return kwargs
+
+    def form_valid(self, form):
+        inj: Injectable = Injectable.objects.get(name=self.name,
+                                                 scenario=self.get_scenario())
+        new_value = form.cleaned_data.get('value')
+        inj.value = new_value
+        if new_value != inj.value:
+            inj.changed = True
+        inj.valid = True
+        inj.save()
+        orca.add_injectable(inj.name, new_value)
+        redirect = self.request.GET.get('next', reverse('injectables'))
+        return HttpResponseRedirect(redirect)
+
+
+
+
 
