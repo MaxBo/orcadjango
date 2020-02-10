@@ -30,12 +30,13 @@ def create_injectables(scenario):
 
         #  check if the original type is overwritable
         funcwrapper = orca._injectable_function.get(name)
+        sig = signature(funcwrapper._func)
         inj.can_be_changed = isinstance(
-            value, overwritable_types) and funcwrapper._func.__code__.co_argcount == 0
+            value, overwritable_types) and not sig.parameters
         if isinstance(funcwrapper, orca.orca._InjectableFuncWrapper):
             inj.docstring = funcwrapper._func.__doc__
             #  Datatype from annotations:
-            returntype = funcwrapper._func.__annotations__.get('return')
+            returntype = sig.return_annotation
             if returntype:
                 if isinstance(returntype, typing._GenericAlias):
                     datatype_class = returntype.__origin__
@@ -47,7 +48,6 @@ def create_injectables(scenario):
             inj.groupname = getattr(funcwrapper, 'groupname', '')
             inj.order = getattr(funcwrapper, 'order', 1)
             parent_injectables = []
-            sig = signature(funcwrapper._func)
             for parameter in sig.parameters:
                 try:
                     parent_inj = Injectable.objects.get(scenario=inj.scenario,

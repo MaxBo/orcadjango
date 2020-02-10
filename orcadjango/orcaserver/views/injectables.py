@@ -22,11 +22,13 @@ class InjectablesView(ProjectMixin, ListView):
         injectables = Injectable.objects.filter(name__in=inj,
                                                 scenario=scenario)\
             .order_by('groupname', 'name')
-        # distinct() fails here
-        groups = set(injectables.values_list('groupname', flat=True))
+
+        groups = sorted(set(injectables.values_list('groupname', flat=True)))
         grouped = OrderedDict()
         for group in groups:
-            grouped[group] = injectables.filter(groupname=group).order_by('order')
+            grouped[group] = injectables\
+                .filter(groupname=group)\
+                .order_by('order', 'name')
         return grouped
 
     def post(self, request, *args, **kwargs):
