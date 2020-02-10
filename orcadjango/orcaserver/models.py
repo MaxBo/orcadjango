@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.gis.db.models import MultiPolygonField
+from django.core.validators import int_list_validator
 import pandas as pd
 import xarray as xr
 import orca
@@ -51,6 +52,8 @@ class Injectable(NameModel):
     datatype = models.TextField(null=True, blank=True)
     data_class = models.TextField(null=True, blank=True)
     valid = models.BooleanField(null=False, default=True)
+    parent_injectables = models.TextField(
+        validators=[int_list_validator], default='[]')
 
     def __str__(self):
         return f'{self.scenario} - {self.name}'
@@ -109,6 +112,15 @@ class Injectable(NameModel):
                        f'Error message: {repr(e)}')
                 raise InjectableConversionError(msg)
         return converted_value
+
+    @property
+    def parent_injectable_values(self):
+        parent_injectables = ast.literal_eval(self.parent_injectables)
+        injectables = Injectable.objects.filter(id__in=parent_injectables)
+        inj_names = injectables.values_list('name', flat=True)
+        return ','.join(inj_names)
+
+
 
 
 class Step(NameModel):

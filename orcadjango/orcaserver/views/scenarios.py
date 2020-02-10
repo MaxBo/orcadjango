@@ -6,6 +6,9 @@ from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.urls import reverse
 from orcaserver.views import ProjectMixin
 from orcaserver.views.steps import apply_injectables
+import logging
+
+logger = logging.getLogger('OrcaLog')
 
 
 overwritable_types = (str, bytes, int, float, complex,
@@ -42,6 +45,15 @@ def create_injectables(scenario):
             inj.module = funcwrapper._func.__module__
             inj.groupname = getattr(funcwrapper, 'groupname', '')
             inj.order = getattr(funcwrapper, 'order', 1)
+            parent_injectables = []
+            for varname in funcwrapper._func.__code__.co_varnames:
+                try:
+                    parent_inj = Injectable.objects.get(scenario=inj.scenario,
+                                                           name=varname)
+                except Injectable.DoesNotExist:
+                    logger.warn(f'Injectable {varname} not found in scneario {inj.scenario.name}')
+                parent_injectables.append(parent_inj.pk)
+            inj.parent_injectables = str(parent_injectables)
         inj.data_class = f'{datatype_class.__module__}.{datatype_class.__name__}'
         inj.save()
         if inj.can_be_changed:

@@ -90,7 +90,7 @@ class StepsView(ProjectMixin, TemplateView):
                 injectables.append({
                     'id': inj.id,
                     'name': name,
-                    'value': inj.value,
+                    'value': repr(inj.calculated_value),
                     'url': f"{reverse('injectables')}{name}",
                 })
             started = step.started

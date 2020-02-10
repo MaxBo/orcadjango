@@ -20,6 +20,12 @@ def inj2():
     return 'INJ 2'
 
 
+@group(groupname='strings', order=2)
+@orca.injectable()
+def inj12(inj1: str, inj2: str) -> str:
+    return f'{inj1} -> {inj2}'
+
+
 @group(groupname='ints', order=2)
 @orca.injectable()
 def inj_int() -> int:
@@ -90,7 +96,7 @@ def step2(inj1, inj2):
 
 @group(groupname='Hallo', order=1)
 @orca.step()
-def step1(inj_list):
+def step1(inj_list, dataframe):
     """dummy step"""
     sleep(5)
 
