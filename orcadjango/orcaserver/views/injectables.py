@@ -66,8 +66,8 @@ class InjectableView(ProjectMixin, FormView):
             new_value = request.POST.get('value')
             if new_value != inj.value:
                 inj.changed = True
+                inj.value = new_value
             self.validate_value(inj)
-            inj.value = new_value
             inj.save()
             if inj.can_be_changed:
                 orca.add_injectable(inj.name, new_value)
@@ -76,12 +76,12 @@ class InjectableView(ProjectMixin, FormView):
             orig_value = orca._injectable_backup[self.name]
             if inj.can_be_changed:
                 orig_value = orca._injectable_backup[inj.name]
+                orca.add_injectable(inj.name, orig_value)
             else:
                 orig_value = orca.get_injectable(inj.name)
+            inj.value = orig_value
             self.validate_value(inj)
             inj.save()
-            if inj.can_be_changed:
-                orca.add_injectable(inj.name, orig_value)
             return HttpResponseRedirect(request.path_info)
 
         elif request.POST.get('clear'):
