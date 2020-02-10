@@ -21,3 +21,9 @@ tr.selected {
 #injectables{
   font-size: 12;
 }
+
+.navbar-nav .nav-link.active {
+  font-size: 18;
+  font-weight: bold;
+  color: #007bff !important;
+}
