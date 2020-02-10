@@ -13,8 +13,8 @@
 
 {% block left-content %}
 <link rel="stylesheet" type="text/css" href="{% static 'css/site.css' %}">
-{% if steps_available %}
 <div class="col-md-3" style="padding: 2em;">
+{% if steps_available %}
   <h6>available</h6>
   <div style="max-height: 800px; overflow-y: scroll;">
     <table class="table" id="steps-available">
@@ -44,8 +44,8 @@
     <input type='hidden' name="steps" id="selected-steps">
     <input class="btn btn-secondary" type="submit" name='add' value="Add >>"/>
   </form>
-</div>
 {% endif %}
+</div>
 {% endblock %}
 
 {% block right-content %}

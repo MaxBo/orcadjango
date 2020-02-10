@@ -59,6 +59,13 @@ class InjectableView(ProjectMixin, FormView):
                                      scenario=self.get_scenario())
         return {'value': inj.value, }
 
+    def get_context_data(self, **kwargs):
+        kwargs = super().get_context_data(**kwargs)
+        inj = Injectable.objects.get(name=self.name,
+                                     scenario=self.get_scenario())
+        kwargs['injectable'] = inj
+        return kwargs
+
     def post(self, request, *args, **kwargs):
         inj = Injectable.objects.get(name=self.name,
                                      scenario=self.get_scenario())
