@@ -24,8 +24,9 @@ def create_injectables(scenario):
             inj.value = value
 
         #  check if the original type is overwritable
-        inj.can_be_changed = isinstance(value, overwritable_types)
         funcwrapper = orca._injectable_function.get(name)
+        inj.can_be_changed = isinstance(
+            value, overwritable_types) and funcwrapper._func.__code__.co_argcount == 0
         if isinstance(funcwrapper, orca.orca._InjectableFuncWrapper):
             inj.docstring = funcwrapper._func.__doc__
             #  Datatype from annotations:

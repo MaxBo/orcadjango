@@ -34,9 +34,14 @@ class InjectablesView(ProjectMixin, ListView):
             qs = self.get_queryset()
             for group, injectables in qs.items():
                 for inj in injectables:
-                    orig_value = orca._injectable_backup[inj.name]
+                    if inj.can_be_changed:
+                        orig_value = orca._injectable_backup[inj.name]
+                    else:
+                        orig_value = orca.get_injectable(inj.name)
                     inj.value = orig_value
                     inj.save()
+                    if inj.can_be_changed:
+                        orca.add_injectable(inj.name, orig_value)
         return HttpResponseRedirect(request.path_info)
 
 
@@ -64,12 +69,19 @@ class InjectableView(ProjectMixin, FormView):
             self.validate_value(inj)
             inj.value = new_value
             inj.save()
+            if inj.can_be_changed:
+                orca.add_injectable(inj.name, new_value)
 
         elif request.POST.get('reset'):
             orig_value = orca._injectable_backup[self.name]
-            inj.value = orig_value
+            if inj.can_be_changed:
+                orig_value = orca._injectable_backup[inj.name]
+            else:
+                orig_value = orca.get_injectable(inj.name)
             self.validate_value(inj)
             inj.save()
+            if inj.can_be_changed:
+                orca.add_injectable(inj.name, orig_value)
             return HttpResponseRedirect(request.path_info)
 
         elif request.POST.get('clear'):
