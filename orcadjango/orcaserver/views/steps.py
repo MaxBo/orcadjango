@@ -1,5 +1,6 @@
 import logging
 import json
+from inspect import signature
 from django.views.generic import TemplateView
 from django.shortcuts import HttpResponseRedirect
 from django.http import HttpResponse
@@ -49,8 +50,9 @@ class StepsView(ProjectMixin, TemplateView):
             order = getattr(wrapper, 'order', 1)
             steps_grouped.setdefault(group, []).append({
                 'name': name,
-                'description': wrapper._func.__doc__,
+                'description': wrapper._func.__doc__ or '',
                 'order': order,
+                'module': wrapper._func.__module__,
             })
         # order the steps inside the groups
         for group, steps_group in steps_grouped.items():
@@ -81,16 +83,17 @@ class StepsView(ProjectMixin, TemplateView):
         injectables_available = orca.list_injectables()
         for step in steps_scenario:
             func = orca.get_step(step.name)
-            inj_names = func._func.__code__.co_varnames
+            sig = signature(func._func)
+            inj_parameters = sig.parameters
             injectables = []
-            for name in inj_names:
+            for name in inj_parameters:
                 if name not in injectables_available:
                     continue
                 inj = Injectable.objects.get(name=name, scenario=scenario)
                 injectables.append({
                     'id': inj.id,
                     'name': name,
-                    'value': repr(inj.calculated_value),
+                    'value': repr(inj.value),
                     'url': f"{reverse('injectables')}{name}",
                 })
             started = step.started
@@ -107,7 +110,8 @@ class StepsView(ProjectMixin, TemplateView):
                 'success': step.success,
                 'order': step.order,
                 'is_active': step.active,
-                'injectables': injectables
+                'injectables': injectables,
+                'module': func._func.__module__,
             })
         return JsonResponse(steps_json, safe=False)
 

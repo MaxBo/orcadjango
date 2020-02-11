@@ -2,6 +2,7 @@ from django.views.generic import ListView
 from django.views.generic.edit import FormView
 import orca
 import numpy as np
+import ast
 from collections import OrderedDict
 from orcaserver.views import ProjectMixin
 from orcaserver.models import Injectable

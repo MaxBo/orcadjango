@@ -23,6 +23,7 @@
           <th>Group</th>
           <th>Name</th>
           <th>Description</th>
+          <th>Module</th>
           <th></th>
         </tr>
       </thead>
@@ -33,6 +34,7 @@
             <td style="border-bottom-style: hidden;"> {% if forloop.counter0 == 0 %} <b>{{ group }}</b> {% endif %} </td>
             <td> {{ step.name }} </td>
             <td> {{ step.description }} </td>
+            <td> {{ step.module }} </td>
           </tr>
         {% endfor %}
       {% endfor %}
@@ -190,7 +192,7 @@
               url= inj.url + '?next={{request.path}}';
           inj_a.text = inj.name;
           inj_a.href = url;
-          content.innerHTML = ' ( ' + inj.value + ' )';
+          content.innerHTML = ''; //( ' + inj.value + ' )';
           content.prepend(inj_a);
           injCell.appendChild(content);
         });

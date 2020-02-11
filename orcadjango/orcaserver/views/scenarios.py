@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.urls import reverse
 from orcaserver.views import ProjectMixin
 from orcaserver.views.steps import apply_injectables
-from inspect import signature
+from inspect import signature, _empty
 import logging
 
 logger = logging.getLogger('OrcaLog')
@@ -37,7 +37,7 @@ def create_injectables(scenario):
             inj.docstring = funcwrapper._func.__doc__
             #  Datatype from annotations:
             returntype = sig.return_annotation
-            if returntype:
+            if returntype and not isinstance(returntype, _empty):
                 if isinstance(returntype, typing._GenericAlias):
                     datatype_class = returntype.__origin__
                     inj.datatype = str(returntype)

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.gis.db.models import MultiPolygonField
 from django.core.validators import int_list_validator
+from django.urls import reverse
 import pandas as pd
 import xarray as xr
 import orca
@@ -102,7 +103,7 @@ class Injectable(NameModel):
                 if not isinstance(converted_value, original_type):
                     #  try to cast the value using the original type
                     converted_value = original_type(value)
-            except (SyntaxError, ValueError) as e:
+            except (SyntaxError, ValueError, TypeError) as e:
 
                 # if casting does not work, raise warning
                 # and use original value
@@ -120,7 +121,11 @@ class Injectable(NameModel):
         inj_names = injectables.values_list('name', flat=True)
         return ','.join(inj_names)
 
-
+    @property
+    def parent_injectable_urls(self):
+        reverse_url = reverse('injectables')
+        return {name: f'{reverse_url}{name}'
+                for name in self.parent_injectable_values.split(',')}
 
 
 class Step(NameModel):
