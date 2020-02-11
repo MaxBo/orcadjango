@@ -37,7 +37,10 @@ def create_injectables(scenario):
             inj.docstring = funcwrapper._func.__doc__
             #  Datatype from annotations:
             returntype = sig.return_annotation
-            if returntype and not isinstance(returntype, _empty):
+            has_returntype = True
+            if isinstance(returntype, type) and issubclass(returntype, _empty):
+                has_returntype = False
+            if has_returntype:
                 if isinstance(returntype, typing._GenericAlias):
                     datatype_class = returntype.__origin__
                     inj.datatype = str(returntype)

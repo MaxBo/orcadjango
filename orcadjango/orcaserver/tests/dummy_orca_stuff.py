@@ -1,5 +1,5 @@
 import orca
-from typing import List
+from typing import List, Dict
 from time import sleep
 import pandas as pd
 import xarray as xr
@@ -41,7 +41,7 @@ def inj_list() -> List[int]:
 
 @group(groupname='das dict')
 @orca.injectable()
-def inj_dict():
+def inj_dict() -> Dict[str, int]:
     return dict(a=1, b=-1)
 
 
