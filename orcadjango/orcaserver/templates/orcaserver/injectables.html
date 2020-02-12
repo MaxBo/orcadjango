@@ -33,13 +33,15 @@
       {% for groupname, injectables in grouped_injectables.items %}
         {% for injectable in injectables %}
           <tr
-          {% if not injectable.valid %}
+          {% if not injectable.valid_value %}
             style="background-color: plum;"
           {% elif not injectable.can_be_changed %}
             style="background-color: lightgrey;"
           {% endif %}
           >
-            <td style="border-bottom-style: hidden;"> {% if forloop.counter0 == 0 %} <b>{{ groupname }}</b> {% endif %} </td>
+            <td {% if not forloop.last %} style="border-bottom-style: hidden;" {% endif %}>
+                {% if forloop.first %} <b>{{ groupname }}</b> {% endif %}
+            </td>
             <td>{{ injectable.name }}</td>
             <td>{{ injectable.datatype }}</td>
             <td>{{ injectable.data_class }}</td>

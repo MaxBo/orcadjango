@@ -36,11 +36,16 @@ class InjectablesView(ProjectMixin, ListView):
         if request.POST.get('reset'):
             qs = self.get_queryset()
             for group, injectables in qs.items():
-                for inj in injectables:
+                for inj in injectables:  # type: Injectable
                     if inj.can_be_changed:
                         orig_value = orca._injectable_backup[inj.name]
                     else:
-                        orig_value = orca.get_injectable(inj.name)
+                        try:
+                            orig_value = orca.get_injectable(inj.name)
+                            _ = inj.validate_value(orig_value)
+                        except Exception as e:
+                            orig_value = str(e)
+                            inj.valid = False
                     inj.value = orig_value
                     inj.save()
                     if inj.can_be_changed:
