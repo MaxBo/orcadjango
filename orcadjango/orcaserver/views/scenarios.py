@@ -19,6 +19,8 @@ overwritable_types = (str, bytes, int, float, complex,
 def create_injectables(scenario):
     injectable_list = orca.list_injectables()
     for name in injectable_list:
+        if name.startswith('iter_'):
+            continue
         inj, created = Injectable.objects.get_or_create(name=name,
                                                         scenario=scenario)
         value = orca._injectable_backup.get(name)
