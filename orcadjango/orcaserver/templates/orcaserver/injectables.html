@@ -39,7 +39,7 @@
             style="background-color: lightgrey;"
           {% endif %}
           >
-            <td {% if not forloop.last %} style="border-bottom-style: hidden;" {% endif %}>
+            <td style="background-color: Snow {% if not forloop.last %} ;border-bottom-style: hidden" {% endif %}">
                 {% if forloop.first %} <b>{{ groupname }}</b> {% endif %}
             </td>
             <td>{{ injectable.name }}</td>
