@@ -67,13 +67,24 @@ class Injectable(NameModel):
         return orca.get_injectable(self.name)
 
     @property
-    def repr_html(self):
-        """HTML-representation of the value according to the type"""
-        if self.datatype == 'DataFrame':
-            return self.calculated_value.to_html()
-        if self.datatype in ['DataArray', 'Dataset']:
-            return self.calculated_value._repr_html_()
+    def valid_value(self) -> bool:
+        """The calculated value"""
+        if self.can_be_changed:
+            return self.valid
         try:
+            orca.get_injectable(self.name)
+        except Exception as e:
+            return False
+        return True
+
+    @property
+    def repr_html(self) -> str:
+        """HTML-representation of the value according to the type"""
+        try:
+            if self.datatype == 'DataFrame':
+                ret = self.calculated_value.to_html()
+            if self.datatype in ['DataArray', 'Dataset']:
+                ret = self.calculated_value._repr_html_()
             ret = str(self.calculated_value)
         except Exception as e:
             ret = repr(e)
