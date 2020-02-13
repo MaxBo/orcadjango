@@ -31,7 +31,7 @@
       {% for group, steps in steps_available.items %}
         {% for step in steps %}
           <tr onclick="highlightRow(this)" data-step="{{ step.name }}">
-            <td style="border-bottom-style: hidden;"> {% if forloop.counter0 == 0 %} <b>{{ group }}</b> {% endif %} </td>
+            <td style="background-color: Snow {% if not forloop.last %} ;border-bottom-style: hidden" {% endif %}"> {% if forloop.first %} <b>{{ group }}</b> {% endif %} </td>
             <td> {{ step.name }} </td>
             <td> {{ step.description }} </td>
             <td> {{ step.module }} </td>
