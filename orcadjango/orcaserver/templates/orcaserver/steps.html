@@ -57,7 +57,7 @@
   <button onclick="clearLog()" class="btn btn-secondary" style="margin: 10px; float: right;">Clear</button>
   <script>
     var chatSocket = new WebSocket(
-        'ws://' + window.location.host + '/ws/log/orca/'),
+        'wss://' + window.location.host + '/ws/log/orca/'),
         logArea = document.querySelector('#wslog');
 
     chatSocket.onmessage = function(e) {
@@ -238,9 +238,9 @@
 
   (function() {
     // periodically update steps and their progress
-    updateSteps();
-    setInterval(updateSteps, 10000);
-    tableDnD();
+    //updateSteps();
+    //setInterval(updateSteps, 100000);
+    //tableDnD();
   })();
 </script>
 {% endblock %}
