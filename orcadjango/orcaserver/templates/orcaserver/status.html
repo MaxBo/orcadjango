@@ -39,7 +39,7 @@
 
 <script>
   var chatSocket = new WebSocket(
-      'ws://' + window.location.host + '/ws/log/orca/'),
+      'wss://' + window.location.host + '/ws/log/orca/'),
       logArea = document.getElementById('wslog'),
       csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value,
       statusRunningLabel = document.getElementById('status-running-label'),
@@ -77,8 +77,8 @@
   };
 
   document.addEventListener("DOMContentLoaded", function(event) {
-      updateStatus().then(function(){updateStepsTable()});
-      setInterval(updateStepsTable, 1000);
+      //updateStatus().then(function(){updateStepsTable()});
+      //setInterval(updateStepsTable, 100000);
   });
 </script>
 
