@@ -13,7 +13,7 @@ from orcaserver.management import OrcaManager
 def create_project(sender, instance, created, **kwargs):
     """Create a matching profile whenever a user object is created."""
     if created:
-        instance.python_module = OrcaManager().python_module
+        instance.module = OrcaManager().python_module
         instance.save()
 
 

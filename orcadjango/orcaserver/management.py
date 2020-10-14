@@ -121,10 +121,9 @@ class OrcaManager(Singleton):
         if thread and thread.isAlive():
             raise InUseError('Thread is already running')
         thread = self.threads[instance_id] = AbortableThread(
-            target=self.run, args=(instance_id, ))
-        self.steps = steps
-        self.user = user.get_username() if user else 'unknown'
-        self.start_time = timezone.now()
+            target=self.run, args=(instance_id, steps))
+        #self.user = user.get_username() if user else 'unknown'
+        #self.start_time = timezone.now()
         thread.start()
 
     def abort(self, instance_id):
@@ -136,7 +135,7 @@ class OrcaManager(Singleton):
         thread = self.threads.get(instance_id)
         return thread.isAlive() if thread else False
 
-    def run(self, instance_id: int, iter_vars=None, data_out=None,
+    def run(self, instance_id: int, steps, iter_vars=None, data_out=None,
             out_interval=1, out_base_tables=None, out_run_tables=None,
             compress=False, out_base_local=True, out_run_local=True):
         """
@@ -186,7 +185,7 @@ class OrcaManager(Singleton):
         try:
             iter_vars = iter_vars or [None]
             max_i = len(iter_vars)
-            step_names = [step.name for step in self.steps]
+            step_names = [step.name for step in steps]
 
             # get the tables to write out
             if out_base_tables is None or out_run_tables is None:
@@ -215,7 +214,7 @@ class OrcaManager(Singleton):
                             i, var))
 
                 t1 = time.time()
-                for j, step in enumerate(self.steps):
+                for j, step in enumerate(steps):
                     step_name = step.name
                     orca.add_injectable(
                         'iter_step', orca.iter_step(j, step_name))

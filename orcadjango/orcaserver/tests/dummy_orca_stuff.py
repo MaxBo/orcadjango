@@ -110,3 +110,11 @@ def step_dict(inj_dict):
     for k, v in inj_dict.items():
         logger.info(f'{k}: {v}')
         sleep(1)
+
+@group(groupname='Huhu')
+@orca.step()
+def step_multiply_df(inj_int, dataframe):
+    a = dataframe.copy()
+    for i in range(inj_int-1):
+        dataframe += a
+        sleep(1)
