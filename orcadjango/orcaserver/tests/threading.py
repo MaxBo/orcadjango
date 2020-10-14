@@ -33,24 +33,24 @@ class TestOrcaInstancing(unittest.TestCase):
         self.orca1.add_injectable('inj_int', mult1)
         # the steps will change the dataframe in place
         self.orca1.add_injectable('dataframe', df1.copy())
-        self.manager.start(1, [step])
+        self.manager.start(1, [step, step])
 
-        # wait a little before setting and starting the other orca instance to
-        # see if there are side effects and if it messes up the first one
+        # wait a little before setting uo and starting the second orca instance
+        # to see if there are side effects and if it messes up the running one
         sleep(1.5)
 
         self.orca2.add_injectable('inj_int', mult2)
         self.orca2.add_injectable('dataframe', df2.copy())
-        self.manager.start(2, [step])
+        self.manager.start(2, [step, step])
 
         # there might be a better way for waiting for the thread
         while self.manager.is_running(1) or self.manager.is_running(2):
             sleep(0.5)
 
         assert((self.orca1.get_injectable('dataframe').values ==
-               (df1 * mult1).values).all())
+               (df1 * mult1 * mult1).values).all())
         assert((self.orca2.get_injectable('dataframe').values ==
-               (df2 * mult2).values).all())
+               (df2 * mult2 * mult2).values).all())
         assert(self.orca1.get_injectable('inj_int') == mult1)
         assert(self.orca2.get_injectable('inj_int') == mult2)
 
