@@ -75,11 +75,11 @@ from contextlib import ContextDecorator
 
 class mycontext(ContextDecorator):
     def __enter__(self):
-        print('Starting')
+        logger.info('Starting')
         return self
 
     def __exit__(self, *exc):
-        print('Finishing')
+        logger.info('Finishing')
         return False
 
 
@@ -88,8 +88,8 @@ class mycontext(ContextDecorator):
 def step2(inj1, inj2):
     """another dummy step"""
     with mycontext():
-        print('start')
         for i in range(10):
+            logger.info(f'loop {i}')
             sleep(1)
             print(i)
 
@@ -98,7 +98,9 @@ def step2(inj1, inj2):
 @orca.step()
 def step1(inj_list, dataframe):
     """dummy step"""
+    logger.info('hallo hallo')
     sleep(5)
+    logger.info('step1 finished')
 
 
 @group(groupname='Huhu')

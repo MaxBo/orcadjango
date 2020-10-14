@@ -1,4 +1,3 @@
-import orca
 from django.views.generic import ListView
 from django.http import HttpResponseRedirect
 from django.db.models.signals import post_save
@@ -7,13 +6,14 @@ from django.urls import reverse
 from django.conf import settings
 
 from orcaserver.models import Scenario, Project, GeoProject
+from orcaserver.management import OrcaManager
 
 @receiver(post_save, sender=GeoProject)
 @receiver(post_save, sender=Project)
 def create_project(sender, instance, created, **kwargs):
     """Create a matching profile whenever a user object is created."""
     if created:
-        instance.module = orca._python_module
+        instance.python_module = OrcaManager().python_module
         instance.save()
 
 
@@ -55,7 +55,7 @@ class ProjectMixin:
         scenario = self.get_scenario()
         kwargs['active_project'] = project
         kwargs['active_scenario'] = scenario
-        kwargs['python_module'] = orca._python_module
+        kwargs['python_module'] = OrcaManager().python_module
         kwargs['show_project_settings'] = True
         return kwargs
 
@@ -67,7 +67,7 @@ class ProjectView(ProjectMixin, ListView):
 
     def get_queryset(self):
         """Return the injectables with their values."""
-        projects = self.model.objects.filter(module=orca._python_module)
+        projects = self.model.objects.filter(module=OrcaManager().python_module)
         return projects
 
     def post(self, request, *args, **kwargs):

@@ -5,10 +5,9 @@ from django.views.generic import TemplateView
 from django.shortcuts import HttpResponseRedirect
 from django.http import HttpResponse
 from django.http import JsonResponse, HttpResponseNotFound
-import orca
 from collections import OrderedDict
 
-from orcaserver.threading import OrcaManager
+from orcaserver.management import OrcaManager
 from orcaserver.views import ProjectMixin
 from orcaserver.models import Step, Injectable, Scenario, InjectableConversionError
 from django.core.exceptions import ObjectDoesNotExist
@@ -16,9 +15,13 @@ from django.urls import reverse
 import json
 
 logger = logging.getLogger('OrcaLog')
+manager = OrcaManager()
 
 
 def apply_injectables(scenario):
+    if not scenario:
+        return
+    orca = manager.get(scenario.id)
     names = orca.list_injectables()
     injectables = Injectable.objects.filter(name__in=names, scenario=scenario)
     for inj in injectables:
@@ -43,6 +46,7 @@ class StepsView(ProjectMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         scenario = self.get_scenario()
+        orca = manager.get(scenario.id)
         steps_grouped = OrderedDict()
         for name in orca.list_steps():
             wrapper = orca.get_step(name)
@@ -74,6 +78,7 @@ class StepsView(ProjectMixin, TemplateView):
                 step.order = item['order']
                 step.save()
         scenario_id = request.session.get('scenario')
+        orca = manager.get(scenario_id)
         if scenario_id is None:
             return HttpResponseNotFound('scenario not found')
         scenario = Scenario.objects.get(id=scenario_id)
@@ -149,14 +154,14 @@ class StepsView(ProjectMixin, TemplateView):
 
     @classmethod
     def status(cls, request):
-        manager = OrcaManager()
-        status_text = f'currently run by user "{manager.user}"'\
-            if manager.is_running else 'not in use'
+        #manager = OrcaManager()
+        #status_text = f'currently run by user "{manager.user}"'\
+            #if manager.is_running else 'not in use'
         status = {
-            'running': manager.is_running,
-            'text': status_text,
-            'last_user': manager.user,
-            'last_start': manager.start_time,
+            'running': '',# manager.is_running,
+            'text': '', # status_text,
+            'last_user': '', # manager.user,
+            'last_start': '' # manager.start_time,
         }
         return JsonResponse(status)
 
@@ -179,10 +184,9 @@ class StepsView(ProjectMixin, TemplateView):
             step.save()
         apply_injectables(scenario)
         manager = OrcaManager()
-        if manager.is_running:
+        if manager.is_running(scenario.id):
             return HttpResponse(status=400)
-        manager.start(steps=steps, logger=logger,
-                      user=request.user)
+        manager.start(scenario.id, steps=steps, user=request.user)
         return HttpResponse(status=200)
 
     @classmethod

@@ -1,16 +1,12 @@
-import orca
 from django import forms
-from django.conf import settings
-from .models import Step
-from orcaserver.models import Injectable, InjectableConversionError
+
+from orcaserver.models import Step, InjectableConversionError
+from orcaserver.management import OrcaManager
 
 
 def get_python_module():
     """return the default python module"""
-    module_name = getattr(orca,
-                          '_python_module',
-                          settings.ORCA_MODULE)
-    return module_name
+    return OrcaManager().python_module
 
 
 class OrcaFileForm(forms.Form):

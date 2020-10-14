@@ -4,9 +4,10 @@ from django.core.validators import int_list_validator
 from django.urls import reverse
 import pandas as pd
 import xarray as xr
-import orca
 import ast
 import importlib
+
+from orcaserver.management import OrcaManager
 
 
 class NameModel(models.Model):
@@ -64,6 +65,7 @@ class Injectable(NameModel):
         """The calculated value"""
         if self.can_be_changed:
             return self.value
+        orca = OrcaManager().get(self.scenario.id)
         return orca.get_injectable(self.name)
 
     @property
@@ -71,6 +73,7 @@ class Injectable(NameModel):
         """The calculated value"""
         if self.can_be_changed:
             return self.valid
+        orca = OrcaManager().get(self.scenario.id)
         try:
             orca.get_injectable(self.name)
         except Exception as e:
@@ -101,6 +104,7 @@ class Injectable(NameModel):
             value = self.value
         # compare to evaluation or value
         if value is None:
+            orca = OrcaManager().get(self.scenario.id)
             func = orca._injectable_function.get(self.name)
             if func:
                 converted_value = func()

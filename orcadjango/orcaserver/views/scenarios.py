@@ -1,22 +1,24 @@
-import orca
 import typing
 from django.views.generic import ListView
-from orcaserver.models import Scenario, Injectable, Step
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.urls import reverse
-from orcaserver.views import ProjectMixin
-from orcaserver.views.steps import apply_injectables
 from inspect import signature, _empty
 import logging
 
-logger = logging.getLogger('OrcaLog')
+from orcaserver.views import ProjectMixin
+from orcaserver.management import OrcaManager
+from orcaserver.views.steps import apply_injectables
+from orcaserver.models import Scenario, Injectable, Step
 
+logger = logging.getLogger('OrcaLog')
+manager = OrcaManager()
 
 overwritable_types = (str, bytes, int, float, complex,
                       tuple, list, dict, set, bool, None.__class__)
 
 
 def create_injectables(scenario):
+    orca = manager.get(scenario.id)
     injectable_list = orca.list_injectables()
     for name in injectable_list:
         if name.startswith('iter_'):
@@ -35,7 +37,7 @@ def create_injectables(scenario):
         sig = signature(funcwrapper._func)
         inj.can_be_changed = isinstance(
             value, overwritable_types) and not sig.parameters
-        if isinstance(funcwrapper, orca.orca._InjectableFuncWrapper):
+        if isinstance(funcwrapper, orca._InjectableFuncWrapper):
             inj.docstring = funcwrapper._func.__doc__
             #  Datatype from annotations:
             returntype = sig.return_annotation
@@ -73,6 +75,7 @@ def create_injectables(scenario):
 
 
 def create_steps(scenario):
+    orca = manager.get(scenario.id)
     for name in orca.list_steps():
         Step.objects.create(name=name, scenario=scenario)
 

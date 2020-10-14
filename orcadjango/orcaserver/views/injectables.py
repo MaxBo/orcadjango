@@ -1,14 +1,17 @@
 from django.views.generic import ListView
 from django.views.generic.edit import FormView
-import orca
+from django.http import HttpResponseRedirect, HttpResponse
+from django.urls import reverse
 import numpy as np
 import ast
 from collections import OrderedDict
+
 from orcaserver.views import ProjectMixin
 from orcaserver.models import Injectable
 from orcaserver.forms import InjectableValueForm
-from django.http import HttpResponseRedirect, HttpResponse
-from django.urls import reverse
+from orcaserver.management import OrcaManager
+
+manager = OrcaManager()
 
 
 class InjectablesView(ProjectMixin, ListView):
@@ -19,6 +22,7 @@ class InjectablesView(ProjectMixin, ListView):
     def get_queryset(self):
         """Return the injectables with their values."""
         scenario = self.get_scenario()
+        orca = manager.get(scenario.id)
         inj = orca.list_injectables()
         injectables = Injectable.objects.filter(name__in=inj,
                                                 scenario=scenario)\
@@ -33,6 +37,7 @@ class InjectablesView(ProjectMixin, ListView):
         return grouped
 
     def post(self, request, *args, **kwargs):
+        orca = manager.get(scenario.id)
         if request.POST.get('reset'):
             qs = self.get_queryset()
             for group, injectables in qs.items():
@@ -84,6 +89,7 @@ class InjectableView(ProjectMixin, FormView):
             return super().post(request, *args, **kwargs)
 
         if request.POST.get('reset'):
+            orca = manager.get(self.get_scenario().id)
             inj.value = orca._injectable_backup[inj.name]
             inj.save()
             orca.add_injectable(inj.name, inj.value)
@@ -103,8 +109,10 @@ class InjectableView(ProjectMixin, FormView):
         return kwargs
 
     def form_valid(self, form):
+        scenario = self.get_scenario()
+        orca = manager.get(scenario.id)
         inj: Injectable = Injectable.objects.get(name=self.name,
-                                                 scenario=self.get_scenario())
+                                                 scenario=scenario)
         new_value = form.cleaned_data.get('value')
         inj.value = new_value
         if new_value != inj.value:

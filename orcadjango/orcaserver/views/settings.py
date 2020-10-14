@@ -2,7 +2,7 @@ from django.views.generic import FormView
 
 from orcaserver.forms import OrcaFileForm
 from orcaserver.views import ProjectMixin
-from orcaserver.management.commands import runorca
+from orcaserver.management import OrcaManager
 
 
 class SettingsView(ProjectMixin, FormView):
@@ -12,5 +12,5 @@ class SettingsView(ProjectMixin, FormView):
 
     def form_valid(self, form):
         module = form.cleaned_data['module']
-        runorca.load_module(module)
+        OrcaManager().set_module(module)
         return super().form_valid(form)
