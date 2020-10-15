@@ -5,7 +5,7 @@ DB_USER = os.environ['DB_USER']
 DB_PASS = os.environ['DB_PASS']
 DB_HOST = os.environ.get('DB_HOST', 'localhost')
 DB_PORT = os.environ.get('DB_PORT', '5432')
-SECRET_KEY = os.environ['SECRET_KEY']
+SECRET_KEY = os.environ.get('SECRET_KEY', SECRET_KEY)
 
 DATABASES = {
     'default': {
@@ -15,7 +15,7 @@ DATABASES = {
         'PASSWORD': DB_PASS,
         'HOST': DB_HOST,
         'PORT': DB_PORT,
-        'OPTIONS': {'sslmode': 'require'},
+        'OPTIONS': {'sslmode': 'prefer'},
     },
 }
 
