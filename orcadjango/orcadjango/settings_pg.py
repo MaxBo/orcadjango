@@ -15,6 +15,9 @@ DATABASES = {
         'PASSWORD': DB_PASS,
         'HOST': DB_HOST,
         'PORT': DB_PORT,
-        'OPTIONS': {}
+        'OPTIONS': {'sslmode': 'require'},
     },
 }
+
+ALLOWED_HOSTS = ['localhost',
+                 'miraculix.ggr-planung.de']
