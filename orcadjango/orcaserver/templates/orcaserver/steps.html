@@ -44,6 +44,7 @@
     <input type='hidden' name="steps" id="selected-steps">
     <input class="btn btn-secondary" type="submit" name='add' value="Add >>"/>
   </form>
+  <div class="row" id="logPlaceholder" style="height: 30em;"></div>
 {% endif %}
 </div>
 {% endblock %}
@@ -243,18 +244,19 @@
 </script>
 
 <script>
-  const BORDER_SIZE = 4;
-  const panel = document.querySelector(".bottom-resizable");
-  console.log(panel)
+  var BORDER_SIZE = 4,
+      logDiv = document.querySelector(".bottom-resizable"),
+      placeholderDiv = document.getElementById("logPlaceholder");
 
   let m_pos;
   function resize(e){
-    const dy = m_pos - e.y;
+    var dy = m_pos - e.y;
     m_pos = e.y;
-    panel.style.height = (parseInt(getComputedStyle(panel, '').height) + dy) + "px";
+    logDiv.style.height = (parseInt(getComputedStyle(logDiv, '').height) + dy) + "px";
+    placeholderDiv.style.height = (parseInt(getComputedStyle(placeholderDiv, '').height) + dy) + "px";
   }
 
-  panel.addEventListener("mousedown", function(e){
+  logDiv.addEventListener("mousedown", function(e){
     console.log(e.offsetY)
     if (e.offsetY < BORDER_SIZE) {
       m_pos = e.y;
