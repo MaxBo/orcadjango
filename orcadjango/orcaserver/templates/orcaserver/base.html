@@ -73,13 +73,13 @@
       <a href='/status' style="float: right;"> <b> Status: </b> <label id="status-label"></label> </a>
     </div>
   </div>
-  <div class="row" style="margin-top: 20px;">
+  <div class="row" style="margin-top: 20px; user-select: none;">
 
     {% block left-content %}
     <div class="col-md-2">
     </div>
     {% endblock %}
-    <div class="col-md-6">
+    <div class="col-md-7">
       <h4>{% block title %}{% endblock %}</h4>
 
       {% autoescape off %}{% bootstrap_messages %}{% endautoescape %}
