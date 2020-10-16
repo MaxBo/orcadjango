@@ -18,6 +18,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 ORCA_MODULE = os.environ.get(
     'ORCA_MODULE', 'orcaserver.tests.dummy_orca_stuff')
+REDIS_HOST = os.environ.get('REDIS_HOST', '127.0.0.1')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -87,7 +88,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
+            "hosts": [(REDIS_HOST, 6379)],
             'capacity': 1500,
             'expiry': 10,
         },
