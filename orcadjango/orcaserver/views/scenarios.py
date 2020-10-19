@@ -7,7 +7,7 @@ import logging
 
 from orcaserver.views import ProjectMixin
 from orcaserver.management import OrcaManager
-from orcaserver.views.steps import apply_injectables
+from orcaserver.views.projects import apply_injectables
 from orcaserver.models import Scenario, Injectable, Step
 
 logger = logging.getLogger('OrcaLog')
@@ -72,12 +72,6 @@ def create_injectables(scenario):
     deleted_injectables = Injectable.objects.filter(scenario=scenario).\
         exclude(name__in=injectable_list)
     deleted_injectables.delete()
-
-
-def create_steps(scenario):
-    orca = manager.get(scenario.id)
-    for name in orca.list_steps():
-        Step.objects.create(name=name, scenario=scenario)
 
 
 class ScenariosView(ProjectMixin, ListView):

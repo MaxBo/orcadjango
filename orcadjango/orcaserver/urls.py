@@ -22,7 +22,7 @@ urlpatterns = [
     path('injectables/<str:name>/',
          login_required(views.InjectableView.as_view()),
          name='injectable'),
-    path('status', login_required(views.StatusView.as_view()), name='status'),
+    path('status/', login_required(views.StatusView.as_view()), name='status'),
     path('steps/', login_required(views.StepsView.as_view()), name='steps'),
     path('steps/run/', login_required(views.StepsView.run)),
     path('steps/abort/', login_required(views.StepsView.abort)),

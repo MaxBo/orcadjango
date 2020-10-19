@@ -8,33 +8,14 @@ from django.http import JsonResponse, HttpResponseNotFound
 from collections import OrderedDict
 
 from orcaserver.management import OrcaManager
-from orcaserver.views import ProjectMixin
-from orcaserver.models import Step, Injectable, Scenario, InjectableConversionError
+from orcaserver.views import ProjectMixin, apply_injectables
+from orcaserver.models import Step, Injectable, Scenario
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 import json
 
 logger = logging.getLogger('OrcaLog')
 manager = OrcaManager()
-
-
-def apply_injectables(scenario):
-    if not scenario:
-        return
-    orca = manager.get(scenario.id)
-    names = orca.list_injectables()
-    injectables = Injectable.objects.filter(name__in=names, scenario=scenario)
-    for inj in injectables:
-        #  skip injectables which cannot be changed
-        if not (inj.changed or inj.can_be_changed):
-            continue
-        try:
-            converted_value = inj.validate_value()
-        except InjectableConversionError as e:
-            logger.warn(str(e))
-            continue
-        if inj.can_be_changed:
-            orca.add_injectable(inj.name, converted_value)
 
 
 class StepsView(ProjectMixin, TemplateView):

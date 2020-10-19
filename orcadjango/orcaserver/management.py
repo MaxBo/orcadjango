@@ -34,7 +34,7 @@ def load_module(module_name, orca=None, module_set=None):
     for module_name in parent_modules:
         #  if the are not reloaded yet
         if not module_name in module_set:
-            load_module(module_name, module_set)
+            load_module(module_name, module_set=module_set)
             module_set.add(module_name)
 
 
@@ -106,7 +106,9 @@ class OrcaManager(Singleton):
 
     def reset(self):
         with lock:
-            for iid, instance in self.instances.items():
+            if 'orca' in sys.modules:
+                del(sys.modules['orca'])
+            for iid in list(self.instances.keys()):
                 thread = self.threads.get(iid)
                 if thread and thread.isAlive():
                     raise Exception(

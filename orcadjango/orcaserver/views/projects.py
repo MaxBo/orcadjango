@@ -5,8 +5,11 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django.conf import settings
 
-from orcaserver.models import Scenario, Project, GeoProject
+from orcaserver.models import(Scenario, Project, GeoProject, Injectable,
+                              InjectableConversionError)
 from orcaserver.management import OrcaManager
+
+manager = OrcaManager()
 
 @receiver(post_save, sender=GeoProject)
 @receiver(post_save, sender=Project)
@@ -15,6 +18,24 @@ def create_project(sender, instance, created, **kwargs):
     if created:
         instance.module = OrcaManager().python_module
         instance.save()
+
+def apply_injectables(scenario):
+    if not scenario:
+        return
+    orca = manager.get(scenario.id)
+    names = orca.list_injectables()
+    injectables = Injectable.objects.filter(name__in=names, scenario=scenario)
+    for inj in injectables:
+        #  skip injectables which cannot be changed
+        if not (inj.changed or inj.can_be_changed):
+            continue
+        try:
+            converted_value = inj.validate_value()
+        except InjectableConversionError as e:
+            logger.warn(str(e))
+            continue
+        if inj.can_be_changed:
+            orca.add_injectable(inj.name, converted_value)
 
 
 class ProjectMixin:
@@ -44,6 +65,7 @@ class ProjectMixin:
             scenarios = Scenario.objects.filter(project_id=project_pk)
             if scenarios:
                 scenario = scenarios.first()
+                apply_injectables(scenario)
                 self.request.session['scenario'] = scenario.pk
             else:
                 scenario = None
@@ -76,7 +98,7 @@ class ProjectView(ProjectMixin, ListView):
             if request.POST.get('select'):
                 self.request.session['project'] = int(project_id)
                 self.request.session['scenario'] = None
-                return HttpResponseRedirect(reverse('scenarios'))
+                return HttpResponseRedirect(reverse('projects'))
             elif request.POST.get('delete'):
                 Project.objects.get(id=project_id).delete()
         return HttpResponseRedirect(request.path_info)

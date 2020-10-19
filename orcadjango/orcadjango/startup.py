@@ -1,4 +1,4 @@
-from orcaserver.views.steps import apply_injectables
+from orcaserver.views.projects import apply_injectables
 from orcaserver.models import Scenario, Project
 from django.conf import settings
 
