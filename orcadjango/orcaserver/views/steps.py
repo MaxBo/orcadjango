@@ -25,6 +25,11 @@ class StepsView(ProjectMixin, TemplateView):
     def id(self):
         return self.kwargs.get('id')
 
+    def get(self, request, *args, **kwargs):
+        if not self.get_scenario():
+            return  HttpResponseRedirect(reverse('scenarios'))
+        return super().get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         scenario = self.get_scenario()
         orca = manager.get(scenario.id)
