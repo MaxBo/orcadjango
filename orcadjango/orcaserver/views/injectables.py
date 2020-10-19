@@ -22,7 +22,7 @@ class InjectablesView(ProjectMixin, ListView):
     def get_queryset(self):
         """Return the injectables with their values."""
         scenario = self.get_scenario()
-        orca = manager.get(scenario.id)
+        orca = self.get_orca()
         inj = orca.list_injectables()
         injectables = Injectable.objects.filter(name__in=inj,
                                                 scenario=scenario)\
@@ -37,7 +37,7 @@ class InjectablesView(ProjectMixin, ListView):
         return grouped
 
     def post(self, request, *args, **kwargs):
-        orca = manager.get(scenario.id)
+        orca = self.get_orca()
         if request.POST.get('reset'):
             qs = self.get_queryset()
             for group, injectables in qs.items():
@@ -89,7 +89,7 @@ class InjectableView(ProjectMixin, FormView):
             return super().post(request, *args, **kwargs)
 
         if request.POST.get('reset'):
-            orca = manager.get(self.get_scenario().id)
+            orca = self.get_orca()
             inj.value = orca._injectable_backup[inj.name]
             inj.save()
             orca.add_injectable(inj.name, inj.value)
@@ -110,7 +110,7 @@ class InjectableView(ProjectMixin, FormView):
 
     def form_valid(self, form):
         scenario = self.get_scenario()
-        orca = manager.get(scenario.id)
+        orca = self.get_orca()
         inj: Injectable = Injectable.objects.get(name=self.name,
                                                  scenario=scenario)
         new_value = form.cleaned_data.get('value')

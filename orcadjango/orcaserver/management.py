@@ -88,13 +88,19 @@ class OrcaManager(Singleton):
         self.reset()
         self.python_module = module
 
-    def get(self, instance_id: int):
+    def get(self, instance_id: int, create: bool = True):
         with lock:
-            if instance_id not in self.instances:
-                self.instances[instance_id] = self.create_instance()
-            return self.instances[instance_id]
+            instance = self.instances.get(instance_id)
+            if not instance and create:
+                return self.create(instance_id)
+            return instance
 
-    def create_instance(self) -> 'module':
+    def create(self, instance_id: int):
+        instance = self._create_instance()
+        self.instances[instance_id] = instance
+        return instance
+
+    def _create_instance(self) -> 'module':
         spec = importlib.util.find_spec('orca.orca')
         orca = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(orca)

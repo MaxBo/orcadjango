@@ -65,11 +65,18 @@ class ProjectMixin:
             scenarios = Scenario.objects.filter(project_id=project_pk)
             if scenarios:
                 scenario = scenarios.first()
-                apply_injectables(scenario)
                 self.request.session['scenario'] = scenario.pk
             else:
                 scenario = None
         return scenario
+
+    def get_orca(self):
+        scenario = self.get_scenario()
+        orca = manager.get(scenario.id, create=False)
+        if not orca:
+            orca = manager.create(scenario.id)
+            apply_injectables(scenario)
+        return orca
 
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)

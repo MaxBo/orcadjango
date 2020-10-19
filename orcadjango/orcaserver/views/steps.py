@@ -32,7 +32,7 @@ class StepsView(ProjectMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         scenario = self.get_scenario()
-        orca = manager.get(scenario.id)
+        orca = self.get_orca()
         steps_grouped = OrderedDict()
         for name in orca.list_steps():
             wrapper = orca.get_step(name)
@@ -177,8 +177,9 @@ class StepsView(ProjectMixin, TemplateView):
 
     @classmethod
     def abort(cls, request):
+        scenario_id = request.session.get('scenario')
         manager = OrcaManager()
-        manager.abort()
+        manager.abort(scenario_id)
         return HttpResponse(status=200)
 
 
