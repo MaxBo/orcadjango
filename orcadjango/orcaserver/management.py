@@ -34,7 +34,7 @@ def load_module(module_name, orca=None, module_set=None):
     for module_name in parent_modules:
         #  if the are not reloaded yet
         if not module_name in module_set:
-            load_module(module_name, module_set=module_set)
+            load_module(module_name, orca=orca, module_set=module_set)
             module_set.add(module_name)
 
 
@@ -99,6 +99,8 @@ class OrcaManager(Singleton):
         orca = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(orca)
         sys.modules['orca'] = orca
+        from orcadjango import decorators
+        importlib.reload(decorators)
         load_module(self.python_module, orca=orca)
         del(spec)
         del(sys.modules['orca'])
