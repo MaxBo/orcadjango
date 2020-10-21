@@ -29,11 +29,12 @@ class InjectablesView(ProjectMixin, ListView):
             .order_by('groupname', 'name')
 
         groups = sorted(set(injectables.values_list('groupname', flat=True)))
-        grouped = OrderedDict()
+        grouped = {}
         for group in groups:
             grouped[group] = injectables\
                 .filter(groupname=group)\
                 .order_by('order', 'name')
+        grouped = OrderedDict(sorted(grouped.items()))
         return grouped
 
     def post(self, request, *args, **kwargs):

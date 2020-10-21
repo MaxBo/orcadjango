@@ -33,7 +33,7 @@ class StepsView(ProjectMixin, TemplateView):
     def get_context_data(self, **kwargs):
         scenario = self.get_scenario()
         orca = self.get_orca()
-        steps_grouped = OrderedDict()
+        steps_grouped = {}
         for name in orca.list_steps():
             wrapper = orca.get_step(name)
             group = getattr(wrapper, 'groupname', '-')
@@ -48,6 +48,7 @@ class StepsView(ProjectMixin, TemplateView):
         for group, steps_group in steps_grouped.items():
             steps_grouped[group] = sorted(steps_group, key=lambda x: x['order'])
 
+        steps_grouped = OrderedDict(sorted(steps_grouped.items()))
         steps_scenario = Step.objects.filter(
             scenario=scenario).order_by('order')
         kwargs = super().get_context_data(**kwargs)
