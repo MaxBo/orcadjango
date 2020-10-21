@@ -31,3 +31,21 @@ tr.selected {
   font-weight: bold;
   color: #007bff !important;
 }
+
+.bottom-resizable{
+  padding: 0 2em 0 2em;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background-color: white;
+}
+
+.bottom-resizable:after {
+  content: " ";
+  background-color: #ccc;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 4px;
+  width: 100%;
+  cursor: ns-resize;
+}
