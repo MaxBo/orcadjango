@@ -22,7 +22,6 @@
           <th>Group</th>
           <th>Name</th>
           <th>Description</th>
-          <th>Module</th>
         </tr>
       </thead>
       <tbody>
@@ -32,7 +31,6 @@
             <td style="background-color: Snow {% if not forloop.last %} ;border-bottom-style: hidden" {% endif %}"> {% if forloop.first %} <b>{{ group }}</b> {% endif %} </td>
             <td> {{ step.name }} </td>
             <td> {{ step.description }} </td>
-            <td> {{ step.module }} </td>
           </tr>
         {% endfor %}
       {% endfor %}
