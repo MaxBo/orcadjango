@@ -23,13 +23,19 @@ class LogConsumer(WebsocketConsumer):
 
     def log_message(self, event):
         message = event['message']
+        timestamp = event.get('timestamp')
+        if timestamp:
+            message = f'&lt;{timestamp}&gt; {message}'
         # Send message to WebSocket
         self.send(text_data=json.dumps({
-            'message': message
+            'message': message,
         }))
 
     def log_error(self, event):
         message = event['message']
+        timestamp = event.get('timestamp')
+        if timestamp:
+            message = f'&lt;{timestamp}&gt; {message}'
         # Send message to WebSocket
         self.send(text_data=json.dumps({
             'message': message,

@@ -1,6 +1,7 @@
 import logging
 from asgiref.sync import async_to_sync
 import channels.layers
+from datetime import datetime
 
 
 class OrcaChannelHandler(logging.StreamHandler):
@@ -13,6 +14,7 @@ class OrcaChannelHandler(logging.StreamHandler):
         log_type = 'log_error' if record.levelname == 'ERROR' else 'log_message'
         async_to_sync(channel_layer.group_send)(self.group, {
             'message': record.getMessage(),
+            'timestamp': datetime.now().strftime("%a %b %d %H:%M:%S %Z %Y"),
             'type': log_type
         })
 
