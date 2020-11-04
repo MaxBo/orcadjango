@@ -10,9 +10,10 @@ class OrcaChannelHandler(logging.StreamHandler):
 
     def emit(self, record):
         channel_layer = channels.layers.get_channel_layer()
+        log_type = 'log_error' if record.levelname == 'ERROR' else 'log_message'
         async_to_sync(channel_layer.group_send)(self.group, {
             'message': record.getMessage(),
-            'type': 'log_message'
+            'type': log_type
         })
 
 
