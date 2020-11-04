@@ -1,9 +1,8 @@
 from django.views.generic import ListView
 from django.views.generic.edit import FormView
 from django.http import HttpResponseRedirect, HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
-import numpy as np
-import ast
 from collections import OrderedDict
 
 from orcaserver.views import ProjectMixin
@@ -69,15 +68,24 @@ class InjectableView(ProjectMixin, FormView):
 
     def get_initial(self):
         """Return the initial data to use for forms on this view."""
-        inj = Injectable.objects.get(name=self.name,
-                                     scenario=self.get_scenario())
-        return {'value': inj.value, }
+        try:
+            inj = Injectable.objects.get(name=self.name,
+                                         scenario=self.get_scenario())
+            return {'value': inj.value}
+        except ObjectDoesNotExist:
+            return {'value': None}
 
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
-        inj = Injectable.objects.get(name=self.name,
-                                     scenario=self.get_scenario())
-        kwargs['injectable'] = inj
+        try:
+            inj = Injectable.objects.get(name=self.name,
+                                         scenario=self.get_scenario())
+            kwargs['injectable'] = inj
+        except ObjectDoesNotExist:
+            kwargs['error_message'] = (
+                'Injectable not found. Your project seems not to be up to date '
+                'with the module. Please refresh the injectables!')
+            kwargs['injectable'] = None
         return kwargs
 
     def post(self, request, *args, **kwargs):
@@ -105,8 +113,11 @@ class InjectableView(ProjectMixin, FormView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['injectable'] = Injectable.objects.get(
-            name=self.name, scenario=self.get_scenario())
+        try:
+            kwargs['injectable'] = Injectable.objects.get(
+                name=self.name, scenario=self.get_scenario())
+        except ObjectDoesNotExist:
+            kwargs['injectable'] = None
         return kwargs
 
     def form_valid(self, form):

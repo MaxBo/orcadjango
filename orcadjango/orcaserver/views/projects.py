@@ -4,11 +4,13 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
 from django.conf import settings
+import logging
 
 from orcaserver.models import(Scenario, Project, GeoProject, Injectable,
                               InjectableConversionError)
 from orcaserver.management import OrcaManager
 
+logger = logging.getLogger('OrcaLog')
 manager = OrcaManager()
 
 @receiver(post_save, sender=GeoProject)

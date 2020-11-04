@@ -50,6 +50,7 @@
 {% block content %}
 <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
 <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+{% if error_message %}<p style="color: red;"><strong>{{ error_message }}</strong></p>{% endif %}
 {% if steps_available %}
   <h6 style="float: left;">in scenario</h6> &nbsp;&nbsp;(change order by dragging and dropping)
   <table class="table" id="steps-scenario">
@@ -106,8 +107,8 @@
           logArea = document.querySelector('#wslog');
 
       chatSocket.onmessage = function(e) {
-          var data = JSON.parse(e.data);
-          var message = data['message'];
+          var data = JSON.parse(e.data),
+              message = data['message'];
           logArea.value += (message + '\n');
           logArea.scrollTop = logArea.scrollHeight;
       };
@@ -189,6 +190,10 @@
               url= inj.url + '?next={{request.path}}';
           inj_a.text = inj.name;
           inj_a.href = url;
+          if (!inj.valid) {
+            inj_a.style.color = 'red';
+            inj_a.text += ' (not valid)'
+          }
           content.innerHTML = ''; //( ' + inj.value + ' )';
           content.prepend(inj_a);
           injCell.appendChild(content);

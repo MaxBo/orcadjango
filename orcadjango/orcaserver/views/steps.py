@@ -81,13 +81,23 @@ class StepsView(ProjectMixin, TemplateView):
             for name in inj_parameters:
                 if name not in injectables_available:
                     continue
-                inj = Injectable.objects.get(name=name, scenario=scenario)
-                injectables.append({
-                    'id': inj.id,
-                    'name': name,
-                    'value': repr(inj.value),
-                    'url': f"{reverse('injectables')}{name}",
-                })
+                try:
+                    inj = Injectable.objects.get(name=name, scenario=scenario)
+                    injectables.append({
+                        'id': inj.id,
+                        'name': name,
+                        'value': repr(inj.value),
+                        'url': f"{reverse('injectables')}{name}",
+                        'valid': True
+                    })
+                except ObjectDoesNotExist:
+                    injectables.append({
+                        'id': -1,
+                        'name': name,
+                        'value': 'Injectable not found',
+                        'url': f"{reverse('injectables')}{name}",
+                        'valid': False
+                    })
             started = step.started
             finished = step.finished
             if started:
@@ -157,21 +167,41 @@ class StepsView(ProjectMixin, TemplateView):
         scenario_id = request.session.get('scenario')
         if not scenario_id:
             return
+        orca = manager.get(scenario_id)
         scenario = Scenario.objects.get(id=scenario_id)
         message = f'Running Steps for scenario "{scenario.name}"'
 
         logger.info(message)
 
         active_steps = Step.objects.filter(scenario=scenario, active=True)
+        if len(active_steps) == 0:
+            logger.error('No steps selected.')
+            return HttpResponse(status=400)
         steps = active_steps.order_by('order')
+        # check if all injectables are available
+        injectables_available = orca.list_injectables()
+        for step in steps:
+            func = orca.get_step(step.name)
+            sig = signature(func._func)
+            inj_parameters = sig.parameters
+            required = list(set(inj_parameters) & set(injectables_available))
+            inj_db = Injectable.objects.filter(name__in=required,
+                                               scenario=scenario)
+            if len(required) > len(inj_db):
+                logger.error(
+                    'Steps contain injectables that can not be found. '
+                    'Your project seems not to be up to date '
+                    'with the module.<br>Please refresh the injectables!')
+                return HttpResponse(status=400)
         for step in steps:
             step.started = None
             step.finished = None
             step.success = False
             step.save()
         apply_injectables(scenario)
-        manager = OrcaManager()
         if manager.is_running(scenario.id):
+            logger.error('Orca is already running. Please wait for it to '
+                         'finish or abort it.')
             return HttpResponse(status=400)
         manager.start(scenario.id, steps=steps, user=request.user)
         return HttpResponse(status=200)
