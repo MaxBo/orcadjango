@@ -69,7 +69,7 @@
     </thead>
     <tbody>
     {% for step in steps_scenario %}
-      <tr data-id="{{ step.id }}">
+      <tr data-id="{{ step.id }}" title="{{ step.name }} - {{ step.docstring }}" {% if not step.valid %} style="color: red;" {% endif %}>
         <td class="index"> {{ forloop.counter0 }} </td>
         <td style="display: none;"> {{ step.id }} </td>
         <td> {{ step.name }} </td>
@@ -79,7 +79,7 @@
         <td class="success"> {{ step.success }} </td>
         <td class="is_active">
           <label>
-            <input type="checkbox" {% if step.active %} checked {% endif %} id="toggle-active" onclick="toggleActiveRow(this, {{ step.id }})" style="transform: scale(2); margin: 0.5em;">
+            <input title="Activate/deactivate step" type="checkbox" {% if step.active %} checked {% endif %} id="toggle-active" onclick="toggleActiveRow(this, {{ step.id }})" style="transform: scale(2); margin: 0.5em;">
           </label>
         </td>
         <td>

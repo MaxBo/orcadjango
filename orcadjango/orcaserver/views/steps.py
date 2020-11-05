@@ -34,7 +34,8 @@ class StepsView(ProjectMixin, TemplateView):
         scenario = self.get_scenario()
         orca = self.get_orca()
         steps_grouped = {}
-        for name in orca.list_steps():
+        steps_available = orca.list_steps()
+        for name in steps_available:
             wrapper = orca.get_step(name)
             group = getattr(wrapper, 'groupname', '-')
             order = getattr(wrapper, 'order', 1)
@@ -51,6 +52,16 @@ class StepsView(ProjectMixin, TemplateView):
         steps_grouped = OrderedDict(sorted(steps_grouped.items()))
         steps_scenario = Step.objects.filter(
             scenario=scenario).order_by('order')
+        for step in steps_scenario:
+            if step.name not in steps_available:
+                step.valid = False
+                step.docstring = (
+                    'Step not found. Your project seems not to be up to date '
+                    'with the module. Please remove this step.')
+                continue
+            if not step.docstring:
+                step.docstring = orca.get_step(step.name)._func.__doc__
+            step.valid = True
         kwargs = super().get_context_data(**kwargs)
         kwargs['steps_available'] = steps_grouped if scenario else []
         kwargs['steps_scenario'] = steps_scenario
@@ -73,7 +84,10 @@ class StepsView(ProjectMixin, TemplateView):
             scenario=scenario).order_by('order')
         steps_json = []
         injectables_available = orca.list_injectables()
+        steps_available = orca.list_steps()
         for step in steps_scenario:
+            if step.name not in steps_available:
+                continue
             func = orca.get_step(step.name)
             sig = signature(func._func)
             inj_parameters = sig.parameters
@@ -178,7 +192,14 @@ class StepsView(ProjectMixin, TemplateView):
         steps = active_steps.order_by('order')
         # check if all injectables are available
         injectables_available = orca.list_injectables()
+        steps_available = orca.list_steps()
         for step in steps:
+            if step.name not in steps_available:
+                logger.error(
+                    'There are steps selected that can not be found in the '
+                    'module. Your project seems not to be up to date '
+                    'with the module. Please remove those steps.')
+                return HttpResponse(status=400)
             func = orca.get_step(step.name)
             sig = signature(func._func)
             inj_parameters = sig.parameters
@@ -187,10 +208,10 @@ class StepsView(ProjectMixin, TemplateView):
                                                scenario=scenario)
             if len(required) > len(inj_db):
                 logger.error(
-                    'Steps contain injectables that can not be found. '
-                    'Your project seems not to be up to date '
+                    'There are steps selected that contain injectables that '
+                    'not be found. Your project seems not to be up to date '
                     'with the module.<br>Please refresh the injectables '
-                    '(scenario page)!')
+                    '(scenario page).')
                 return HttpResponse(status=400)
         for step in steps:
             step.started = None

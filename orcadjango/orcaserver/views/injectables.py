@@ -85,7 +85,7 @@ class InjectableView(ProjectMixin, FormView):
             kwargs['error_message'] = (
                 'Injectable not found. Your project seems not to be up to date '
                 'with the module. Please refresh the injectables '
-                '(scenario page)!')
+                '(scenario page).')
             kwargs['injectable'] = None
         return kwargs
 
