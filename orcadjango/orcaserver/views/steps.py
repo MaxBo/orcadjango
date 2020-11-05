@@ -26,8 +26,10 @@ class StepsView(ProjectMixin, TemplateView):
         return self.kwargs.get('id')
 
     def get(self, request, *args, **kwargs):
-        if not self.get_scenario():
+        scenario = self.get_scenario()
+        if not scenario:
             return  HttpResponseRedirect(reverse('scenarios'))
+        #apply_injectables(scenario)
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -100,7 +102,7 @@ class StepsView(ProjectMixin, TemplateView):
                     injectables.append({
                         'id': inj.id,
                         'name': name,
-                        'value': repr(inj.value),
+                        'value': repr(inj.calculated_value),
                         'url': f"{reverse('injectables')}{name}",
                         'valid': True
                     })
