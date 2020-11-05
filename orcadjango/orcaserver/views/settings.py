@@ -8,7 +8,7 @@ from orcaserver.management import OrcaManager
 class SettingsView(ProjectMixin, FormView):
     template_name = 'orcaserver/settings.html'
     form_class = OrcaFileForm
-    success_url = '/scenarios'
+    success_url = '/projects'
 
     def form_valid(self, form):
         module = form.cleaned_data['module']

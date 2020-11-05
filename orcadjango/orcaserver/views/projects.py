@@ -46,15 +46,18 @@ class ProjectMixin:
     def get_project(self):
         """get the selected scenario"""
         project_pk = self.request.session.get('project')
+        module = OrcaManager().python_module
         try:
-            project = Project.objects.get(pk=project_pk)
+            project = Project.objects.get(pk=project_pk, module=module)
         except Project.DoesNotExist:
-            projects = Project.objects.filter(module=settings.ORCA_MODULE)
-            if projects:
-                project = projects.first()
-                self.request.session['project'] = project.pk
-            else:
-                project = None
+            #projects = Project.objects.filter(module=module)
+            #if projects:
+                #project = projects.first()
+                #self.request.session['project'] = project.pk
+            #else:
+            project = None
+            self.request.session['project'] = None
+            self.request.session['scenario'] = None
         return project
 
     def get_scenario(self):
