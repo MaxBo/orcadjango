@@ -5,15 +5,15 @@
   top: 50%;
 }
 
-table, th, td {
-  border: 1px solid black;
-}
+/*.select th, .select td {*/
+  /*border: 1px solid black;*/
+/*}*/
 
-tr {
+.select tr {
   cursor: pointer;
 }
 
-tr.selected {
+.select tr.selected {
   background-color: #87c1ff;
   color: white;
 }

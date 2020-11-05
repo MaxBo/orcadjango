@@ -171,8 +171,6 @@ class StepsView(ProjectMixin, TemplateView):
         scenario = Scenario.objects.get(id=scenario_id)
         message = f'Running Steps for scenario "{scenario.name}"'
 
-        logger.info(message)
-
         active_steps = Step.objects.filter(scenario=scenario, active=True)
         if len(active_steps) == 0:
             logger.error('No steps selected.')
@@ -191,7 +189,8 @@ class StepsView(ProjectMixin, TemplateView):
                 logger.error(
                     'Steps contain injectables that can not be found. '
                     'Your project seems not to be up to date '
-                    'with the module.<br>Please refresh the injectables!')
+                    'with the module.<br>Please refresh the injectables '
+                    '(scenario page)!')
                 return HttpResponse(status=400)
         for step in steps:
             step.started = None
@@ -203,6 +202,7 @@ class StepsView(ProjectMixin, TemplateView):
             logger.error('Orca is already running. Please wait for it to '
                          'finish or abort it.')
             return HttpResponse(status=400)
+        logger.info(message)
         manager.start(scenario.id, steps=steps, user=request.user)
         return HttpResponse(status=200)
 
