@@ -29,12 +29,19 @@ class TestOrcaInstancing(unittest.TestCase):
         handler.setFormatter(logging.Formatter('%(asctime)s orca1 %(message)s'))
         handler.setLevel(logging.INFO)
         cls.orca1.logger.addHandler(handler)
-        cls.orca1.logger.setLevel(logging.INFO)
         handler = logging.StreamHandler(sys.stdout)
         handler.setFormatter(logging.Formatter('%(asctime)s orca2 %(message)s'))
         handler.setLevel(logging.INFO)
         cls.orca2.logger.addHandler(handler)
-        cls.orca2.logger.setLevel(logging.INFO)
+
+    def test_sub(self):
+        step = MockStep('step1')
+        self.orca1.add_injectable('dataframe', pd.DataFrame())
+        self.orca2.add_injectable('dataframe', pd.DataFrame())
+        self.orca1.add_injectable('inj_list', [])
+        self.orca2.add_injectable('inj_list', [])
+        self.manager.start(1, [step])
+        self.manager.start(2, [step])
 
     def test_multiply(self):
         step = MockStep('step_multiply_df')

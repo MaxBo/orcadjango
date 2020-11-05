@@ -6,6 +6,8 @@ import xarray as xr
 from orcadjango.decorators import group
 from orca import logger
 
+from .dummy_submodule import DummySub
+
 @group(groupname='strings', order=1)
 @orca.injectable()
 def inj1() -> str:
@@ -96,7 +98,8 @@ def step2(inj1, inj2):
 @orca.step()
 def step1(inj_list, dataframe):
     """dummy step"""
-    logger.info('hallo hallo')
+    dummy = DummySub()
+    dummy.run()
     sleep(5)
     logger.info('step1 finished')
 
