@@ -1,6 +1,8 @@
 import unittest
 from time import sleep
 import pandas as pd
+import logging
+import sys
 
 from orcaserver.management import OrcaManager
 
@@ -21,6 +23,18 @@ class TestOrcaInstancing(unittest.TestCase):
         cls.orca1 = cls.manager.get(1)
         cls.orca2 = cls.manager.get(2)
         assert(id(cls.orca1) != id(cls.orca2))
+        assert(id(cls.orca1.logger) != id(cls.orca2.logger))
+
+        handler = logging.StreamHandler(sys.stdout)
+        handler.setFormatter(logging.Formatter('%(asctime)s orca1 %(message)s'))
+        handler.setLevel(logging.INFO)
+        cls.orca1.logger.addHandler(handler)
+        cls.orca1.logger.setLevel(logging.INFO)
+        handler = logging.StreamHandler(sys.stdout)
+        handler.setFormatter(logging.Formatter('%(asctime)s orca2 %(message)s'))
+        handler.setLevel(logging.INFO)
+        cls.orca2.logger.addHandler(handler)
+        cls.orca2.logger.setLevel(logging.INFO)
 
     def test_multiply(self):
         step = MockStep('step_multiply_df')

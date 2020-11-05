@@ -20,8 +20,10 @@ def load_module(module_name, orca=None, module_set=None):
         orca._injectable_backup = {}
         orca._injectable_function = {}
         module_set = {module_name}
-    module = importlib.import_module(module_name)
-    importlib.reload(module)
+
+    spec = importlib.util.find_spec(module_name)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
     for inj in orca.list_injectables():
         orca._injectable_function[inj] = orca._INJECTABLES[inj]
         try:
@@ -36,6 +38,7 @@ def load_module(module_name, orca=None, module_set=None):
         if not module_name in module_set:
             load_module(module_name, orca=orca, module_set=module_set)
             module_set.add(module_name)
+    return module
 
 
 class InUseError(Exception):
@@ -104,6 +107,8 @@ class OrcaManager(Singleton):
         spec = importlib.util.find_spec('orca.orca')
         orca = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(orca)
+        # append a logger
+        orca.logger = logging.getLogger(str(id(orca)))
         sys.modules['orca'] = orca
         from orcadjango import decorators
         importlib.reload(decorators)
@@ -237,7 +242,14 @@ class OrcaManager(Singleton):
                         step.started = timezone.now()
                         step.save()
                         try:
+                            #f = io.BytesIO()
+                            #handler = logging.StreamHandler(f)
+                            #log = logging.getLogger('mylogger')
+                            #log.setLevel(logging.INFO)
+                            #log.addHandler(handler)
+                            #with stdio_proxy.redirect_stdout(f):
                             step_func()
+                            #print('Got stdout: "{0}"'.format(f.getvalue()))
                             step.success = True
                         except Exception as e:
                             step.success = False

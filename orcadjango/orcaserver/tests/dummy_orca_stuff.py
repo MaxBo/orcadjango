@@ -4,9 +4,7 @@ from time import sleep
 import pandas as pd
 import xarray as xr
 from orcadjango.decorators import group
-import logging
-logger = logging.getLogger('OrcaLog')
-
+from orca import logger
 
 @group(groupname='strings', order=1)
 @orca.injectable()
@@ -117,4 +115,7 @@ def step_multiply_df(inj_int, dataframe):
     a = dataframe.copy()
     for i in range(inj_int-1):
         dataframe += a
+        logger.info(i)
+        #print(id(dataframe))
+        #print(f'{id(logger)} {i}')
         sleep(1)
