@@ -224,7 +224,11 @@ class StepsView(ProjectMixin, TemplateView):
                          'finish or abort it.')
             return HttpResponse(status=400)
         logger.info(message)
-        manager.start(scenario.id, steps=steps, user=request.user)
+        try:
+            manager.start(scenario.id, steps=steps, user=request.user)
+        except Exception as e:
+            logger.error(str(e))
+            return HttpResponse(status=400)
         return HttpResponse(status=200)
 
     @classmethod

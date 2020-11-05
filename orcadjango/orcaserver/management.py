@@ -241,7 +241,13 @@ class OrcaManager(Singleton):
                             step.success = True
                         except Exception as e:
                             step.success = False
-                            raise e
+                            step.finished = timezone.now()
+                            step.save()
+                            logger.error(
+                                f'{e.__class__.__module__}.'
+                                f'{e.__class__.__name__} - {str(e)}')
+                            logger.error('Aborting run')
+                            return
                         end = time.time() - t2
                         print("Time to execute step '{}': {:.2f} s".format(
                               step_name, end))
@@ -265,4 +271,4 @@ class OrcaManager(Singleton):
                 orca.clear_cache(scope=_CS_ITER)
             logger.info('orca run finished')
         except Abort:
-            logger.info('orca run aborted')
+            logger.error('orca run aborted')

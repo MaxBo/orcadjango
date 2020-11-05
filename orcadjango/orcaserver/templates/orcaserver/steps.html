@@ -76,7 +76,7 @@
         <td class="injectables"> {{ step.injectables }} </td>
         <td class="start"> {{ step.started }} </td>
         <td class="finish"> {{ step.finished }} </td>
-        <td class="success"> {{ step.success }} </td>
+        <td class="success" style="text-align: center; vertical-align: middle; color: white;"> </td>
         <td class="is_active">
           <label>
             <input title="Activate/deactivate step" type="checkbox" {% if step.active %} checked {% endif %} id="toggle-active" onclick="toggleActiveRow(this, {{ step.id }})" style="transform: scale(2); margin: 0.5em;">
@@ -186,7 +186,10 @@
         injCell.innerHTML = '';
         startCell.innerHTML = step.started;
         finishCell.innerHTML = step.finished;
-        successCell.innerHTML = step.success;
+        if (step.finished) {
+          successCell.innerHTML = step.success;
+          successCell.style.background = (step.success) ? 'green' : 'red';
+        }
         step.injectables.forEach(function(inj){
           var inj_a = document.createElement('a'),
               content = document.createElement('div'),
