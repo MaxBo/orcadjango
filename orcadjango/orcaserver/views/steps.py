@@ -6,6 +6,7 @@ from django.shortcuts import HttpResponseRedirect
 from django.http import HttpResponse
 from django.http import JsonResponse, HttpResponseNotFound
 from collections import OrderedDict
+from django.db.models import Max
 
 from orcaserver.management import OrcaManager
 from orcaserver.views import ProjectMixin, apply_injectables
@@ -137,11 +138,15 @@ class StepsView(ProjectMixin, TemplateView):
         scenario = self.get_scenario()
         if request.POST.get('add'):
             steps = request.POST.get('steps', '').split(',')
+            existing = Step.objects.filter(scenario=scenario)
+            i = 0 if len(existing) == 0 else \
+                existing.aggregate(Max('order'))['order__max'] + 1
             for step in steps:
                 if not step:
                     continue
                 Step.objects.create(scenario=scenario,
-                                    name=step, order=10000)
+                                    name=step, order=i)
+                i += 1
         elif request.POST.get('remove'):
             step_id = request.POST.get('step')
             step = Step.objects.get(id=step_id)
