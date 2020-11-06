@@ -85,6 +85,7 @@ class OrcaManager(Singleton):
     ''''''
     instances = {}
     threads = {}
+    meta = {}
     python_module = None
 
     def set_module(self, module: str):
@@ -132,14 +133,13 @@ class OrcaManager(Singleton):
                 if thread:
                     del(self.threads[iid])
 
-    def start(self, instance_id: int, steps, user=None):
+    def start(self, instance_id: int, steps):
         thread = self.threads.get(instance_id)
         if thread and thread.isAlive():
             raise InUseError('Thread is already running')
         thread = self.threads[instance_id] = AbortableThread(
             target=self.run, args=(instance_id, steps))
-        #self.user = user.get_username() if user else 'unknown'
-        #self.start_time = timezone.now()
+        self.add_meta(instance_id, start_time=timezone.now())
         thread.start()
 
     def abort(self, instance_id):
@@ -150,6 +150,18 @@ class OrcaManager(Singleton):
     def is_running(self, instance_id: int):
         thread = self.threads.get(instance_id)
         return thread.isAlive() if thread else False
+
+    def add_meta(self, instance_id, **kwargs):
+        if instance_id not in self.meta:
+            self.meta[instance_id] = {}
+        for k, v in kwargs.items():
+            self.meta[instance_id][k] = v
+
+    def get_meta(self, instance_id: int, *args):
+        meta = self.meta.get(instance_id, {})
+        if args:
+            return {arg: meta.get(arg) for arg in args}
+        return meta
 
     def run(self, instance_id: int, steps, iter_vars=None, data_out=None,
             out_interval=1, out_base_tables=None, out_run_tables=None,

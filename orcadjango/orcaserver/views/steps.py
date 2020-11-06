@@ -176,14 +176,20 @@ class StepsView(ProjectMixin, TemplateView):
 
     @classmethod
     def status(cls, request):
-        #manager = OrcaManager()
-        #status_text = f'currently run by user "{manager.user}"'\
-            #if manager.is_running else 'not in use'
+        manager = OrcaManager()
+        scenario_id = request.session.get('scenario')
+        is_running = manager.is_running(scenario_id)
+        meta = manager.get_meta(scenario_id)
+        user = meta.get('user')
+        user_name = user.get_username() if user else 'unknown'
+        start_time = meta.get('start_time', '-')
+        status_text = (f'scenario is currently run by user "{user}"') \
+            if is_running else 'scenario not in use'
         status = {
-            'running': '',# manager.is_running,
-            'text': '', # status_text,
-            'last_user': '', # manager.user,
-            'last_start': '' # manager.start_time,
+            'running': is_running,
+            'text': status_text,
+            'last_user': user_name,
+            'last_start': start_time
         }
         return JsonResponse(status)
 
@@ -204,15 +210,15 @@ class StepsView(ProjectMixin, TemplateView):
         handler.setLevel(level)
         logger.addHandler(handler)
 
-        active_steps = Step.objects.filter(scenario=scenario, active=True)
+        active_steps = Step.objects.filter(
+            scenario=scenario, active=True).order_by('order')
         if len(active_steps) == 0:
             logger.error('No steps selected.')
             return HttpResponse(status=400)
-        steps = active_steps.order_by('order')
         # check if all injectables are available
         injectables_available = orca.list_injectables()
         steps_available = orca.list_steps()
-        for step in steps:
+        for step in active_steps:
             if step.name not in steps_available:
                 logger.error(
                     'There are steps selected that can not be found in the '
@@ -232,7 +238,7 @@ class StepsView(ProjectMixin, TemplateView):
                     'with the module.<br>Please refresh the injectables '
                     '(scenario page).')
                 return HttpResponse(status=400)
-        for step in steps:
+        for step in active_steps:
             step.started = None
             step.finished = None
             step.success = False
@@ -246,7 +252,8 @@ class StepsView(ProjectMixin, TemplateView):
         message = f'Running Steps for scenario "{scenario.name}"'
         logger.info(message)
         try:
-            manager.start(scenario.id, steps=steps, user=request.user)
+            manager.add_meta(scenario.id, user=request.user)
+            manager.start(scenario.id, steps=active_steps)
         except Exception as e:
             logger.error(str(e))
             return HttpResponse(status=400)

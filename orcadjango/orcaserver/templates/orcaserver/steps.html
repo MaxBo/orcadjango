@@ -190,6 +190,10 @@
           successCell.innerHTML = step.success;
           successCell.style.background = (step.success) ? 'green' : 'red';
         }
+        else {
+            successCell.innerHTML = '';
+            successCell.style.background = 'white';
+        }
         step.injectables.forEach(function(inj){
           var inj_a = document.createElement('a'),
               content = document.createElement('div'),
