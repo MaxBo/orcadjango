@@ -9,7 +9,7 @@ def send(channel, message, log_type='log_message'):
     channel_layer = channels.layers.get_channel_layer()
     async_to_sync(channel_layer.group_send)(channel, {
         'message': message,
-        'timestamp': datetime.now().strftime("%a %b %d %H:%M:%S %Z %Y"),
+        #'timestamp': datetime.now().strftime("%a %b %d %H:%M:%S %Z %Y"),
         'type': log_type
     })
 
@@ -18,10 +18,11 @@ class OrcaChannelHandler(logging.StreamHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.group = 'log_orca'
+        self.setFormatter(logging.Formatter('%(asctime)s %(message)s'))
 
     def emit(self, record):
         log_type = 'log_error' if record.levelname == 'ERROR' else 'log_message'
-        send(self.group, record.getMessage(), log_type=log_type)
+        send(self.group, self.format(record), log_type=log_type)
 
 
 class ScenarioHandler(OrcaChannelHandler):
@@ -29,7 +30,7 @@ class ScenarioHandler(OrcaChannelHandler):
         super().__init__(*args, **kwargs)
         self.group = f'log_{scenario.id}'
         self.setFormatter(logging.Formatter(
-            f'%(asctime)s {scenario.name} %(message)s'))
+            f'%(asctime)s {scenario.name} - %(message)s'))
 
 
 class LogConsumer(WebsocketConsumer):
