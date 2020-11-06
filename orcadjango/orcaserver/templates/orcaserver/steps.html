@@ -102,7 +102,7 @@
     </div>
     <div id="wslog" class="log" style="width: 100%; height: calc(100% - 5em); resize: none;"></div>
     <script>
-      var chatSocket = new WebSocket('wss://' + location.host + '/ws/log/orca/'),
+      var chatSocket = new WebSocket('{{ log_socket }}'),
           logArea = document.querySelector('#wslog');
 
       chatSocket.onmessage = function(e) {

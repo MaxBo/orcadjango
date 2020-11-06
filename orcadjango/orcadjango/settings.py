@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'orcaserver',
     'bootstrap4',
-    'wslog',
     'channels',
 ]
 

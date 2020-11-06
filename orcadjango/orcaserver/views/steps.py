@@ -7,15 +7,16 @@ from django.http import HttpResponse
 from django.http import JsonResponse, HttpResponseNotFound
 from collections import OrderedDict
 from django.db.models import Max
+from django.conf import settings
+import json
 
 from orcaserver.management import OrcaManager
 from orcaserver.views import ProjectMixin, apply_injectables
 from orcaserver.models import Step, Injectable, Scenario
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
-import json
+from orcadjango.loggers import ScenarioHandler
 
-logger = logging.getLogger('OrcaLog')
 manager = OrcaManager()
 
 
@@ -68,6 +69,9 @@ class StepsView(ProjectMixin, TemplateView):
         kwargs = super().get_context_data(**kwargs)
         kwargs['steps_available'] = steps_grouped if scenario else []
         kwargs['steps_scenario'] = steps_scenario
+        # ToDo: get room from handler
+        kwargs['log_socket'] = \
+            f'wss://{self.request.get_host()}/ws/log/{scenario.id}/'
         return kwargs
 
     @staticmethod
@@ -190,7 +194,15 @@ class StepsView(ProjectMixin, TemplateView):
             return
         orca = manager.get(scenario_id)
         scenario = Scenario.objects.get(id=scenario_id)
-        message = f'Running Steps for scenario "{scenario.name}"'
+
+        logger = orca.logger
+        # ToDo: move handler config to manager (doesn't know about scenarios)?
+        logger.handlers.clear()
+        handler = ScenarioHandler(scenario)
+        level = logging.DEBUG if settings.DEBUG else logging.INFO
+        logger.setLevel(level)
+        handler.setLevel(level)
+        logger.addHandler(handler)
 
         active_steps = Step.objects.filter(scenario=scenario, active=True)
         if len(active_steps) == 0:
@@ -230,6 +242,8 @@ class StepsView(ProjectMixin, TemplateView):
             logger.error('Orca is already running. Please wait for it to '
                          'finish or abort it.')
             return HttpResponse(status=400)
+
+        message = f'Running Steps for scenario "{scenario.name}"'
         logger.info(message)
         try:
             manager.start(scenario.id, steps=steps, user=request.user)

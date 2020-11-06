@@ -109,6 +109,7 @@ class OrcaManager(Singleton):
         spec.loader.exec_module(orca)
         # append a logger
         orca.logger = logging.getLogger(str(id(orca)))
+        orca.logger.setLevel(logging.INFO)
         sys.modules['orca'] = orca
         from orcadjango import decorators
         importlib.reload(decorators)
@@ -196,7 +197,8 @@ class OrcaManager(Singleton):
             or both, local and computed columns (False).
         """
         orca = self.get(instance_id)
-        logger = logging.getLogger('OrcaLog')
+        logger = orca.logger
+
         try:
             iter_vars = iter_vars or [None]
             max_i = len(iter_vars)
@@ -242,14 +244,7 @@ class OrcaManager(Singleton):
                         step.started = timezone.now()
                         step.save()
                         try:
-                            #f = io.BytesIO()
-                            #handler = logging.StreamHandler(f)
-                            #log = logging.getLogger('mylogger')
-                            #log.setLevel(logging.INFO)
-                            #log.addHandler(handler)
-                            #with stdio_proxy.redirect_stdout(f):
                             step_func()
-                            #print('Got stdout: "{0}"'.format(f.getvalue()))
                             step.success = True
                         except Exception as e:
                             step.success = False
@@ -261,8 +256,8 @@ class OrcaManager(Singleton):
                             logger.error('Aborting run')
                             return
                         end = time.time() - t2
-                        print("Time to execute step '{}': {:.2f} s".format(
-                              step_name, end))
+                        #print("Time to execute step '{}': {:.2f} s".format(
+                              #step_name, end))
                         step.finished = timezone.now()
                         step.save()
 
