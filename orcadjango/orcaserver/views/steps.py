@@ -70,8 +70,10 @@ class StepsView(ProjectMixin, TemplateView):
         kwargs['steps_available'] = steps_grouped if scenario else []
         kwargs['steps_scenario'] = steps_scenario
         # ToDo: get room from handler
+
+        prefix = 'ws' if settings.DEBUG else 'wss'
         kwargs['log_socket'] = \
-            f'wss://{self.request.get_host()}/ws/log/{scenario.id}/'
+            f'{prefix}://{self.request.get_host()}/ws/log/{scenario.id}/'
         return kwargs
 
     @staticmethod
