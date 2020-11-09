@@ -1,5 +1,8 @@
-from orca import logger
+from orca import logger as orca_logger
 
 class DummySub:
+    def __init__(self, logger=None):
+        self.logger = logger or orca_logger
+
     def run(self):
-        logger.info('test_sub')
+        self.logger.info('test_sub')

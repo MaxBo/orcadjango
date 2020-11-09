@@ -1,14 +1,14 @@
 from django.views.generic import FormView
 import importlib
 
-from orcaserver.forms import OrcaFileForm
+from orcaserver.forms import OrcaSettingsForm
 from orcaserver.views import ProjectMixin
 from orcaserver.management import OrcaManager
 
 
 class SettingsView(ProjectMixin, FormView):
     template_name = 'orcaserver/settings.html'
-    form_class = OrcaFileForm
+    form_class = OrcaSettingsForm
     success_url = '/projects'
 
     def form_valid(self, form):

@@ -98,7 +98,7 @@ def step2(inj1, inj2):
 @orca.step()
 def step1(inj_list, dataframe):
     """dummy step"""
-    dummy = DummySub()
+    dummy = DummySub(logger=logger)
     dummy.run()
     sleep(5)
     logger.info('step1 finished')

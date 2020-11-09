@@ -6,6 +6,7 @@ DB_PASS = os.environ['DB_PASS']
 DB_HOST = os.environ.get('DB_HOST', 'localhost')
 DB_PORT = os.environ.get('DB_PORT', '5432')
 SECRET_KEY = os.environ.get('SECRET_KEY', SECRET_KEY)
+HOST = os.environ.get('DJANGO_HOST')
 
 DATABASES = {
     'default': {
@@ -19,5 +20,4 @@ DATABASES = {
     },
 }
 
-ALLOWED_HOSTS = ['localhost',
-                 'miraculix.ggr-planung.de']
+ALLOWED_HOSTS = ['localhost', HOST]

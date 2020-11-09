@@ -1,21 +1,36 @@
 from django import forms
+from django.conf import settings
 
 from orcaserver.models import Step, InjectableConversionError
 from orcaserver.management import OrcaManager
 
 
 def get_python_module():
-    """return the default python module"""
+    """return the currently set python module"""
     return OrcaManager().python_module
 
+def get_available_modules():
+    available = settings.ORCA_MODULES.get('available', {})
+    return [(v.get('path'),
+             k + f" - {v['description']} " if 'description' in v else '')
+            for k, v in available.items()]
 
-class OrcaFileForm(forms.Form):
-    module = forms.CharField(max_length=100,
-                             widget=forms.widgets.TextInput(
-                                 attrs={'size': 100, }),
-                             label='python module with orca imports',
-                             initial=get_python_module,
-                             )
+
+class OrcaSettingsForm(forms.Form):
+    choices = forms.ChoiceField(
+        widget=forms.Select(
+        attrs={'onchange': "document.querySelector('input[name=\"module\"]').value=this.value;"}),
+        choices=get_available_modules(),
+        label='Available modules',
+        initial=get_python_module,
+    )
+    module = forms.CharField(
+        max_length=100,
+        widget=forms.widgets.TextInput(
+            attrs={'size': 100, }),
+        label='Python module with orca imports',
+        initial=get_python_module,
+    )
 
 
 class InjectableValueForm(forms.Form):
