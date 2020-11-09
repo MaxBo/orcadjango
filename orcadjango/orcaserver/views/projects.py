@@ -50,11 +50,6 @@ class ProjectMixin:
         try:
             project = Project.objects.get(pk=project_pk, module=module)
         except Project.DoesNotExist:
-            #projects = Project.objects.filter(module=module)
-            #if projects:
-                #project = projects.first()
-                #self.request.session['project'] = project.pk
-            #else:
             project = None
             self.request.session['project'] = None
             self.request.session['scenario'] = None
@@ -77,6 +72,8 @@ class ProjectMixin:
 
     def get_orca(self):
         scenario = self.get_scenario()
+        if not scenario:
+            return
         orca = manager.get(scenario.id, create=False)
         if not orca:
             orca = manager.create(scenario.id)
@@ -114,8 +111,3 @@ class ProjectView(ProjectMixin, ListView):
             elif request.POST.get('delete'):
                 Project.objects.get(id=project_id).delete()
         return HttpResponseRedirect(request.path_info)
-
-
-class GeoProjectView(ProjectView):
-    model = GeoProject
-    template_name = 'orcaserver/geoprojects.html'

@@ -21,6 +21,8 @@ class InjectablesView(ProjectMixin, ListView):
     def get_queryset(self):
         """Return the injectables with their values."""
         scenario = self.get_scenario()
+        if not scenario:
+            return []
         orca = self.get_orca()
         inj = orca.list_injectables()
         injectables = Injectable.objects.filter(name__in=inj,
