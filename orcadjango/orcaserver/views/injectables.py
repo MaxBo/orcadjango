@@ -4,8 +4,9 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from collections import OrderedDict
+import json
 
-from orcaserver.views import ProjectMixin
+from orcaserver.views import ProjectMixin, recreate_injectables
 from orcaserver.models import Injectable
 from orcaserver.forms import InjectableValueForm
 from orcaserver.management import OrcaManager
@@ -39,24 +40,8 @@ class InjectablesView(ProjectMixin, ListView):
         return grouped
 
     def post(self, request, *args, **kwargs):
-        orca = self.get_orca()
         if request.POST.get('reset'):
-            qs = self.get_queryset()
-            for group, injectables in qs.items():
-                for inj in injectables:  # type: Injectable
-                    if inj.can_be_changed:
-                        orig_value = orca._injectable_backup[inj.name]
-                    else:
-                        try:
-                            orig_value = orca.get_injectable(inj.name)
-                            _ = inj.validate_value(orig_value)
-                        except Exception as e:
-                            orig_value = str(e)
-                            inj.valid = False
-                    inj.value = orig_value
-                    inj.save()
-                    if inj.can_be_changed:
-                        orca.add_injectable(inj.name, orig_value)
+            recreate_injectables(self.get_orca(), self.get_scenario())
         return HttpResponseRedirect(request.path_info)
 
 
@@ -102,7 +87,8 @@ class InjectableView(ProjectMixin, FormView):
 
         if request.POST.get('reset'):
             orca = self.get_orca()
-            inj.value = orca._injectable_backup[inj.name]
+            init = json.loads(inj.scenario.project.init)
+            inj.value = init.get(inj.name, orca._injectable_backup[inj.name])
             inj.save()
             orca.add_injectable(inj.name, inj.value)
             return HttpResponseRedirect(request.path_info)

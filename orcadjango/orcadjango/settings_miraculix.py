@@ -8,7 +8,7 @@ ORCA_MODULES['available'].update({
         'description': ('collection of tools to extract data from the europe '
                         'database to a project database'),
         'template': 'extract_project',
-        'init': ['target_srid', 'bbox_dict']# , 'database'],
+        'init': ['database', 'target_srid', 'bbox_dict']
     }
 })
 

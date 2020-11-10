@@ -11,7 +11,11 @@ def group(groupname='Group1', order=1):
             name, orca._injectable_function.get(
                 name, orca._INJECTABLES.get(name)))
         if orcafunc_wrapper:
-            orcafunc_wrapper.groupname = groupname
-            orcafunc_wrapper.order = order
+            if not hasattr(orca, 'meta'):
+                orca.meta = {}
+            if name not in orca.meta:
+                orca.meta[name] = {}
+            orca.meta[name]['group'] = groupname
+            orca.meta[name]['order'] = order
         return func
     return decorator

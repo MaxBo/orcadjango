@@ -39,10 +39,12 @@ class StepsView(ProjectMixin, TemplateView):
         orca = self.get_orca()
         steps_grouped = {}
         steps_available = orca.list_steps()
+        meta = getattr(orca, 'meta', {})
         for name in steps_available:
+            _meta = meta.get(name, {})
             wrapper = orca.get_step(name)
-            group = getattr(wrapper, 'groupname', '-')
-            order = getattr(wrapper, 'order', 1)
+            group = _meta.get('group', '-')
+            order = _meta.get('order', 1)
             steps_grouped.setdefault(group, []).append({
                 'name': name,
                 'description': wrapper._func.__doc__ or '',

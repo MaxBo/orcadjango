@@ -46,10 +46,10 @@ def recreate_injectables(orca, scenario):
             try:
                 parent_inj = Injectable.objects.get(scenario=inj.scenario,
                                                     name=parameter)
+                parent_injectables.append(parent_inj.pk)
             except Injectable.DoesNotExist:
                 logger.warn(f'Injectable {parameter} '
                             f'not found in scneario {inj.scenario.name}')
-            parent_injectables.append(parent_inj.pk)
         inj.parent_injectables = str(parent_injectables)
         inj.save()
 

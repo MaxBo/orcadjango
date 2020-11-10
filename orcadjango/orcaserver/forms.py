@@ -45,7 +45,7 @@ class OrcaSettingsForm(forms.Form):
 
 
 class InjectableValueForm(forms.Form):
-    value = forms.CharField(label='Value', max_length=255)
+    value = forms.CharField(label='Value', max_length=255, required=False)
 
     def __init__(self, *args, **kwargs):
         self.injectable = kwargs.pop('injectable', None)

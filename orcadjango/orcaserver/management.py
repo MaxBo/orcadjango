@@ -48,8 +48,10 @@ def load_module(module_name, orca=None, module_set=None):
 def parse_injectables(orca):
     injectable_list = orca.list_injectables()
     descriptors = {}
+    orca_meta = getattr(orca, 'meta', {})
     for name in injectable_list:
         desc = {}
+        _meta = orca_meta.get(name, {})
         if name.startswith('iter_'):
             continue
         value = orca._injectable_backup.get(name)
@@ -78,10 +80,11 @@ def parse_injectables(orca):
                     datatype_class = returntype
                     desc['datatype'] = returntype.__name__
             desc['module'] = funcwrapper._func.__module__
-            desc['groupname'] = getattr(funcwrapper, 'groupname', '')
-            desc['order'] = getattr(funcwrapper, 'order', 1)
+            desc['groupname'] = _meta.get('group', '')
+            desc['order'] = _meta.get('order', 1)
             desc['parameters'] = list(sig.parameters.keys())
-        desc['data_class'] = f'{datatype_class.__module__}.{datatype_class.__name__}'
+        desc['data_class'] = (f'{datatype_class.__module__}.'
+                              f'{datatype_class.__name__}')
         descriptors[name] = desc
     return descriptors
 
