@@ -22,11 +22,7 @@ class Project(NameModel):
     name = models.TextField()
     description = models.TextField()
     module = models.TextField(default='')
-
-
-class GeoProject(Project):
-    srid = models.IntegerField()
-    bbox = MultiPolygonField()
+    init = models.TextField(default='{}')
 
 
 class Scenario(NameModel):

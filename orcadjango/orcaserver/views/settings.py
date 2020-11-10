@@ -3,7 +3,6 @@ import importlib
 
 from orcaserver.forms import OrcaSettingsForm
 from orcaserver.views import ProjectMixin
-from orcaserver.management import OrcaManager
 
 
 class SettingsView(ProjectMixin, FormView):
@@ -16,5 +15,5 @@ class SettingsView(ProjectMixin, FormView):
         if not importlib.util.find_spec(module):
             form.add_error('module', 'Module not found')
             return super().form_invalid(form)
-        OrcaManager().set_module(module)
+        self.request.session['module'] = module
         return super().form_valid(form)

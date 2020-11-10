@@ -1,30 +1,21 @@
-from django.views.generic import ListView
+from django.views.generic import ListView, FormView
 from django.http import HttpResponseRedirect
-from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
-from django.conf import settings
 import logging
+import json
 
-from orcaserver.models import(Scenario, Project, GeoProject, Injectable,
+from orcaserver.forms import ProjectForm
+from orcaserver.models import(Scenario, Project, Injectable,
                               InjectableConversionError)
 from orcaserver.management import OrcaManager
 
 logger = logging.getLogger('OrcaLog')
 manager = OrcaManager()
 
-@receiver(post_save, sender=GeoProject)
-@receiver(post_save, sender=Project)
-def create_project(sender, instance, created, **kwargs):
-    """Create a matching profile whenever a user object is created."""
-    if created:
-        instance.module = OrcaManager().python_module
-        instance.save()
-
-def apply_injectables(scenario):
+def apply_injectables(orca, scenario):
     if not scenario:
         return
-    orca = manager.get(scenario.id)
     names = orca.list_injectables()
     injectables = Injectable.objects.filter(name__in=names, scenario=scenario)
     for inj in injectables:
@@ -41,12 +32,11 @@ def apply_injectables(scenario):
 
 
 class ProjectMixin:
-    _backup = {}
 
     def get_project(self):
         """get the selected scenario"""
         project_pk = self.request.session.get('project')
-        module = OrcaManager().python_module
+        module = self.get_module()
         try:
             project = Project.objects.get(pk=project_pk, module=module)
         except Project.DoesNotExist:
@@ -54,6 +44,13 @@ class ProjectMixin:
             self.request.session['project'] = None
             self.request.session['scenario'] = None
         return project
+
+    def get_module(self):
+        module = self.request.session.get('module')
+        if not module:
+            module = self.request.session['module'] = \
+                OrcaManager().default_module
+        return module
 
     def get_scenario(self):
         """get the selected scenario"""
@@ -76,29 +73,30 @@ class ProjectMixin:
             return
         orca = manager.get(scenario.id, create=False)
         if not orca:
-            orca = manager.create(scenario.id)
-            apply_injectables(scenario)
+            orca = manager.create(scenario.id, module=self.get_module())
+            apply_injectables(orca, scenario)
         return orca
 
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
         project = self.get_project()
         scenario = self.get_scenario()
+        module = self.get_module()
         kwargs['active_project'] = project
         kwargs['active_scenario'] = scenario
-        kwargs['python_module'] = OrcaManager().python_module
+        kwargs['python_module'] = module
         kwargs['show_project_settings'] = True
         return kwargs
 
 
-class ProjectView(ProjectMixin, ListView):
+class ProjectsView(ProjectMixin, ListView):
     model = Project
     template_name = 'orcaserver/projects.html'
     context_object_name = 'projects'
 
     def get_queryset(self):
         """Return the injectables with their values."""
-        projects = self.model.objects.filter(module=OrcaManager().python_module)
+        projects = self.model.objects.filter(module=self.get_module())
         return projects
 
     def post(self, request, *args, **kwargs):
@@ -111,3 +109,30 @@ class ProjectView(ProjectMixin, ListView):
             elif request.POST.get('delete'):
                 Project.objects.get(id=project_id).delete()
         return HttpResponseRedirect(request.path_info)
+
+
+class ProjectView(ProjectMixin, FormView):
+    template_name = 'orcaserver/project.html'
+    form_class = ProjectForm
+    success_url = '/projects'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['module'] = self.get_module()
+        return kwargs
+
+    def form_valid(self, form):
+        fields = form.cleaned_data.copy()
+        name = fields.pop('name')
+        description = fields.pop('description')
+        init = {}
+        # additional fields are assumed to be injectable values
+        for field, value in fields.items():
+            init[field] = value
+        project = Project.objects.create(name=name, description=description,
+                                         init=json.dumps(init))
+        return super().form_valid(form)
+
+class ExtractProjectView(ProjectMixin, FormView):
+    ''''''
+

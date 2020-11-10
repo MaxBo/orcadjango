@@ -16,9 +16,7 @@ manager = OrcaManager()
 overwritable_types = (str, bytes, int, float, complex,
                       tuple, list, dict, set, bool, None.__class__)
 
-
-def create_injectables(scenario):
-    orca = manager.get(scenario.id)
+def create_injectables(orca, scenario):
     injectable_list = orca.list_injectables()
     for name in injectable_list:
         if name.startswith('iter_'):
@@ -91,13 +89,15 @@ class ScenariosView(ProjectMixin, ListView):
             if request.POST.get('select'):
                 self.request.session['scenario'] = int(scenario_id)
                 scenario = Scenario.objects.get(pk=scenario_id)
-                apply_injectables(scenario)
+                orca = self.get_orca()
+                apply_injectables(orca, scenario)
                 return HttpResponseRedirect(reverse('injectables'))
             elif request.POST.get('delete'):
                 Scenario.objects.get(id=scenario_id).delete()
             elif request.POST.get('refresh'):
                 scenario = Scenario.objects.get(id=scenario_id)
-                create_injectables(scenario)
+                orca = self.get_orca()
+                create_injectables(orca, scenario)
         return HttpResponseRedirect(request.path_info)
 
     def create(request):
@@ -107,7 +107,8 @@ class ScenariosView(ProjectMixin, ListView):
                 return HttpResponseBadRequest('name can not be empty')
             project_pk = request.session.get('project')
             scenario = Scenario.objects.create(name=name, project_id=project_pk)
-            create_injectables(scenario)
+            orca = self.get_orca()
+            create_injectables(orca, scenario)
             request.session['scenario'] = scenario.id
             if request.POST.get('clone'):
                 #  clone injectables and steps

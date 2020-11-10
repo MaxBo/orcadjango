@@ -245,7 +245,7 @@ class StepsView(ProjectMixin, TemplateView):
             step.finished = None
             step.success = False
             step.save()
-        apply_injectables(scenario)
+        apply_injectables(orca, scenario)
         if manager.is_running(scenario.id):
             logger.error('Orca is already running. Please wait for it to '
                          'finish or abort it.')

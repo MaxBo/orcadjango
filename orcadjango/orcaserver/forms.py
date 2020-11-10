@@ -2,12 +2,21 @@ from django import forms
 from django.conf import settings
 
 from orcaserver.models import Step, InjectableConversionError
-from orcaserver.management import OrcaManager
+from orcaserver.management import OrcaManager, parse_injectables
+
+TYPE_FORM_MAP = {
+    'float': forms.FloatField,
+    'int': forms.IntegerField,
+    'bool': forms.BooleanField,
+    'str': forms.CharField,
+    #'dict': forms.MultiValueDict,
+    'list': forms.MultiValueField
+}
 
 
 def get_python_module():
     """return the currently set python module"""
-    return OrcaManager().python_module
+    return OrcaManager().default_module
 
 def get_available_modules():
     available = settings.ORCA_MODULES.get('available', {})
@@ -48,6 +57,41 @@ class InjectableValueForm(forms.Form):
         except InjectableConversionError as e:
             self.add_error('value', str(e))
             raise forms.ValidationError(str(e))
+
+
+class ProjectForm(forms.Form):
+    name = forms.CharField(label='Project name', max_length=255)
+    description = forms.CharField(label='Description')
+
+    def __init__(self, *args, **kwargs):
+        active_mod = kwargs.pop('module')
+        super().__init__(*args, **kwargs)
+        available_mods = settings.ORCA_MODULES.get('available')
+
+        mod_descs = list(filter(lambda mod: mod['path'] == active_mod,
+                                available_mods.values()))
+        if len(mod_descs) > 1:
+            raise Exception('more than one module defined with same path in '
+                            'settings')
+        if len(mod_descs) == 0:
+            return kwargs
+
+        module_name = mod_descs[0]['path']
+        initial = mod_descs[0].get('init')
+        manager = OrcaManager()
+        # ToDo: same id, bad if two persons create it simultaneously
+        orca = manager.get(-1, module=module_name)
+        meta = parse_injectables(orca)
+
+        for injectable in initial:
+            desc = meta[injectable]
+            typ = desc['data_class'].replace('builtins.', '')
+            field_form = TYPE_FORM_MAP.get(typ, forms.CharField)
+            field = field_form(
+                label=f"{injectable} - {desc['docstring']}",
+                initial=desc['value'])
+            self.fields[injectable] = field
+        manager.remove(-1)
 
 
 class StepForm(forms.ModelForm):

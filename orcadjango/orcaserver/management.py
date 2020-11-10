@@ -5,6 +5,11 @@ import logging
 from django.utils import timezone
 import ctypes
 import sys
+import typing
+from inspect import signature, _empty
+
+overwritable_types = (str, bytes, int, float, complex,
+                      tuple, list, dict, set, bool, None.__class__)
 
 lock = threading.Lock()
 
@@ -40,6 +45,45 @@ def load_module(module_name, orca=None, module_set=None):
             module_set.add(module_name)
     return module
 
+def parse_injectables(orca):
+    injectable_list = orca.list_injectables()
+    descriptors = {}
+    for name in injectable_list:
+        desc = {}
+        if name.startswith('iter_'):
+            continue
+        value = orca._injectable_backup.get(name)
+        datatype_class = type(value)
+        datatype = datatype_class.__name__
+        desc['datatype'] = datatype
+        desc['value'] = value
+
+        #  check if the original type is overwritable
+        funcwrapper = orca._injectable_function.get(name)
+        sig = signature(funcwrapper._func)
+        desc['can_be_changed'] = isinstance(
+            value, overwritable_types) and not sig.parameters
+        if isinstance(funcwrapper, orca._InjectableFuncWrapper):
+            desc['docstring'] = funcwrapper._func.__doc__
+            #  Datatype from annotations:
+            returntype = sig.return_annotation
+            has_returntype = True
+            if isinstance(returntype, type) and issubclass(returntype, _empty):
+                has_returntype = False
+            if has_returntype:
+                if isinstance(returntype, typing._GenericAlias):
+                    datatype_class = returntype.__origin__
+                    desc['datatype'] = str(returntype)
+                else:
+                    datatype_class = returntype
+                    desc['datatype'] = returntype.__name__
+            desc['module'] = funcwrapper._func.__module__
+            desc['groupname'] = getattr(funcwrapper, 'groupname', '')
+            desc['order'] = getattr(funcwrapper, 'order', 1)
+            desc['parameters'] = list(sig.parameters.keys())
+        desc['data_class'] = f'{datatype_class.__module__}.{datatype_class.__name__}'
+        descriptors[name] = desc
+    return descriptors
 
 class InUseError(Exception):
     ''''''
@@ -86,25 +130,39 @@ class OrcaManager(Singleton):
     instances = {}
     threads = {}
     meta = {}
-    python_module = None
+    default_module = None
 
-    def set_module(self, module: str):
+    def set_default_module(self, module: str):
         self.reset()
-        self.python_module = module
+        self.default_module = module
 
-    def get(self, instance_id: int, create: bool = True):
+    def get(self, instance_id: int, create: bool = True, module: str = None):
         with lock:
             instance = self.instances.get(instance_id)
+            if instance and instance._python_module != module:
+                raise Exception('The requested orca instance was built with '
+                                f'the module {instance._python_module} instead '
+                                f'of the requested module {module}')
             if not instance and create:
                 return self.create(instance_id)
             return instance
 
-    def create(self, instance_id: int):
-        instance = self._create_instance()
+    def remove(self, instance_id: int):
+        thread = self.threads.get(instance_id)
+        if thread and thread.isAlive():
+            raise Exception(
+                'The orca instances can not be reset at the moment.'
+                ' A thread is still running.')
+        del(self.instances[instance_id])
+        if thread:
+            del(self.threads[instance_id])
+
+    def create(self, instance_id: int, module: str = None):
+        instance = self._create_instance(module or self.default_module)
         self.instances[instance_id] = instance
         return instance
 
-    def _create_instance(self) -> 'module':
+    def _create_instance(self, module_name) -> 'module':
         spec = importlib.util.find_spec('orca.orca')
         orca = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(orca)
@@ -114,7 +172,7 @@ class OrcaManager(Singleton):
         sys.modules['orca'] = orca
         from orcadjango import decorators
         importlib.reload(decorators)
-        load_module(self.python_module, orca=orca)
+        load_module(module_name, orca=orca)
         del(spec)
         del(sys.modules['orca'])
         return orca
@@ -124,14 +182,7 @@ class OrcaManager(Singleton):
             if 'orca' in sys.modules:
                 del(sys.modules['orca'])
             for iid in list(self.instances.keys()):
-                thread = self.threads.get(iid)
-                if thread and thread.isAlive():
-                    raise Exception(
-                        'The orca instances can not be reset at the moment.'
-                        ' A thread is still running.')
-                del(self.instances[iid])
-                if thread:
-                    del(self.threads[iid])
+                self.remove(iid)
 
     def start(self, instance_id: int, steps):
         thread = self.threads.get(instance_id)
