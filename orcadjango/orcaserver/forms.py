@@ -1,5 +1,7 @@
 from django import forms
 from django.conf import settings
+import time
+import json
 
 from orcaserver.models import Step, InjectableConversionError
 from orcaserver.management import OrcaManager, parse_injectables
@@ -65,7 +67,12 @@ class ProjectForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         active_mod = kwargs.pop('module')
+        project_name = kwargs.pop('project_name', '')
+        project_description = kwargs.pop('project_description', '')
+        initial_values = json.loads(kwargs.pop('init', '{}'))
         super().__init__(*args, **kwargs)
+        self.fields['name'].initial = project_name
+        self.fields['description'].initial = project_description
         available_mods = settings.ORCA_MODULES.get('available')
 
         mod_descs = list(filter(lambda mod: mod['path'] == active_mod,
@@ -79,19 +86,19 @@ class ProjectForm(forms.Form):
         module_name = mod_descs[0]['path']
         initial = mod_descs[0].get('init')
         manager = OrcaManager()
-        # ToDo: same id, bad if two persons create it simultaneously
-        orca = manager.get(-1, module=module_name)
+        uid = str(time.time())
+        orca = manager.get(uid , module=module_name)
         meta = parse_injectables(orca)
-
         for injectable in initial:
             desc = meta[injectable]
+            value = initial_values.get(injectable, desc['value'])
             typ = desc['data_class'].replace('builtins.', '')
             field_form = TYPE_FORM_MAP.get(typ, forms.CharField)
             field = field_form(
-                label=f"{injectable} - {desc['docstring']}",
-                initial=desc['value'])
+                label=f'initial value for "{injectable}" - {desc["docstring"]}',
+                initial=value)
             self.fields[injectable] = field
-        manager.remove(-1)
+        manager.remove(uid)
 
 
 class StepForm(forms.ModelForm):

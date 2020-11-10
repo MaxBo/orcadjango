@@ -116,9 +116,29 @@ class ProjectView(ProjectMixin, FormView):
     form_class = ProjectForm
     success_url = '/projects'
 
+    def get(self, request, *args, **kwargs):
+        self.project_id = kwargs.get('id')
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.project_id = kwargs.get('id')
+        return super().post(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        kwargs = super().get_context_data(**kwargs)
+        kwargs['title'] = 'Change Project' if self.project_id else 'Add Project'
+        return kwargs
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['module'] = self.get_module()
+        # ToDo: catch errors if project does not exist (maybe already
+        # in get() or post())
+        if self.project_id is not None:
+            project = Project.objects.get(id=self.project_id)
+            kwargs['project_name'] = project.name
+            kwargs['project_description'] = project.description
+            kwargs['init'] = project.init
         return kwargs
 
     def form_valid(self, form):
@@ -129,8 +149,16 @@ class ProjectView(ProjectMixin, FormView):
         # additional fields are assumed to be injectable values
         for field, value in fields.items():
             init[field] = value
-        project = Project.objects.create(name=name, description=description,
-                                         init=json.dumps(init))
+        if self.project_id is None:
+            Project.objects.create(name=name, description=description,
+                                   init=json.dumps(init),
+                                   module=self.get_module())
+        else:
+            project = Project.objects.get(id=self.project_id)
+            project.name = name
+            project.description = description
+            project.init = json.dumps(init)
+            project.save()
         return super().form_valid(form)
 
 class ExtractProjectView(ProjectMixin, FormView):
