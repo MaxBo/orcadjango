@@ -22,6 +22,8 @@ class Project(NameModel):
     name = models.TextField()
     description = models.TextField()
     module = models.TextField(default='')
+    # ToDo: saved as plain text, maybe custom field here so that you don't need
+    # to dump/load outside
     init = models.TextField(default='{}')
 
 

@@ -27,10 +27,8 @@
     <input class="btn btn-primary" type="submit" name="select" value="Select">
     <input class="btn btn-danger" type="submit" name="delete" value="Delete">
     <input class="btn btn-secondary" type="submit" name="refresh" value="Refresh Injectables">
-  </form>
-  <br>
-  <br>
-  <form action='create/' method="post">
+    <br>
+    <br>
     <h4> Create Scenario </h4>
     {% csrf_token %}
     <input class="form-control" name="name" placeholder="scenario name" style="width: auto; margin-right: 10px; display: inline;">

@@ -139,7 +139,7 @@ class OrcaManager(Singleton):
     def get(self, instance_id: int, create: bool = True, module: str = None):
         with lock:
             instance = self.instances.get(instance_id)
-            if instance and instance._python_module != module:
+            if instance and module and instance._python_module != module:
                 raise Exception('The requested orca instance was built with '
                                 f'the module {instance._python_module} instead '
                                 f'of the requested module {module}')
@@ -148,6 +148,8 @@ class OrcaManager(Singleton):
             return instance
 
     def remove(self, instance_id: int):
+        if instance_id not in self.instances:
+            return
         thread = self.threads.get(instance_id)
         if thread and thread.isAlive():
             raise Exception(

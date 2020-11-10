@@ -19,7 +19,6 @@ urlpatterns = [
     path('projects/create/', login_required(views.ProjectView.as_view())),
     path('scenarios/', login_required(views.ScenariosView.as_view()),
          name='scenarios'),
-    path('scenarios/create/', login_required(views.ScenariosView.create)),
     path('injectables/', login_required(views.InjectablesView.as_view()),
          name='injectables'),
     path('injectables/<str:name>/',

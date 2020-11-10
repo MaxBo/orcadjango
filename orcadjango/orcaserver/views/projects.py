@@ -71,9 +71,10 @@ class ProjectMixin:
         scenario = self.get_scenario()
         if not scenario:
             return
-        orca = manager.get(scenario.id, create=False)
+        module = self.get_module()
+        orca = manager.get(scenario.id, module=module, create=False)
         if not orca:
-            orca = manager.create(scenario.id, module=self.get_module())
+            orca = manager.create(scenario.id, module=module)
             apply_injectables(orca, scenario)
         return orca
 
