@@ -15,8 +15,8 @@
 <div class="col-md-4" style="padding: 2em;">
 {% if steps_available %}
   <h6>available</h6>
-  <div style="max-height: 800px; overflow-y: scroll;">
-    <table class="table" id="steps-available">
+  <div> <!--style="max-height: 800px; overflow-y: scroll;"-->
+    <table class="table select" id="steps-available">
       <thead>
         <tr>
           <th>Group</th>
@@ -27,7 +27,7 @@
       <tbody>
       {% for group, steps in steps_available.items %}
         {% for step in steps %}
-          <tr onclick="highlightRow(this)" data-step="{{ step.name }}">
+          <tr onclick="highlightRow(this)" data-step="{{ step.name }}" title="{{ step.name }} - {{ step.description }}">
             <td style="background-color: Snow {% if not forloop.last %} ;border-bottom-style: hidden" {% endif %}"> {% if forloop.first %} <b>{{ group }}</b> {% endif %} </td>
             <td> {{ step.name }} </td>
             <td> {{ step.description }} </td>
@@ -50,9 +50,10 @@
 {% block content %}
 <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
 <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+{% if error_message %}<p style="color: red;"><strong>{{ error_message }}</strong></p>{% endif %}
 {% if steps_available %}
   <h6 style="float: left;">in scenario</h6> &nbsp;&nbsp;(change order by dragging and dropping)
-  <table class="table" id="steps-scenario">
+  <table class="table select" id="steps-scenario">
     <thead>
       <tr>
         <th class="index">No.</th>
@@ -68,17 +69,17 @@
     </thead>
     <tbody>
     {% for step in steps_scenario %}
-      <tr data-id="{{ step.id }}">
+      <tr data-id="{{ step.id }}" title="{{ step.name }} - {{ step.docstring }}" {% if not step.valid %} style="color: red;" {% endif %}>
         <td class="index"> {{ forloop.counter0 }} </td>
         <td style="display: none;"> {{ step.id }} </td>
         <td> {{ step.name }} </td>
         <td class="injectables"> {{ step.injectables }} </td>
         <td class="start"> {{ step.started }} </td>
         <td class="finish"> {{ step.finished }} </td>
-        <td class="success"> {{ step.success }} </td>
+        <td class="success" style="text-align: center; vertical-align: middle; color: white;"> </td>
         <td class="is_active">
           <label>
-            <input type="checkbox" {% if step.active %} checked {% endif %} id="toggle-active" onclick="toggleActiveRow(this, {{ step.id }})" style="transform: scale(2); margin: 0.5em;">
+            <input title="Activate/deactivate step" type="checkbox" {% if step.active %} checked {% endif %} id="toggle-active" onclick="toggleActiveRow(this, {{ step.id }})" style="transform: scale(2); margin: 0.5em;">
           </label>
         </td>
         <td>
@@ -99,16 +100,19 @@
       <h5 style="float: left; margin-top: 15px;"> Log </h5>
       <button onclick="clearLog()" class="btn btn-secondary" style="margin: 10px; float: right;">Clear</button>
     </div>
-    <textarea id="wslog" style="width: 100%; height: calc(100% - 5em); resize: none;"></textarea>
+    <div id="wslog" class="log" style="width: 100%; height: calc(100% - 5em); resize: none;"></div>
     <script>
-      var chatSocket = new WebSocket(
-          'wss://' + window.location.host + '/ws/log/orca/'),
+      var chatSocket = new WebSocket('{{ log_socket }}'),
           logArea = document.querySelector('#wslog');
 
       chatSocket.onmessage = function(e) {
-          var data = JSON.parse(e.data);
-          var message = data['message'];
-          logArea.value += (message + '\n');
+          var data = JSON.parse(e.data),
+              message = data['message'],
+              error = data['error'];
+          if (error)
+              logArea.innerHTML += ('<p style="color:red">' + message + '</p>');
+          else
+              logArea.innerHTML += ('<p>' + message + '</p>');
           logArea.scrollTop = logArea.scrollHeight;
       };
 
@@ -116,7 +120,7 @@
           console.error('Chat socket closed unexpectedly');
       };
 
-      function clearLog(){ logArea.value = '' };
+      function clearLog(){ logArea.innerHTML = '' };
 
     </script>
   </div>
@@ -164,7 +168,7 @@
               method: "POST",
               credentials: "same-origin",
               headers: { "X-CSRFToken": csrfToken }
-            });
+            }).then(function(){updateStatus(); updateSteps();});
         }
       else alert('Orca is already running! Abort it or wait.')
     })
@@ -182,14 +186,26 @@
         injCell.innerHTML = '';
         startCell.innerHTML = step.started;
         finishCell.innerHTML = step.finished;
-        successCell.innerHTML = step.success;
+        if (step.finished) {
+          successCell.innerHTML = step.success;
+          successCell.style.background = (step.success) ? 'green' : 'red';
+        }
+        else {
+            successCell.innerHTML = '';
+            successCell.style.background = 'white';
+        }
         step.injectables.forEach(function(inj){
           var inj_a = document.createElement('a'),
               content = document.createElement('div'),
               url= inj.url + '?next={{request.path}}';
           inj_a.text = inj.name;
           inj_a.href = url;
-          content.innerHTML = ''; //( ' + inj.value + ' )';
+          if (!inj.valid) {
+            inj_a.style.color = 'red';
+            inj_a.text += ' (not valid)'
+          }
+          content.title = inj.value;
+          content.innerHTML = '';
           content.prepend(inj_a);
           injCell.appendChild(content);
         });
@@ -255,7 +271,6 @@
   }
 
   logDiv.addEventListener("mousedown", function(e){
-    console.log(e.offsetY)
     if (e.offsetY < BORDER_SIZE) {
       m_pos = e.y;
       document.addEventListener("mousemove", resize, false);

@@ -1,5 +1,4 @@
-from .projects import GeoProjectView as ProjectView
-from .projects import ProjectMixin
+from .projects import *
 from .settings import *
 from .scenarios import *
 from .injectables import *

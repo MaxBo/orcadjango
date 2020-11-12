@@ -5,33 +5,19 @@ from django.views.generic import TemplateView
 from django.shortcuts import HttpResponseRedirect
 from django.http import HttpResponse
 from django.http import JsonResponse, HttpResponseNotFound
-import orca
 from collections import OrderedDict
-
-from orcaserver.threading import OrcaManager
-from orcaserver.views import ProjectMixin
-from orcaserver.models import Step, Injectable, Scenario, InjectableConversionError
-from django.core.exceptions import ObjectDoesNotExist
-from django.urls import reverse
+from django.db.models import Max
+from django.conf import settings
 import json
 
-logger = logging.getLogger('OrcaLog')
+from orcaserver.management import OrcaManager
+from orcaserver.views import ProjectMixin, apply_injectables
+from orcaserver.models import Step, Injectable, Scenario
+from django.core.exceptions import ObjectDoesNotExist
+from django.urls import reverse
+from orcadjango.loggers import ScenarioHandler
 
-
-def apply_injectables(scenario):
-    names = orca.list_injectables()
-    injectables = Injectable.objects.filter(name__in=names, scenario=scenario)
-    for inj in injectables:
-        #  skip injectables which cannot be changed
-        if not (inj.changed or inj.can_be_changed):
-            continue
-        try:
-            converted_value = inj.validate_value()
-        except InjectableConversionError as e:
-            logger.warn(str(e))
-            continue
-        if inj.can_be_changed:
-            orca.add_injectable(inj.name, converted_value)
+manager = OrcaManager()
 
 
 class StepsView(ProjectMixin, TemplateView):
@@ -41,13 +27,24 @@ class StepsView(ProjectMixin, TemplateView):
     def id(self):
         return self.kwargs.get('id')
 
+    def get(self, request, *args, **kwargs):
+        scenario = self.get_scenario()
+        if not scenario:
+            return  HttpResponseRedirect(reverse('scenarios'))
+        #apply_injectables(scenario)
+        return super().get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         scenario = self.get_scenario()
-        steps_grouped = OrderedDict()
-        for name in orca.list_steps():
+        orca = self.get_orca()
+        steps_grouped = {}
+        steps_available = orca.list_steps()
+        meta = getattr(orca, 'meta', {})
+        for name in steps_available:
+            _meta = meta.get(name, {})
             wrapper = orca.get_step(name)
-            group = getattr(wrapper, 'groupname', '-')
-            order = getattr(wrapper, 'order', 1)
+            group = _meta.get('group', '-')
+            order = _meta.get('order', 1)
             steps_grouped.setdefault(group, []).append({
                 'name': name,
                 'description': wrapper._func.__doc__ or '',
@@ -58,11 +55,27 @@ class StepsView(ProjectMixin, TemplateView):
         for group, steps_group in steps_grouped.items():
             steps_grouped[group] = sorted(steps_group, key=lambda x: x['order'])
 
+        steps_grouped = OrderedDict(sorted(steps_grouped.items()))
         steps_scenario = Step.objects.filter(
             scenario=scenario).order_by('order')
+        for step in steps_scenario:
+            if step.name not in steps_available:
+                step.valid = False
+                step.docstring = (
+                    'Step not found. Your project seems not to be up to date '
+                    'with the module. Please remove this step.')
+                continue
+            if not step.docstring:
+                step.docstring = orca.get_step(step.name)._func.__doc__
+            step.valid = True
         kwargs = super().get_context_data(**kwargs)
         kwargs['steps_available'] = steps_grouped if scenario else []
         kwargs['steps_scenario'] = steps_scenario
+        # ToDo: get room from handler
+
+        prefix = 'ws' if settings.DEBUG else 'wss'
+        kwargs['log_socket'] = \
+            f'{prefix}://{self.request.get_host()}/ws/log/{scenario.id}/'
         return kwargs
 
     @staticmethod
@@ -74,6 +87,7 @@ class StepsView(ProjectMixin, TemplateView):
                 step.order = item['order']
                 step.save()
         scenario_id = request.session.get('scenario')
+        orca = manager.get(scenario_id)
         if scenario_id is None:
             return HttpResponseNotFound('scenario not found')
         scenario = Scenario.objects.get(id=scenario_id)
@@ -81,7 +95,10 @@ class StepsView(ProjectMixin, TemplateView):
             scenario=scenario).order_by('order')
         steps_json = []
         injectables_available = orca.list_injectables()
+        steps_available = orca.list_steps()
         for step in steps_scenario:
+            if step.name not in steps_available:
+                continue
             func = orca.get_step(step.name)
             sig = signature(func._func)
             inj_parameters = sig.parameters
@@ -89,13 +106,23 @@ class StepsView(ProjectMixin, TemplateView):
             for name in inj_parameters:
                 if name not in injectables_available:
                     continue
-                inj = Injectable.objects.get(name=name, scenario=scenario)
-                injectables.append({
-                    'id': inj.id,
-                    'name': name,
-                    'value': repr(inj.value),
-                    'url': f"{reverse('injectables')}{name}",
-                })
+                try:
+                    inj = Injectable.objects.get(name=name, scenario=scenario)
+                    injectables.append({
+                        'id': inj.id,
+                        'name': name,
+                        'value': repr(inj.calculated_value),
+                        'url': f"{reverse('injectables')}{name}",
+                        'valid': True
+                    })
+                except ObjectDoesNotExist:
+                    injectables.append({
+                        'id': -1,
+                        'name': name,
+                        'value': 'Injectable not found',
+                        'url': f"{reverse('injectables')}{name}",
+                        'valid': False
+                    })
             started = step.started
             finished = step.finished
             if started:
@@ -119,11 +146,15 @@ class StepsView(ProjectMixin, TemplateView):
         scenario = self.get_scenario()
         if request.POST.get('add'):
             steps = request.POST.get('steps', '').split(',')
+            existing = Step.objects.filter(scenario=scenario)
+            i = 0 if len(existing) == 0 else \
+                existing.aggregate(Max('order'))['order__max'] + 1
             for step in steps:
                 if not step:
                     continue
                 Step.objects.create(scenario=scenario,
-                                    name=step, order=10000)
+                                    name=step, order=i)
+                i += 1
         elif request.POST.get('remove'):
             step_id = request.POST.get('step')
             step = Step.objects.get(id=step_id)
@@ -150,13 +181,19 @@ class StepsView(ProjectMixin, TemplateView):
     @classmethod
     def status(cls, request):
         manager = OrcaManager()
-        status_text = f'currently run by user "{manager.user}"'\
-            if manager.is_running else 'not in use'
+        scenario_id = request.session.get('scenario')
+        is_running = manager.is_running(scenario_id)
+        meta = manager.get_meta(scenario_id)
+        user = meta.get('user')
+        user_name = user.get_username() if user else 'unknown'
+        start_time = meta.get('start_time', '-')
+        status_text = (f'scenario is currently run by user "{user}"') \
+            if is_running else 'scenario not in use'
         status = {
-            'running': manager.is_running,
+            'running': is_running,
             'text': status_text,
-            'last_user': manager.user,
-            'last_start': manager.start_time,
+            'last_user': user_name,
+            'last_start': start_time
         }
         return JsonResponse(status)
 
@@ -165,30 +202,72 @@ class StepsView(ProjectMixin, TemplateView):
         scenario_id = request.session.get('scenario')
         if not scenario_id:
             return
+        orca = manager.get(scenario_id)
         scenario = Scenario.objects.get(id=scenario_id)
-        message = f'Running Steps for scenario "{scenario.name}"'
 
-        logger.info(message)
+        logger = orca.logger
+        # ToDo: move handler config to manager (doesn't know about scenarios)?
+        logger.handlers.clear()
+        handler = ScenarioHandler(scenario)
+        level = logging.DEBUG if settings.DEBUG else logging.INFO
+        logger.setLevel(level)
+        handler.setLevel(level)
+        logger.addHandler(handler)
 
-        active_steps = Step.objects.filter(scenario=scenario, active=True)
-        steps = active_steps.order_by('order')
-        for step in steps:
+        active_steps = Step.objects.filter(
+            scenario=scenario, active=True).order_by('order')
+        if len(active_steps) == 0:
+            logger.error('No steps selected.')
+            return HttpResponse(status=400)
+        # check if all injectables are available
+        injectables_available = orca.list_injectables()
+        steps_available = orca.list_steps()
+        for step in active_steps:
+            if step.name not in steps_available:
+                logger.error(
+                    'There are steps selected that can not be found in the '
+                    'module. Your project seems not to be up to date '
+                    'with the module. Please remove those steps.')
+                return HttpResponse(status=400)
+            func = orca.get_step(step.name)
+            sig = signature(func._func)
+            inj_parameters = sig.parameters
+            required = list(set(inj_parameters) & set(injectables_available))
+            inj_db = Injectable.objects.filter(name__in=required,
+                                               scenario=scenario)
+            if len(required) > len(inj_db):
+                logger.error(
+                    'There are steps selected that contain injectables that '
+                    'not be found. Your project seems not to be up to date '
+                    'with the module.<br>Please refresh the injectables '
+                    '(scenario page).')
+                return HttpResponse(status=400)
+        for step in active_steps:
             step.started = None
             step.finished = None
             step.success = False
             step.save()
-        apply_injectables(scenario)
-        manager = OrcaManager()
-        if manager.is_running:
+        apply_injectables(orca, scenario)
+        if manager.is_running(scenario.id):
+            logger.error('Orca is already running. Please wait for it to '
+                         'finish or abort it.')
             return HttpResponse(status=400)
-        manager.start(steps=steps, logger=logger,
-                      user=request.user)
+
+        message = f'Running Steps for scenario "{scenario.name}"'
+        logger.info(message)
+        try:
+            manager.add_meta(scenario.id, user=request.user)
+            manager.start(scenario.id, steps=active_steps)
+        except Exception as e:
+            logger.error(str(e))
+            return HttpResponse(status=400)
         return HttpResponse(status=200)
 
     @classmethod
     def abort(cls, request):
+        scenario_id = request.session.get('scenario')
         manager = OrcaManager()
-        manager.abort()
+        manager.abort(scenario_id)
         return HttpResponse(status=200)
 
 
