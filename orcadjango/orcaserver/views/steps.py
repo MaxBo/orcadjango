@@ -286,14 +286,18 @@ class StatusView(ProjectMixin, TemplateView):
 
 
 class LogsView(ProjectMixin, ListView):
+    template_name = 'orcaserver/logs.html'
+    model = LogEntry
+    context_object_name = 'logs'
 
     def get_queryset(self):
         """Return the injectables with their values."""
-        logs = LogEntry.objects.filter(scenario=self.scenario_id)
+        logs = LogEntry.objects.filter(scenario=self.get_scenario())
         return logs
 
-    def get(self, request, *args, **kwargs):
-        self.scenario_id = kwargs.get('id')
-        queryset = self.get_queryset()
-        data = serializers.serialize("json", queryset)
+    @staticmethod
+    def detail(request, *args, **kwargs):
+        scenario_id = kwargs.get('id')
+        logs = LogEntry.objects.filter(scenario=scenario_id)
+        data = serializers.serialize("json", logs)
         return JsonResponse(data, status=200, safe=False)
