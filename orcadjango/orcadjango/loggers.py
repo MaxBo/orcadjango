@@ -3,15 +3,15 @@ from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 import json
 import channels.layers
-from datetime import datetime
 
-def send(channel, message, log_type='log_message'):
+def send(channel: str, message: str, log_type: str='log_message', **kwargs):
     channel_layer = channels.layers.get_channel_layer()
-    async_to_sync(channel_layer.group_send)(channel, {
+    rec = {
         'message': message,
-        #'timestamp': datetime.now().strftime("%a %b %d %H:%M:%S %Z %Y"),
         'type': log_type
-    })
+    }
+    rec.update(kwargs)
+    async_to_sync(channel_layer.group_send)(channel, rec)
 
 
 class OrcaChannelHandler(logging.StreamHandler):
@@ -21,8 +21,8 @@ class OrcaChannelHandler(logging.StreamHandler):
         self.setFormatter(logging.Formatter('%(asctime)s %(message)s'))
 
     def emit(self, record):
-        log_type = 'log_error' if record.levelname == 'ERROR' else 'log_message'
-        send(self.group, self.format(record), log_type=log_type)
+        send(self.group, self.format(record), log_type='log_message',
+             level=record.levelname)
 
 
 class ScenarioHandler(OrcaChannelHandler):
@@ -52,22 +52,9 @@ class LogConsumer(WebsocketConsumer):
         )
 
     def log_message(self, event):
-        message = event['message']
-        timestamp = event.get('timestamp')
-        if timestamp:
-            message = f'&lt;{timestamp}&gt; {message}'
         # Send message to WebSocket
         self.send(text_data=json.dumps({
-            'message': message,
-        }))
-
-    def log_error(self, event):
-        message = event['message']
-        timestamp = event.get('timestamp')
-        if timestamp:
-            message = f'&lt;{timestamp}&gt; {message}'
-        # Send message to WebSocket
-        self.send(text_data=json.dumps({
-            'message': message,
-            'error': True
+            'message': event['message'],
+            'level': event.get('level'),
+            'timestamp': event.get('timestamp')
         }))

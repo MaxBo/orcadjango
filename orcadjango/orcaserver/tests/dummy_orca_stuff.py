@@ -90,8 +90,11 @@ def step2(inj1, inj2):
     with mycontext():
         for i in range(10):
             logger.info(f'loop {i}')
+            logger.warning(f'sleeping')
             sleep(1)
             print(i)
+
+    logger.error(f'Test error message')
 
 
 @group(groupname='Hallo', order=1)

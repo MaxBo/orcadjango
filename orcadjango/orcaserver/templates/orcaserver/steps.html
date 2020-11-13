@@ -98,37 +98,36 @@
   <div class="bottom-resizable" style="height: 15em;">
     <div style="width: 100%;">
       <h5 style="float: left; margin-top: 15px;"> Log </h5>
-      <button onclick="clearLog()" class="btn btn-secondary" style="margin: 10px; float: right;">Clear</button>
+      <!--<button onclick="clearLog()" class="btn btn-secondary" style="margin: 10px; float: right;">Clear</button>-->
+      <button class="btn btn-primary" style="margin: 10px; float: right;">History</button>
     </div>
     <div id="wslog" class="log" style="width: 100%; height: calc(100% - 5em); resize: none;"></div>
-    <script>
-      var chatSocket = new WebSocket('{{ log_socket }}'),
-          logArea = document.querySelector('#wslog');
-
-      chatSocket.onmessage = function(e) {
-          var data = JSON.parse(e.data),
-              message = data['message'],
-              error = data['error'];
-          if (error)
-              logArea.innerHTML += ('<p style="color:red">' + message + '</p>');
-          else
-              logArea.innerHTML += ('<p>' + message + '</p>');
-          logArea.scrollTop = logArea.scrollHeight;
-      };
-
-      chatSocket.onclose = function(e) {
-          console.error('Chat socket closed unexpectedly');
-      };
-
-      function clearLog(){ logArea.innerHTML = '' };
-
-    </script>
   </div>
 {% else %}
 <p>no steps available</p>
 {% endif %}
 
 <script>
+  var chatSocket = new WebSocket('{{ log_socket }}'),
+      logArea = document.querySelector('#wslog');
+
+  chatSocket.onmessage = function(e) {
+      var data = JSON.parse(e.data),
+          message = data['message'],
+          level = data['level'],
+          p = document.createElement('p');
+      p.innerHTML = message;
+      p.style.color = (level == 'ERROR') ? 'red': (level == 'WARNING') ? 'orange': 'black';
+      logArea.appendChild(p);
+      logArea.scrollTop = logArea.scrollHeight;
+  };
+
+  chatSocket.onclose = function(e) {
+      console.error('Chat socket closed unexpectedly');
+  };
+
+  function clearLog(){ logArea.innerHTML = '' };
+
   var stepsTable = document.getElementById('steps-scenario'),
       stepsAvailableTable = document.getElementById('steps-available'),
       stepsUrl = '/steps/list/',
