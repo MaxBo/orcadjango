@@ -2,9 +2,11 @@ from django.views.generic import ListView, FormView
 from django.http import HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
+from django.conf import settings
 import logging
 import json
 
+from orcadjango.loggers import ScenarioHandler
 from orcaserver.forms import ProjectForm
 from orcaserver.models import(Scenario, Project, Injectable,
                               InjectableConversionError)
@@ -75,6 +77,9 @@ class ProjectMixin:
         orca = manager.get(scenario.id, module=module, create=False)
         if not orca:
             orca = manager.create(scenario.id, module=module)
+            handler = ScenarioHandler(scenario)
+            handler.setLevel(logging.DEBUG if settings.DEBUG else logging.INFO)
+            manager.add_log_handler(scenario.id, handler)
             apply_injectables(orca, scenario)
         return orca
 

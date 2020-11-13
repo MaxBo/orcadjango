@@ -3,15 +3,11 @@ from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.urls import reverse
 import json
 from django.core.exceptions import ObjectDoesNotExist
-import logging
 
 from orcaserver.views import ProjectMixin
 from orcaserver.management import OrcaManager, parse_injectables
 from orcaserver.views.projects import apply_injectables
 from orcaserver.models import Scenario, Injectable, Step
-
-logger = logging.getLogger('OrcaLog')
-manager = OrcaManager()
 
 overwritable_types = (str, bytes, int, float, complex,
                       tuple, list, dict, set, bool, None.__class__)
@@ -47,8 +43,8 @@ def recreate_injectables(orca, scenario):
                                                     name=parameter)
                 parent_injectables.append(parent_inj.pk)
             except ObjectDoesNotExist:
-                logger.warn(f'Injectable {parameter} '
-                            f'not found in scneario {inj.scenario.name}')
+                orca.logger.warn(f'Injectable {parameter} '
+                                 f'not found in scneario {inj.scenario.name}')
         inj.parent_injectables = str(parent_injectables)
         inj.save()
 
