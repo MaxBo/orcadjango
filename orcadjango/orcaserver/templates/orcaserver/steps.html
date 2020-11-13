@@ -1,5 +1,4 @@
 {% extends 'orcaserver/base.html' %}
-{% load bootstrap4 %}
 {% load static %}
 
 {% block title %}
@@ -48,7 +47,6 @@
 {% endblock %}
 
 {% block content %}
-<script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
 <script src="{% static 'js/jquery-ui.min.js' %}"></script>
 {% if error_message %}<p style="color: red;"><strong>{{ error_message }}</strong></p>{% endif %}
 {% if steps_available %}
@@ -99,7 +97,7 @@
     <div style="width: 100%;">
       <h5 style="float: left; margin-top: 15px;"> Log </h5>
       <!--<button onclick="clearLog()" class="btn btn-secondary" style="margin: 10px; float: right;">Clear</button>-->
-      <button class="btn btn-primary" style="margin: 10px; float: right;" data-toggle="modal" data-target="#logs-modal">History</button>
+      <button onclick="openLogs()" class="btn btn-primary"  style="margin: 10px; float: right;" >History</button>
     </div>
     <div id="wslog" class="log" style="width: 100%; height: calc(100% - 5em); resize: none;"></div>
   </div>
@@ -113,28 +111,11 @@
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <div class="modal-body" style="overflow-y: auto; max-height: calc(100vh - 200px);">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Timestamp</th>
-                <th>Message</th>
-                <th>Log Level</th>
-              </tr>
-            </thead>
-            <tbody>
-            {% for entry in logs %}
-              <tr style="color: {% if entry.level == 'ERROR'%} red {% elif entry.level == 'WARNING' %} orange {% elif entry.level == 'DEBUG' %} grey {% endif %};">
-                <td> {{ entry.timestamp }} </td>
-                <td> {{ entry.message }} </td>
-                <td> {{ entry.level }} </td>
-              </tr>
-            {% endfor %}
-            </tbody>
-          </table>
+        <div id="logs-body" class="modal-body" style="overflow-y: auto; max-height: calc(100vh - 200px);">
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button onclick="reloadLogs()" type="button" class="btn btn-primary">Reload</button>
         </div>
       </div>
     </div>
@@ -145,6 +126,21 @@
 {% endif %}
 
 <script>
+  function openLogs(){
+    $("#logs-modal").modal();
+    reloadLogs();
+  }
+
+  function reloadLogs(){
+    var logsDiv = document.getElementById('logs-body');
+    logsDiv.innerHTML = '<h4>Updating...</h4>';
+    fetch('/logs').then(function(res){
+        return res.text()
+    }).then(function(html){
+        document.getElementById('logs-body').innerHTML = html;
+    });
+  }
+
   var chatSocket = new WebSocket('{{ log_socket }}'),
       logArea = document.querySelector('#wslog');
 
