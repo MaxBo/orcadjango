@@ -1,6 +1,6 @@
 import json
 from inspect import signature
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 from django.shortcuts import HttpResponseRedirect
 from django.http import HttpResponse
 from django.http import JsonResponse, HttpResponseNotFound
@@ -8,12 +8,13 @@ from collections import OrderedDict
 from django.db.models import Max
 from django.conf import settings
 import json
+from django.core.exceptions import ObjectDoesNotExist
+from django.urls import reverse
+from django.core import serializers
 
 from orcaserver.management import OrcaManager
 from orcaserver.views import ProjectMixin, apply_injectables
-from orcaserver.models import Step, Injectable, Scenario
-from django.core.exceptions import ObjectDoesNotExist
-from django.urls import reverse
+from orcaserver.models import Step, Injectable, Scenario, LogEntry
 
 manager = OrcaManager()
 
@@ -28,7 +29,7 @@ class StepsView(ProjectMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         scenario = self.get_scenario()
         if not scenario:
-            return  HttpResponseRedirect(reverse('scenarios'))
+            return HttpResponseRedirect(reverse('scenarios'))
         #apply_injectables(scenario)
         return super().get(request, *args, **kwargs)
 
@@ -69,6 +70,8 @@ class StepsView(ProjectMixin, TemplateView):
         kwargs = super().get_context_data(**kwargs)
         kwargs['steps_available'] = steps_grouped if scenario else []
         kwargs['steps_scenario'] = steps_scenario
+        logs = LogEntry.objects.filter(scenario=scenario).order_by('-timestamp')
+        kwargs['logs'] = logs
         # ToDo: get room from handler
 
         prefix = 'ws' if settings.DEBUG else 'wss'
@@ -280,3 +283,17 @@ class StepsView(ProjectMixin, TemplateView):
 
 class StatusView(ProjectMixin, TemplateView):
     template_name = 'orcaserver/status.html'
+
+
+class LogsView(ProjectMixin, ListView):
+
+    def get_queryset(self):
+        """Return the injectables with their values."""
+        logs = LogEntry.objects.filter(scenario=self.scenario_id)
+        return logs
+
+    def get(self, request, *args, **kwargs):
+        self.scenario_id = kwargs.get('id')
+        queryset = self.get_queryset()
+        data = serializers.serialize("json", queryset)
+        return JsonResponse(data, status=200, safe=False)

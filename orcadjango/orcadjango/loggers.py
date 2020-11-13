@@ -25,14 +25,6 @@ class OrcaChannelHandler(logging.StreamHandler):
              level=record.levelname)
 
 
-class ScenarioHandler(OrcaChannelHandler):
-    def __init__(self, scenario, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.group = f'log_{scenario.id}'
-        self.setFormatter(logging.Formatter(
-            f'%(asctime)s {scenario.name} - %(message)s'))
-
-
 class LogConsumer(WebsocketConsumer):
     def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']

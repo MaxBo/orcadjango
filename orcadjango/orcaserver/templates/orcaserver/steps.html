@@ -99,10 +99,47 @@
     <div style="width: 100%;">
       <h5 style="float: left; margin-top: 15px;"> Log </h5>
       <!--<button onclick="clearLog()" class="btn btn-secondary" style="margin: 10px; float: right;">Clear</button>-->
-      <button class="btn btn-primary" style="margin: 10px; float: right;">History</button>
+      <button class="btn btn-primary" style="margin: 10px; float: right;" data-toggle="modal" data-target="#logs-modal">History</button>
     </div>
     <div id="wslog" class="log" style="width: 100%; height: calc(100% - 5em); resize: none;"></div>
   </div>
+
+  <div class="modal fade" id="logs-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Log History</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" style="overflow-y: auto; max-height: calc(100vh - 200px);">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Message</th>
+                <th>Log Level</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for entry in logs %}
+              <tr style="color: {% if entry.level == 'ERROR'%} red {% elif entry.level == 'WARNING' %} orange {% elif entry.level == 'DEBUG' %} grey {% endif %};">
+                <td> {{ entry.timestamp }} </td>
+                <td> {{ entry.message }} </td>
+                <td> {{ entry.level }} </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% else %}
 <p>no steps available</p>
 {% endif %}
@@ -117,7 +154,7 @@
           level = data['level'],
           p = document.createElement('p');
       p.innerHTML = message;
-      p.style.color = (level == 'ERROR') ? 'red': (level == 'WARNING') ? 'orange': 'black';
+      p.style.color = (level == 'ERROR') ? 'red': (level == 'WARNING') ? 'orange': (level == 'DEBUG') ? 'grey' : 'black';
       logArea.appendChild(p);
       logArea.scrollTop = logArea.scrollHeight;
   };
