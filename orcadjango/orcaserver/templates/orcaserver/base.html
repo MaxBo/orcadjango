@@ -70,7 +70,8 @@
         {% endif %}
     </div>
     <div class="col-md-4" style="padding-right: 60px;">
-      <a href='/status' style="float: right;"> <b> Status: </b> <label id="status-label"></label> </a>
+      <label id="status-label" style="float: right; margin-left: 5px;"></label>
+      <a href='/status' style="float: right;"> <b> Status:</b> </a>
     </div>
   </div>
   <div class="row" style="margin-top: 20px;">
@@ -104,7 +105,7 @@
       fetch(statusUrl).then(data=>{return data.json()}).then(function(res){
         lastStatus = res;
         statusLabel.innerHTML = res.text;
-        var color = (res.running) ? 'red' : 'green';
+        var color = (res.running) ? 'red' : (res.other_running_in_project.length > 0) ? 'orange' : 'green';
         statusLabel.parentNode.style.color = color;
         resolve(res)
       }, function(){reject(res)})

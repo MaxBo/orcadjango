@@ -1,6 +1,6 @@
 from django.views.generic import ListView, FormView
 from django.http import HttpResponseRedirect
-from django.dispatch import receiver
+from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 import logging
 import json
@@ -39,7 +39,7 @@ class ProjectMixin:
         module = self.get_module()
         try:
             project = Project.objects.get(pk=project_pk, module=module)
-        except Project.DoesNotExist:
+        except ObjectDoesNotExist:
             project = None
             self.request.session['project'] = None
             self.request.session['scenario'] = None
@@ -57,7 +57,7 @@ class ProjectMixin:
         scenario_pk = self.request.session.get('scenario')
         try:
             scenario = Scenario.objects.get(pk=scenario_pk)
-        except Scenario.DoesNotExist:
+        except ObjectDoesNotExist:
             project_pk = self.request.session.get('project')
             scenarios = Scenario.objects.filter(project_id=project_pk)
             if scenarios:

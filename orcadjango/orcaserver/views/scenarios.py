@@ -1,9 +1,8 @@
-import typing
 from django.views.generic import ListView
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.urls import reverse
 import json
-from inspect import signature, _empty
+from django.core.exceptions import ObjectDoesNotExist
 import logging
 
 from orcaserver.views import ProjectMixin
@@ -47,7 +46,7 @@ def recreate_injectables(orca, scenario):
                 parent_inj = Injectable.objects.get(scenario=inj.scenario,
                                                     name=parameter)
                 parent_injectables.append(parent_inj.pk)
-            except Injectable.DoesNotExist:
+            except ObjectDoesNotExist:
                 logger.warn(f'Injectable {parameter} '
                             f'not found in scneario {inj.scenario.name}')
         inj.parent_injectables = str(parent_injectables)

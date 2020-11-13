@@ -84,7 +84,7 @@ class ProjectForm(forms.Form):
             return kwargs
 
         module_name = mod_descs[0]['path']
-        initial = mod_descs[0].get('init')
+        initial = mod_descs[0].get('init', [])
         manager = OrcaManager()
         uid = str(time.time())
         orca = manager.get(uid , module=module_name)
