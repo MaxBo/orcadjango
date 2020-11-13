@@ -1,7 +1,6 @@
-import logging
 import json
 from inspect import signature
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 from django.shortcuts import HttpResponseRedirect
 from django.http import HttpResponse
 from django.http import JsonResponse, HttpResponseNotFound
@@ -9,13 +8,13 @@ from collections import OrderedDict
 from django.db.models import Max
 from django.conf import settings
 import json
+from django.core.exceptions import ObjectDoesNotExist
+from django.urls import reverse
+from django.core import serializers
 
 from orcaserver.management import OrcaManager
 from orcaserver.views import ProjectMixin, apply_injectables
-from orcaserver.models import Step, Injectable, Scenario
-from django.core.exceptions import ObjectDoesNotExist
-from django.urls import reverse
-from orcadjango.loggers import ScenarioHandler
+from orcaserver.models import Step, Injectable, Scenario, LogEntry
 
 manager = OrcaManager()
 
@@ -30,7 +29,7 @@ class StepsView(ProjectMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         scenario = self.get_scenario()
         if not scenario:
-            return  HttpResponseRedirect(reverse('scenarios'))
+            return HttpResponseRedirect(reverse('scenarios'))
         #apply_injectables(scenario)
         return super().get(request, *args, **kwargs)
 
@@ -71,6 +70,8 @@ class StepsView(ProjectMixin, TemplateView):
         kwargs = super().get_context_data(**kwargs)
         kwargs['steps_available'] = steps_grouped if scenario else []
         kwargs['steps_scenario'] = steps_scenario
+        logs = LogEntry.objects.filter(scenario=scenario).order_by('-timestamp')
+        kwargs['logs'] = logs
         # ToDo: get room from handler
 
         prefix = 'ws' if settings.DEBUG else 'wss'
@@ -223,26 +224,17 @@ class StepsView(ProjectMixin, TemplateView):
         orca = manager.get(scenario_id)
         scenario = Scenario.objects.get(id=scenario_id)
 
-        logger = orca.logger
-        # ToDo: move handler config to manager (doesn't know about scenarios)?
-        logger.handlers.clear()
-        handler = ScenarioHandler(scenario)
-        level = logging.DEBUG if settings.DEBUG else logging.INFO
-        logger.setLevel(level)
-        handler.setLevel(level)
-        logger.addHandler(handler)
-
         active_steps = Step.objects.filter(
             scenario=scenario, active=True).order_by('order')
         if len(active_steps) == 0:
-            logger.error('No steps selected.')
+            orca.logger.error('No steps selected.')
             return HttpResponse(status=400)
         # check if all injectables are available
         injectables_available = orca.list_injectables()
         steps_available = orca.list_steps()
         for step in active_steps:
             if step.name not in steps_available:
-                logger.error(
+                orca.logger.error(
                     'There are steps selected that can not be found in the '
                     'module. Your project seems not to be up to date '
                     'with the module. Please remove those steps.')
@@ -254,7 +246,7 @@ class StepsView(ProjectMixin, TemplateView):
             inj_db = Injectable.objects.filter(name__in=required,
                                                scenario=scenario)
             if len(required) > len(inj_db):
-                logger.error(
+                orca.logger.error(
                     'There are steps selected that contain injectables that '
                     'not be found. Your project seems not to be up to date '
                     'with the module.<br>Please refresh the injectables '
@@ -267,17 +259,17 @@ class StepsView(ProjectMixin, TemplateView):
             step.save()
         apply_injectables(orca, scenario)
         if manager.is_running(scenario.id):
-            logger.error('Orca is already running. Please wait for it to '
+            orca.logger.error('Orca is already running. Please wait for it to '
                          'finish or abort it.')
             return HttpResponse(status=400)
 
         message = f'Running Steps for scenario "{scenario.name}"'
-        logger.info(message)
+        orca.logger.info(message)
         try:
             manager.add_meta(scenario.id, user=request.user)
             manager.start(scenario.id, steps=active_steps)
         except Exception as e:
-            logger.error(str(e))
+            orca.logger.error(str(e))
             return HttpResponse(status=400)
         return HttpResponse(status=200)
 
@@ -291,3 +283,17 @@ class StepsView(ProjectMixin, TemplateView):
 
 class StatusView(ProjectMixin, TemplateView):
     template_name = 'orcaserver/status.html'
+
+
+class LogsView(ProjectMixin, ListView):
+
+    def get_queryset(self):
+        """Return the injectables with their values."""
+        logs = LogEntry.objects.filter(scenario=self.scenario_id)
+        return logs
+
+    def get(self, request, *args, **kwargs):
+        self.scenario_id = kwargs.get('id')
+        queryset = self.get_queryset()
+        data = serializers.serialize("json", queryset)
+        return JsonResponse(data, status=200, safe=False)

@@ -167,13 +167,23 @@ class OrcaManager(Singleton):
         self.instances[instance_id] = instance
         return instance
 
+    def add_log_handler(self, instance_id: int, handler: logging.StreamHandler):
+        instance = self.instances[instance_id]
+        instance.logger.addHandler(handler)
+
+    def clear_log_handlers(self, instance_id: int):
+        instance = self.instances.get(instance_id)
+        if not instance:
+            return
+        instance.logger.handlers.clear()
+
     def _create_instance(self, module_name) -> 'module':
         spec = importlib.util.find_spec('orca.orca')
         orca = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(orca)
         # append a logger
         orca.logger = logging.getLogger(str(id(orca)))
-        orca.logger.setLevel(logging.INFO)
+        orca.logger.setLevel(logging.DEBUG)
         sys.modules['orca'] = orca
         from orcadjango import decorators
         importlib.reload(decorators)

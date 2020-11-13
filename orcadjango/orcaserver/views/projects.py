@@ -2,15 +2,19 @@ from django.views.generic import ListView, FormView
 from django.http import HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
+from django.conf import settings
 import logging
 import json
+from django.utils import timezone
+import logging
 
+from orcadjango.loggers import OrcaChannelHandler
+from orcaserver.models import LogEntry
 from orcaserver.forms import ProjectForm
 from orcaserver.models import(Scenario, Project, Injectable,
                               InjectableConversionError)
 from orcaserver.management import OrcaManager
 
-logger = logging.getLogger('OrcaLog')
 manager = OrcaManager()
 
 def apply_injectables(orca, scenario):
@@ -25,10 +29,31 @@ def apply_injectables(orca, scenario):
         try:
             converted_value = inj.validate_value()
         except InjectableConversionError as e:
-            logger.warn(str(e))
+            orca.logger.warn(str(e))
             continue
         if inj.can_be_changed:
             orca.add_injectable(inj.name, converted_value)
+
+
+class ScenarioHandler(OrcaChannelHandler):
+    def __init__(self, scenario, persist=False, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.group = f'log_{scenario.id}'
+        self.scenario = scenario
+        self.setFormatter(logging.Formatter(
+            f'%(asctime)s {scenario.name} - %(message)s'))
+        self.persist = persist
+
+    def emit(self, record):
+        super().emit(record)
+        if not self.persist:
+            return
+        LogEntry.objects.create(
+            scenario=self.scenario,
+            message=record.getMessage(),
+            timestamp=timezone.now(),
+            level=record.levelname
+        )
 
 
 class ProjectMixin:
@@ -75,6 +100,9 @@ class ProjectMixin:
         orca = manager.get(scenario.id, module=module, create=False)
         if not orca:
             orca = manager.create(scenario.id, module=module)
+            handler = ScenarioHandler(scenario, persist=True)
+            handler.setLevel(logging.DEBUG if settings.DEBUG else logging.INFO)
+            manager.add_log_handler(scenario.id, handler)
             apply_injectables(orca, scenario)
         return orca
 

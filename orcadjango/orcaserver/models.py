@@ -150,3 +150,10 @@ class Step(NameModel):
     order = models.IntegerField(null=True)
     active = models.BooleanField(default=True)
     docstring = models.TextField(null=True, blank=True)
+
+
+class LogEntry(models.Model):
+    scenario = models.ForeignKey(Scenario, on_delete=models.CASCADE)
+    message = models.TextField(blank=True)
+    level = models.TextField(default='INFO')
+    timestamp = models.DateTimeField()
