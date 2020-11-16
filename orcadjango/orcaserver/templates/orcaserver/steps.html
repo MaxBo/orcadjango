@@ -10,7 +10,6 @@
 {% endblock %}
 
 {% block left-content %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/site.css' %}">
 <div class="col-md-4" style="padding: 2em;">
 {% if steps_available %}
   <h6>available</h6>
@@ -47,6 +46,8 @@
 {% endblock %}
 
 {% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/datatables.min.css' %}">
+<script src="{% static 'js/datatables.min.js' %}"></script>
 <script src="{% static 'js/jquery-ui.min.js' %}"></script>
 {% if error_message %}<p style="color: red;"><strong>{{ error_message }}</strong></p>{% endif %}
 {% if steps_available %}
@@ -137,7 +138,10 @@
     fetch('/logs').then(function(res){
         return res.text()
     }).then(function(html){
-        document.getElementById('logs-body').innerHTML = html;
+        var modalBody = document.getElementById('logs-body');
+        modalBody.innerHTML = html;
+        var table = modalBody.querySelector('table');
+        $(table).DataTable({"order": [[0, "desc"]]});
     });
   }
 
@@ -312,5 +316,6 @@
   document.addEventListener("mouseup", function(){
       document.removeEventListener("mousemove", resize, false);
   }, false);
+
 </script>
 {% endblock %}
