@@ -14,7 +14,7 @@
 }
 
 .select tr.selected {
-  background-color: #87c1ff;
+  background-color: #87c1ff !IMPORTANT;
   color: white;
 }
 
@@ -29,7 +29,7 @@
 .navbar-nav .nav-link.active {
   font-size: 18;
   font-weight: bold;
-  color: #007bff !important;
+  color: #007bff !IMPORTANT;
 }
 
 .bottom-resizable{

@@ -10,36 +10,39 @@
 {% endblock %}
 
 {% block left-content %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/site.css' %}">
 <div class="col-md-4" style="padding: 2em;">
 {% if steps_available %}
   <h6>available</h6>
-  <div> <!--style="max-height: 800px; overflow-y: scroll;"-->
-    <table class="table select" id="steps-available">
-      <thead>
-        <tr>
-          <th>Group</th>
-          <th>Name</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-      {% for group, steps in steps_available.items %}
-        {% for step in steps %}
-          <tr onclick="highlightRow(this)" data-step="{{ step.name }}" title="{{ step.name }} - {{ step.description }}">
-            <td style="background-color: Snow {% if not forloop.last %} ;border-bottom-style: hidden" {% endif %}"> {% if forloop.first %} <b>{{ group }}</b> {% endif %} </td>
-            <td> {{ step.name }} </td>
-            <td> {{ step.description }} </td>
-          </tr>
-        {% endfor %}
-      {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  <form action='' method="post" style="float: right; margin-top: 10px;">
+  <form action='' method="post">
     {% csrf_token %}
     <input type='hidden' name="steps" id="selected-steps">
-    <input class="btn btn-secondary" type="submit" name='add' value="Add >>"/>
+    <div> <!--style="max-height: 800px; overflow-y: scroll;"-->
+      <input class="btn btn-secondary" title="Add selected steps" type="submit" name='add' value=">>" style="right: 0; top: 20%; position: absolute; padding: 0.2em; font-size: 0.5em;"/>
+      {% if steps_count > 10 %}
+      <input class="btn btn-secondary" title="Add selected steps" type="submit" name='add' value=">>" style="right: 0; top: 50%; position: absolute; padding: 0.2em; font-size: 0.5em;"/>
+      {% endif %}
+      <table class="table select table-striped" id="steps-available">
+        <thead>
+          <tr>
+            <th>Group</th>
+            <th>Name</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for group, steps in steps_available.items %}
+          {% for step in steps %}
+            <tr onclick="highlightRow(this)" data-step="{{ step.name }}" title="{{ step.name }} - {{ step.description }}">
+              <td style="background-color: Snow {% if not forloop.last %} ;border-bottom-style: hidden" {% endif %}"> {% if forloop.first %} <b>{{ group }}</b> {% endif %} </td>
+              <td> {{ step.name }} </td>
+              <td> {{ step.description }} </td>
+            </tr>
+          {% endfor %}
+        {% endfor %}
+        </tbody>
+      </table>
+      <input class="btn btn-secondary" title="Add selected steps" type="submit" name='add' value="Add >>" style="float: right; margin-top: 10px;"/>
+    </div>
   </form>
   <div class="row" id="logPlaceholder" style="height: 30em;"></div>
 {% endif %}
@@ -47,6 +50,8 @@
 {% endblock %}
 
 {% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/datatables.min.css' %}">
+<script src="{% static 'js/datatables.min.js' %}"></script>
 <script src="{% static 'js/jquery-ui.min.js' %}"></script>
 {% if error_message %}<p style="color: red;"><strong>{{ error_message }}</strong></p>{% endif %}
 {% if steps_available %}
@@ -137,7 +142,10 @@
     fetch('/logs').then(function(res){
         return res.text()
     }).then(function(html){
-        document.getElementById('logs-body').innerHTML = html;
+        var modalBody = document.getElementById('logs-body');
+        modalBody.innerHTML = html;
+        var table = modalBody.querySelector('table');
+        $(table).DataTable({"order": [[0, "desc"]]});
     });
   }
 
@@ -312,5 +320,6 @@
   document.addEventListener("mouseup", function(){
       document.removeEventListener("mousemove", resize, false);
   }, false);
+
 </script>
 {% endblock %}
