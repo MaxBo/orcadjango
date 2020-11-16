@@ -2,6 +2,7 @@
 {% bootstrap_css %}
 {% bootstrap_javascript jquery='full' %}
 {% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/site.css' %}">
 
 <head>
   <title>OrcaDjango</title>
@@ -11,7 +12,6 @@
 <body>
 {% bootstrap_messages %}
 {% block bootstrap4_content %}
-  <link rel="stylesheet" type="text/css" href="{% static 'css/site.css' %}">
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="/">OrcaDjango</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
