@@ -357,3 +357,25 @@ class OrcaManager(Singleton):
             logger.info('orca run finished')
         except Abort:
             logger.error('orca run aborted')
+
+
+class OrcaVarConverter:
+    datatype = None
+    form = None
+
+    @staticmethod
+    def get(datatype):
+        pass
+
+    def to_value(self, text):
+        raise NotImplementedError
+
+    def to_str(self, value):
+        raise NotImplementedError
+
+    def get_form(self):
+        raise NotImplementedError
+
+
+class IntegerConverter(OrcaVarConverter):
+    pass

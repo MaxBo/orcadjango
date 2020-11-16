@@ -4,7 +4,8 @@ import time
 import json
 
 from orcaserver.models import Step, InjectableConversionError
-from orcaserver.management import OrcaManager, parse_injectables
+from orcaserver.management import (OrcaManager, parse_injectables,
+                                   OrcaVarConverter)
 
 TYPE_FORM_MAP = {
     'float': forms.FloatField,
@@ -92,6 +93,7 @@ class ProjectForm(forms.Form):
         for injectable in initial:
             desc = meta[injectable]
             value = initial_values.get(injectable, desc['value'])
+            OrcaVarConverter.get('data_class')
             typ = desc['data_class'].replace('builtins.', '')
             field_form = TYPE_FORM_MAP.get(typ, forms.CharField)
             field = field_form(
