@@ -5,17 +5,7 @@ import json
 
 from orcaserver.models import Step, InjectableConversionError
 from orcaserver.management import (OrcaManager, parse_injectables,
-                                   OrcaVarConverter)
-
-TYPE_FORM_MAP = {
-    'float': forms.FloatField,
-    'int': forms.IntegerField,
-    'bool': forms.BooleanField,
-    'str': forms.CharField,
-    #'dict': forms.MultiValueDict,
-    'list': forms.MultiValueField
-}
-
+                                   OrcaTypeMap)
 
 def get_python_module():
     """return the currently set python module"""
@@ -93,12 +83,9 @@ class ProjectForm(forms.Form):
         for injectable in initial:
             desc = meta[injectable]
             value = initial_values.get(injectable, desc['value'])
-            OrcaVarConverter.get('data_class')
-            typ = desc['data_class'].replace('builtins.', '')
-            field_form = TYPE_FORM_MAP.get(typ, forms.CharField)
-            field = field_form(
-                label=f'initial value for "{injectable}" - {desc["docstring"]}',
-                initial=value)
+            converter = OrcaTypeMap.get(desc['data_class'])
+            label=f'initial value for "{injectable}" - {desc["docstring"]}'
+            field = converter.get_field(value=value, label=label)
             self.fields[injectable] = field
         manager.remove(uid)
 

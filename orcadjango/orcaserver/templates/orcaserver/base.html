@@ -69,10 +69,12 @@
         </div>
         {% endif %}
     </div>
+    {% if show_status %}
     <div class="col-md-4" style="padding-right: 60px;">
       <label id="status-label" style="float: right; margin-left: 5px;"></label>
       <a href='/status' style="float: right;"> <b> Status:</b> </a>
     </div>
+    {% endif %}
   </div>
   <div class="row" style="margin-top: 20px;">
 
@@ -112,9 +114,11 @@
     })
   }
 
+  {% if show_status %}
   (function() {
     // periodically update status
     updateStatus();
     setInterval(updateStatus, 10000);
   })();
+  {% endif %}
 </script>

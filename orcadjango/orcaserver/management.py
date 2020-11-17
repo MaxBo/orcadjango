@@ -7,6 +7,9 @@ import ctypes
 import sys
 import typing
 from inspect import signature, _empty
+from django import forms
+
+from orcaserver.widgets import DictWidget, DictField
 
 overwritable_types = (str, bytes, int, float, complex,
                       tuple, list, dict, set, bool, None.__class__)
@@ -147,7 +150,7 @@ class OrcaManager(Singleton):
                                 f'the module {instance._python_module} instead '
                                 f'of the requested module {module}')
             if not instance and create:
-                return self.create(instance_id)
+                return self.create(instance_id, module=module)
             return instance
 
     def remove(self, instance_id: int):
@@ -359,13 +362,25 @@ class OrcaManager(Singleton):
             logger.error('orca run aborted')
 
 
-class OrcaVarConverter:
-    datatype = None
-    form = None
+class OrcaTypeMap:
+    data_type = None
+    form_field = None
 
     @staticmethod
-    def get(datatype):
-        pass
+    def get(module):
+        module = module.replace('builtins.', '')
+        if module in __builtins__:
+            mod = __builtins__.get(module)
+        else:
+            mod = importlib.import_module(module)
+        cls = None
+        for sub in OrcaTypeMap.__subclasses__():
+            if sub.data_type == mod:
+                cls = sub
+                break
+        if not cls:
+            cls = DefaultConverter
+        return cls()
 
     def to_value(self, text):
         raise NotImplementedError
@@ -373,9 +388,46 @@ class OrcaVarConverter:
     def to_str(self, value):
         raise NotImplementedError
 
-    def get_form(self):
-        raise NotImplementedError
+    def get_field(self, value=None, label=''):
+        return self.form_field(initial=value, label=label)
 
 
-class IntegerConverter(OrcaVarConverter):
-    pass
+class DefaultConverter(OrcaTypeMap):
+    form_field = forms.CharField
+
+
+class IntegerConverter(OrcaTypeMap):
+    data_type = int
+    form_field = forms.IntegerField
+
+
+class FloatConverter(OrcaTypeMap):
+    data_type = float
+    form_field = forms.FloatField
+
+
+class BooleanConverter(OrcaTypeMap):
+    data_type = bool
+    form_field = forms.BooleanField
+
+
+#class ListConverter(OrcaTypeMap):
+    #data_type = list
+    #form_field = forms.MultiValueField
+
+    #def get_field(self, value, label=''):
+        #pass
+
+
+class DictConverter(OrcaTypeMap):
+    data_type = dict
+    form_field = DictField
+
+    def get_field(self, value, label=''):
+        return self.form_field(value, label=label)
+
+
+class StringConverter(OrcaTypeMap):
+    data_type = str
+    form_field = forms.CharField
+
