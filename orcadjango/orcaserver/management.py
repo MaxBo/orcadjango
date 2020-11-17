@@ -8,8 +8,9 @@ import sys
 import typing
 from inspect import signature, _empty
 from django import forms
+import json
 
-from orcaserver.widgets import DictWidget, DictField
+from orcaserver.widgets import DictField, CommaSeparatedCharField
 
 overwritable_types = (str, bytes, int, float, complex,
                       tuple, list, dict, set, bool, None.__class__)
@@ -368,14 +369,15 @@ class OrcaTypeMap:
 
     @staticmethod
     def get(module):
-        module = module.replace('builtins.', '')
-        if module in __builtins__:
-            mod = __builtins__.get(module)
-        else:
-            mod = importlib.import_module(module)
+        if isinstance(module, str):
+            module = module.replace('builtins.', '')
+            if module in __builtins__:
+                module = __builtins__.get(module)
+            else:
+                module = importlib.import_module(module)
         cls = None
         for sub in OrcaTypeMap.__subclasses__():
-            if sub.data_type == mod:
+            if sub.data_type == module:
                 cls = sub
                 break
         if not cls:
@@ -386,7 +388,7 @@ class OrcaTypeMap:
         raise NotImplementedError
 
     def to_str(self, value):
-        raise NotImplementedError
+        return str(value)
 
     def get_field(self, value=None, label=''):
         return self.form_field(initial=value, label=label)
@@ -400,23 +402,35 @@ class IntegerConverter(OrcaTypeMap):
     data_type = int
     form_field = forms.IntegerField
 
+    def to_value(self, text):
+        return int(text)
+
 
 class FloatConverter(OrcaTypeMap):
     data_type = float
     form_field = forms.FloatField
+
+    def to_value(self, text):
+        return float(text)
 
 
 class BooleanConverter(OrcaTypeMap):
     data_type = bool
     form_field = forms.BooleanField
 
+    def to_value(self, text):
+        return bool(text)
 
-#class ListConverter(OrcaTypeMap):
-    #data_type = list
-    #form_field = forms.MultiValueField
 
-    #def get_field(self, value, label=''):
-        #pass
+class ListConverter(OrcaTypeMap):
+    data_type = list
+    form_field = CommaSeparatedCharField
+
+    def to_str(self, value):
+        return ','.join(str(v) for v in value)
+
+    def to_value(self, text):
+        return text.split(',') if text else []
 
 
 class DictConverter(OrcaTypeMap):
@@ -425,6 +439,18 @@ class DictConverter(OrcaTypeMap):
 
     def get_field(self, value, label=''):
         return self.form_field(value, label=label)
+
+    def to_str(self, value):
+        return json.dumps(value)
+
+    def to_value(self, text):
+        # workaround
+        # ToDo: remove this
+        try:
+            ret = json.loads(text)
+        except json.decoder.JSONDecodeError:
+            ret = json.loads(text.replace("'",'"'))
+        return ret
 
 
 class StringConverter(OrcaTypeMap):

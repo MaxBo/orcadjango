@@ -5,6 +5,20 @@ from django.core.exceptions import ValidationError
 from django.forms.utils import ErrorList
 
 
+class CommaSeparatedCharField(forms.Field):
+    def __init__(self, *args, **kwargs):
+        if 'initial' in kwargs:
+            kwargs['initial'] = ', '.join(kwargs['initial'])
+        super().__init__(*args, **kwargs)
+
+    def value_from_datadict(self, data, files, name):
+        return data.getlist(name)
+
+    def to_python(self, value):
+        value = [v.strip() for v in value.split(',') if v.strip()]
+        return value
+
+
 class DictField(forms.MultiValueField):
 
     def __init__(self, dictionary, *args, **kwargs):

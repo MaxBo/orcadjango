@@ -13,7 +13,7 @@ from orcaserver.models import LogEntry
 from orcaserver.forms import ProjectForm
 from orcaserver.models import(Scenario, Project, Injectable,
                               InjectableConversionError)
-from orcaserver.management import OrcaManager
+from orcaserver.management import OrcaManager, OrcaTypeMap
 
 manager = OrcaManager()
 
@@ -177,7 +177,8 @@ class ProjectView(ProjectMixin, FormView):
         init = {}
         # additional fields are assumed to be injectable values
         for field, value in fields.items():
-            init[field] = value
+            conv = OrcaTypeMap.get(type(value))
+            init[field] = conv.to_str(value)
         if self.project_id is None:
             Project.objects.create(name=name, description=description,
                                    init=json.dumps(init),

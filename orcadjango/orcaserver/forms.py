@@ -82,8 +82,12 @@ class ProjectForm(forms.Form):
         meta = parse_injectables(orca)
         for injectable in initial:
             desc = meta[injectable]
-            value = initial_values.get(injectable, desc['value'])
             converter = OrcaTypeMap.get(desc['data_class'])
+            value = initial_values.get(injectable)
+            if value:
+                value = converter.to_value(value)
+            else:
+                value = desc['value']
             label=f'initial value for "{injectable}" - {desc["docstring"]}'
             field = converter.get_field(value=value, label=label)
             self.fields[injectable] = field
