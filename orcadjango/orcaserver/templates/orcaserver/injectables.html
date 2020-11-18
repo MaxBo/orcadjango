@@ -31,9 +31,7 @@
       {% for groupname, injectables in grouped_injectables.items %}
         {% for injectable in injectables %}
           <tr
-          {% if not injectable.valid_value %}
-            style="background-color: plum;"
-          {% elif not injectable.can_be_changed %}
+          {% if not injectable.can_be_changed %}
             style="background-color: lightgrey;"
           {% endif %}
           >

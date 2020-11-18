@@ -469,3 +469,6 @@ class StringConverter(OrcaTypeMap):
     form_field = forms.CharField
     description = 'string'
 
+    def to_value(self, text):
+        return text
+

@@ -11,8 +11,7 @@ import logging
 from orcadjango.loggers import OrcaChannelHandler
 from orcaserver.models import LogEntry
 from orcaserver.forms import ProjectForm
-from orcaserver.models import(Scenario, Project, Injectable,
-                              InjectableConversionError)
+from orcaserver.models import Scenario, Project, Injectable
 from orcaserver.management import OrcaManager, OrcaTypeMap
 
 manager = OrcaManager()
@@ -23,16 +22,8 @@ def apply_injectables(orca, scenario):
     names = orca.list_injectables()
     injectables = Injectable.objects.filter(name__in=names, scenario=scenario)
     for inj in injectables:
-        #  skip injectables which cannot be changed
-        if not (inj.changed or inj.can_be_changed):
-            continue
-        try:
-            converted_value = inj.validate_value()
-        except InjectableConversionError as e:
-            orca.logger.warn(str(e))
-            continue
         if inj.can_be_changed:
-            orca.add_injectable(inj.name, converted_value)
+            orca.add_injectable(inj.name, inj.validated_value)
 
 
 class ScenarioHandler(OrcaChannelHandler):

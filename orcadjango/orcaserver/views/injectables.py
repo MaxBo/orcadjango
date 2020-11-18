@@ -53,17 +53,6 @@ class InjectableView(ProjectMixin, FormView):
     def name(self):
         return self.kwargs.get('name')
 
-    def get_initial(self):
-        """Return the initial data to use for forms on this view."""
-        try:
-            inj = Injectable.objects.get(name=self.name,
-                                         scenario=self.get_scenario())
-            converter = OrcaTypeMap.get(inj.data_class)
-            inj.validate_value(inj.value)
-            return {'value': converter.to_value(inj.value)}
-        except ObjectDoesNotExist:
-            return {'value': None}
-
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
         try:
@@ -117,13 +106,10 @@ class InjectableView(ProjectMixin, FormView):
         inj = Injectable.objects.get(name=self.name,
                                      scenario=scenario)
         value = form.cleaned_data.get('value')
-        new_value = OrcaTypeMap.get(inj.data_class).to_str(value)
-        if new_value != inj.value:
-            inj.changed = True
-        inj.value = new_value
         inj.valid = True
+        inj.value = value
         inj.save()
-        orca.add_injectable(inj.name, new_value)
+        orca.add_injectable(inj.name, value)
         redirect = self.request.GET.get('next', reverse('injectables'))
         return HttpResponseRedirect(redirect)
 

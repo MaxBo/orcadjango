@@ -3,7 +3,7 @@ from django.conf import settings
 import time
 import json
 
-from orcaserver.models import Step, InjectableConversionError
+from orcaserver.models import Step
 from orcaserver.management import (OrcaManager, parse_injectables,
                                    OrcaTypeMap)
 
@@ -36,15 +36,11 @@ class OrcaSettingsForm(forms.Form):
 
 
 class InjectableValueForm(forms.Form):
-    #value = forms.CharField(label='Value', max_length=255, required=False)
 
     def __init__(self, *args, **kwargs):
-        self.injectable = kwargs.pop('injectable', None)
+        inj = kwargs.pop('injectable', None)
         super().__init__(*args, **kwargs)
-        converter = OrcaTypeMap.get(self.injectable.data_class)
-        init = kwargs.get('initial', {})
-        field = converter.get_field(value=init.get('value'), label=f'Value')
-        self.fields['value'] = field
+        self.fields['value'] = inj.get_form_field()
 
 
 class ProjectForm(forms.Form):
