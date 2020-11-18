@@ -74,9 +74,10 @@ class DictWidget(forms.widgets.MultiWidget):
         required = attrs.pop('required')
         attrs['name'] = _id
         _attrs = ' '.join([f'{k}="{v}"' for k,v in attrs.items()])
-        html = [f'<fieldset {_attrs}>']
+        html = [f'<table {_attrs}>']
 
         for idx, field in enumerate(self.fields):
+            html.append('<tr>')
             key = self.keys[idx]
             widget = field.widget
             widget_id = f'{_id}_{key}'
@@ -85,15 +86,14 @@ class DictWidget(forms.widgets.MultiWidget):
                 'id': widget_id,
                 'required': True
             };
-            html.append(f'<label for {widget_id}>{field.label}</label>')
+            html.append(f'<td><label for {widget_id}>{field.label}</label></td>')
             widget_html = widget.render(f'{name}_{key}',
                                         field.initial,
                                         widget_attrs,
                                         renderer=renderer)
-            html.append(widget_html)
-            if idx < len(self.fields) - 1:
-                html.append('<br>')
-        html.append('</fieldset>')
+            html.append(f'<td>{widget_html}</td>')
+            html.append('</tr>')
+        html.append('</table>')
         return mark_safe(''.join(html))
 
     def id_for_label(self, _id):
