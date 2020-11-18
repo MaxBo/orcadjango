@@ -44,7 +44,6 @@ class Injectable(NameModel):
                                  null=True)
     value = models.TextField(null=True)
     changed = models.BooleanField(default=False)
-    can_be_changed = models.BooleanField(default=True)
     docstring = models.TextField(null=True, blank=True)
     module = models.TextField(null=True, blank=True)
     groupname = models.TextField(null=False, blank=False, default='')
@@ -57,6 +56,17 @@ class Injectable(NameModel):
 
     def __str__(self):
         return f'{self.scenario} - {self.name}'
+
+    @property
+    def can_be_changed(self):
+        if self.parent_injectable_values:
+            return False
+        conv = OrcaTypeMap.get(self.data_class)
+        # only data types with an implemented converter should be changable
+        # via UI, the default converter has no datatype
+        if not conv.data_type:
+            return False
+        return True
 
     @property
     def calculated_value(self):

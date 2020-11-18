@@ -16,10 +16,6 @@ import osr
 
 from orcaserver.widgets import DictField, CommaSeparatedCharField, GeometryField
 
-overwritable_types = (str, bytes, int, float, complex,
-                      tuple, list, dict, set, bool, None.__class__,
-                      ogr.Geometry)
-
 lock = threading.Lock()
 
 _CS_STEP = 'steps'
@@ -72,8 +68,6 @@ def parse_injectables(orca):
         #  check if the original type is overwritable
         funcwrapper = orca._injectable_function.get(name)
         sig = signature(funcwrapper._func)
-        desc['can_be_changed'] = isinstance(
-            value, overwritable_types) and not sig.parameters
         if isinstance(funcwrapper, orca._InjectableFuncWrapper):
             desc['docstring'] = funcwrapper._func.__doc__
             #  Datatype from annotations:
@@ -380,7 +374,8 @@ class OrcaTypeMap:
             module_class = module.split('.')
             module_name = '.'.join(module_class[:-1])
             classname = module_class[-1]
-            module = getattr(importlib.import_module(module_name), classname, str)
+            module = getattr(importlib.import_module(module_name),
+                             classname, str)
             for sub in OrcaTypeMap.__subclasses__():
                 if sub.data_type == module:
                     cls = sub
@@ -506,6 +501,7 @@ class GeometryConverter(OrcaTypeMap):
             srid=4326,
             geom_type='Polygon',
             initial=self.to_str(value),
+            label='',
             widget=geoforms.OSMWidget(
                 attrs={
                     'map_width': 800,
