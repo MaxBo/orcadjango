@@ -111,6 +111,7 @@ class Injectable(NameModel):
     def get_form_field(self):
         converter = OrcaTypeMap.get(self.data_class)
         field = converter.get_field(value=self.validated_value, label=f'Value')
+        field.widget.attrs['placeholder'] = self.docstring
         return field
 
 
