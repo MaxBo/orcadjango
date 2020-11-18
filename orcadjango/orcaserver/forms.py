@@ -36,20 +36,15 @@ class OrcaSettingsForm(forms.Form):
 
 
 class InjectableValueForm(forms.Form):
-    value = forms.CharField(label='Value', max_length=255, required=False)
+    #value = forms.CharField(label='Value', max_length=255, required=False)
 
     def __init__(self, *args, **kwargs):
         self.injectable = kwargs.pop('injectable', None)
         super().__init__(*args, **kwargs)
-
-    def clean(self):
-        value = self.cleaned_data['value']
-
-        try:
-            _ = self.injectable.validate_value(value=value)
-        except InjectableConversionError as e:
-            self.add_error('value', str(e))
-            raise forms.ValidationError(str(e))
+        converter = OrcaTypeMap.get(self.injectable.data_class)
+        init = kwargs.get('initial', {})
+        field = converter.get_field(value=init.get('value'), label=f'Value')
+        self.fields['value'] = field
 
 
 class ProjectForm(forms.Form):
@@ -88,7 +83,7 @@ class ProjectForm(forms.Form):
                 value = converter.to_value(value)
             else:
                 value = desc['value']
-            label=f'initial value for "{injectable}" - {desc["docstring"]}'
+            label = f'initial value for "{injectable}" - {desc["docstring"]}'
             field = converter.get_field(value=value, label=label)
             self.fields[injectable] = field
         manager.remove(uid)

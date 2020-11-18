@@ -9,6 +9,7 @@ import typing
 from inspect import signature, _empty
 from django import forms
 import json
+import ast
 
 from orcaserver.widgets import DictField, CommaSeparatedCharField
 
@@ -366,20 +367,22 @@ class OrcaManager(Singleton):
 class OrcaTypeMap:
     data_type = None
     form_field = None
+    description = ''
 
     @staticmethod
     def get(module):
-        if isinstance(module, str):
-            module = module.replace('builtins.', '')
-            if module in __builtins__:
-                module = __builtins__.get(module)
-            else:
-                module = importlib.import_module(module)
         cls = None
-        for sub in OrcaTypeMap.__subclasses__():
-            if sub.data_type == module:
-                cls = sub
-                break
+        try:
+            module_class = module.split('.')
+            module_name = '.'.join(module_class[:-1])
+            classname = module_class[-1]
+            module = getattr(importlib.import_module(module_name), classname, str)
+            for sub in OrcaTypeMap.__subclasses__():
+                if sub.data_type == module:
+                    cls = sub
+                    break
+        except ModuleNotFoundError:
+            pass
         if not cls:
             cls = DefaultConverter
         return cls()
@@ -397,10 +400,14 @@ class OrcaTypeMap:
 class DefaultConverter(OrcaTypeMap):
     form_field = forms.CharField
 
+    def to_value(self, text):
+        return ast.literal_eval(text)
+
 
 class IntegerConverter(OrcaTypeMap):
     data_type = int
     form_field = forms.IntegerField
+    description = 'integer'
 
     def to_value(self, text):
         return int(text)
@@ -409,6 +416,7 @@ class IntegerConverter(OrcaTypeMap):
 class FloatConverter(OrcaTypeMap):
     data_type = float
     form_field = forms.FloatField
+    description = 'float'
 
     def to_value(self, text):
         return float(text)
@@ -417,6 +425,7 @@ class FloatConverter(OrcaTypeMap):
 class BooleanConverter(OrcaTypeMap):
     data_type = bool
     form_field = forms.BooleanField
+    description = 'boolean'
 
     def to_value(self, text):
         return bool(text)
@@ -425,6 +434,7 @@ class BooleanConverter(OrcaTypeMap):
 class ListConverter(OrcaTypeMap):
     data_type = list
     form_field = CommaSeparatedCharField
+    description = 'comma seperated values'
 
     def to_str(self, value):
         return ','.join(str(v) for v in value)
@@ -436,6 +446,7 @@ class ListConverter(OrcaTypeMap):
 class DictConverter(OrcaTypeMap):
     data_type = dict
     form_field = DictField
+    description = 'dictionary'
 
     def get_field(self, value, label=''):
         return self.form_field(value, label=label)
@@ -456,4 +467,5 @@ class DictConverter(OrcaTypeMap):
 class StringConverter(OrcaTypeMap):
     data_type = str
     form_field = forms.CharField
+    description = 'string'
 

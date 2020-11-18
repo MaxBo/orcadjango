@@ -91,13 +91,15 @@ class Injectable(NameModel):
             ret = repr(e)
         return ret
 
+    # ToDo: move validation to form
     def validate_value(self, value=None):
         """validate the value of the injectable"""
         #  get original type of injectable value (if not available, use string)
         module_class = self.data_class.split('.')
         module_name = '.'.join(module_class[:-1])
         classname = module_class[-1]
-        original_type = getattr(importlib.import_module(module_name), classname, str)
+        original_type = getattr(importlib.import_module(module_name),
+                                classname, str)
         if value is None:
             value = self.value
         # compare to evaluation or value

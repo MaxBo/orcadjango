@@ -9,7 +9,7 @@ import json
 from orcaserver.views import ProjectMixin, recreate_injectables
 from orcaserver.models import Injectable
 from orcaserver.forms import InjectableValueForm
-from orcaserver.management import OrcaManager
+from orcaserver.management import OrcaManager, OrcaTypeMap
 
 manager = OrcaManager()
 
@@ -58,7 +58,9 @@ class InjectableView(ProjectMixin, FormView):
         try:
             inj = Injectable.objects.get(name=self.name,
                                          scenario=self.get_scenario())
-            return {'value': inj.value}
+            converter = OrcaTypeMap.get(inj.data_class)
+            inj.validate_value(inj.value)
+            return {'value': converter.to_value(inj.value)}
         except ObjectDoesNotExist:
             return {'value': None}
 
@@ -112,12 +114,13 @@ class InjectableView(ProjectMixin, FormView):
     def form_valid(self, form):
         scenario = self.get_scenario()
         orca = self.get_orca()
-        inj: Injectable = Injectable.objects.get(name=self.name,
-                                                 scenario=scenario)
-        new_value = form.cleaned_data.get('value')
-        inj.value = new_value
+        inj = Injectable.objects.get(name=self.name,
+                                     scenario=scenario)
+        value = form.cleaned_data.get('value')
+        new_value = OrcaTypeMap.get(inj.data_class).to_str(value)
         if new_value != inj.value:
             inj.changed = True
+        inj.value = new_value
         inj.valid = True
         inj.save()
         orca.add_injectable(inj.name, new_value)
