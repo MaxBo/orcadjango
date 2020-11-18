@@ -12,7 +12,7 @@ from orcadjango.loggers import OrcaChannelHandler
 from orcaserver.models import LogEntry
 from orcaserver.forms import ProjectForm
 from orcaserver.models import Scenario, Project, Injectable
-from orcaserver.management import OrcaManager, OrcaTypeMap
+from orcaserver.management import (OrcaManager, OrcaTypeMap)
 
 manager = OrcaManager()
 
@@ -132,8 +132,8 @@ class ProjectsView(ProjectMixin, ListView):
 
 
 class ProjectView(ProjectMixin, FormView):
-    template_name = 'orcaserver/project.html'
     form_class = ProjectForm
+    template_name = 'orcaserver/project.html'
     success_url = '/projects'
 
     def get(self, request, *args, **kwargs):
@@ -148,6 +148,20 @@ class ProjectView(ProjectMixin, FormView):
         kwargs = super().get_context_data(**kwargs)
         kwargs['title'] = 'Change Project' if self.project_id else 'Add Project'
         return kwargs
+
+    def get_template_names(self):
+        try:
+            project = Project.objects.get(id=self.project_id)
+            module = project.module
+        except ObjectDoesNotExist:
+            module = self.get_module()
+        available = settings.ORCA_MODULES.get('available', {})
+        rev = {p['path']: p.get('template') for p in available.values()}
+        template = rev.get(module)
+        if not template:
+            template = settings.ORCA_MODULES.get('default', {}).get(
+                'template', self.template_name)
+        return [template]
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

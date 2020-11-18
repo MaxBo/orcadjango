@@ -19,13 +19,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ORCA_MODULES = {
     'default': {
         'path': 'orcaserver.tests.dummy_orca_stuff',
-        'template': 'project',
+        'template': 'orcaserver/project.html',
     },
     'available': {
         'test module': {
             'path': 'orcaserver.tests.dummy_orca_stuff',
             'description': 'module used for testing',
-            'template': 'project',
+            'template': 'orcaserver/project.html',
             'init': ['inj_list', 'inj_dict'],
         }
     }

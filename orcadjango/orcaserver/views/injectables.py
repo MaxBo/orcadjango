@@ -9,7 +9,7 @@ import json
 from orcaserver.views import ProjectMixin, recreate_injectables
 from orcaserver.models import Injectable
 from orcaserver.forms import InjectableValueForm
-from orcaserver.management import OrcaManager, OrcaTypeMap
+from orcaserver.management import OrcaManager
 
 manager = OrcaManager()
 
