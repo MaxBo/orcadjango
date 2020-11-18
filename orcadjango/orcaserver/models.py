@@ -103,7 +103,7 @@ class Injectable(NameModel):
                 for name in self.parent_injectable_values.split(',')}
 
     def save(self, **kwargs):
-        if not isinstance(self.value, str):
+        if self.value and not isinstance(self.value, str):
             conv = OrcaTypeMap.get(self.data_class)
             self.value = conv.to_str(self.value)
         super().save(**kwargs)
@@ -113,7 +113,6 @@ class Injectable(NameModel):
         field = converter.get_field(value=self.validated_value, label=f'Value')
         field.widget.attrs['placeholder'] = self.docstring
         return field
-
 
 
 class Step(NameModel):

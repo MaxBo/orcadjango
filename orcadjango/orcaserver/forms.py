@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.gis import forms as geoforms
 from django.conf import settings
 import time
 import json
@@ -35,7 +36,7 @@ class OrcaSettingsForm(forms.Form):
     )
 
 
-class InjectableValueForm(forms.Form):
+class InjectableValueForm(geoforms.Form):
 
     def __init__(self, *args, **kwargs):
         inj = kwargs.pop('injectable', None)

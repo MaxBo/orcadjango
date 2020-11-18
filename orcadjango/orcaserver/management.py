@@ -8,13 +8,17 @@ import sys
 import typing
 from inspect import signature, _empty
 from django import forms
+from django.contrib.gis import forms as geoforms
 import json
 import ast
+import ogr
+import osr
 
-from orcaserver.widgets import DictField, CommaSeparatedCharField
+from orcaserver.widgets import DictField, CommaSeparatedCharField, GeometryField
 
 overwritable_types = (str, bytes, int, float, complex,
-                      tuple, list, dict, set, bool, None.__class__)
+                      tuple, list, dict, set, bool, None.__class__,
+                      ogr.Geometry)
 
 lock = threading.Lock()
 
@@ -472,3 +476,43 @@ class StringConverter(OrcaTypeMap):
     def to_value(self, text):
         return text
 
+
+class GeometryConverter(OrcaTypeMap):
+    data_type = ogr.Geometry
+    form_field = GeometryField
+
+    def to_str(self, value):
+        # ToDo: this is inplace, might cause side effects
+        value.FlattenTo2D()
+        return value.ExportToWkt()
+
+    def to_value(self, text):
+        geom = ogr.CreateGeometryFromWkt(text)
+        geom.FlattenTo2D()
+        return geom
+
+    def get_field(self, value, label=''):
+        # geodjango OSMWidget does not transform itself
+        source = value.GetSpatialReference()
+        if not source:
+            source = osr.SpatialReference()
+            source.ImportFromEPSG(4326)
+        target = osr.SpatialReference()
+        target.ImportFromEPSG(geoforms.OSMWidget.map_srid)
+        transform = osr.CoordinateTransformation(source, target)
+        # ToDo: inplace transformation might cause side-effects
+        value.Transform(transform)
+        return self.form_field(
+            srid=4326,
+            geom_type='Polygon',
+            initial=self.to_str(value),
+            widget=geoforms.OSMWidget(
+                attrs={
+                    'map_width': 800,
+                    'map_height': 500,
+                    'default_lat': 50,
+                    'default_lon': 12,
+                    #'default_zoom': 5
+                }
+            )
+        )
