@@ -25,7 +25,6 @@ ORCA_MODULES = {
         'test module': {
             'path': 'orcaserver.tests.dummy_orca_stuff',
             'description': 'module used for testing',
-            'template': 'orcaserver/project.html',
             'init': ['inj_list', 'inj_dict'],
         }
     }

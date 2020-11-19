@@ -1,11 +1,7 @@
 from django.db import models
-from django.contrib.gis.db.models import MultiPolygonField
 from django.core.validators import int_list_validator
 from django.urls import reverse
-import pandas as pd
-import xarray as xr
 import ast
-import importlib
 
 from orcaserver.management import OrcaManager, OrcaTypeMap
 

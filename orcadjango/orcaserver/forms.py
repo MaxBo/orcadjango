@@ -41,7 +41,8 @@ class InjectableValueForm(geoforms.Form):
     def __init__(self, *args, **kwargs):
         inj = kwargs.pop('injectable', None)
         super().__init__(*args, **kwargs)
-        self.fields['value'] = inj.get_form_field()
+        if inj.can_be_changed:
+            self.fields['value'] = inj.get_form_field()
 
 
 class ProjectForm(forms.Form):
