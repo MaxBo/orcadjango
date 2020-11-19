@@ -11,7 +11,8 @@
   {% if grouped_injectables %}
     <form action='' method="post">
       {% csrf_token %}
-      <input type="submit" name="reset" value="Reset all" class="btn btn-warning">
+      <input type="submit" name="reset" title="Reset injectable values to project defaults" value="Reset all" class="btn btn-warning">
+      <input type="submit" name="refresh" title="Synchronize injectable meta data with module keeping current injectable values" value="Refresh all" class="btn btn-primary">
     </form>
     <table class="table table-striped" id="injectables">
       <thead>

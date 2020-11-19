@@ -40,8 +40,16 @@ class InjectablesView(ProjectMixin, ListView):
         return grouped
 
     def post(self, request, *args, **kwargs):
+        scenario = self.get_scenario()
+        is_running = OrcaManager().is_running(scenario.id)
+        if is_running:
+            return HttpResponse(content='Injectables can not be changed while '
+                                'the scenario is running', status=400)
         if request.POST.get('reset'):
-            recreate_injectables(self.get_orca(), self.get_scenario())
+            Injectable.objects.filter(scenario=scenario).delete()
+            recreate_injectables(self.get_orca(), scenario)
+        if request.POST.get('refresh'):
+            recreate_injectables(self.get_orca(), scenario, keep_values=True)
         return HttpResponseRedirect(request.path_info)
 
 

@@ -109,7 +109,7 @@ class Injectable(NameModel):
                 for name in self.parent_injectable_values.split(',')}
 
     def save(self, **kwargs):
-        if self.value and not isinstance(self.value, str):
+        if self.value is not None and not isinstance(self.value, str):
             conv = OrcaTypeMap.get(self.data_class)
             self.value = conv.to_str(self.value)
         super().save(**kwargs)

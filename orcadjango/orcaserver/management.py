@@ -371,11 +371,12 @@ class OrcaTypeMap:
     def get(module):
         cls = None
         try:
-            module_class = module.split('.')
-            module_name = '.'.join(module_class[:-1])
-            classname = module_class[-1]
-            module = getattr(importlib.import_module(module_name),
-                             classname, str)
+            if isinstance(module, str):
+                module_class = module.split('.')
+                module_name = '.'.join(module_class[:-1])
+                classname = module_class[-1]
+                module = getattr(importlib.import_module(module_name),
+                                 classname, str)
             for sub in OrcaTypeMap.__subclasses__():
                 if sub.data_type == module:
                     cls = sub
@@ -439,10 +440,10 @@ class ListConverter(OrcaTypeMap):
     description = 'comma seperated values'
 
     def to_str(self, value):
-        return ','.join(str(v) for v in value)
+        return ', '.join(str(v) for v in value)
 
     def to_value(self, text):
-        return text.split(',') if text else []
+        return [t.strip() for t in text.split(',')] if text else []
 
 
 class DictConverter(OrcaTypeMap):

@@ -44,6 +44,9 @@ class InjectableValueForm(geoforms.Form):
         if inj.can_be_changed:
             self.fields['value'] = inj.get_form_field()
 
+    def clean(self):
+        return super().clean()
+
 
 class ProjectForm(forms.Form):
     name = forms.CharField(label='Project name', max_length=255)

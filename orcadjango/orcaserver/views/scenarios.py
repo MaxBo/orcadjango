@@ -12,7 +12,7 @@ from orcaserver.models import Scenario, Injectable, Step
 overwritable_types = (str, bytes, int, float, complex,
                       tuple, list, dict, set, bool, None.__class__)
 
-def recreate_injectables(orca, scenario):
+def recreate_injectables(orca, scenario, keep_values=False):
     '''
     function to create or reset injectables of scenario
     '''
@@ -24,10 +24,10 @@ def recreate_injectables(orca, scenario):
         inj, created = Injectable.objects.get_or_create(name=name,
                                                         scenario=scenario)
         value = init_values.get(name, desc['value'])
-        inj.value = value
+        if created or not keep_values:
+            inj.value = value
         inj.datatype = desc['datatype']
         inj.data_class = desc['data_class']
-        inj.can_be_changed = desc['can_be_changed']
         inj.docstring = desc['docstring']
         inj.groupname = desc['groupname']
         inj.module = desc['module']
@@ -80,7 +80,7 @@ class ScenariosView(ProjectMixin, ListView):
                     except Exception as e:
                         return HttpResponseBadRequest(content=str(e))
                     Scenario.objects.get(id=scenario_id).delete()
-                elif request.POST.get('refresh'):
+                elif request.POST.get('reset'):
                     scenario = Scenario.objects.get(id=scenario_id)
                     orca = self.get_orca()
                     recreate_injectables(orca, scenario)
