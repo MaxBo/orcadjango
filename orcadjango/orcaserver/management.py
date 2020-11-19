@@ -426,8 +426,11 @@ class BooleanConverter(OrcaTypeMap):
     form_field = forms.BooleanField
     description = 'boolean'
 
+    def get_field(self, value, label=''):
+        return self.form_field(initial=value, label='True', required=False)
+
     def to_value(self, text):
-        return bool(text)
+        return text.lower() == 'true'
 
 
 class ListConverter(OrcaTypeMap):
