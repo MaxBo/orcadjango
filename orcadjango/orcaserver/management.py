@@ -12,7 +12,6 @@ from django.contrib.gis import forms as geoforms
 import json
 import ast
 import ogr
-import osr
 
 from orcaserver.widgets import DictField, CommaSeparatedCharField, GeometryField
 
@@ -494,11 +493,11 @@ class GeometryConverter(OrcaTypeMap):
         # geodjango OSMWidget does not transform itself
         source = value.GetSpatialReference()
         if not source:
-            source = osr.SpatialReference()
+            source = ogr.osr.SpatialReference()
             source.ImportFromEPSG(4326)
-        target = osr.SpatialReference()
+        target = ogr.osr.SpatialReference()
         target.ImportFromEPSG(geoforms.OSMWidget.map_srid)
-        transform = osr.CoordinateTransformation(source, target)
+        transform = ogr.osr.CoordinateTransformation(source, target)
         # ToDo: inplace transformation might cause side-effects
         value.Transform(transform)
         return self.form_field(
