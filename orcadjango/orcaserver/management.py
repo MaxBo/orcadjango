@@ -11,7 +11,7 @@ from django import forms
 from django.contrib.gis import forms as geoforms
 import json
 import ast
-from gdal import ogr
+from osgeo.gdal import ogr
 
 from orcaserver.widgets import DictField, CommaSeparatedCharField, GeometryField
 
