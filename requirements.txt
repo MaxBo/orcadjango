@@ -7,4 +7,3 @@ channels_redis
 pandas
 xarray
 toolz==0.10
-ogr
