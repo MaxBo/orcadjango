@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.forms.utils import ErrorList
 from django.contrib.gis.geos import GEOSException
 from django.contrib.gis import forms as geoforms
-from osgeo.gdal import ogr
+import ogr
 
 
 class CommaSeparatedCharField(forms.Field):
