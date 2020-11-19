@@ -73,6 +73,7 @@ class StepsView(ProjectMixin, TemplateView):
         kwargs['steps_scenario'] = steps_scenario
         logs = LogEntry.objects.filter(scenario=scenario).order_by('-timestamp')
         kwargs['logs'] = logs
+        kwargs['show_status'] = True
         # ToDo: get room from handler
 
         prefix = 'ws' if settings.DEBUG else 'wss'

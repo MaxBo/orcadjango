@@ -11,37 +11,42 @@ from .dummy_submodule import DummySub
 @group(groupname='strings', order=1)
 @orca.injectable()
 def inj1() -> str:
+    """string"""
     return 'INJ 1'
 
 
 @group(groupname='strings', order=2)
 @orca.injectable()
 def inj2():
+    """string"""
     return 'INJ 2'
 
 
 @group(groupname='strings', order=2)
 @orca.injectable()
 def inj12(inj1: str, inj2: str) -> str:
+    """composed"""
     return f'{inj1} -> {inj2}'
 
 
 @group(groupname='ints', order=2)
 @orca.injectable()
 def inj_int() -> int:
-    """The answer is 42"""
+    """integer"""
     return 42
 
 
 @group(groupname='ints', order=1)
 @orca.injectable()
 def inj_list() -> List[int]:
+    """list"""
     return [2, 3, 66]
 
 
 @group(groupname='das dict')
 @orca.injectable()
 def inj_dict() -> Dict[str, int]:
+    """dictionary"""
     return dict(a=1, b=-1)
 
 

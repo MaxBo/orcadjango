@@ -1,5 +1,4 @@
 {% extends 'orcaserver/base.html' %}
-
 {% block title %}
   {% if request.session.scenario %}
     List of all Injectables and their current values
@@ -12,7 +11,8 @@
   {% if grouped_injectables %}
     <form action='' method="post">
       {% csrf_token %}
-      <input type="submit" name="reset" value="Reset all" class="btn btn-warning">
+      <input type="submit" name="reset" title="Reset injectable values to project defaults" value="Reset all" class="btn btn-warning">
+      <input type="submit" name="refresh" title="Synchronize injectable meta data with module keeping current injectable values" value="Refresh all" class="btn btn-primary">
     </form>
     <table class="table table-striped" id="injectables">
       <thead>
@@ -31,9 +31,7 @@
       {% for groupname, injectables in grouped_injectables.items %}
         {% for injectable in injectables %}
           <tr
-          {% if not injectable.valid_value %}
-            style="background-color: plum;"
-          {% elif not injectable.can_be_changed %}
+          {% if not injectable.can_be_changed %}
             style="background-color: lightgrey;"
           {% endif %}
           >

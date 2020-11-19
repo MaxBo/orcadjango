@@ -40,8 +40,16 @@ class InjectablesView(ProjectMixin, ListView):
         return grouped
 
     def post(self, request, *args, **kwargs):
+        scenario = self.get_scenario()
+        is_running = OrcaManager().is_running(scenario.id)
+        if is_running:
+            return HttpResponse(content='Injectables can not be changed while '
+                                'the scenario is running', status=400)
         if request.POST.get('reset'):
-            recreate_injectables(self.get_orca(), self.get_scenario())
+            Injectable.objects.filter(scenario=scenario).delete()
+            recreate_injectables(self.get_orca(), scenario)
+        if request.POST.get('refresh'):
+            recreate_injectables(self.get_orca(), scenario, keep_values=True)
         return HttpResponseRedirect(request.path_info)
 
 
@@ -52,15 +60,6 @@ class InjectableView(ProjectMixin, FormView):
     @property
     def name(self):
         return self.kwargs.get('name')
-
-    def get_initial(self):
-        """Return the initial data to use for forms on this view."""
-        try:
-            inj = Injectable.objects.get(name=self.name,
-                                         scenario=self.get_scenario())
-            return {'value': inj.value}
-        except ObjectDoesNotExist:
-            return {'value': None}
 
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
@@ -112,15 +111,13 @@ class InjectableView(ProjectMixin, FormView):
     def form_valid(self, form):
         scenario = self.get_scenario()
         orca = self.get_orca()
-        inj: Injectable = Injectable.objects.get(name=self.name,
-                                                 scenario=scenario)
-        new_value = form.cleaned_data.get('value')
-        inj.value = new_value
-        if new_value != inj.value:
-            inj.changed = True
+        inj = Injectable.objects.get(name=self.name,
+                                     scenario=scenario)
+        value = form.cleaned_data.get('value')
         inj.valid = True
+        inj.value = value
         inj.save()
-        orca.add_injectable(inj.name, new_value)
+        orca.add_injectable(inj.name, value)
         redirect = self.request.GET.get('next', reverse('injectables'))
         return HttpResponseRedirect(redirect)
 

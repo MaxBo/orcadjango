@@ -1,13 +1,9 @@
 from django.db import models
-from django.contrib.gis.db.models import MultiPolygonField
 from django.core.validators import int_list_validator
 from django.urls import reverse
-import pandas as pd
-import xarray as xr
 import ast
-import importlib
 
-from orcaserver.management import OrcaManager
+from orcaserver.management import OrcaManager, OrcaTypeMap
 
 
 class NameModel(models.Model):
@@ -44,7 +40,6 @@ class Injectable(NameModel):
                                  null=True)
     value = models.TextField(null=True)
     changed = models.BooleanField(default=False)
-    can_be_changed = models.BooleanField(default=True)
     docstring = models.TextField(null=True, blank=True)
     module = models.TextField(null=True, blank=True)
     groupname = models.TextField(null=False, blank=False, default='')
@@ -59,24 +54,24 @@ class Injectable(NameModel):
         return f'{self.scenario} - {self.name}'
 
     @property
+    def can_be_changed(self):
+        if self.parent_injectable_values:
+            return False
+        conv = OrcaTypeMap.get(self.data_class)
+        # only data types with an implemented converter should be changable
+        # via UI, the default converter has no datatype
+        if not conv.data_type:
+            return False
+        return True
+
+    @property
     def calculated_value(self):
         """The calculated value"""
         if self.can_be_changed:
             return self.value
-        orca = OrcaManager().get(self.scenario.id)
+        orca = OrcaManager().get(self.scenario.id,
+                                 module=self.scenario.project.module)
         return orca.get_injectable(self.name)
-
-    @property
-    def valid_value(self) -> bool:
-        """The calculated value"""
-        if self.can_be_changed:
-            return self.valid
-        orca = OrcaManager().get(self.scenario.id)
-        try:
-            orca.get_injectable(self.name)
-        except Exception as e:
-            return False
-        return True
 
     @property
     def repr_html(self) -> str:
@@ -91,41 +86,14 @@ class Injectable(NameModel):
             ret = repr(e)
         return ret
 
-    def validate_value(self, value=None):
-        """validate the value of the injectable"""
-        #  get original type of injectable value (if not available, use string)
-        module_class = self.data_class.split('.')
-        module_name = '.'.join(module_class[:-1])
-        classname = module_class[-1]
-        original_type = getattr(importlib.import_module(module_name), classname, str)
-        if value is None:
-            value = self.value
-        # compare to evaluation or value
-        if value is None:
-            orca = OrcaManager().get(self.scenario.id)
-            func = orca._injectable_function.get(self.name)
-            if func:
-                converted_value = func()
-            else:
-                converted_value = orca.get_injectable(self.name)
-        elif issubclass(original_type, str):
-            converted_value = value
-        else:
-            try:
-                converted_value = ast.literal_eval(value)
-                if not isinstance(converted_value, original_type):
-                    #  try to cast the value using the original type
-                    converted_value = original_type(value)
-            except (SyntaxError, ValueError, TypeError) as e:
-
-                # if casting does not work, raise warning
-                # and use original value
-                msg = (f'Injectable `{self.name}` with value `{value}` '
-                       f'could not be casted to type `{original_type.__name__}`.'
-                       f'Injectable Value was not overwritten.'
-                       f'Error message: {repr(e)}')
-                raise InjectableConversionError(msg)
-        return converted_value
+    @property
+    def validated_value(self):
+        # ToDo: some validation
+        value = self.value
+        if self.can_be_changed:
+            conv = OrcaTypeMap.get(self.data_class)
+            value = conv.to_value(value)
+        return value
 
     @property
     def parent_injectable_values(self):
@@ -139,6 +107,18 @@ class Injectable(NameModel):
         reverse_url = reverse('injectables')
         return {name: f'{reverse_url}{name}'
                 for name in self.parent_injectable_values.split(',')}
+
+    def save(self, **kwargs):
+        if self.value is not None and not isinstance(self.value, str):
+            conv = OrcaTypeMap.get(self.data_class)
+            self.value = conv.to_str(self.value)
+        super().save(**kwargs)
+
+    def get_form_field(self):
+        converter = OrcaTypeMap.get(self.data_class)
+        field = converter.get_field(value=self.validated_value, label=f'Value')
+        field.widget.attrs['placeholder'] = self.docstring
+        return field
 
 
 class Step(NameModel):

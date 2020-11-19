@@ -1,20 +1,12 @@
 from django import forms
+from django.contrib.gis import forms as geoforms
 from django.conf import settings
 import time
 import json
 
-from orcaserver.models import Step, InjectableConversionError
-from orcaserver.management import OrcaManager, parse_injectables
-
-TYPE_FORM_MAP = {
-    'float': forms.FloatField,
-    'int': forms.IntegerField,
-    'bool': forms.BooleanField,
-    'str': forms.CharField,
-    #'dict': forms.MultiValueDict,
-    'list': forms.MultiValueField
-}
-
+from orcaserver.models import Step
+from orcaserver.management import (OrcaManager, parse_injectables,
+                                   OrcaTypeMap)
 
 def get_python_module():
     """return the currently set python module"""
@@ -44,21 +36,16 @@ class OrcaSettingsForm(forms.Form):
     )
 
 
-class InjectableValueForm(forms.Form):
-    value = forms.CharField(label='Value', max_length=255, required=False)
+class InjectableValueForm(geoforms.Form):
 
     def __init__(self, *args, **kwargs):
-        self.injectable = kwargs.pop('injectable', None)
+        inj = kwargs.pop('injectable', None)
         super().__init__(*args, **kwargs)
+        if inj.can_be_changed:
+            self.fields['value'] = inj.get_form_field()
 
     def clean(self):
-        value = self.cleaned_data['value']
-
-        try:
-            _ = self.injectable.validate_value(value=value)
-        except InjectableConversionError as e:
-            self.add_error('value', str(e))
-            raise forms.ValidationError(str(e))
+        return super().clean()
 
 
 class ProjectForm(forms.Form):
@@ -91,12 +78,15 @@ class ProjectForm(forms.Form):
         meta = parse_injectables(orca)
         for injectable in initial:
             desc = meta[injectable]
-            value = initial_values.get(injectable, desc['value'])
-            typ = desc['data_class'].replace('builtins.', '')
-            field_form = TYPE_FORM_MAP.get(typ, forms.CharField)
-            field = field_form(
-                label=f'initial value for "{injectable}" - {desc["docstring"]}',
-                initial=value)
+            converter = OrcaTypeMap.get(desc['data_class'])
+            value = initial_values.get(injectable)
+            if value:
+                value = converter.to_value(value)
+            else:
+                value = desc['value']
+            label = f'initial value for "{injectable}" - {desc["docstring"]}'
+            field = converter.get_field(value=value, label=label)
+            field.widget.attrs['placeholder'] = desc["docstring"]
             self.fields[injectable] = field
         manager.remove(uid)
 

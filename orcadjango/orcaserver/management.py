@@ -7,9 +7,14 @@ import ctypes
 import sys
 import typing
 from inspect import signature, _empty
+from django import forms
+from django.contrib.gis import forms as geoforms
+import json
+import ast
+import ogr
+import osr
 
-overwritable_types = (str, bytes, int, float, complex,
-                      tuple, list, dict, set, bool, None.__class__)
+from orcaserver.widgets import DictField, CommaSeparatedCharField, GeometryField
 
 lock = threading.Lock()
 
@@ -63,8 +68,6 @@ def parse_injectables(orca):
         #  check if the original type is overwritable
         funcwrapper = orca._injectable_function.get(name)
         sig = signature(funcwrapper._func)
-        desc['can_be_changed'] = isinstance(
-            value, overwritable_types) and not sig.parameters
         if isinstance(funcwrapper, orca._InjectableFuncWrapper):
             desc['docstring'] = funcwrapper._func.__doc__
             #  Datatype from annotations:
@@ -147,7 +150,7 @@ class OrcaManager(Singleton):
                                 f'the module {instance._python_module} instead '
                                 f'of the requested module {module}')
             if not instance and create:
-                return self.create(instance_id)
+                return self.create(instance_id, module=module)
             return instance
 
     def remove(self, instance_id: int):
@@ -357,3 +360,159 @@ class OrcaManager(Singleton):
             logger.info('orca run finished')
         except Abort:
             logger.error('orca run aborted')
+
+
+class OrcaTypeMap:
+    data_type = None
+    form_field = None
+    description = ''
+
+    @staticmethod
+    def get(module):
+        cls = None
+        try:
+            if isinstance(module, str):
+                module_class = module.split('.')
+                module_name = '.'.join(module_class[:-1])
+                classname = module_class[-1]
+                module = getattr(importlib.import_module(module_name),
+                                 classname, str)
+            for sub in OrcaTypeMap.__subclasses__():
+                if sub.data_type == module:
+                    cls = sub
+                    break
+        except ModuleNotFoundError:
+            pass
+        if not cls:
+            cls = DefaultConverter
+        return cls()
+
+    def to_value(self, text):
+        raise NotImplementedError
+
+    def to_str(self, value):
+        return str(value)
+
+    def get_field(self, value=None, label=''):
+        return self.form_field(initial=value, label=label)
+
+
+class DefaultConverter(OrcaTypeMap):
+    form_field = forms.CharField
+
+    def to_value(self, text):
+        return ast.literal_eval(text)
+
+
+class IntegerConverter(OrcaTypeMap):
+    data_type = int
+    form_field = forms.IntegerField
+    description = 'integer'
+
+    def to_value(self, text):
+        return int(text)
+
+
+class FloatConverter(OrcaTypeMap):
+    data_type = float
+    form_field = forms.FloatField
+    description = 'float'
+
+    def to_value(self, text):
+        return float(text)
+
+
+class BooleanConverter(OrcaTypeMap):
+    data_type = bool
+    form_field = forms.BooleanField
+    description = 'boolean'
+
+    def get_field(self, value, label=''):
+        return self.form_field(initial=value, label='True', required=False)
+
+    def to_value(self, text):
+        return text.lower() == 'true'
+
+
+class ListConverter(OrcaTypeMap):
+    data_type = list
+    form_field = CommaSeparatedCharField
+    description = 'comma seperated values'
+
+    def to_str(self, value):
+        return ', '.join(str(v) for v in value)
+
+    def to_value(self, text):
+        return [t.strip() for t in text.split(',')] if text else []
+
+
+class DictConverter(OrcaTypeMap):
+    data_type = dict
+    form_field = DictField
+    description = 'dictionary'
+
+    def get_field(self, value, label=''):
+        return self.form_field(value, label=label)
+
+    def to_str(self, value):
+        return json.dumps(value)
+
+    def to_value(self, text):
+        # workaround
+        # ToDo: remove this
+        try:
+            ret = json.loads(text)
+        except json.decoder.JSONDecodeError:
+            ret = json.loads(text.replace("'",'"'))
+        return ret
+
+
+class StringConverter(OrcaTypeMap):
+    data_type = str
+    form_field = forms.CharField
+    description = 'string'
+
+    def to_value(self, text):
+        return text
+
+
+class GeometryConverter(OrcaTypeMap):
+    data_type = ogr.Geometry
+    form_field = GeometryField
+
+    def to_str(self, value):
+        # ToDo: this is inplace, might cause side effects
+        value.FlattenTo2D()
+        return value.ExportToWkt()
+
+    def to_value(self, text):
+        geom = ogr.CreateGeometryFromWkt(text)
+        geom.FlattenTo2D()
+        return geom
+
+    def get_field(self, value, label=''):
+        # geodjango OSMWidget does not transform itself
+        source = value.GetSpatialReference()
+        if not source:
+            source = osr.SpatialReference()
+            source.ImportFromEPSG(4326)
+        target = osr.SpatialReference()
+        target.ImportFromEPSG(geoforms.OSMWidget.map_srid)
+        transform = osr.CoordinateTransformation(source, target)
+        # ToDo: inplace transformation might cause side-effects
+        value.Transform(transform)
+        return self.form_field(
+            srid=4326,
+            geom_type='Polygon',
+            initial=self.to_str(value),
+            label='',
+            widget=geoforms.OSMWidget(
+                attrs={
+                    'map_width': 800,
+                    'map_height': 500,
+                    'default_lat': 50,
+                    'default_lon': 12,
+                    #'default_zoom': 5
+                }
+            )
+        )

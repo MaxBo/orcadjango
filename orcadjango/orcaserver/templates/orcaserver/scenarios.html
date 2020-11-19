@@ -23,16 +23,16 @@
       </option>
     {% endfor %}
     </select>
-    <input class="btn btn-primary" type="submit" name="select" value="Select">
-    <input class="btn btn-danger" type="submit" name="delete" value="Delete">
-    <input class="btn btn-secondary" type="submit" name="refresh" value="Refresh Injectables">
+    <input class="btn btn-primary" type="submit" name="select" title="Set as active scenario" value="Select">
+    <input class="btn btn-danger" type="submit" name="delete" title="Delete selected scenario" value="Delete">
+    <input class="btn btn-secondary" type="submit" name="reset" title="Reset injectable values of selected scenario to project defaults" value="Reset Injectables">
     <br>
     <br>
     <h4> Create Scenario </h4>
     {% csrf_token %}
-    <input class="form-control" name="name" placeholder="scenario name" style="width: auto; margin-right: 10px; display: inline;">
-    <input class="btn btn-primary" type="submit" value="Create New", name='create'>
-    <input class="btn btn-secondary" type="submit" value="Clone Current", name='clone'>
+    <input class="form-control" name="name" title="Name of scenario to create" placeholder="scenario name" style="width: auto; margin-right: 10px; display: inline;">
+    <input class="btn btn-primary" type="submit" value="Create New" name="create" title="Create new scenario with input name">
+    <input class="btn btn-secondary" type="submit" value="Clone Current" name="clone" title="Create new scenario with input name based on selected scenario keeping its injectable values">
   </form>
 
   {% endif %}
