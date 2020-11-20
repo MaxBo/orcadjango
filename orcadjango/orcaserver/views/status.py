@@ -17,9 +17,6 @@ class StatusView(ProjectMixin, ListView):
         scenarios = Scenario.objects.filter(project__module=self.get_module())
         return scenarios
 
-    def list(self):
-        pass
-
     @staticmethod
     def detail(request, *args, **kwargs):
         scenario_id = kwargs.get('id')

@@ -56,7 +56,7 @@
 {% if error_message %}<p style="color: red;"><strong>{{ error_message }}</strong></p>{% endif %}
 {% if steps_available %}
   <h6 style="float: left;">in scenario</h6> &nbsp;&nbsp;(change order by dragging and dropping)
-  <table class="table select" id="steps-scenario">
+  <table class="table" id="steps-scenario" style="user-select: none;">
     <thead>
       <tr>
         <th class="index">No.</th>
@@ -72,7 +72,7 @@
     </thead>
     <tbody>
     {% for step in steps_scenario %}
-      <tr data-id="{{ step.id }}" title="{{ step.name }} - {{ step.docstring }}" {% if not step.valid %} style="color: red;" {% endif %}>
+      <tr data-id="{{ step.id }}" title="{{ step.name }} - {{ step.docstring }}" style="cursor: move; {% if not step.valid %} color: red; {% endif %}">
         <td class="index"> {{ forloop.counter0 }} </td>
         <td style="display: none;"> {{ step.id }} </td>
         <td> {{ step.name }} </td>
@@ -139,7 +139,7 @@
   function reloadLogs(){
     var logsDiv = document.getElementById('logs-body');
     logsDiv.innerHTML = '<h4>Updating...</h4>';
-    fetch('/logs').then(function(res){
+    fetch('/logs/{{ active_scenario.id }}').then(function(res){
         return res.text()
     }).then(function(html){
         var modalBody = document.getElementById('logs-body');

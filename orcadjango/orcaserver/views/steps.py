@@ -252,12 +252,6 @@ class LogsView(ProjectMixin, ListView):
 
     def get_queryset(self):
         """Return the injectables with their values."""
-        logs = LogEntry.objects.filter(scenario=self.get_scenario())
+        scenario_id = self.kwargs.get('id')
+        logs = LogEntry.objects.filter(scenario_id=scenario_id)
         return logs
-
-    @staticmethod
-    def detail(request, *args, **kwargs):
-        scenario_id = kwargs.get('id')
-        logs = LogEntry.objects.filter(scenario=scenario_id)
-        data = serializers.serialize("json", logs)
-        return JsonResponse(data, status=200, safe=False)

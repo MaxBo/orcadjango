@@ -30,10 +30,48 @@
       <td></td>
       <td></td>
       <td></td>
-      <td><button onclick="openLogs()" class="btn btn-primary">Log</button></td>
+      <td><button onclick="openLogs({{ scenario.id }})" class="btn btn-primary">Log</button></td>
     </tr>
   {% endfor %}
   </tbody>
 </table>
+<div class="modal fade" id="logs-modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Log History</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div id="logs-body" class="modal-body" style="overflow-y: auto; max-height: calc(100vh - 200px);">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button onclick="reloadLogs()" type="button" class="btn btn-primary">Reload</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openLogs(scenarioId){
+    $("#logs-modal").modal();
+    reloadLogs(scenarioId);
+  }
+
+  function reloadLogs(scenarioId){
+    var logsDiv = document.getElementById('logs-body');
+    logsDiv.innerHTML = '<h4>Updating...</h4>';
+    fetch('/logs/' + scenarioId).then(function(res){
+        return res.text()
+    }).then(function(html){
+        var modalBody = document.getElementById('logs-body');
+        modalBody.innerHTML = html;
+        var table = modalBody.querySelector('table');
+        $(table).DataTable({"order": [[0, "desc"]]});
+    });
+  }
+</script>
 {% endblock %}
 

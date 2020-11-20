@@ -139,22 +139,16 @@ class ProjectView(ProjectMixin, FormView):
     template_name = 'orcaserver/project.html'
     success_url = '/projects'
 
-    def get(self, request, *args, **kwargs):
-        self.project_id = kwargs.get('id')
-        return super().get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        self.project_id = kwargs.get('id')
-        return super().post(request, *args, **kwargs)
-
     def get_context_data(self, **kwargs):
+        project_id = self.kwargs.get('id')
         kwargs = super().get_context_data(**kwargs)
-        kwargs['title'] = 'Change Project' if self.project_id else 'Add Project'
+        kwargs['title'] = 'Change Project' if project_id else 'Add Project'
         return kwargs
 
     def get_template_names(self):
+        project_id = self.kwargs.get('id')
         try:
-            project = Project.objects.get(id=self.project_id)
+            project = Project.objects.get(id=project_id)
             module = project.module
         except ObjectDoesNotExist:
             module = self.get_module()
@@ -167,18 +161,20 @@ class ProjectView(ProjectMixin, FormView):
         return [template]
 
     def get_form_kwargs(self):
+        project_id = self.kwargs.get('id')
         kwargs = super().get_form_kwargs()
         kwargs['module'] = self.get_module()
         # ToDo: catch errors if project does not exist (maybe already
         # in get() or post())
-        if self.project_id is not None:
-            project = Project.objects.get(id=self.project_id)
+        if project_id is not None:
+            project = Project.objects.get(id=project_id)
             kwargs['project_name'] = project.name
             kwargs['project_description'] = project.description
             kwargs['init'] = project.init
         return kwargs
 
     def form_valid(self, form):
+        project_id = self.kwargs.get('id')
         fields = form.cleaned_data.copy()
         name = fields.pop('name')
         description = fields.pop('description')
@@ -187,12 +183,12 @@ class ProjectView(ProjectMixin, FormView):
         for field, value in fields.items():
             conv = OrcaTypeMap.get(type(value))
             init[field] = conv.to_str(value)
-        if self.project_id is None:
+        if project_id is None:
             Project.objects.create(name=name, description=description,
                                    init=json.dumps(init),
                                    module=self.get_module())
         else:
-            project = Project.objects.get(id=self.project_id)
+            project = Project.objects.get(id=project_id)
             project.name = name
             project.description = description
             project.init = json.dumps(init)
