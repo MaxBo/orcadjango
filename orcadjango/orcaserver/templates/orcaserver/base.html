@@ -98,7 +98,8 @@
 </body>
 
 <script>
-  var statusUrl = '/steps/status/',
+{% if show_status and active_scenario%}
+  var statusUrl = '/status/detail/{{ active_scenario.id }}',
       statusLabel = document.getElementById('status-label'),
       lastStatus;
 
@@ -114,11 +115,10 @@
     })
   }
 
-  {% if show_status %}
   (function() {
     // periodically update status
     updateStatus();
     setInterval(updateStatus, 10000);
   })();
-  {% endif %}
+{% endif %}
 </script>

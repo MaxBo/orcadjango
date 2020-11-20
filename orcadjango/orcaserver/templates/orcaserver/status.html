@@ -5,83 +5,35 @@
     Orca Status
 {% endblock %}
 
+
 {% block content %}
-{% csrf_token %}
-<div class="row">
-  <div class="col-md-9">
-    <table class="table">
-      <tbody>
-        <tr>
-          <td> Currently running </td>
-          <td> <label id="status-running-label"></label> </td>
-        </tr>
-        <tr>
-          <td> Last User </td>
-          <td> <label id="status-user-label"></label> </td>
-        </tr>
-        <tr>
-          <td> Last Start </td>
-          <td> <label id="status-start-label"></label> </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="col-md-3">
-    <button id="abort-button" style="visibility: hidden;" onclick="abort()" class="btn btn-danger" style="margin: 10px; float: right;">Abort</button>
-  </div>
-</div>
-<div class="row">
-  <h5> Log </h5>
-  <div id="wslog" class="log" style="height: 30em;"></div>
-  <button onclick="clearLog()" class="btn btn-secondary" style="margin: 10px; float: right;">Clear</button>
-</div>
-
-<script>
-  var chatSocket = new WebSocket('wss://' + location.host + '/ws/log/orca/'),
-      logArea = document.getElementById('wslog'),
-      csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value,
-      statusRunningLabel = document.getElementById('status-running-label'),
-      statusUserLabel = document.getElementById('status-user-label'),
-      statusStartLabel = document.getElementById('status-start-label'),
-      abortButton = document.getElementById('abort-button');
-
-      chatSocket.onmessage = function(e) {
-          var data = JSON.parse(e.data),
-              message = data['message'],
-              error = data['error'];
-          if (error)
-              logArea.innerHTML += ('<p style="color:red">' + message + '</p>');
-          else
-              logArea.innerHTML += ('<p>' + message + '</p>');
-          logArea.scrollTop = logArea.scrollHeight;
-      };
-
-  chatSocket.onclose = function(e) {
-      console.error('Chat socket closed unexpectedly');
-  };
-
-  function updateStepsTable(){
-    statusRunningLabel.innerHTML = lastStatus.running;
-    statusUserLabel.innerHTML = lastStatus.last_user;
-    statusStartLabel.innerHTML = lastStatus.last_start;
-    abortButton.style.visibility = (lastStatus.running) ? 'visible': 'hidden';
-  }
-
-  function clearLog(){ logArea.innerHTML = '' };
-
-  function abort(){
-    console.log('abort')
-    fetch('/steps/abort/', {
-        method: "POST",
-        credentials: "same-origin",
-        headers: { "X-CSRFToken": csrfToken }
-      });
-  };
-
-  document.addEventListener("DOMContentLoaded", function(event) {
-      updateStatus().then(function(){updateStepsTable()});
-      setInterval(updateStepsTable, 10000);
-  });
-</script>
-
+<table class="table table-striped" id="scenarios" style="padding: 2em;">
+  <thead>
+    <tr>
+      <th style="display: none;">ID</th>
+      <th>Project</th>
+      <th>Scenario</th>
+      <th>Running</th>
+      <th>Run by</th>
+      <th>Start</th>
+      <th>Stop</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for scenario in scenarios %}
+    <tr onclick="highlightRow(this)" data-id="{{ project.id }}">
+      <td style="display: none;"> {{ scenario.id }} </td>
+      <td> {{ scenario.project.name }} </td>
+      <td> {{ scenario.name }} </td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td><button onclick="openLogs()" class="btn btn-primary">Log</button></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
 {% endblock %}
+

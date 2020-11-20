@@ -36,15 +36,18 @@ class ScenarioHandler(OrcaChannelHandler):
         self.persist = persist
 
     def emit(self, record):
-        super().emit(record)
-        if not self.persist:
-            return
-        LogEntry.objects.create(
-            scenario=self.scenario,
-            message=record.getMessage(),
-            timestamp=timezone.now(),
-            level=record.levelname
-        )
+        try:
+            super().emit(record)
+            if not self.persist:
+                return
+            LogEntry.objects.create(
+                scenario=self.scenario,
+                message=record.getMessage(),
+                timestamp=timezone.now(),
+                level=record.levelname
+            )
+        except OSError as e:
+            print('Error while connecting to Redis')
 
 
 class ProjectMixin:

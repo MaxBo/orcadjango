@@ -166,7 +166,6 @@ class StepsView(ProjectMixin, TemplateView):
             pass
         return HttpResponseRedirect(request.path_info)
 
-    # to do for updating is_active
     @staticmethod
     def detail(request, *args, **kwargs):
         step_id = kwargs.get('id')
@@ -180,43 +179,6 @@ class StepsView(ProjectMixin, TemplateView):
             step.active = is_active
             step.save()
             return JsonResponse({}, safe=False)
-
-    @classmethod
-    def status(cls, request):
-        manager = OrcaManager()
-        scenario_id = request.session.get('scenario')
-        try:
-            scenario = Scenario.objects.get(id=scenario_id)
-        except ObjectDoesNotExist:
-            return HttpResponseNotFound('scenario not found')
-        project = scenario.project
-        other_running = []
-        for scn in project.scenario_set.all():
-            if scn.id != scenario_id and manager.is_running(scn.id):
-                other_running.append(scenario)
-        is_running = manager.is_running(scenario_id)
-        meta = manager.get_meta(scenario_id)
-        user = meta.get('user')
-        user_name = user.get_username() if user else 'unknown'
-        start_time = meta.get('start_time', '-')
-        status_text = (
-            'project not in use'
-            if not is_running and len(other_running) == 0
-            else ('project is in use')
-        )
-        status_text += '<br>'
-        status_text += (
-            f'scenario "{scenario.name}" is currently run by user "{user}"'
-            if is_running else f'scenario "{scenario.name}" not in use'
-        )
-        status = {
-            'running': is_running,
-            'other_running_in_project': [s.name for s in other_running],
-            'text': status_text,
-            'last_user': user_name,
-            'last_start': start_time
-        }
-        return JsonResponse(status)
 
     @classmethod
     def run(cls, request):
@@ -281,10 +243,6 @@ class StepsView(ProjectMixin, TemplateView):
         manager = OrcaManager()
         manager.abort(scenario_id)
         return HttpResponse(status=200)
-
-
-class StatusView(ProjectMixin, TemplateView):
-    template_name = 'orcaserver/status.html'
 
 
 class LogsView(ProjectMixin, ListView):
