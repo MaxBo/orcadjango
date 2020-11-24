@@ -1,87 +1,123 @@
 {% extends 'orcaserver/base.html' %}
 {% load static %}
 
-{% block title %}
-    Orca Status
-{% endblock %}
-
 {% block content %}
-{% csrf_token %}
-<div class="row">
-  <div class="col-md-9">
-    <table class="table">
-      <tbody>
-        <tr>
-          <td> Currently running </td>
-          <td> <label id="status-running-label"></label> </td>
-        </tr>
-        <tr>
-          <td> Last User </td>
-          <td> <label id="status-user-label"></label> </td>
-        </tr>
-        <tr>
-          <td> Last Start </td>
-          <td> <label id="status-start-label"></label> </td>
-        </tr>
-      </tbody>
-    </table>
+<h4>Orca Status</h4>
+<link rel="stylesheet" type="text/css" href="{% static 'css/datatables.min.css' %}">
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+<table class="table table-striped" id="status-table" style="padding: 2em;">
+  <thead>
+    <tr>
+      <th>Module</th>
+      <th>Project</th>
+      <th>Scenario</th>
+      <th>Running</th>
+      <th>Run by</th>
+      <th>Start</th>
+      <th>Stop</th>
+      <th>Success</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+<div class="modal fade" id="logs-modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Log History</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div id="logs-body" class="modal-body" style="overflow-y: auto; max-height: calc(100vh - 200px);">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button onclick="reloadLogs()" type="button" class="btn btn-primary">Reload</button>
+      </div>
+    </div>
   </div>
-  <div class="col-md-3">
-    <button id="abort-button" style="visibility: hidden;" onclick="abort()" class="btn btn-danger" style="margin: 10px; float: right;">Abort</button>
-  </div>
-</div>
-<div class="row">
-  <h5> Log </h5>
-  <div id="wslog" class="log" style="height: 30em;"></div>
-  <button onclick="clearLog()" class="btn btn-secondary" style="margin: 10px; float: right;">Clear</button>
 </div>
 
 <script>
-  var chatSocket = new WebSocket('wss://' + location.host + '/ws/log/orca/'),
-      logArea = document.getElementById('wslog'),
-      csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value,
-      statusRunningLabel = document.getElementById('status-running-label'),
-      statusUserLabel = document.getElementById('status-user-label'),
-      statusStartLabel = document.getElementById('status-start-label'),
-      abortButton = document.getElementById('abort-button');
+  var modal = document.getElementById('logs-modal'),
+      logsDiv = document.getElementById('logs-body'),
+      logged_scenario;
 
-      chatSocket.onmessage = function(e) {
-          var data = JSON.parse(e.data),
-              message = data['message'],
-              error = data['error'];
-          if (error)
-              logArea.innerHTML += ('<p style="color:red">' + message + '</p>');
-          else
-              logArea.innerHTML += ('<p>' + message + '</p>');
-          logArea.scrollTop = logArea.scrollHeight;
-      };
-
-  chatSocket.onclose = function(e) {
-      console.error('Chat socket closed unexpectedly');
-  };
-
-  function updateStepsTable(){
-    statusRunningLabel.innerHTML = lastStatus.running;
-    statusUserLabel.innerHTML = lastStatus.last_user;
-    statusStartLabel.innerHTML = lastStatus.last_start;
-    abortButton.style.visibility = (lastStatus.running) ? 'visible': 'hidden';
+  function openLogs(scenarioId){
+    $(modal).modal();
+    logged_scenario = scenarioId;
+    reloadLogs();
   }
 
-  function clearLog(){ logArea.innerHTML = '' };
+  function reloadLogs(){
+    logsDiv.innerHTML = '<h4>Updating...</h4>';
+    fetch('/logs/' + logged_scenario).then(function(res){
+        return res.text()
+    }).then(function(html){
+        var modalBody = document.getElementById('logs-body');
+        modalBody.innerHTML = html;
+        var table = modalBody.querySelector('table');
+        $(table).DataTable({
+          // sort by id when sorting date column
+          'aoColumnDefs': [{'aTargets': [0], 'iDataSort': 3 }],
+          'columnDefs': [{'targets': [3], 'visible': false }],
+          'order': [[0, 'desc']]
+        });
+    });
+  }
 
-  function abort(){
-    console.log('abort')
-    fetch('/steps/abort/', {
-        method: "POST",
-        credentials: "same-origin",
-        headers: { "X-CSRFToken": csrfToken }
-      });
-  };
+  $(document).ready(function() {
+    var statusTable = $('#status-table').DataTable( {
+      'ajax': {
+        url: '/status/list',
+        type: 'GET',
+        cache: true,
+        dataSrc: 'runs'
+      },
+      select: true,
+      'columns': [
+          { 'data': 'module'},
+          { 'data': 'project_name'},
+          { 'data': 'scenario_name'},
+          { 'data': 'is_running'},
+          { 'data': 'run_by'},
+          { 'data': 'started'},
+          { 'data': 'finished'},
+          { 'data': 'success'}
+      ],
+      'rowCallback': function(row, data, index){
+        if (data['is_running'] == false){
+          var color = (data['success'] == true) ? 'green' : 'red',
+              cell = $(row).find('td:eq(7)');
+          //cell.css('background', color);
+          //cell.css('color', 'white');
+          cell.css('color', color);
+          var button = document.createElement('button'),
+              cell = document.createElement('td');
+          row.append(cell)
+          button.innerHTML = 'Log';
+          button.addEventListener('click', function(){
+            openLogs(data['scenario_id']);
+          })
+          button.classList.add('btn', 'btn-primary');
+          cell.append(button);
+        }
+      },
+      searching: false,
+      paging: false,
+      autoWidth: true
+    });
 
-  document.addEventListener("DOMContentLoaded", function(event) {
-      updateStatus().then(function(){updateStepsTable()});
-      setInterval(updateStepsTable, 10000);
+    setInterval(function(){
+      statusTable.ajax.reload();
+      //statusTable.columns.adjust();
+      }, 10000);
   });
-</script>
 
+</script>
 {% endblock %}
+

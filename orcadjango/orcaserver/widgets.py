@@ -11,7 +11,7 @@ import ogr
 class CommaSeparatedCharField(forms.Field):
     def __init__(self, *args, **kwargs):
         if 'initial' in kwargs:
-            kwargs['initial'] = ', '.join(kwargs['initial'])
+            kwargs['initial'] = ', '.join([str(v) for v in kwargs['initial']])
         super().__init__(*args, **kwargs)
 
     def value_from_datadict(self, data, files, name):

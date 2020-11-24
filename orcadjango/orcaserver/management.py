@@ -201,13 +201,15 @@ class OrcaManager(Singleton):
             for iid in list(self.instances.keys()):
                 self.remove(iid)
 
-    def start(self, instance_id: int, steps):
+    def start(self, instance_id: int, steps, on_success=None,
+              on_error=None):
         thread = self.threads.get(instance_id)
         if thread and thread.isAlive():
             raise InUseError('Thread is already running')
         thread = self.threads[instance_id] = AbortableThread(
             target=self.run, args=(instance_id, steps))
-        self.add_meta(instance_id, start_time=timezone.now())
+        thread.on_success = on_success
+        thread.on_error = on_error
         thread.start()
 
     def abort(self, instance_id):
@@ -278,7 +280,8 @@ class OrcaManager(Singleton):
         """
         orca = self.get(instance_id)
         logger = orca.logger
-
+        thread = self.threads[instance_id]
+        logger.info(str(thread))
         try:
             iter_vars = iter_vars or [None]
             max_i = len(iter_vars)
@@ -334,10 +337,10 @@ class OrcaManager(Singleton):
                                 f'{e.__class__.__module__}.'
                                 f'{e.__class__.__name__} - {str(e)}')
                             logger.error('Aborting run')
+                            if thread.on_error:
+                                thread.on_error()
                             return
                         end = time.time() - t2
-                        #print("Time to execute step '{}': {:.2f} s".format(
-                              #step_name, end))
                         step.finished = timezone.now()
                         step.save()
 
@@ -359,6 +362,11 @@ class OrcaManager(Singleton):
             logger.info('orca run finished')
         except Abort:
             logger.error('orca run aborted')
+            if thread.on_error:
+                thread.on_error()
+                return
+        if thread.on_success:
+            thread.on_success()
 
 
 class OrcaTypeMap:

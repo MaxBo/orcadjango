@@ -10,11 +10,11 @@ from django.conf import settings
 import json
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
-from django.core import serializers
+from django.utils import timezone
 
 from orcaserver.management import OrcaManager
 from orcaserver.views import ProjectMixin, apply_injectables
-from orcaserver.models import Step, Injectable, Scenario, LogEntry
+from orcaserver.models import Step, Injectable, Scenario, LogEntry, Run
 
 manager = OrcaManager()
 
@@ -74,6 +74,8 @@ class StepsView(ProjectMixin, TemplateView):
         logs = LogEntry.objects.filter(scenario=scenario).order_by('-timestamp')
         kwargs['logs'] = logs
         kwargs['show_status'] = True
+        kwargs['left_columns'] = 4
+        kwargs['right_columns'] = 0
         # ToDo: get room from handler
 
         prefix = 'ws' if settings.DEBUG else 'wss'
@@ -129,9 +131,9 @@ class StepsView(ProjectMixin, TemplateView):
             started = step.started
             finished = step.finished
             if started:
-                started = started.strftime("%a %b %d %H:%M:%S %Z %Y")
+                started = started.strftime('%d.%m.%Y %H:%M:%S.%f %Z')
             if finished:
-                finished = finished.strftime("%a %b %d %H:%M:%S %Z %Y")
+                finished = finished.strftime('%d.%m.%Y %H:%M:%S.%f %Z')
             steps_json.append({
                 'id': step.id,
                 'name': step.name,
@@ -166,7 +168,6 @@ class StepsView(ProjectMixin, TemplateView):
             pass
         return HttpResponseRedirect(request.path_info)
 
-    # to do for updating is_active
     @staticmethod
     def detail(request, *args, **kwargs):
         step_id = kwargs.get('id')
@@ -180,43 +181,6 @@ class StepsView(ProjectMixin, TemplateView):
             step.active = is_active
             step.save()
             return JsonResponse({}, safe=False)
-
-    @classmethod
-    def status(cls, request):
-        manager = OrcaManager()
-        scenario_id = request.session.get('scenario')
-        try:
-            scenario = Scenario.objects.get(id=scenario_id)
-        except ObjectDoesNotExist:
-            return HttpResponseNotFound('scenario not found')
-        project = scenario.project
-        other_running = []
-        for scn in project.scenario_set.all():
-            if scn.id != scenario_id and manager.is_running(scn.id):
-                other_running.append(scenario)
-        is_running = manager.is_running(scenario_id)
-        meta = manager.get_meta(scenario_id)
-        user = meta.get('user')
-        user_name = user.get_username() if user else 'unknown'
-        start_time = meta.get('start_time', '-')
-        status_text = (
-            'project not in use'
-            if not is_running and len(other_running) == 0
-            else ('project is in use')
-        )
-        status_text += '<br>'
-        status_text += (
-            f'scenario "{scenario.name}" is currently run by user "{user}"'
-            if is_running else f'scenario "{scenario.name}" not in use'
-        )
-        status = {
-            'running': is_running,
-            'other_running_in_project': [s.name for s in other_running],
-            'text': status_text,
-            'last_user': user_name,
-            'last_start': start_time
-        }
-        return JsonResponse(status)
 
     @classmethod
     def run(cls, request):
@@ -267,9 +231,27 @@ class StepsView(ProjectMixin, TemplateView):
 
         message = f'Running Steps for scenario "{scenario.name}"'
         orca.logger.info(message)
+
+        run, created = Run.objects.get_or_create(scenario=scenario)
+        run.run_by = request.user
+        run.success = False
+        run.started = timezone.now()
+        run.finished =  None
+        run.save()
+
+        def on_success():
+            run.success = True
+            run.finished = timezone.now()
+            run.save()
+        def on_error():
+            run.success = False
+            run.finished = timezone.now()
+            run.save()
+
         try:
-            manager.add_meta(scenario.id, user=request.user)
-            manager.start(scenario.id, steps=active_steps)
+            manager.start(scenario.id, steps=active_steps,
+                          on_success=on_success, on_error=on_error)
+        # ToDo: specific exceptions
         except Exception as e:
             orca.logger.error(str(e))
             return HttpResponse(status=400)
@@ -283,10 +265,6 @@ class StepsView(ProjectMixin, TemplateView):
         return HttpResponse(status=200)
 
 
-class StatusView(ProjectMixin, TemplateView):
-    template_name = 'orcaserver/status.html'
-
-
 class LogsView(ProjectMixin, ListView):
     template_name = 'orcaserver/logs.html'
     model = LogEntry
@@ -294,12 +272,9 @@ class LogsView(ProjectMixin, ListView):
 
     def get_queryset(self):
         """Return the injectables with their values."""
-        logs = LogEntry.objects.filter(scenario=self.get_scenario())
+        scenario_id = self.kwargs.get('id')
+        logs = LogEntry.objects.filter(scenario_id=scenario_id)
+        for log in logs:
+            log.filtered_timestamp = log.timestamp.strftime(
+                '%d.%m.%Y %H:%M:%S.%f %Z')
         return logs
-
-    @staticmethod
-    def detail(request, *args, **kwargs):
-        scenario_id = kwargs.get('id')
-        logs = LogEntry.objects.filter(scenario=scenario_id)
-        data = serializers.serialize("json", logs)
-        return JsonResponse(data, status=200, safe=False)

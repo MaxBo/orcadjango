@@ -1,6 +1,7 @@
 from orcadjango.settings_pg import *
+import os
 
-DEBUG = False
+DEBUG = os.environ.get('DEBUG', 'false').lower() == 'true'
 
 ORCA_MODULES['default'].update({'path': 'extractiontools.steps.extract_data'})
 

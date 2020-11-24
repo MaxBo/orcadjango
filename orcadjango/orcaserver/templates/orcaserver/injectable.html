@@ -1,11 +1,8 @@
 {% extends 'orcaserver/base.html' %}
 {% load bootstrap4 %}
 
-{% block title %}
-    Injectable "{{ view.name }}"
-{% endblock %}
-
 {% block content %}
+    <h4>Injectable "{{ view.name }}"</h4>
     {{ form.media }}
     {% if error_message %}<p style="color: red;"><strong>{{ error_message }}</strong></p>{% endif %}
     <p>{{ injectable.docstring }}</p>

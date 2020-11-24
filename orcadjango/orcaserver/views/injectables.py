@@ -19,6 +19,11 @@ class InjectablesView(ProjectMixin, ListView):
     template_name = 'orcaserver/injectables.html'
     context_object_name = 'grouped_injectables'
 
+    def get_context_data(self, **kwargs):
+        kwargs = super().get_context_data(**kwargs)
+        kwargs['show_status'] = True
+        return kwargs
+
     def get_queryset(self):
         """Return the injectables with their values."""
         scenario = self.get_scenario()

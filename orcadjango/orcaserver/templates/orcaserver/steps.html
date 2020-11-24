@@ -1,16 +1,14 @@
 {% extends 'orcaserver/base.html' %}
 {% load static %}
 
-{% block title %}
-  {% if request.session.scenario %}
-    Steps
-  {% else %}
-    No scenario selected
-  {% endif %}
-{% endblock %}
-
 {% block left-content %}
-<div class="col-md-4" style="padding: 2em;">
+<h4>
+{% if request.session.scenario %}
+  Steps
+{% else %}
+  No scenario selected
+{% endif %}
+</h4>
 {% if steps_available %}
   <h6>available</h6>
   <form action='' method="post">
@@ -46,17 +44,17 @@
   </form>
   <div class="row" id="logPlaceholder" style="height: 30em;"></div>
 {% endif %}
-</div>
 {% endblock %}
 
 {% block content %}
 <link rel="stylesheet" type="text/css" href="{% static 'css/datatables.min.css' %}">
 <script src="{% static 'js/datatables.min.js' %}"></script>
 <script src="{% static 'js/jquery-ui.min.js' %}"></script>
-{% if error_message %}<p style="color: red;"><strong>{{ error_message }}</strong></p>{% endif %}
-{% if steps_available %}
+<div style="margin-top: 2.3em;">
+  {% if error_message %}<p style="color: red;"><strong>{{ error_message }}</strong></p>{% endif %}
+  {% if steps_available %}
   <h6 style="float: left;">in scenario</h6> &nbsp;&nbsp;(change order by dragging and dropping)
-  <table class="table select" id="steps-scenario">
+  <table class="table" id="steps-scenario" style="user-select: none;">
     <thead>
       <tr>
         <th class="index">No.</th>
@@ -72,7 +70,7 @@
     </thead>
     <tbody>
     {% for step in steps_scenario %}
-      <tr data-id="{{ step.id }}" title="{{ step.name }} - {{ step.docstring }}" {% if not step.valid %} style="color: red;" {% endif %}>
+      <tr data-id="{{ step.id }}" title="{{ step.name }} - {{ step.docstring }}" style="cursor: move; {% if not step.valid %} color: red; {% endif %}">
         <td class="index"> {{ forloop.counter0 }} </td>
         <td style="display: none;"> {{ step.id }} </td>
         <td> {{ step.name }} </td>
@@ -97,31 +95,30 @@
     </tbody>
   </table>
   <button id="run-scenario" type="submit" onclick="runScenario()" class="btn btn-primary" style="float: right;">Run Steps</button>
-
-  <div class="bottom-resizable" style="height: 15em;">
-    <div style="width: 100%;">
-      <h5 style="float: left; margin-top: 15px;"> Log </h5>
-      <!--<button onclick="clearLog()" class="btn btn-secondary" style="margin: 10px; float: right;">Clear</button>-->
-      <button onclick="openLogs()" class="btn btn-primary"  style="margin: 10px; float: right;" >History</button>
-    </div>
-    <div id="wslog" class="log" style="width: 100%; height: calc(100% - 5em); resize: none;"></div>
+</div>
+<div class="bottom-resizable" style="height: 15em;">
+  <div style="width: 100%;">
+    <h5 style="float: left; margin-top: 15px;"> Log </h5>
+    <!--<button onclick="clearLog()" class="btn btn-secondary" style="margin: 10px; float: right;">Clear</button>-->
+    <button onclick="openLogs()" class="btn btn-primary"  style="margin: 10px; float: right;" >History</button>
   </div>
+  <div id="wslog" class="log" style="width: 100%; height: calc(100% - 5em); resize: none;"></div>
+</div>
 
-  <div class="modal fade" id="logs-modal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Log History</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div id="logs-body" class="modal-body" style="overflow-y: auto; max-height: calc(100vh - 200px);">
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button onclick="reloadLogs()" type="button" class="btn btn-primary">Reload</button>
-        </div>
+<div class="modal fade" id="logs-modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Log History</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div id="logs-body" class="modal-body" style="overflow-y: auto; max-height: calc(100vh - 200px);">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button onclick="reloadLogs()" type="button" class="btn btn-primary">Reload</button>
       </div>
     </div>
   </div>
@@ -139,13 +136,17 @@
   function reloadLogs(){
     var logsDiv = document.getElementById('logs-body');
     logsDiv.innerHTML = '<h4>Updating...</h4>';
-    fetch('/logs').then(function(res){
+    fetch('/logs/{{ active_scenario.id }}').then(function(res){
         return res.text()
     }).then(function(html){
         var modalBody = document.getElementById('logs-body');
         modalBody.innerHTML = html;
         var table = modalBody.querySelector('table');
-        $(table).DataTable({"order": [[0, "desc"]]});
+        $(table).DataTable({
+          'aoColumnDefs': [{'aTargets': [0], 'iDataSort': 3 }],
+          'columnDefs': [{'targets': [3], 'visible': false }],
+          'order': [[0, 'desc']]
+        });
     });
   }
 

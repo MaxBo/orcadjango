@@ -1,13 +1,13 @@
 {% extends 'orcaserver/base.html' %}
-{% block title %}
+
+{% block content %}
+  <h4>
   {% if request.session.scenario %}
     List of all Injectables and their current values
   {% else %}
     No scenario selected
   {% endif %}
-{% endblock %}
-
-{% block content %}
+  </h4>
   {% if grouped_injectables %}
     <form action='' method="post">
       {% csrf_token %}
