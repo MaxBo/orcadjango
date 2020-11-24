@@ -17,6 +17,13 @@ class StatusView(ProjectMixin, TemplateView):
         #runs = Run.objects.all()#filter(scenario__project__module=self.get_module())
         #return runs
 
+    def get_context_data(self, **kwargs):
+        kwargs = super().get_context_data(**kwargs)
+        kwargs['left_columns'] = 0
+        kwargs['center_columns'] = 12
+        kwargs['right_columns'] = 0
+        return kwargs
+
     @staticmethod
     def list(request):
         manager = OrcaManager()

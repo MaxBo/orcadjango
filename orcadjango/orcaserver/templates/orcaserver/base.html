@@ -76,23 +76,21 @@
     </div>
     {% endif %}
   </div>
-  <div class="row" style="margin-top: 20px;">
-
+  <div class="row" style="margin-top: 10px;">
+    <div class="col-md-{% if left_columns %}{{ left_columns }}{% else %}2{% endif %}" style="padding-left: 2em;">
     {% block left-content %}
-    <div class="col-md-2">
-    </div>
     {% endblock %}
-    <div class="col-md-7">
-      <h4>{% block title %}{% endblock %}</h4>
+    </div>
+    <div class="col-md-{% if center_columns %}{{ center_columns }}{% else %}7{% endif %}" style="padding-left: 2em;">
 
       {% autoescape off %}{% bootstrap_messages %}{% endautoescape %}
 
       {% block content %}{% endblock %}
     </div>
-    {% block right-content %}
-    <div class="col-md-0">
+    <div class="col-md-{% if right_columns %}{{ right_columns }}{% else %}2{% endif %}" style="padding-left: 2em;">
+      {% block right-content %}
+      {% endblock %}
     </div>
-    {% endblock %}
   </div>
 {% endblock %}
 </body>

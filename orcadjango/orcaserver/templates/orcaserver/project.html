@@ -1,11 +1,8 @@
 {% extends 'orcaserver/base.html' %}
 {% load bootstrap4 %}
 
-{% block title %}
-  {{ title }}
-{% endblock %}
-
 {% block content %}
+  <h4>{{ title }}</h4>
   <form action='' method="post">
     {% csrf_token %}
     {% bootstrap_form form %}

@@ -1,34 +1,29 @@
 {% extends 'orcaserver/base.html' %}
 {% load static %}
 
-{% block title %}
-    Orca Status
-{% endblock %}
-
 {% block content %}
-<div class="col-md-12" style="padding: 2em;">
-  <link rel="stylesheet" type="text/css" href="{% static 'css/datatables.min.css' %}">
-  <script src="{% static 'js/datatables.min.js' %}"></script>
-  <script src="{% static 'js/jquery-ui.min.js' %}"></script>
-  <table class="table table-striped" id="status-table" style="padding: 2em;">
-    <thead>
-      <tr>
-        <th style="display: none;">ID</th>
-        <th>Module</th>
-        <th>Project</th>
-        <th>Scenario</th>
-        <th>Running</th>
-        <th>Run by</th>
-        <th>Start</th>
-        <th>Stop</th>
-        <th>Success</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
-</div>
+<h4>Orca Status</h4>
+<link rel="stylesheet" type="text/css" href="{% static 'css/datatables.min.css' %}">
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+<table class="table table-striped" id="status-table" style="padding: 2em;">
+  <thead>
+    <tr>
+      <th style="display: none;">ID</th>
+      <th>Module</th>
+      <th>Project</th>
+      <th>Scenario</th>
+      <th>Running</th>
+      <th>Run by</th>
+      <th>Start</th>
+      <th>Stop</th>
+      <th>Success</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
 <div class="modal fade" id="logs-modal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
