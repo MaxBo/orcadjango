@@ -39,7 +39,7 @@ REDIS_HOST = os.environ.get('REDIS_HOST', '127.0.0.1')
 SECRET_KEY = 'kfn+e0u++2*k6!r^^o(jlmd+40l*8qdk8(8cwb5dc$v9u9e-jc'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'false').lower() == 'true'
 
 ALLOWED_HOSTS = ['localhost']
 
