@@ -9,7 +9,6 @@
 <table class="table table-striped" id="status-table" style="padding: 2em;">
   <thead>
     <tr>
-      <th style="display: none;">ID</th>
       <th>Module</th>
       <th>Project</th>
       <th>Scenario</th>
@@ -37,7 +36,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button onclick="reloadLogs()" type="button" class="reload btn btn-primary">Reload</button>
+        <button onclick="reloadLogs()" type="button" class="btn btn-primary">Reload</button>
       </div>
     </div>
   </div>
@@ -66,55 +65,54 @@
     });
   }
 
-  var statusTable = document.getElementById('status-table');
-  $(statusTable).DataTable({searching: false, paging: false});
-
-  function clearTable(table){
-    for(var i = table.rows.length - 1; i > 0; i--){
-        table.deleteRow(i);
-    }
-  }
-
-  // fetch and update steps in table
-  function updateStatus(){
-    fetch('/status/list').then(data=>{return data.json()}).then(function(res){
-      clearTable(statusTable);
-      var body = statusTable.getElementsByTagName('tbody')[0];
-      res.forEach(function(run){
-        var row = body.insertRow(),
-            attrs = ['module', 'project_name', 'scenario_name', 'is_running', 'run_by',
-            'started', 'finished'],
-            cell;
-        attrs.forEach(function(attr){
-          cell = row.insertCell();
-          cell.innerHTML = run[attr];
-        });
-        cell = row.insertCell();
-        console.log(run['is_running'])
-        if (run['is_running'] == false){
-          var success = run['success'];
-          cell.innerHTML = success;
-          cell.style.color = 'white';
-          cell.style.backgroundColor = (success == true) ? 'green' : 'red';
-          cell.style.textAlign = 'center';
-          cell.style.verticalAlign = 'middle';
+  $(document).ready(function() {
+    var statusTable = $('#status-table').DataTable( {
+      'ajax': {
+        url: '/status/list',
+        type: 'GET',
+        cache: true,
+        dataSrc: 'runs'
+      },
+      select: true,
+      'columns': [
+          { 'data': 'module'},
+          { 'data': 'project_name'},
+          { 'data': 'scenario_name'},
+          { 'data': 'is_running'},
+          { 'data': 'run_by'},
+          { 'data': 'started'},
+          { 'data': 'finished'},
+          { 'data': 'success'}
+      ],
+      'rowCallback': function(row, data, index){
+        if (data['is_running'] == false){
+          var color = (data['success'] == true) ? 'green' : 'red',
+              cell = $(row).find('td:eq(7)');
+          //cell.css('background', color);
+          //cell.css('color', 'white');
+          cell.css('color', color);
+          var button = document.createElement('button'),
+              cell = document.createElement('td');
+          row.append(cell)
+          button.innerHTML = 'Log';
+          button.addEventListener('click', function(){
+            openLogs(data['scenario_id']);
+          })
+          button.classList.add('btn', 'btn-primary');
+          cell.append(button);
         }
-        cell = row.insertCell();
-        var button = document.createElement('button');
-        button.innerHTML = 'Log';
-        button.addEventListener('click', function(){
-          openLogs(run['scenario_id']);
-        })
-        button.classList.add('btn', 'btn-primary');
-        cell.appendChild(button);
+      },
+      searching: false,
+      paging: false,
+      autoWidth: true
     });
-  })};
 
-  (function() {
-    // periodically update steps and their progress
-    updateStatus();
-    setInterval(updateStatus, 10000);
-  })();
+    setInterval(function(){
+      statusTable.ajax.reload();
+      //statusTable.columns.adjust();
+      }, 10000);
+  });
+
 </script>
 {% endblock %}
 

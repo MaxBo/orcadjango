@@ -50,7 +50,7 @@ class StatusView(ProjectMixin, TemplateView):
                 'is_running': manager.is_running(run.scenario.id),
                 'success': run.success,
             })
-        return JsonResponse(runs_json, safe=False)
+        return JsonResponse({'runs': runs_json}, safe=False)
 
     @staticmethod
     def detail(request, *args, **kwargs):
