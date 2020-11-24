@@ -34,9 +34,9 @@ class StatusView(ProjectMixin, TemplateView):
             finished = run.finished
             user = run.run_by
             if started:
-                started = started.strftime("%a %b %d %H:%M:%S %Z %Y")
+                started = started.strftime('%d.%m.%Y %H:%M:%S.%f %Z')
             if finished:
-                finished = finished.strftime("%a %b %d %H:%M:%S %Z %Y")
+                finished = finished.strftime('%d.%m.%Y %H:%M:%S.%f %Z')
             scenario = run.scenario
             project = scenario.project
             runs_json.append({
@@ -70,7 +70,7 @@ class StatusView(ProjectMixin, TemplateView):
         user_name = run.run_by.get_username() if run.run_by else 'unknown'
         start_time = run.started
         if start_time:
-            start_time = start_time.strftime("%a %b %d %H:%M:%S %Z %Y")
+            start_time = start_time.strftime('%d.%m.%Y %H:%M:%S.%f %Z')
         status_text = (
             'project not in use' if not is_running and len(other_running) == 0
             else ('project is in use')

@@ -131,9 +131,9 @@ class StepsView(ProjectMixin, TemplateView):
             started = step.started
             finished = step.finished
             if started:
-                started = started.strftime("%a %b %d %H:%M:%S %Z %Y")
+                started = started.strftime('%d.%m.%Y %H:%M:%S.%f %Z')
             if finished:
-                finished = finished.strftime("%a %b %d %H:%M:%S %Z %Y")
+                finished = finished.strftime('%d.%m.%Y %H:%M:%S.%f %Z')
             steps_json.append({
                 'id': step.id,
                 'name': step.name,
@@ -274,4 +274,7 @@ class LogsView(ProjectMixin, ListView):
         """Return the injectables with their values."""
         scenario_id = self.kwargs.get('id')
         logs = LogEntry.objects.filter(scenario_id=scenario_id)
+        for log in logs:
+            log.filtered_timestamp = log.timestamp.strftime(
+                '%d.%m.%Y %H:%M:%S.%f %Z')
         return logs

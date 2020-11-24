@@ -4,14 +4,16 @@
       <th>Timestamp</th>
       <th>Message</th>
       <th>Log Level</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
   {% for entry in logs %}
     <tr style="color: {% if entry.level == 'ERROR'%} red {% elif entry.level == 'WARNING' %} orange {% elif entry.level == 'DEBUG' %} grey {% endif %};">
-      <td> {{ entry.timestamp }} </td>
+      <td> {{ entry.filtered_timestamp }} </td>
       <td> {{ entry.message }} </td>
       <td> {{ entry.level }} </td>
+      <td> {{ entry.id }} </td>
     </tr>
   {% endfor %}
   </tbody>

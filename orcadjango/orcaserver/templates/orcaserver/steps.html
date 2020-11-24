@@ -142,7 +142,11 @@
         var modalBody = document.getElementById('logs-body');
         modalBody.innerHTML = html;
         var table = modalBody.querySelector('table');
-        $(table).DataTable({"order": [[0, "desc"]]});
+        $(table).DataTable({
+          'aoColumnDefs': [{'aTargets': [0], 'iDataSort': 3 }],
+          'columnDefs': [{'targets': [3], 'visible': false }],
+          'order': [[0, 'desc']]
+        });
     });
   }
 
