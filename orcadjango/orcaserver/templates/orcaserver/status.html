@@ -5,36 +5,30 @@
     Orca Status
 {% endblock %}
 
-
 {% block content %}
-<table class="table table-striped" id="scenarios" style="padding: 2em;">
-  <thead>
-    <tr>
-      <th style="display: none;">ID</th>
-      <th>Project</th>
-      <th>Scenario</th>
-      <th>Running</th>
-      <th>Run by</th>
-      <th>Start</th>
-      <th>Stop</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for scenario in scenarios %}
-    <tr onclick="highlightRow(this)" data-id="{{ project.id }}">
-      <td style="display: none;"> {{ scenario.id }} </td>
-      <td> {{ scenario.project.name }} </td>
-      <td> {{ scenario.name }} </td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td><button onclick="openLogs({{ scenario.id }})" class="btn btn-primary">Log</button></td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
+<div class="col-md-12" style="padding: 2em;">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/datatables.min.css' %}">
+  <script src="{% static 'js/datatables.min.js' %}"></script>
+  <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+  <table class="table table-striped" id="status-table" style="padding: 2em;">
+    <thead>
+      <tr>
+        <th style="display: none;">ID</th>
+        <th>Module</th>
+        <th>Project</th>
+        <th>Scenario</th>
+        <th>Running</th>
+        <th>Run by</th>
+        <th>Start</th>
+        <th>Stop</th>
+        <th>Success</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+</div>
 <div class="modal fade" id="logs-modal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -48,22 +42,26 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button onclick="reloadLogs()" type="button" class="btn btn-primary">Reload</button>
+        <button onclick="reloadLogs()" type="button" class="reload btn btn-primary">Reload</button>
       </div>
     </div>
   </div>
 </div>
 
 <script>
+  var modal = document.getElementById('logs-modal'),
+      logsDiv = document.getElementById('logs-body'),
+      logged_scenario;
+
   function openLogs(scenarioId){
-    $("#logs-modal").modal();
-    reloadLogs(scenarioId);
+    $(modal).modal();
+    logged_scenario = scenarioId;
+    reloadLogs();
   }
 
-  function reloadLogs(scenarioId){
-    var logsDiv = document.getElementById('logs-body');
+  function reloadLogs(){
     logsDiv.innerHTML = '<h4>Updating...</h4>';
-    fetch('/logs/' + scenarioId).then(function(res){
+    fetch('/logs/' + logged_scenario).then(function(res){
         return res.text()
     }).then(function(html){
         var modalBody = document.getElementById('logs-body');
@@ -72,6 +70,56 @@
         $(table).DataTable({"order": [[0, "desc"]]});
     });
   }
+
+  var statusTable = document.getElementById('status-table');
+  $(statusTable).DataTable({searching: false, paging: false});
+
+  function clearTable(table){
+    for(var i = table.rows.length - 1; i > 0; i--){
+        table.deleteRow(i);
+    }
+  }
+
+  // fetch and update steps in table
+  function updateStatus(){
+    fetch('/status/list').then(data=>{return data.json()}).then(function(res){
+      clearTable(statusTable);
+      var body = statusTable.getElementsByTagName('tbody')[0];
+      res.forEach(function(run){
+        var row = body.insertRow(),
+            attrs = ['module', 'project_name', 'scenario_name', 'is_running', 'run_by',
+            'started', 'finished'],
+            cell;
+        attrs.forEach(function(attr){
+          cell = row.insertCell();
+          cell.innerHTML = run[attr];
+        });
+        cell = row.insertCell();
+        console.log(run['is_running'])
+        if (run['is_running'] == false){
+          var success = run['success'];
+          cell.innerHTML = success;
+          cell.style.color = 'white';
+          cell.style.backgroundColor = (success == true) ? 'green' : 'red';
+          cell.style.textAlign = 'center';
+          cell.style.verticalAlign = 'middle';
+        }
+        cell = row.insertCell();
+        var button = document.createElement('button');
+        button.innerHTML = 'Log';
+        button.addEventListener('click', function(){
+          openLogs(run['scenario_id']);
+        })
+        button.classList.add('btn', 'btn-primary');
+        cell.appendChild(button);
+    });
+  })};
+
+  (function() {
+    // periodically update steps and their progress
+    updateStatus();
+    setInterval(updateStatus, 10000);
+  })();
 </script>
 {% endblock %}
 

@@ -10,11 +10,11 @@ from django.conf import settings
 import json
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
-from django.core import serializers
+from django.utils import timezone
 
 from orcaserver.management import OrcaManager
 from orcaserver.views import ProjectMixin, apply_injectables
-from orcaserver.models import Step, Injectable, Scenario, LogEntry
+from orcaserver.models import Step, Injectable, Scenario, LogEntry, Run
 
 manager = OrcaManager()
 
@@ -229,9 +229,27 @@ class StepsView(ProjectMixin, TemplateView):
 
         message = f'Running Steps for scenario "{scenario.name}"'
         orca.logger.info(message)
+
+        run, created = Run.objects.get_or_create(scenario=scenario)
+        run.run_by = request.user
+        run.success = False
+        run.started = timezone.now()
+        run.finished =  None
+        run.save()
+
+        def on_success():
+            run.success = True
+            run.finished = timezone.now()
+            run.save()
+        def on_error():
+            run.success = False
+            run.finished = timezone.now()
+            run.save()
+
         try:
-            manager.add_meta(scenario.id, user=request.user)
-            manager.start(scenario.id, steps=active_steps)
+            manager.start(scenario.id, steps=active_steps,
+                          on_success=on_success, on_error=on_error)
+        # ToDo: specific exceptions
         except Exception as e:
             orca.logger.error(str(e))
             return HttpResponse(status=400)

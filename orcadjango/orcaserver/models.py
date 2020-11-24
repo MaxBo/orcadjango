@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import int_list_validator
 from django.urls import reverse
+from django.conf import settings
 import ast
 
 from orcaserver.management import OrcaManager, OrcaTypeMap
@@ -137,3 +138,13 @@ class LogEntry(models.Model):
     message = models.TextField(blank=True)
     level = models.TextField(default='INFO')
     timestamp = models.DateTimeField()
+
+
+class Run(models.Model):
+    scenario = models.ForeignKey(Scenario, on_delete=models.CASCADE)
+    models.OneToOneField(Scenario, on_delete=models.CASCADE)
+    started = models.DateTimeField(null=True)
+    finished = models.DateTimeField(null=True)
+    success = models.BooleanField(default=False)
+    run_by = models.ForeignKey(settings.AUTH_USER_MODEL,
+                               on_delete=models.SET_NULL, null=True)

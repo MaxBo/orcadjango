@@ -33,4 +33,5 @@ urlpatterns = [
     path('steps/list/', login_required(views.StepsView.list)),
     path('steps/detail/<str:id>/', login_required(views.StepsView.detail)),
     path('status/detail/<str:id>/', login_required(views.StatusView.detail)),
+    path('status/list/', login_required(views.StatusView.list)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
