@@ -9,6 +9,7 @@ import typing
 from inspect import signature, _empty
 from django import forms
 from django.contrib.gis import forms as geoforms
+from django.contrib.gis.geos import GEOSGeometry
 import json
 import ast
 import ogr
@@ -486,6 +487,7 @@ class StringConverter(OrcaTypeMap):
 class GeometryConverter(OrcaTypeMap):
     data_type = ogr.Geometry
     form_field = GeometryField
+    srid = 4326
 
     def to_str(self, value):
         # ToDo: this is inplace, might cause side effects
@@ -498,20 +500,12 @@ class GeometryConverter(OrcaTypeMap):
         return geom
 
     def get_field(self, value, label=''):
-        # geodjango OSMWidget does not transform itself
-        source = value.GetSpatialReference()
-        if not source:
-            source = ogr.osr.SpatialReference()
-            source.ImportFromEPSG(4326)
-        target = ogr.osr.SpatialReference()
-        target.ImportFromEPSG(geoforms.OSMWidget.map_srid)
-        transform = ogr.osr.CoordinateTransformation(source, target)
-        # ToDo: inplace transformation might cause side-effects
-        value.Transform(transform)
+        geom = GEOSGeometry(self.to_str(value))
+        geom.srid = self.srid
         return self.form_field(
-            srid=4326,
+            srid=self.srid,
             geom_type='Polygon',
-            initial=self.to_str(value),
+            initial=geom,
             label='',
             widget=geoforms.OSMWidget(
                 attrs={
