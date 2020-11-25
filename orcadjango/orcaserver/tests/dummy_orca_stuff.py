@@ -3,54 +3,54 @@ from typing import List, Dict
 from time import sleep
 import pandas as pd
 import xarray as xr
-from orcadjango.decorators import group
+from orcadjango.decorators import meta
 from orca import logger
 
 from .dummy_submodule import DummySub
 
-@group(groupname='strings', order=1)
+@meta(group='strings', order=1)
 @orca.injectable()
 def inj1() -> str:
     """string"""
     return 'INJ 1'
 
 
-@group(groupname='strings', order=2)
+@meta(group='strings', order=2)
 @orca.injectable()
 def inj2():
     """string"""
     return 'INJ 2'
 
 
-@group(groupname='strings', order=2)
+@meta(group='strings', order=2)
 @orca.injectable()
 def inj12(inj1: str, inj2: str) -> str:
     """composed"""
     return f'{inj1} -> {inj2}'
 
 
-@group(groupname='ints', order=2)
+@meta(group='ints', order=2)
 @orca.injectable()
 def inj_int() -> int:
     """integer"""
     return 42
 
 
-@group(groupname='ints', order=1)
+@meta(group='ints', order=1)
 @orca.injectable()
 def inj_list() -> List[int]:
     """list"""
     return [2, 3, 66]
 
 
-@group(groupname='das dict')
+@meta(group='das dict')
 @orca.injectable()
 def inj_dict() -> Dict[str, int]:
     """dictionary"""
     return dict(a=1, b=-1)
 
 
-@group('data')
+@meta(group='data')
 @orca.injectable()
 def dataframe() -> pd.DataFrame:
     """Pandas Dataframe"""
@@ -59,7 +59,7 @@ def dataframe() -> pd.DataFrame:
     return df
 
 
-@group('data')
+@meta(group='data')
 @orca.injectable()
 def dataset(dataframe: pd.DataFrame) -> xr.Dataset:
     """xarray.Dataset"""
@@ -67,7 +67,7 @@ def dataset(dataframe: pd.DataFrame) -> xr.Dataset:
     return ds
 
 
-@group('data')
+@meta(group='data')
 @orca.injectable()
 def dataarray(dataset: xr.Dataset) -> xr.DataArray:
     """xarray.DataArray"""
@@ -88,7 +88,7 @@ class mycontext(ContextDecorator):
         return False
 
 
-@group(groupname='Hallo', order=2)
+@meta(group='Hallo', order=2)
 @orca.step()
 def step2(inj1, inj2):
     """another dummy step"""
@@ -102,7 +102,7 @@ def step2(inj1, inj2):
     logger.error(f'Test error message')
 
 
-@group(groupname='Hallo', order=1)
+@meta(group='Hallo', order=1)
 @orca.step()
 def step1(inj_list, dataframe):
     """dummy step"""
@@ -112,7 +112,7 @@ def step1(inj_list, dataframe):
     logger.info('step1 finished')
 
 
-@group(groupname='Huhu')
+@meta(group='Huhu')
 @orca.step()
 def step_dict(inj_dict):
     """another dummy step with dict"""
@@ -120,7 +120,7 @@ def step_dict(inj_dict):
         logger.info(f'{k}: {v}')
         sleep(1)
 
-@group(groupname='Huhu')
+@meta(group='Huhu')
 @orca.step()
 def step_multiply_df(inj_int, dataframe):
     a = dataframe.copy()
