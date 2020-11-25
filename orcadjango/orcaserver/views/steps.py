@@ -92,10 +92,10 @@ class StepsView(ProjectMixin, TemplateView):
                 step.order = item['order']
                 step.save()
         scenario_id = request.session.get('scenario')
-        orca = manager.get(scenario_id)
         if scenario_id is None:
             return HttpResponseNotFound('scenario not found')
         scenario = Scenario.objects.get(id=scenario_id)
+        orca = manager.get(scenario_id, module=scenario.project.module)
         steps_scenario = Step.objects.filter(
             scenario=scenario).order_by('order')
         steps_json = []

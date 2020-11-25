@@ -24,5 +24,5 @@ urlpatterns = [
 ]
 
 websocket_urlpatterns = [
-    re_path(r'ws/log/(?P<room_name>\w+)/$', LogConsumer),
+    re_path(r'ws/log/(?P<room_name>\w+)/$', LogConsumer.as_asgi()),
 ]
