@@ -504,7 +504,7 @@ class GeometryConverter(OrcaTypeMap):
         geom.srid = self.srid
         return self.form_field(
             srid=self.srid,
-            geom_type='Polygon',
+            geom_type='MultiPolygon',
             initial=geom,
             label='',
             widget=geoforms.OSMWidget(

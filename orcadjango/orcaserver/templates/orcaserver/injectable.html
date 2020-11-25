@@ -12,9 +12,9 @@
             <div style="height: 100%">
             {% bootstrap_form form %}
             </div>
-            <a class="btn btn-secondary" href="/injectables/">Back</a>
-            <input type="submit" name="change" value="Save" class="btn btn-primary">
-            <input type="submit" name="reset" value="Reset" class="btn btn-warning">
+            <a class="btn btn-secondary" title="Back" href="/injectables/">Back</a>
+            <input type="submit" name="change" title="Save current value" value="Save" class="btn btn-primary">
+            <input type="submit" name="reset" value="Reset to default" title="Reset injectable value to project default" class="btn btn-warning">
         {% else %}
             <table class="table" id="parent_injectables">
             <thead>
