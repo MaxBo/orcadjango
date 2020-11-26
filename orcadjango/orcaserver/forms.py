@@ -85,7 +85,7 @@ class ProjectForm(forms.Form):
             else:
                 value = desc['value']
             label = f'initial value for "{injectable}" - {desc["docstring"]}'
-            field = converter.get_field(value=value, label=label)
+            field = converter.get_form_field(value=value, label=label)
             field.widget.attrs['placeholder'] = desc["docstring"]
             self.fields[injectable] = field
         manager.remove(uid)

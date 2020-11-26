@@ -8,6 +8,7 @@ from orca import logger
 
 from .dummy_submodule import DummySub
 
+
 @meta(group='strings', order=1)
 @orca.injectable()
 def inj1() -> str:
@@ -41,6 +42,20 @@ def inj_int() -> int:
 def inj_list() -> List[int]:
     """list"""
     return [2, 3, 66]
+
+
+@meta(group='ints', order=3, choices=[1, 2, 3])
+@orca.injectable()
+def inj_int_choose_many() -> List[int]:
+    """choose many out of list, one default is not in list"""
+    return [45, 2]
+
+
+@meta(group='ints', order=4, choices=[34, 45, 12])
+@orca.injectable()
+def inj_int_choose_one() -> int:
+    """choose one out of list, default is not in list"""
+    return 345
 
 
 @meta(group='das dict')
@@ -119,6 +134,7 @@ def step_dict(inj_dict):
     for k, v in inj_dict.items():
         logger.info(f'{k}: {v}')
         sleep(1)
+
 
 @meta(group='Huhu')
 @orca.step()

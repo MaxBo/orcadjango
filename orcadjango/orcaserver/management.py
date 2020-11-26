@@ -69,7 +69,7 @@ def parse_injectables(orca):
         funcwrapper = orca._injectable_function.get(name)
         sig = signature(funcwrapper._func)
         if isinstance(funcwrapper, orca._InjectableFuncWrapper):
-            desc['docstring'] = funcwrapper._func.__doc__
+            desc['docstring'] = funcwrapper._func.__doc__ or ''
             #  Datatype from annotations:
             returntype = sig.return_annotation
             has_returntype = True
@@ -85,6 +85,12 @@ def parse_injectables(orca):
             desc['module'] = funcwrapper._func.__module__
             desc['groupname'] = _meta.get('group', '')
             desc['order'] = _meta.get('order', 1)
+            desc['hidden'] = _meta.get('hidden', False)
+            choices = _meta.get('choices', [])
+            # choices are derived from another injectable
+            if callable(choices):
+                choices = orca._injectable_backup.get(choices.__name__)
+            desc['choices'] = ','.join(str(c) for c in choices)
             desc['parameters'] = list(sig.parameters.keys())
         desc['data_class'] = (f'{datatype_class.__module__}.'
                               f'{datatype_class.__name__}')
@@ -401,8 +407,11 @@ class OrcaTypeMap:
     def to_str(self, value):
         return str(value)
 
-    def get_field(self, value=None, label=''):
+    def get_form_field(self, value=None, label=''):
         return self.form_field(initial=value, label=label)
+
+    def get_choice_field(self, value=None, choices=(), label='Select'):
+        return forms.ChoiceField(choices=choices, label=label, initial=value)
 
 
 class DefaultConverter(OrcaTypeMap):
@@ -435,7 +444,7 @@ class BooleanConverter(OrcaTypeMap):
     form_field = forms.BooleanField
     description = 'boolean'
 
-    def get_field(self, value, label=''):
+    def get_form_field(self, value, label=''):
         return self.form_field(initial=value, label='True', required=False)
 
     def to_value(self, text):
@@ -453,13 +462,19 @@ class ListConverter(OrcaTypeMap):
     def to_value(self, text):
         return [t.strip() for t in text.split(',')] if text else []
 
+    def get_choice_field(self, value=None, choices=(),
+                         label='Select one or more'):
+        return forms.MultipleChoiceField(choices=choices, label=label,
+                                         widget=forms.CheckboxSelectMultiple,
+                                         initial=value)
+
 
 class DictConverter(OrcaTypeMap):
     data_type = dict
     form_field = DictField
     description = 'dictionary'
 
-    def get_field(self, value, label=''):
+    def get_form_field(self, value, label=''):
         return self.form_field(value, label=label)
 
     def to_str(self, value):
@@ -499,7 +514,7 @@ class GeometryConverter(OrcaTypeMap):
         geom.FlattenTo2D()
         return geom
 
-    def get_field(self, value, label=''):
+    def get_form_field(self, value, label=''):
         geom = GEOSGeometry(self.to_str(value))
         geom.srid = self.srid
         return self.form_field(
@@ -517,3 +532,6 @@ class GeometryConverter(OrcaTypeMap):
                 }
             )
         )
+
+    def get_choice_field(self, *args, **kwargs):
+        raise NotImplementedError

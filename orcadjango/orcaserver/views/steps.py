@@ -44,11 +44,15 @@ class StepsView(ProjectMixin, TemplateView):
             wrapper = orca.get_step(name)
             group = _meta.get('group', '-')
             order = _meta.get('order', 1)
+            required = _meta.get('required', [])
+            if not isinstance(required, list):
+                required = [required]
+            required = [r.__name__ if callable(r) else str(r) for r in required]
             steps_grouped.setdefault(group, []).append({
                 'name': name,
                 'description': wrapper._func.__doc__ or '',
                 'order': order,
-                'module': wrapper._func.__module__,
+                'required': ', '.join(required),
             })
         # order the steps inside the groups
         for group, steps_group in steps_grouped.items():
