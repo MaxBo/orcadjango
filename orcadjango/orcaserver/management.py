@@ -9,7 +9,7 @@ import typing
 from inspect import signature, _empty
 from django import forms
 from django.contrib.gis import forms as geoforms
-from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.geos import GEOSGeometry, MultiPolygon, fromstr
 import json
 import ast
 import ogr
@@ -38,7 +38,7 @@ def load_module(module_name, orca=None, module_set=None):
         orca._injectable_function[inj] = orca._INJECTABLES[inj]
         try:
             orca._injectable_backup[inj] = orca.get_injectable(inj)
-        except Exception as e:
+        except KeyError as e:
             orca._injectable_backup[inj] = repr(e)
 
     # reload the parent modules
@@ -515,12 +515,14 @@ class GeometryConverter(OrcaTypeMap):
         return geom
 
     def get_form_field(self, value, label=''):
-        geom = GEOSGeometry(self.to_str(value))
-        geom.srid = self.srid
+        poly = fromstr(self.to_str(value))
+        if not isinstance(poly, MultiPolygon):
+            poly = MultiPolygon(poly)
+        poly.srid = self.srid
         return self.form_field(
             srid=self.srid,
             geom_type='MultiPolygon',
-            initial=geom,
+            initial=poly,
             label='',
             widget=geoforms.OSMWidget(
                 attrs={
