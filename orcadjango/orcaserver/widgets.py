@@ -6,6 +6,7 @@ from django.forms.utils import ErrorList
 from django.contrib.gis.geos import GEOSException
 from django.contrib.gis import forms as geoforms
 import ogr
+import floppyforms
 
 
 class CommaSeparatedCharField(forms.Field):
@@ -60,29 +61,14 @@ class DictField(forms.MultiValueField):
         self.validate(ret)
         return ret
 
+class OsmMultiPolyWidget(floppyforms.gis.MultiPolygonWidget,
+                         floppyforms.gis.BaseOsmWidget):
+    template_name = 'orcaserver/osm.html'
 
-class GeometryField(geoforms.GeometryField):
+
+class OgrGeometryField(floppyforms.gis.MultiPolygonField):
     def clean(self, value):
-        geom = forms.Field.clean(self, value)
-        if geom is None:
-            return
-
-        # there is a bug in the super class, you can not pass the geometry type
-        # to OL with all upper but starting with capital letter
-        if (str(geom.geom_type).upper() != self.geom_type.upper() and
-            not self.geom_type.upper() == 'GEOMETRY'):
-            raise forms.ValidationError(
-                self.error_messages['invalid_geom_type'],
-                code='invalid_geom_type')
-
-        if self.srid and self.srid != -1 and self.srid != geom.srid:
-            try:
-                geom.transform(self.srid)
-            except GEOSException:
-                raise forms.ValidationError(
-                    self.error_messages['transform_error'],
-                    code='transform_error')
-
+        geom = super().clean(value)
         return ogr.CreateGeometryFromWkt(geom.wkt)
 
 

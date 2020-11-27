@@ -1,6 +1,7 @@
 django>=3.0
 orca
 django-bootstrap4
+django-floppyforms
 psycopg2
 channels
 channels_redis

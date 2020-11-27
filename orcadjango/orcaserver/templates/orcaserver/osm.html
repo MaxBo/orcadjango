@@ -1,0 +1,72 @@
+{% load l10n %}
+<style type="text/css">
+    #{{ attrs.id }}_map { width: {{ map_width }}px; height: {{ map_height }}px; }
+    #{{ attrs.id }}_map .aligned label { float: inherit; }
+    #{{ attrs.id }}_span_map { position: relative; vertical-align: top; float: left; }
+    .olControlEditingToolbar .olControlModifyFeatureItemActive {
+        background-image: url("{{ STATIC_URL }}floppyforms/gis/img/move_vertex_on.png");
+        background-repeat: no-repeat;
+    }
+    .olControlEditingToolbar .olControlModifyFeatureItemInactive {
+        background-image: url("{{ STATIC_URL }}floppyforms/gis/img/move_vertex_off.png");
+        background-repeat: no-repeat;
+    }
+</style>
+
+<span id="{{ attrs.id }}_span_map">
+    <div id="{{ attrs.id }}_map"></div>
+    <button type="button" class="btn btn-secondary" onclick="{{ module }}.clearFeatures()">Delete all Features</button>
+    <br><br>
+    {% include "floppyforms/textarea.html" with required=0 %}
+    <button type="button" class="btn btn-secondary" onclick="applyWkt()"> Render Wkt in map </button> (Warning: Render WKT in map only works with SRID 3857 at the moment.)
+    <script type="text/javascript">
+        {% block map_options %}var map_options = {
+            maxExtend: new OpenLayers.Bounds(-20037508,-20037508,20037508,20037508),
+            maxResolution: 156543.0339,
+            numZoomLevels: 20,
+            units: 'm'};
+        {% endblock %}
+        {% block options %}var options = {
+            geom_type: OpenLayers.Geometry.{{ geom_type }},
+            id: '{{ attrs.id }}',
+            is_collection: {{ is_collection|yesno:"true,false" }},
+            is_linestring: {{ is_linestring|yesno:"true,false" }},
+            is_point: {{ is_point|yesno:"true,false" }},
+            is_polygon: {{ is_polygon|yesno:"true,false" }},
+            map_id: '{{ attrs.id }}_map',
+            map_options: map_options,
+            map_srid: {{ map_srid|unlocalize }},
+            name: '{{ name }}',
+            default_lon: 5,
+            default_lat: 47,
+            scale_text: true,
+            mouse_position: true,
+            base_layer: new OpenLayers.Layer.OSM.Mapnik("OpenStreetMap (Mapnik)")
+        };{% endblock %}
+        var {{ module }} = new MapWidget(options),
+            mapWidget = {{ module }};
+        function applyWkt(){
+            var wkt = document.getElementById(mapWidget.options.id).value;
+            mapWidget.clearFeatures();
+            if (wkt) {
+                var re = new RegExp("SRID=[0-9]*;"),
+                    match = wkt.match(re);
+                if (match) wkt = wkt.replace(match[0], '');
+                var format = new OpenLayers.Format.WKT(),
+                    feature = format.read(wkt, options);
+                /*if (match){
+                    re = new RegExp("[0-9]*;");
+                    var srid = match[0].match(re)[0];
+                    feature.geometry = feature.geometry.transform(new OpenLayers.Projection('EPSG:' + srid), new OpenLayers.Projection('EPSG:' + mapWidget.options.map_srid));
+                    console.log(feature.geometry);
+                    console.log(feature.geometry.transform(new OpenLayers.Projection('EPSG:' + srid), new OpenLayers.Projection('EPSG:' + mapWidget.options.map_srid)));
+                }*/
+                mapWidget.layers.vector.addFeatures([feature], {silent: true});
+                mapWidget.map.zoomToExtent(feature.geometry.getBounds());
+                mapWidget.write_wkt(feature);
+            } else {
+                mapWidget.map.setCenter(mapWidget.defaultCenter(), mapWidget.options.default_zoom);
+            }
+        }
+    </script>
+</span>

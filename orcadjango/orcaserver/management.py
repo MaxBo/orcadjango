@@ -8,13 +8,13 @@ import sys
 import typing
 from inspect import signature, _empty
 from django import forms
-from django.contrib.gis import forms as geoforms
-from django.contrib.gis.geos import GEOSGeometry, MultiPolygon, fromstr
+from django.contrib.gis.geos import MultiPolygon, fromstr
 import json
 import ast
 import ogr
 
-from orcaserver.widgets import DictField, CommaSeparatedCharField, GeometryField
+from orcaserver.widgets import (DictField, CommaSeparatedCharField,
+                                OgrGeometryField, OsmMultiPolyWidget)
 
 lock = threading.Lock()
 
@@ -501,7 +501,7 @@ class StringConverter(OrcaTypeMap):
 
 class GeometryConverter(OrcaTypeMap):
     data_type = ogr.Geometry
-    form_field = GeometryField
+    form_field = OgrGeometryField
     srid = 4326
 
     def to_str(self, value):
@@ -524,12 +524,13 @@ class GeometryConverter(OrcaTypeMap):
             geom_type='MultiPolygon',
             initial=poly,
             label='',
-            widget=geoforms.OSMWidget(
+            widget= OsmMultiPolyWidget(
                 attrs={
                     'map_width': 800,
                     'map_height': 500,
                     'default_lat': 50,
                     'default_lon': 12,
+                    'display_wkt': True,
                     #'default_zoom': 5
                 }
             )
