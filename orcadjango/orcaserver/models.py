@@ -124,9 +124,9 @@ class Injectable(NameModel):
             field = converter.get_choice_field(
                 value=self.validated_value, choices=choices)
         else:
-            field = converter.get_form_field(value=self.validated_value,
-                                             label=f'Value')
-            field.widget.attrs['placeholder'] = self.docstring
+            field = converter.get_form_field(
+                value=self.validated_value, label=f'Value',
+                placeholder=self.docstring)
         return field
 
 

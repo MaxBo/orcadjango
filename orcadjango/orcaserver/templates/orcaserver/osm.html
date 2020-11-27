@@ -18,7 +18,7 @@
     <button type="button" class="btn btn-secondary" onclick="{{ module }}.clearFeatures()">Delete all Features</button>
     <br><br>
     {% include "floppyforms/textarea.html" with required=0 %}
-    <button type="button" class="btn btn-secondary" onclick="applyWkt()"> Render Wkt in map </button> (Warning: Render WKT in map only works with SRID 3857 at the moment.)
+    <button type="button" class="btn btn-secondary" onclick="applyWkt()" title="Render Wkt on map. Only works with WKT with projection EPSG 3857."> Render Wkt on map </button>
     <script type="text/javascript">
         {% block map_options %}var map_options = {
             maxExtend: new OpenLayers.Bounds(-20037508,-20037508,20037508,20037508),
@@ -47,20 +47,24 @@
             mapWidget = {{ module }};
         function applyWkt(){
             var wkt = document.getElementById(mapWidget.options.id).value;
-            mapWidget.clearFeatures();
             if (wkt) {
                 var re = new RegExp("SRID=[0-9]*;"),
                     match = wkt.match(re);
                 if (match) wkt = wkt.replace(match[0], '');
                 var format = new OpenLayers.Format.WKT(),
                     feature = format.read(wkt, options);
-                /*if (match){
+                if (match){
                     re = new RegExp("[0-9]*;");
-                    var srid = match[0].match(re)[0];
-                    feature.geometry = feature.geometry.transform(new OpenLayers.Projection('EPSG:' + srid), new OpenLayers.Projection('EPSG:' + mapWidget.options.map_srid));
-                    console.log(feature.geometry);
-                    console.log(feature.geometry.transform(new OpenLayers.Projection('EPSG:' + srid), new OpenLayers.Projection('EPSG:' + mapWidget.options.map_srid)));
-                }*/
+                    var srid = parseInt(match[0].match(re)[0]);
+                    // ToDo: openlayers doesn't transform here, maybe proj4 required?
+                    //feature.geometry = feature.geometry.transform(new OpenLayers.Projection('EPSG:' + srid), new OpenLayers.Projection('EPSG:' + mapWidget.options.map_srid));
+                    if (srid != mapWidget.options.map_srid){
+                        alert('WKT input has to be in map projection EPSG:' + mapWidget.options.map_srid + ' to render it on the map.\n'+
+                              'Nevertheless you can save your WKT input without rendering it.')
+                        return;
+                    }
+                }
+                mapWidget.clearFeatures();
                 mapWidget.layers.vector.addFeatures([feature], {silent: true});
                 mapWidget.map.zoomToExtent(feature.geometry.getBounds());
                 mapWidget.write_wkt(feature);

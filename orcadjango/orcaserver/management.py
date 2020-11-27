@@ -407,8 +407,10 @@ class OrcaTypeMap:
     def to_str(self, value):
         return str(value)
 
-    def get_form_field(self, value=None, label=''):
-        return self.form_field(initial=value, label=label)
+    def get_form_field(self, value=None, label='', placeholder='value'):
+        field = self.form_field(initial=value, label=label)
+        field.widget.attrs['placeholder'] = placeholder
+        return field
 
     def get_choice_field(self, value=None, choices=(), label='Select'):
         return forms.ChoiceField(choices=choices, label=label, initial=value)
@@ -444,7 +446,7 @@ class BooleanConverter(OrcaTypeMap):
     form_field = forms.BooleanField
     description = 'boolean'
 
-    def get_form_field(self, value, label=''):
+    def get_form_field(self, value, label='', **kwargs):
         return self.form_field(initial=value, label='True', required=False)
 
     def to_value(self, text):
@@ -474,7 +476,7 @@ class DictConverter(OrcaTypeMap):
     form_field = DictField
     description = 'dictionary'
 
-    def get_form_field(self, value, label=''):
+    def get_form_field(self, value, label='', **kwargs):
         return self.form_field(value, label=label)
 
     def to_str(self, value):
@@ -514,7 +516,7 @@ class GeometryConverter(OrcaTypeMap):
         geom.FlattenTo2D()
         return geom
 
-    def get_form_field(self, value, label=''):
+    def get_form_field(self, value, label='', **kwargs):
         poly = fromstr(self.to_str(value))
         if not isinstance(poly, MultiPolygon):
             poly = MultiPolygon(poly)
@@ -531,6 +533,8 @@ class GeometryConverter(OrcaTypeMap):
                     'default_lat': 50,
                     'default_lon': 12,
                     'display_wkt': True,
+                    'placeholder': ('WKT string (preferably in 3857 to be able '
+                                    'to render it on map)'),
                     #'default_zoom': 5
                 }
             )

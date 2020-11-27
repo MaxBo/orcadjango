@@ -3,8 +3,7 @@ from django.core import validators
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
 from django.forms.utils import ErrorList
-from django.contrib.gis.geos import GEOSException
-from django.contrib.gis import forms as geoforms
+from django.contrib.gis.gdal.error import GDALException
 import ogr
 import floppyforms
 
@@ -68,7 +67,11 @@ class OsmMultiPolyWidget(floppyforms.gis.MultiPolygonWidget,
 
 class OgrGeometryField(floppyforms.gis.MultiPolygonField):
     def clean(self, value):
-        geom = super().clean(value)
+        try:
+            geom = super().clean(value)
+        except GDALException:
+            raise forms.ValidationError(self.error_messages['transform_error'],
+                                        code='transform_error')
         return ogr.CreateGeometryFromWkt(geom.wkt)
 
 
