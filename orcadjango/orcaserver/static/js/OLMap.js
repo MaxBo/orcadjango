@@ -90,25 +90,44 @@ ol.inherits(GeometryTypeControl, ol.control.Control);
             }
         });
 
-        const initial_value = document.getElementById(this.options.id).value;
-        if (initial_value) {
-            const features = wktFormat.readFeatures(initial_value);
-            const extent = ol.extent.createEmpty();
-            features.forEach(function(feature) {
-                this.featureOverlay.getSource().addFeature(feature);
-                ol.extent.extend(extent, feature.getGeometry().getExtent());
-            }, this);
-            // Center/zoom the map
-            this.map.getView().fit(extent, {maxZoom: this.options.default_zoom});
-        } else {
-            this.map.getView().setCenter(this.defaultCenter());
-        }
         this.createInteractions();
+        const initial_value = document.getElementById(this.options.id).value;
         if (initial_value && !this.options.is_collection) {
             this.disableDrawing();
         }
+        this.redraw();
         this.serializeFeatures();
         this.ready = true;
+    }
+
+    MapWidget.prototype.redraw = function() {
+        let value = document.getElementById(this.options.id).value;
+        this.clearFeatures();
+        if (!value) {
+            this.map.getView().setCenter(this.defaultCenter());
+            return;
+        }
+        let re = new RegExp("SRID=[0-9]*;"),
+            match = value.match(re);
+        if (match){
+            value = value.replace(match[0], '');
+            re = new RegExp("[0-9]*;");
+            let srid = parseInt(match[0].match(re)[0]);
+            // ToDo: openlayers doesn't transform here, maybe proj4 required?
+            options = {
+                dataProjection: 'EPSG:' + srid,
+                featureProjection: 'EPSG:' + this.options.map_srid
+            }
+        }
+        const features = wktFormat.readFeatures(value, options);
+        console.log(features)
+        const extent = ol.extent.createEmpty();
+        features.forEach(function(feature) {
+            this.featureOverlay.getSource().addFeature(feature);
+            ol.extent.extend(extent, feature.getGeometry().getExtent());
+        }, this);
+        // Center/zoom the map
+        this.map.getView().fit(extent);
     }
 
     MapWidget.prototype.createMap = function() {
@@ -203,17 +222,19 @@ ol.inherits(GeometryTypeControl, ol.control.Control);
                 }
                 geometry = new ol.geom.GeometryCollection(geometries);
             } else {
-                geometry = features[0].getGeometry().clone();
-                for (let j = 1; j < features.length; j++) {
-                    switch (geometry.getType()) {
-                    case "MultiPoint":
-                        geometry.appendPoint(features[j].getGeometry().getPoint(0));
-                        break;
-                    case "MultiLineString":
-                        geometry.appendLineString(features[j].getGeometry().getLineString(0));
-                        break;
-                    case "MultiPolygon":
-                        geometry.appendPolygon(features[j].getGeometry().getPolygon(0));
+                if (features[0]) {
+                    geometry = features[0].getGeometry().clone();
+                    for (let j = 1; j < features.length; j++) {
+                        switch (geometry.getType()) {
+                        case "MultiPoint":
+                            geometry.appendPoint(features[j].getGeometry().getPoint(0));
+                            break;
+                        case "MultiLineString":
+                            geometry.appendLineString(features[j].getGeometry().getLineString(0));
+                            break;
+                        case "MultiPolygon":
+                            geometry.appendPolygon(features[j].getGeometry().getPolygon(0));
+                        }
                     }
                 }
             }
@@ -223,7 +244,7 @@ ol.inherits(GeometryTypeControl, ol.control.Control);
             }
         }
         var prefix = "SRID=" + this.options.map_srid + ";";
-        document.getElementById(this.options.id).value = prefix + wktFormat.writeGeometry(geometry);
+        document.getElementById(this.options.id).value = (geometry) ? prefix + wktFormat.writeGeometry(geometry) : '';
     };
 
     window.MapWidget = MapWidget;

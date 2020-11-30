@@ -8,9 +8,11 @@
 
 <div id="{{ id }}_div_map">
     <div id="{{ id }}_map"></div>
-    {% if not disabled %}<span class="clear_features"><a href="javascript:{{ module }}.clearFeatures()">{% translate "Delete all Features" %}</a></span>{% endif %}
-    <p>{% translate "WKT" %}</p>
+    <button type="button" class="btn btn-secondary" onclick="{{ module }}.clearFeatures()">Delete all Features</button>
+    <p style="margin-top: 20px;">{% translate "WKT" %}</p>
     <textarea id="{{ id }}" class="vSerializedField required" cols="150" rows="10" name="{{ name }}">{{ serialized }}</textarea>
+    <br>
+    <button type="button" class="btn btn-secondary" onclick="{{ module }}.redraw()" title="Render Wkt on map. Only works with WKT with projection EPSG 3857."> Render Wkt on map </button>
     <script>
         {% block map_options %}var map_options = {};{% endblock %}
         {% block base_layer %}
