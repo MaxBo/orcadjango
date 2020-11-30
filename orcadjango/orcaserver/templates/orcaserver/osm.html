@@ -60,14 +60,20 @@
                     //feature.geometry = feature.geometry.transform(new OpenLayers.Projection('EPSG:' + srid), new OpenLayers.Projection('EPSG:' + mapWidget.options.map_srid));
                     if (srid != mapWidget.options.map_srid){
                         alert('WKT input has to be in map projection EPSG:' + mapWidget.options.map_srid + ' to render it on the map.\n'+
-                              'Nevertheless you can save your WKT input without rendering it.')
+                            'Nevertheless you can save your WKT input without rendering it.')
                         return;
                     }
                 }
-                mapWidget.clearFeatures();
-                mapWidget.layers.vector.addFeatures([feature], {silent: true});
-                mapWidget.map.zoomToExtent(feature.geometry.getBounds());
+                mapWidget.deleteFeatures();
                 mapWidget.write_wkt(feature);
+                if (mapWidget.options.is_collection) {
+                    for (var i=0; i<mapWidget.num_geom; i++) {
+                        mapWidget.layers.vector.addFeatures([new OpenLayers.Feature.Vector(feature.geometry.components[i].clone())]);
+                    }
+                } else {
+                    mapWidget.layers.vector.addFeatures([feature]);
+                }
+                mapWidget.map.zoomToExtent(feature.geometry.getBounds());
             } else {
                 mapWidget.map.setCenter(mapWidget.defaultCenter(), mapWidget.options.default_zoom);
             }
