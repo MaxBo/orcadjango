@@ -507,20 +507,28 @@ class GeometryConverter(OrcaTypeMap):
     srid = 4326
 
     def to_str(self, value):
+        if not value:
+            #return 'POLYGON EMPTY'
+            return
         # ToDo: this is inplace, might cause side effects
         value.FlattenTo2D()
         return value.ExportToWkt()
 
     def to_value(self, text):
+        if not text:
+            return
         geom = ogr.CreateGeometryFromWkt(text)
         geom.FlattenTo2D()
         return geom
 
     def get_form_field(self, value, label='', **kwargs):
-        poly = fromstr(self.to_str(value))
-        if not isinstance(poly, MultiPolygon):
-            poly = MultiPolygon(poly)
-        poly.srid = self.srid
+        if value:
+            poly = fromstr(self.to_str(value))
+            if not isinstance(poly, MultiPolygon):
+                poly = MultiPolygon(poly)
+            poly.srid = self.srid
+        else:
+            poly = None
         return self.form_field(
             srid=self.srid,
             geom_type='MultiPolygon',
@@ -530,8 +538,6 @@ class GeometryConverter(OrcaTypeMap):
                 attrs={
                     'map_width': 800,
                     'map_height': 500,
-                    'default_lat': 50,
-                    'default_lon': 12,
                     'display_wkt': True,
                     'placeholder': ('WKT string (preferably in 3857 to be able '
                                     'to render it on map)'),

@@ -5,7 +5,8 @@ from django.core.exceptions import ValidationError
 from django.forms.utils import ErrorList
 from django.contrib.gis.gdal.error import GDALException
 import ogr
-import floppyforms
+from django.contrib.gis.geos import GEOSException, GEOSGeometry
+from django.contrib.gis import forms as geoforms
 
 
 class CommaSeparatedCharField(forms.Field):
@@ -60,18 +61,66 @@ class DictField(forms.MultiValueField):
         self.validate(ret)
         return ret
 
-class OsmMultiPolyWidget(floppyforms.gis.MultiPolygonWidget,
-                         floppyforms.gis.BaseOsmWidget):
+
+class OsmMultiPolyWidget(geoforms.OSMWidget):
     template_name = 'orcaserver/osm.html'
+    default_lon = 10
+    default_lat = 52
+    default_zoom = 5
 
+    def __init__(self, attrs=None):
+        super().__init__()
+        for key in ('default_lon', 'default_lat', 'default_zoom'):
+            self.attrs[key] = getattr(self, key)
+        if attrs:
+            self.attrs.update(attrs)
 
-class OgrGeometryField(floppyforms.gis.MultiPolygonField):
-    def clean(self, value):
+    def serialize(self, value):
+        return value.wkt if value else ''
+
+    def deserialize(self, value):
         try:
-            geom = super().clean(value)
-        except GDALException:
-            raise forms.ValidationError(self.error_messages['transform_error'],
-                                        code='transform_error')
+            return GEOSGeometry(value)
+        except (GEOSException, ValueError, TypeError) as err:
+            pass
+            #logger.error("Error creating geometry from value '%s' (%s)", value, err)
+        return None
+
+    class Media:
+        css = {
+            'all': (
+                'https://cdnjs.cloudflare.com/ajax/libs/ol3/4.6.5/ol.css',
+                'gis/css/ol3.css',
+            )
+        }
+        js = (
+            'https://cdnjs.cloudflare.com/ajax/libs/ol3/4.6.5/ol.js',
+            'js/OLMap.js',
+        )
+
+
+class OgrGeometryField(geoforms.GeometryField):
+    def clean(self, value):
+        geom = forms.Field.clean(self, value)
+        if geom is None:
+            return
+
+        # there is a bug in the super class, you can not pass the geometry type
+        # to OL with all upper but starting with capital letter
+        if (str(geom.geom_type).upper() != self.geom_type.upper() and
+            not self.geom_type.upper() == 'GEOMETRY'):
+            raise forms.ValidationError(
+                self.error_messages['invalid_geom_type'],
+                code='invalid_geom_type')
+
+        if self.srid and self.srid != -1 and self.srid != geom.srid:
+            try:
+                geom.transform(self.srid)
+            except GEOSException:
+                raise forms.ValidationError(
+                    self.error_messages['transform_error'],
+                    code='transform_error')
+
         return ogr.CreateGeometryFromWkt(geom.wkt)
 
 
