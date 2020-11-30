@@ -90,7 +90,9 @@ class OsmMultiPolyWidget(geoforms.OSMWidget):
         css = {
             'all': (
                 'https://cdnjs.cloudflare.com/ajax/libs/ol3/4.6.5/ol.css',
+                'https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css',
                 'gis/css/ol3.css',
+                'css/olmap.css'
             )
         }
         js = (

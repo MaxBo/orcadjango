@@ -8,7 +8,8 @@
 
 <div id="{{ id }}_div_map">
     <div id="{{ id }}_map"></div>
-    <button type="button" class="btn btn-secondary" onclick="{{ module }}.clearFeatures()">Delete all Features</button>
+    <button type="button" class="btn btn-secondary" onclick="{{ module }}.clearSelectedFeatures()">Delete selected Features</button>
+    <button type="button" class="btn btn-warning" onclick="{{ module }}.clearFeatures()">Delete all Features</button>
     <p style="margin-top: 20px;">{% translate "WKT" %}</p>
     <textarea id="{{ id }}" class="vSerializedField required" cols="150" rows="10" name="{{ name }}">{{ serialized }}</textarea>
     <br>

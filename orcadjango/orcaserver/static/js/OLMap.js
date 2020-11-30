@@ -113,14 +113,12 @@ ol.inherits(GeometryTypeControl, ol.control.Control);
             value = value.replace(match[0], '');
             re = new RegExp("[0-9]*;");
             let srid = parseInt(match[0].match(re)[0]);
-            // ToDo: openlayers doesn't transform here, maybe proj4 required?
             options = {
                 dataProjection: 'EPSG:' + srid,
                 featureProjection: 'EPSG:' + this.options.map_srid
             }
         }
         const features = wktFormat.readFeatures(value, options);
-        console.log(features)
         const extent = ol.extent.createEmpty();
         features.forEach(function(feature) {
             this.featureOverlay.getSource().addFeature(feature);
@@ -142,6 +140,8 @@ ol.inherits(GeometryTypeControl, ol.control.Control);
     };
 
     MapWidget.prototype.createInteractions = function() {
+        const self = this;
+
         // Initialize the modify interaction
         this.interactions.modify = new ol.interaction.Modify({
             features: this.featureCollection,
@@ -167,8 +167,79 @@ ol.inherits(GeometryTypeControl, ol.control.Control);
             type: geomType
         });
 
+        this.interactions.select = new ol.interaction.Select({
+            condition: ol.events.condition.click,
+            toggleCondition: ol.events.condition.shiftKeyOnly
+        });
+        // select button
+        var button = document.createElement('button'),
+            icon = document.createElement('i');
+        button.title = 'Select Feature (SHIFT+click to select multiple)';
+        button.type = 'button';
+        icon.classList.add('icon-hand-up');
+        button.appendChild(icon);
+        button.addEventListener('click', function(){
+            self.interactions.select.setActive(true);
+            self.interactions.modify.setActive(false);
+            self.disableDrawing();
+        });
+        var element = document.createElement('div');
+        element.className = 'toggle-select ol-unselectable ol-control';
+        element.appendChild(button);
+        var SelectControl = new ol.control.Control({
+            element: element
+        });
+        // draw button
+        button = document.createElement('button');
+        button.title = 'Draw/Modify Feature';
+        icon = document.createElement('i');
+        button.type = 'button';
+        icon.classList.add('icon-pencil');
+        button.appendChild(icon);
+        button.addEventListener('click', function(){
+            self.interactions.select.setActive(false);
+            self.interactions.modify.setActive(true);
+            self.enableDrawing();
+        });
+        element = document.createElement('div');
+        element.className = 'toggle-draw ol-unselectable ol-control';
+        element.appendChild(button);
+        var DrawControl = new ol.control.Control({
+            element: element
+        });
         this.map.addInteraction(this.interactions.draw);
         this.map.addInteraction(this.interactions.modify);
+        this.map.addInteraction(this.interactions.select);
+        this.interactions.select.setActive(false);
+
+        this.map.addControl(SelectControl);
+        this.map.addControl(DrawControl);
+        this.map.addControl(new ol.control.FullScreen());
+
+        this.map.on('pointermove', function (e) {
+            if (!self.interactions.select.getActive()) return;
+            var pixel = self.map.getEventPixel(e.originalEvent);
+            var hit = self.map.hasFeatureAtPixel(pixel);
+            self.map.getTargetElement().style.cursor = hit ? 'pointer' : '';
+        });
+    };
+
+    MapWidget.prototype.toggleSelect = function(enable){
+        if (enable === false)
+            this.map.removeInteraction(this.interactions.select);
+        else
+            this.map.addInteraction(this.interactions.select);
+    };
+
+    MapWidget.prototype.toggleDraw = function(enable){
+        if (enable === false){
+            this.map.removeInteraction(this.interactions.draw);
+            this.map.removeInteraction(this.interactions.modify);
+        }
+        else {
+            this.map.addInteraction(this.interactions.draw);
+            this.map.addInteraction(this.interactions.modify);
+        }
     };
 
     MapWidget.prototype.defaultCenter = function() {
@@ -201,6 +272,15 @@ ol.inherits(GeometryTypeControl, ol.control.Control);
                 }
             }
         }
+    };
+
+    MapWidget.prototype.clearSelectedFeatures = function() {
+        const self = this;
+        this.interactions.select.getFeatures().forEach(function(feat){
+            self.featureCollection.remove(feat);
+        })
+        this.interactions.select.getFeatures().clear();
+        this.serializeFeatures();
     };
 
     MapWidget.prototype.clearFeatures = function() {
