@@ -44,7 +44,7 @@
             <td>{{ injectable.docstring }}</td>
             <td>{{ injectable.repr_html | safe }}</td>
             {% if injectable.can_be_changed %}
-            <td><a style="margin-left: 10px;" href="{{ injectable.name }}/">edit</a></td>
+            <td><a style="margin-left: 10px;" href="{{ injectable.name }}?next={{request.path}}">edit</a></td>
             <td></td>
             {% else %}
             <td><a style="margin-left: 10px;" href="{{ injectable.name }}/">view</a></td>

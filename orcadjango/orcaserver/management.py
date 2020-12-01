@@ -84,7 +84,7 @@ def parse_injectables(orca):
                     desc['datatype'] = returntype.__name__
             desc['module'] = funcwrapper._func.__module__
             desc['groupname'] = _meta.get('group', '')
-            desc['order'] = _meta.get('order', 1)
+            desc['order'] = _meta.get('order', 10000)
             desc['hidden'] = _meta.get('hidden', False)
             choices = _meta.get('choices', [])
             # choices are derived from another injectable
