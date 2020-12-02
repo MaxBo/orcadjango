@@ -96,7 +96,11 @@
     {% endfor %}
     </tbody>
   </table>
-  <button id="run-scenario" type="submit" onclick="runScenario()" class="btn btn-primary" style="float: right;">Run Steps</button>
+  <button id="run-scenario" type="button" onclick="runScenario()" class="btn btn-primary" style="float: right;">Run Steps</button>
+  <form action='' method="post">
+    {% csrf_token %}
+    <button id="abort-scenario" type="button" name="abort" class="btn btn-danger" style="float: right; margin-right: 5px;">Abort Run</button>
+  </form>
 </div>
 <div class="bottom-resizable" style="height: 15em;">
   <div style="width: 100%;">
@@ -205,13 +209,16 @@
   }
 
   function runScenario(){
-    updateStatus().then(function(res){
+    status.update().then(function(res){
       if (!res.running){
           fetch('/steps/run/', {
               method: "POST",
               credentials: "same-origin",
               headers: { "X-CSRFToken": csrfToken }
-            }).then(function(){updateStatus(); updateSteps();});
+            }).then(function(){
+              status.update();
+              updateSteps();
+            });
         }
       else alert('Orca is already running! Abort it or wait.')
     })
@@ -292,15 +299,20 @@
 
   }
 
-  (function() {
-    // periodically update steps and their progress
+  const run_button = document.getElementById('run-scenario'),
+        abort_button = document.getElementById('abort-scenario');
+
+  $(document).ready(function() {
+    status.on_update = function(res){
+      run_button.disabled = res.running;
+      abort_button.disabled = !res.running;
+    }
+    status.update();
     updateSteps();
     setInterval(updateSteps, 10000);
     tableDnD();
-  })();
-</script>
+  });
 
-<script>
   var BORDER_SIZE = 4,
       logDiv = document.querySelector(".bottom-resizable"),
       placeholderDiv = document.getElementById("logPlaceholder");
