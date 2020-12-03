@@ -97,7 +97,7 @@
     </tbody>
   </table>
   <button id="run-scenario" type="button" onclick="runScenario()" class="btn btn-primary" style="float: right;">Run Steps</button>
-  <button id="abort-scenario" type="button" onclick="abort()" class="btn btn-danger" style="float: right; margin-right: 5px;">Abort Run</button>
+  <button id="abort-scenario" type="button" onclick="abort()" class="btn btn-danger" style="float: right; display: None;">Abort Run</button>
 </div>
 <div class="bottom-resizable" style="height: 15em;">
   <div style="width: 100%;">
@@ -147,7 +147,7 @@
         var table = modalBody.querySelector('table');
         $(table).DataTable({
           'aoColumnDefs': [{'aTargets': [0], 'iDataSort': 3 }],
-          'columnDefs': [{'targets': [3], 'visible': false }],
+          //'columnDefs': [{'targets': [3], 'visible': false }],
           'order': [[0, 'desc']]
         });
     });
@@ -171,14 +171,11 @@
       console.error('Chat socket closed unexpectedly');
   };
 
-  function clearLog(){ logArea.innerHTML = '' };
-
   var stepsTable = document.getElementById('steps-scenario'),
       stepsAvailableTable = document.getElementById('steps-available'),
-      stepsUrl = '/steps/list/',
       stepUrl = '/steps/',
       stepDetailUrl = '/steps/detail/',
-      abortUrl = '/steps/abort/',
+      abortUrl = '/steps/abort/{{ active_scenario.id }}/',
       csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value,
       stepsInput = document.getElementById('selected-steps');
 
@@ -207,7 +204,6 @@
   }
 
   function abort(){
-  console.log('abort')
     fetch(abortUrl, {
       method: "POST",
       credentials: "same-origin",
@@ -233,7 +229,9 @@
 
   // fetch and update steps in table
   function updateSteps(){
-    fetch(stepsUrl).then(data=>{return data.json()}).then(function(res){
+    fetch(stepUrl, {headers: {
+      'Content-Type': 'application/json'
+    }}).then(data=>{return data.json()}).then(function(res){
       res.forEach(function(step){
         var row = stepsTable.querySelector('tr[data-id="' + step.id + '"]'),
             injCell = row.querySelector('.injectables'),
@@ -311,10 +309,8 @@
 
   $(document).ready(function() {
     status.on_update = function(res){
-      run_button.disabled = res.running;
-      run_button.style.background = run_button.style.border = res.running ? 'lightgray' : null;
-      abort_button.disabled = !res.running;
-      abort_button.style.background = abort_button.style.border = !res.running ? 'lightgray' : null;
+      run_button.style.display = res.running ? 'None' : 'block';
+      abort_button.style.display = abort_button.style.border = !res.running ? 'None' : 'block';
     }
     status.update();
     updateSteps();

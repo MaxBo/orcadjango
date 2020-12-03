@@ -6,6 +6,7 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/datatables.min.css' %}">
 <script src="{% static 'js/datatables.min.js' %}"></script>
 <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+{% csrf_token %}
 <table class="table table-striped" id="status-table" style="padding: 2em;">
   <thead>
     <tr>
@@ -17,6 +18,7 @@
       <th>Start</th>
       <th>Stop</th>
       <th>Success</th>
+      <th></th>
       <th></th>
     </tr>
   </thead>
@@ -36,7 +38,8 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button onclick="reloadLogs()" type="button" class="btn btn-primary">Reload</button>
+        <button id='reload-logs-button' onclick="reloadLogs()" title="Update Log table" type="button" class="btn btn-primary">Reload</button>
+        <button id='clear-logs-button' onclick="clearLogs()" title="Remove all log entries of this scenario from the database" type="button" class="btn btn-danger">Clear</button>
       </div>
     </div>
   </div>
@@ -45,6 +48,9 @@
 <script>
   var modal = document.getElementById('logs-modal'),
       logsDiv = document.getElementById('logs-body'),
+      csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value,
+      reloadButton = modal.querySelector('#reload-logs-button'),
+      clearButton = modal.querySelector('#clear-logs-button'),
       logged_scenario;
 
   function openLogs(scenarioId){
@@ -53,11 +59,34 @@
     reloadLogs();
   }
 
+  function clearLogs(scenarioId){
+    const form = new FormData();
+    form.set('clear', true);
+    fetch('/logs/' + logged_scenario + '/?clear=true', {
+      method: "POST",
+      credentials: "same-origin",
+      body: form,
+      headers: { "X-CSRFToken": csrfToken }
+    }).then(reloadLogs);
+  }
+
+  function abort(scenarioId){
+    const form = new FormData();
+    form.set('clear', true);
+    fetch('/steps/abort/' + scenarioId + '/', {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "X-CSRFToken": csrfToken }
+    });
+  }
+
   function reloadLogs(){
     logsDiv.innerHTML = '<h4>Updating...</h4>';
+    reloadButton.disabled = clearButton.disabled = true;
     fetch('/logs/' + logged_scenario + '/').then(function(res){
         return res.text()
     }).then(function(html){
+
         var modalBody = document.getElementById('logs-body');
         modalBody.innerHTML = html;
         var table = modalBody.querySelector('table');
@@ -67,6 +96,7 @@
       //    'columnDefs': [{'targets': [3], 'visible': false }],
           'order': [[0, 'desc']]
         });
+      reloadButton.disabled = clearButton.disabled = false;
     });
   }
 
@@ -96,16 +126,27 @@
           //cell.css('background', color);
           //cell.css('color', 'white');
           cell.css('color', color);
-          var button = document.createElement('button'),
-              cell = document.createElement('td');
-          row.append(cell)
-          button.innerHTML = 'Log';
-          button.addEventListener('click', function(){
-            openLogs(data['scenario_id']);
-          })
-          button.classList.add('btn', 'btn-primary');
-          cell.append(button);
         }
+        var button = document.createElement('button'),
+            cell = document.createElement('td');
+        row.append(cell)
+        button.innerHTML = 'Log';
+        button.addEventListener('click', function(){
+          openLogs(data['scenario_id']);
+        })
+        button.classList.add('btn', 'btn-primary');
+        cell.append(button);
+
+        cell = document.createElement('td');
+        button = document.createElement('button');
+        button.innerHTML = 'Abort';
+        button.addEventListener('click', function(){
+          abort(data['scenario_id']);
+        })
+        button.classList.add('btn', 'btn-danger');
+        button.style.display = data['is_running'] ? 'block' : 'None';
+        cell.append(button);
+        row.append(cell);
       },
       searching: false,
       paging: false,

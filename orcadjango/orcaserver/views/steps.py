@@ -28,6 +28,8 @@ class StepsView(ProjectMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
         scenario = self.get_scenario()
+        if request.content_type == 'application/json':
+            return self.list(request)
         if not scenario:
             return HttpResponseRedirect(reverse('scenarios'))
         #apply_injectables(scenario)
@@ -87,8 +89,7 @@ class StepsView(ProjectMixin, TemplateView):
             f'{prefix}://{self.request.get_host()}/ws/log/{scenario.id}/'
         return kwargs
 
-    @staticmethod
-    def list(request):
+    def list(self, request):
         if request.method == 'POST':
             body = json.loads(request.body)
             for item in body:
@@ -98,8 +99,8 @@ class StepsView(ProjectMixin, TemplateView):
         scenario_id = request.session.get('scenario')
         if scenario_id is None:
             return HttpResponseNotFound('scenario not found')
-        scenario = Scenario.objects.get(id=scenario_id)
-        orca = manager.get(scenario_id, module=scenario.project.module)
+        scenario = self.get_scenario()
+        orca = self.get_orca()
         steps_scenario = Step.objects.filter(
             scenario=scenario).order_by('order')
         steps_json = []
@@ -178,13 +179,13 @@ class StepsView(ProjectMixin, TemplateView):
         if request.method == 'PATCH':
             try:
                 step = Step.objects.get(id=step_id)
+                body = json.loads(request.body)
+                is_active = body.get('is_active')
+                step.active = is_active
+                step.save()
             except ObjectDoesNotExist:
-                return JsonResponse({}, safe=False)
-            body = json.loads(request.body)
-            is_active = body.get('is_active')
-            step.active = is_active
-            step.save()
-            return JsonResponse({}, safe=False)
+                pass
+        return HttpResponse(status=200)
 
     @classmethod
     def run(cls, request):
@@ -261,9 +262,9 @@ class StepsView(ProjectMixin, TemplateView):
             return HttpResponse(status=400)
         return HttpResponse(status=200)
 
-    @classmethod
-    def abort(cls, request):
-        scenario_id = request.session.get('scenario')
+    @staticmethod
+    def abort(request, *args, **kwargs):
+        scenario_id = kwargs.get('id')
         manager = OrcaManager()
         manager.abort(int(scenario_id))
         return HttpResponse(status=200)
@@ -282,3 +283,10 @@ class LogsView(ProjectMixin, ListView):
             log.filtered_timestamp = log.timestamp.strftime(
                 '%d.%m.%Y %H:%M:%S.%f %Z')
         return logs
+
+    def post(self, request, *args, **kwargs):
+        scenario_id = self.kwargs.get('id')
+        if request.POST.get('clear'):
+            logs = LogEntry.objects.filter(scenario_id=scenario_id)
+            logs.delete()
+        return HttpResponse(status=200)
