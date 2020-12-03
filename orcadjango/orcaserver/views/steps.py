@@ -168,8 +168,8 @@ class StepsView(ProjectMixin, TemplateView):
             step_id = request.POST.get('step')
             step = Step.objects.get(id=step_id)
             step.delete()
-        elif request.POST.get('run'):
-            pass
+        elif request.POST.get('abort'):
+            self.abort(request)
         return HttpResponseRedirect(request.path_info)
 
     @staticmethod
@@ -265,7 +265,7 @@ class StepsView(ProjectMixin, TemplateView):
     def abort(cls, request):
         scenario_id = request.session.get('scenario')
         manager = OrcaManager()
-        manager.abort(scenario_id)
+        manager.abort(int(scenario_id))
         return HttpResponse(status=200)
 
 

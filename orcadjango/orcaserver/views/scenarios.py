@@ -128,4 +128,4 @@ class ScenariosView(ProjectMixin, ListView):
                 new_step.order = step.order
                 new_step.save()
 
-        request.session['scenario'] = scenario.id
+        request.session['scenario'] = int(scenario.id)

@@ -55,7 +55,7 @@
 
   function reloadLogs(){
     logsDiv.innerHTML = '<h4>Updating...</h4>';
-    fetch('/logs/' + logged_scenario).then(function(res){
+    fetch('/logs/' + logged_scenario + '/').then(function(res){
         return res.text()
     }).then(function(html){
         var modalBody = document.getElementById('logs-body');
@@ -64,7 +64,7 @@
         $(table).DataTable({
           // sort by id when sorting date column
           'aoColumnDefs': [{'aTargets': [0], 'iDataSort': 3 }],
-          'columnDefs': [{'targets': [3], 'visible': false }],
+      //    'columnDefs': [{'targets': [3], 'visible': false }],
           'order': [[0, 'desc']]
         });
     });
@@ -73,7 +73,7 @@
   $(document).ready(function() {
     var statusTable = $('#status-table').DataTable( {
       'ajax': {
-        url: '/status/list',
+        url: '/status/list/',
         type: 'GET',
         cache: true,
         dataSrc: 'runs'

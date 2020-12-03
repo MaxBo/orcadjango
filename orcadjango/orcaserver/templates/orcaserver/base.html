@@ -97,7 +97,7 @@
 
 <script>
 {% if show_status and active_scenario%}
-  var statusUrl = '/status/detail/{{ active_scenario.id }}',
+  var statusUrl = '/status/detail/{{ active_scenario.id }}/',
       statusLabel = document.getElementById('status-label');
 
   class Status{

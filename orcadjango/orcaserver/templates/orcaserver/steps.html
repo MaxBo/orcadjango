@@ -97,10 +97,7 @@
     </tbody>
   </table>
   <button id="run-scenario" type="button" onclick="runScenario()" class="btn btn-primary" style="float: right;">Run Steps</button>
-  <form action='' method="post">
-    {% csrf_token %}
-    <button id="abort-scenario" type="button" name="abort" class="btn btn-danger" style="float: right; margin-right: 5px;">Abort Run</button>
-  </form>
+  <button id="abort-scenario" type="button" onclick="abort()" class="btn btn-danger" style="float: right; margin-right: 5px;">Abort Run</button>
 </div>
 <div class="bottom-resizable" style="height: 15em;">
   <div style="width: 100%;">
@@ -142,7 +139,7 @@
   function reloadLogs(){
     var logsDiv = document.getElementById('logs-body');
     logsDiv.innerHTML = '<h4>Updating...</h4>';
-    fetch('/logs/{{ active_scenario.id }}').then(function(res){
+    fetch('/logs/{{ active_scenario.id }}/').then(function(res){
         return res.text()
     }).then(function(html){
         var modalBody = document.getElementById('logs-body');
@@ -181,6 +178,7 @@
       stepsUrl = '/steps/list/',
       stepUrl = '/steps/',
       stepDetailUrl = '/steps/detail/',
+      abortUrl = '/steps/abort/',
       csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value,
       stepsInput = document.getElementById('selected-steps');
 
@@ -206,6 +204,15 @@
         credentials: "same-origin",
         headers: { "X-CSRFToken": csrfToken }
       });
+  }
+
+  function abort(){
+  console.log('abort')
+    fetch(abortUrl, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "X-CSRFToken": csrfToken }
+    });
   }
 
   function runScenario(){
@@ -305,7 +312,9 @@
   $(document).ready(function() {
     status.on_update = function(res){
       run_button.disabled = res.running;
+      run_button.style.background = run_button.style.border = res.running ? 'lightgray' : null;
       abort_button.disabled = !res.running;
+      abort_button.style.background = abort_button.style.border = !res.running ? 'lightgray' : null;
     }
     status.update();
     updateSteps();

@@ -222,6 +222,8 @@ class OrcaManager(Singleton):
     def abort(self, instance_id):
         thread = self.threads.get(instance_id)
         if thread:
+            orca = self.get(instance_id)
+            orca.logger.error('aborting...')
             thread.abort()
 
     def is_running(self, instance_id: int):

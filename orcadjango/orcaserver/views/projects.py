@@ -37,7 +37,6 @@ class ScenarioHandler(OrcaChannelHandler):
 
     def emit(self, record):
         try:
-            super().emit(record)
             if not self.persist:
                 return
             LogEntry.objects.create(
@@ -46,6 +45,7 @@ class ScenarioHandler(OrcaChannelHandler):
                 timestamp=timezone.now(),
                 level=record.levelname
             )
+            super().emit(record)
         except OSError as e:
             print('Error while connecting to Redis')
 
