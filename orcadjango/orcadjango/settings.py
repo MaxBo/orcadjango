@@ -59,8 +59,7 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'orcaserver',
     'bootstrap4',
-    'channels',
-    'floppyforms'
+    'channels'
 ]
 
 MIDDLEWARE = [
