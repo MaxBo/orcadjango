@@ -3,6 +3,7 @@
 
 {% block content %}
   <h4>{{ title }}</h4>
+  {{ form.media }}
   <form action='' method="post">
     {% csrf_token %}
     {% bootstrap_form form %}

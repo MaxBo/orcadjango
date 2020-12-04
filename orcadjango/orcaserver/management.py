@@ -535,7 +535,7 @@ class GeometryConverter(OrcaTypeMap):
             srid=self.srid,
             geom_type='MultiPolygon',
             initial=poly,
-            label='',
+            label=label,
             widget= OsmMultiPolyWidget(
                 attrs={
                     'map_width': 800,
