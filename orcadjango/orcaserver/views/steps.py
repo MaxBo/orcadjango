@@ -99,6 +99,13 @@ class StepsView(ProjectMixin, TemplateView):
                         'url': f"{reverse('injectables')}{name}",
                         'valid': False
                     })
+                    step.valid = False
+            if not step.valid:
+                step.docstring = (
+                    'One or more injectables are not valid. Your project seems '
+                    'not to be up to date with the module. Please refresh the '
+                    'injectables (Injectables page). If the problem persists '
+                    'remove this step.')
             step.injectables = injectables
         kwargs = super().get_context_data(**kwargs)
         kwargs['steps_available'] = steps_grouped if scenario else []

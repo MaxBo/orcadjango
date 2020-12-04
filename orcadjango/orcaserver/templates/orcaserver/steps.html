@@ -73,10 +73,12 @@
     <tbody>
     {% for step in steps_scenario %}
       <tr data-toggle="popover" data-trigger="hover" data-placement="left" data-id="{{ step.id }}" title="{{ step.name }}" style="cursor: move; {% if not step.valid %} color: red; {% endif %}"
-      data-content="{{ step.docstring }} <br><br>
-      {% for inj in step.injectables %}
-      <p><u>{{ inj.name }}</u> - <i>{{ inj.value }}</i></p>
-      {% endfor %}
+      data-content="<p>{{ step.docstring }}</p>
+      {% if step.valid %}
+        {% for inj in step.injectables %}
+        <p><u>{{ inj.name }}</u> - <i>{{ inj.value }}</i></p>
+        {% endfor %}
+      {% endif %}
       ">
         <td class="index"> {{ forloop.counter0 }} </td>
         <td style="display: none;"> {{ step.id }} </td>
