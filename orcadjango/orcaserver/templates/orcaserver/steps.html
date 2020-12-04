@@ -263,10 +263,13 @@
         var row = stepsTable.querySelector('tr[data-id="' + step.id + '"]'),
             startCell = row.querySelector('.start'),
             finishCell = row.querySelector('.finish'),
+            activeCell = row.querySelector('.is_active'),
+            activeCheck = activeCell.querySelector('input'),
             successCell = row.querySelector('.success');
 
         startCell.innerHTML = step.started;
         finishCell.innerHTML = step.finished;
+        activeCheck.checked = step.is_active;
         if (step.finished) {
           successCell.innerHTML = step.success;
           successCell.style.background = (step.success) ? 'green' : 'red';

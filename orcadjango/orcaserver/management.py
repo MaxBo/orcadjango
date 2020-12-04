@@ -349,8 +349,8 @@ class OrcaManager(Singleton):
                             if thread.on_error:
                                 thread.on_error()
                             return
-                        end = time.time() - t2
                         step.finished = timezone.now()
+                        step.active = False
                         step.save()
 
                     orca.clear_cache(scope=_CS_STEP)
