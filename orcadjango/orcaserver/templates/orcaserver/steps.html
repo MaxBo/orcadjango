@@ -121,6 +121,7 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button onclick="reloadLogs()" type="button" class="btn btn-primary">Reload</button>
+        <button id='clear-logs-button' onclick="clearLogs()" title="Remove all log entries of this scenario from the database" type="button" class="btn btn-danger">Clear</button>
       </div>
     </div>
   </div>
@@ -134,6 +135,17 @@
   function openLogs(){
     $("#logs-modal").modal();
     reloadLogs();
+  }
+
+  function clearLogs(){
+    const form = new FormData();
+    form.set('clear', true);
+    fetch('/logs/{{ active_scenario.id }}/', {
+      method: "POST",
+      credentials: "same-origin",
+      body: form,
+      headers: { "X-CSRFToken": csrfToken }
+    }).then(reloadLogs);
   }
 
   function reloadLogs(){

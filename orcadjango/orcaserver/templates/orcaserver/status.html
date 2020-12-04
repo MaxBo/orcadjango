@@ -59,10 +59,10 @@
     reloadLogs();
   }
 
-  function clearLogs(scenarioId){
+  function clearLogs(){
     const form = new FormData();
     form.set('clear', true);
-    fetch('/logs/' + logged_scenario + '/?clear=true', {
+    fetch('/logs/' + logged_scenario + '/', {
       method: "POST",
       credentials: "same-origin",
       body: form,
