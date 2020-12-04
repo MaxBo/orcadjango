@@ -101,6 +101,7 @@
   }
 
   $(document).ready(function() {
+    $.fn.dataTable.ext.errMode = 'none';
     var statusTable = $('#status-table').DataTable( {
       'ajax': {
         url: '/status/list/',

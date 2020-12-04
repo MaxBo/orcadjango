@@ -30,7 +30,8 @@
         <tbody>
         {% for group, steps in steps_available.items %}
           {% for step in steps %}
-            <tr onclick="highlightRow(this)" data-step="{{ step.name }}" title="{{ step.name }} - {{ step.description }}">
+            <tr data-toggle="popover" data-trigger="hover" data-placement="right" onclick="highlightRow(this)" data-step="{{ step.name }}" title="{{ step.name }}"
+            data-content="{{ step.description }} {% if step.required %} <br><br> requires Step(s) <b>{{ step.required }}</b> to be run before {% endif %}">
               <td style="background-color: Snow; color: black; {% if not forloop.last %}border-bottom-style: hidden{% endif %}"> {% if forloop.first %} <b>{{ group }}</b> {% endif %} </td>
               <td> {{ step.name }} </td>
               <td> {{ step.required }} </td>
@@ -71,11 +72,22 @@
     </thead>
     <tbody>
     {% for step in steps_scenario %}
-      <tr data-id="{{ step.id }}" title="{{ step.name }} - {{ step.docstring }}" style="cursor: move; {% if not step.valid %} color: red; {% endif %}">
+      <tr data-toggle="popover" data-trigger="hover" data-placement="left" data-id="{{ step.id }}" title="{{ step.name }}" style="cursor: move; {% if not step.valid %} color: red; {% endif %}"
+      data-content="{{ step.docstring }} <br><br>
+      {% for inj in step.injectables %}
+      <p><u>{{ inj.name }}</u> - <i>{{ inj.value }}</i></p>
+      {% endfor %}
+      ">
         <td class="index"> {{ forloop.counter0 }} </td>
         <td style="display: none;"> {{ step.id }} </td>
         <td> {{ step.name }} </td>
-        <td class="injectables"> {{ step.injectables }} </td>
+        <td class="injectables">
+          {% for inj in step.injectables %}
+          <a href="{{ inj.url }}?next={{request.path}}" title="{{ inj.value }}" {% if not inj.valid %} style="color: red;" {% endif %}>
+            {{ inj.name }} {% if not inj.valid %} (not valid) {% endif %}
+          </a> <br>
+          {% endfor %}
+        </td>
         <td class="start"> {{ step.started }} </td>
         <td class="finish"> {{ step.finished }} </td>
         <td class="success" style="text-align: center; vertical-align: middle; color: white;"> </td>
@@ -87,7 +99,7 @@
         <td>
           <form action='' method="post">
             {% csrf_token %}
-            <input type="hidden" name="step" value="{{step.id}}">
+            <input type="hidden" name="step" value="{{ step.id }}">
             <input title="Remove Step" type="submit" name="remove" class="btn btn-outline-danger" value="X" style="padding: .35rem .6rem; line-height: 1;">
           </form>
         </td>
@@ -239,6 +251,7 @@
     })
   }
 
+
   // fetch and update steps in table
   function updateSteps(){
     fetch(stepUrl, {headers: {
@@ -246,11 +259,10 @@
     }}).then(data=>{return data.json()}).then(function(res){
       res.forEach(function(step){
         var row = stepsTable.querySelector('tr[data-id="' + step.id + '"]'),
-            injCell = row.querySelector('.injectables'),
             startCell = row.querySelector('.start'),
             finishCell = row.querySelector('.finish'),
             successCell = row.querySelector('.success');
-        injCell.innerHTML = '';
+
         startCell.innerHTML = step.started;
         finishCell.innerHTML = step.finished;
         if (step.finished) {
@@ -261,24 +273,9 @@
             successCell.innerHTML = '';
             successCell.style.background = 'white';
         }
-        step.injectables.forEach(function(inj){
-          var inj_a = document.createElement('a'),
-              content = document.createElement('div'),
-              url= inj.url + '?next={{request.path}}';
-          inj_a.text = inj.name;
-          inj_a.href = url;
-          if (!inj.valid) {
-            inj_a.style.color = 'red';
-            inj_a.text += ' (not valid)'
-          }
-          content.title = inj.value;
-          content.innerHTML = '';
-          content.prepend(inj_a);
-          injCell.appendChild(content);
-        });
       })
     })
-  }
+  };
 
   //drag and drop of table rows
   function tableDnD(){
@@ -299,7 +296,7 @@
             id = row.dataset['id'];
         index.innerHTML = i;
         i += 1;
-        data.push({ id: id, order: i})
+        data.push({ id: id, order: i});
       })
       fetch(stepsUrl, {
         method: "POST",
@@ -318,6 +315,8 @@
         abort_button = document.getElementById('abort-scenario');
 
   $(document).ready(function() {
+    $('[data-toggle="popover"]').popover({html: true})
+    $.fn.dataTable.ext.errMode = 'none';
     status.on_update = function(res){
       run_button.style.display = res.running ? 'None' : 'block';
       abort_button.style.display = abort_button.style.border = !res.running ? 'None' : 'block';

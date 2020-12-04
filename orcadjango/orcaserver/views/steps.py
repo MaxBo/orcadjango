@@ -63,6 +63,7 @@ class StepsView(ProjectMixin, TemplateView):
         steps_grouped = OrderedDict(sorted(steps_grouped.items()))
         steps_scenario = Step.objects.filter(
             scenario=scenario).order_by('order')
+        injectables_available = orca.list_injectables()
         for step in steps_scenario:
             if step.name not in steps_available:
                 step.valid = False
@@ -73,6 +74,32 @@ class StepsView(ProjectMixin, TemplateView):
             if not step.docstring:
                 step.docstring = orca.get_step(step.name)._func.__doc__
             step.valid = True
+
+            func = orca.get_step(step.name)
+            sig = signature(func._func)
+            inj_parameters = sig.parameters
+            injectables = []
+            for name in inj_parameters:
+                if name not in injectables_available:
+                    continue
+                try:
+                    inj = Injectable.objects.get(name=name, scenario=scenario)
+                    injectables.append({
+                        'id': inj.id,
+                        'name': name,
+                        'value': repr(inj.calculated_value),
+                        'url': f"{reverse('injectables')}{name}",
+                        'valid': True
+                    })
+                except ObjectDoesNotExist:
+                    injectables.append({
+                        'id': -1,
+                        'name': name,
+                        'value': 'Injectable not found',
+                        'url': f"{reverse('injectables')}{name}",
+                        'valid': False
+                    })
+            step.injectables = injectables
         kwargs = super().get_context_data(**kwargs)
         kwargs['steps_available'] = steps_grouped if scenario else []
         kwargs['steps_scenario'] = steps_scenario
@@ -104,35 +131,11 @@ class StepsView(ProjectMixin, TemplateView):
         steps_scenario = Step.objects.filter(
             scenario=scenario).order_by('order')
         steps_json = []
-        injectables_available = orca.list_injectables()
         steps_available = orca.list_steps()
         for step in steps_scenario:
             if step.name not in steps_available:
                 continue
             func = orca.get_step(step.name)
-            sig = signature(func._func)
-            inj_parameters = sig.parameters
-            injectables = []
-            for name in inj_parameters:
-                if name not in injectables_available:
-                    continue
-                try:
-                    inj = Injectable.objects.get(name=name, scenario=scenario)
-                    injectables.append({
-                        'id': inj.id,
-                        'name': name,
-                        'value': repr(inj.calculated_value),
-                        'url': f"{reverse('injectables')}{name}",
-                        'valid': True
-                    })
-                except ObjectDoesNotExist:
-                    injectables.append({
-                        'id': -1,
-                        'name': name,
-                        'value': 'Injectable not found',
-                        'url': f"{reverse('injectables')}{name}",
-                        'valid': False
-                    })
             started = step.started
             finished = step.finished
             if started:
@@ -147,7 +150,6 @@ class StepsView(ProjectMixin, TemplateView):
                 'success': step.success,
                 'order': step.order,
                 'is_active': step.active,
-                'injectables': injectables,
                 'module': func._func.__module__,
             })
         return JsonResponse(steps_json, safe=False)
@@ -201,7 +203,6 @@ class StepsView(ProjectMixin, TemplateView):
             orca.logger.error('No steps selected.')
             return HttpResponse(status=400)
         # check if all injectables are available
-        injectables_available = orca.list_injectables()
         steps_available = orca.list_steps()
         for step in active_steps:
             if step.name not in steps_available:
