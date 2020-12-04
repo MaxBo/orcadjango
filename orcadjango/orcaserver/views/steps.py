@@ -75,7 +75,6 @@ class StepsView(ProjectMixin, TemplateView):
             step.valid = True
         kwargs = super().get_context_data(**kwargs)
         kwargs['steps_available'] = steps_grouped if scenario else []
-        kwargs['steps_count'] = len(steps_available)
         kwargs['steps_scenario'] = steps_scenario
         logs = LogEntry.objects.filter(scenario=scenario).order_by('-timestamp')
         kwargs['logs'] = logs

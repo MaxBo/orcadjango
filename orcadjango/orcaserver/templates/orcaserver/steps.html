@@ -15,10 +15,7 @@
     {% csrf_token %}
     <input type='hidden' name="steps" id="selected-steps">
     <div> <!--style="max-height: 800px; overflow-y: scroll;"-->
-      <input class="btn btn-secondary" title="Add selected steps" type="submit" name='add' value=">>" style="right: 0; top: 20%; position: absolute; padding: 0.2em; font-size: 0.5em;"/>
-      {% if steps_count > 10 %}
-      <input class="btn btn-secondary" title="Add selected steps" type="submit" name='add' value=">>" style="right: 0; top: 50%; position: absolute; padding: 0.2em; font-size: 0.5em;"/>
-      {% endif %}
+      <input class="btn btn-secondary" title="Add selected steps" type="submit" name='add' value=">>" style="right: -20; top: 30%; position: absolute; padding: 0.2em; padding-top: 0em; z-index: 1;"/>
       <table class="table select table-striped" id="steps-available">
         <thead>
           <tr>
@@ -44,7 +41,7 @@
       <input class="btn btn-secondary" title="Add selected steps" type="submit" name='add' value="Add >>" style="float: right; margin-top: 10px;"/>
     </div>
   </form>
-  <div class="row" id="logPlaceholder" style="height: 30em;"></div>
+  <div class="row" style="height: 30em;"></div>
 {% endif %}
 {% endblock %}
 
@@ -126,6 +123,7 @@
     </div>
   </div>
 </div>
+<div class="row" style="height: 30em;"></div>
 {% else %}
 <p>no steps available</p>
 {% endif %}
@@ -296,12 +294,10 @@
         headers: { "X-CSRFToken": csrfToken }
       });
     };
-
     $("#steps-scenario tbody").sortable({
       helper: fixHelperModified,
       stop: updateOrder
     }).disableSelection();
-
   }
 
   const run_button = document.getElementById('run-scenario'),
@@ -319,15 +315,13 @@
   });
 
   var BORDER_SIZE = 4,
-      logDiv = document.querySelector(".bottom-resizable"),
-      placeholderDiv = document.getElementById("logPlaceholder");
+      logDiv = document.querySelector(".bottom-resizable");
 
   let m_pos;
   function resize(e){
     var dy = m_pos - e.y;
     m_pos = e.y;
     logDiv.style.height = (parseInt(getComputedStyle(logDiv, '').height) + dy) + "px";
-    placeholderDiv.style.height = (parseInt(getComputedStyle(placeholderDiv, '').height) + dy) + "px";
   }
 
   logDiv.addEventListener("mousedown", function(e){
