@@ -300,9 +300,12 @@
         i += 1;
         data.push({ id: id, order: i});
       })
-      fetch(stepsUrl, {
+      const form = new FormData();
+      form.set('change-order', true);
+      form.set('data', JSON.stringify(data));
+      fetch(stepUrl, {
         method: "POST",
-        body: JSON.stringify(data),
+        body: form,
         credentials: "same-origin",
         headers: { "X-CSRFToken": csrfToken }
       });

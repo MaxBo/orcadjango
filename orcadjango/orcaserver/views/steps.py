@@ -180,6 +180,14 @@ class StepsView(ProjectMixin, TemplateView):
             step.delete()
         elif request.POST.get('abort'):
             self.abort(request)
+        elif request.POST.get('change-order'):
+            data = request.POST.get('data')
+            if data:
+                items = json.loads(data)
+                for item in items:
+                    step = Step.objects.get(id=item['id'])
+                    step.order = item['order']
+                    step.save()
         return HttpResponseRedirect(request.path_info)
 
     @staticmethod
@@ -210,6 +218,7 @@ class StepsView(ProjectMixin, TemplateView):
             orca.logger.error('No steps selected.')
             return HttpResponse(status=400)
         # check if all injectables are available
+        injectables_available = orca.list_injectables()
         steps_available = orca.list_steps()
         for step in active_steps:
             if step.name not in steps_available:
