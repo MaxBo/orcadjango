@@ -7,7 +7,7 @@ from orcaserver.models import Scenario, Run
 from orcaserver.management import OrcaManager
 
 
-class StatusView(ProjectMixin, TemplateView):
+class StatusView(TemplateView):
     template_name = 'orcaserver/status.html'
     #model = Run
     #context_object_name = 'runs'
