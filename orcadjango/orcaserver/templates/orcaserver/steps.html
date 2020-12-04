@@ -10,12 +10,14 @@
 {% endif %}
 </h4>
 {% if steps_available %}
-  <h6>available</h6>
+  <h6 style="float: left;">available</h6> &nbsp;&nbsp;(select multiple by clicking rows)
   <form action='' method="post">
     {% csrf_token %}
     <input type='hidden' name="steps" id="selected-steps">
     <div> <!--style="max-height: 800px; overflow-y: scroll;"-->
+      {% if steps_count > 10 %}
       <input class="btn btn-secondary" title="Add selected steps" type="submit" name='add' value=">>" style="right: -20; top: 30%; position: absolute; padding: 0.2em; padding-top: 0em; z-index: 1;"/>
+      {% endif %}
       <table class="table select table-striped" id="steps-available">
         <thead>
           <tr>
