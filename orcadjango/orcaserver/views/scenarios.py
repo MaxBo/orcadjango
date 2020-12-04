@@ -21,6 +21,8 @@ def recreate_injectables(orca, scenario, keep_values=False):
     init_values = json.loads(project.init)
     # create or reset injectables
     for name, desc in injectables.items():
+        if desc['hidden']:
+            continue
         inj, created = Injectable.objects.get_or_create(name=name,
                                                         scenario=scenario)
         value = init_values.get(name, desc['value'])
@@ -32,9 +34,12 @@ def recreate_injectables(orca, scenario, keep_values=False):
         inj.groupname = desc['groupname']
         inj.module = desc['module']
         inj.order = desc['order']
+        inj.choices = desc['choices']
         inj.save()
     # add parent injectable ids
     for name, desc in injectables.items():
+        if desc['hidden']:
+            continue
         parent_injectables = []
         inj = Injectable.objects.get(name=name, scenario=scenario)
         for parameter in desc.get('parameters', []):
@@ -123,4 +128,4 @@ class ScenariosView(ProjectMixin, ListView):
                 new_step.order = step.order
                 new_step.save()
 
-        request.session['scenario'] = scenario.id
+        request.session['scenario'] = int(scenario.id)

@@ -3,9 +3,10 @@ from django.core import validators
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
 from django.forms.utils import ErrorList
-from django.contrib.gis.geos import GEOSException
-from django.contrib.gis import forms as geoforms
+from django.contrib.gis.gdal.error import GDALException
 import ogr
+from django.contrib.gis.geos import GEOSException, GEOSGeometry
+from django.contrib.gis import forms as geoforms
 
 
 class CommaSeparatedCharField(forms.Field):
@@ -61,7 +62,46 @@ class DictField(forms.MultiValueField):
         return ret
 
 
-class GeometryField(geoforms.GeometryField):
+class OsmMultiPolyWidget(geoforms.OSMWidget):
+    template_name = 'orcaserver/osm.html'
+    default_lon = 10
+    default_lat = 52
+    default_zoom = 5
+
+    def __init__(self, attrs=None):
+        super().__init__()
+        for key in ('default_lon', 'default_lat', 'default_zoom'):
+            self.attrs[key] = getattr(self, key)
+        if attrs:
+            self.attrs.update(attrs)
+
+    def serialize(self, value):
+        return value.wkt if value else ''
+
+    def deserialize(self, value):
+        try:
+            return GEOSGeometry(value)
+        except (GEOSException, ValueError, TypeError) as err:
+            pass
+            #logger.error("Error creating geometry from value '%s' (%s)", value, err)
+        return None
+
+    class Media:
+        css = {
+            'all': (
+                'https://cdnjs.cloudflare.com/ajax/libs/ol3/4.6.5/ol.css',
+                'https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css',
+                'gis/css/ol3.css',
+                'css/olmap.css'
+            )
+        }
+        js = (
+            'https://cdnjs.cloudflare.com/ajax/libs/ol3/4.6.5/ol.js',
+            'js/OLMap.js',
+        )
+
+
+class OgrGeometryField(geoforms.GeometryField):
     def clean(self, value):
         geom = forms.Field.clean(self, value)
         if geom is None:

@@ -78,6 +78,10 @@ class InjectableView(ProjectMixin, FormView):
                 'with the module. Please refresh the injectables '
                 '(scenario page).')
             kwargs['injectable'] = None
+        form = kwargs['form']
+        if not form.is_valid():
+            errors = form.errors.get('value', [])
+            kwargs['error_message'] = kwargs.get('error_message', []) + errors
         return kwargs
 
     def post(self, request, *args, **kwargs):

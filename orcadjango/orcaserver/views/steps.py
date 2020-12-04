@@ -28,6 +28,8 @@ class StepsView(ProjectMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
         scenario = self.get_scenario()
+        if request.content_type == 'application/json':
+            return self.list(request)
         if not scenario:
             return HttpResponseRedirect(reverse('scenarios'))
         #apply_injectables(scenario)
@@ -44,11 +46,15 @@ class StepsView(ProjectMixin, TemplateView):
             wrapper = orca.get_step(name)
             group = _meta.get('group', '-')
             order = _meta.get('order', 1)
+            required = _meta.get('required', [])
+            if not isinstance(required, list):
+                required = [required]
+            required = [r.__name__ if callable(r) else str(r) for r in required]
             steps_grouped.setdefault(group, []).append({
                 'name': name,
                 'description': wrapper._func.__doc__ or '',
                 'order': order,
-                'module': wrapper._func.__module__,
+                'required': ', '.join(required),
             })
         # order the steps inside the groups
         for group, steps_group in steps_grouped.items():
@@ -57,6 +63,7 @@ class StepsView(ProjectMixin, TemplateView):
         steps_grouped = OrderedDict(sorted(steps_grouped.items()))
         steps_scenario = Step.objects.filter(
             scenario=scenario).order_by('order')
+        injectables_available = orca.list_injectables()
         for step in steps_scenario:
             if step.name not in steps_available:
                 step.valid = False
@@ -67,43 +74,7 @@ class StepsView(ProjectMixin, TemplateView):
             if not step.docstring:
                 step.docstring = orca.get_step(step.name)._func.__doc__
             step.valid = True
-        kwargs = super().get_context_data(**kwargs)
-        kwargs['steps_available'] = steps_grouped if scenario else []
-        kwargs['steps_count'] = len(steps_available)
-        kwargs['steps_scenario'] = steps_scenario
-        logs = LogEntry.objects.filter(scenario=scenario).order_by('-timestamp')
-        kwargs['logs'] = logs
-        kwargs['show_status'] = True
-        kwargs['left_columns'] = 4
-        kwargs['right_columns'] = 0
-        # ToDo: get room from handler
 
-        prefix = 'ws' if settings.DEBUG else 'wss'
-        kwargs['log_socket'] = \
-            f'{prefix}://{self.request.get_host()}/ws/log/{scenario.id}/'
-        return kwargs
-
-    @staticmethod
-    def list(request):
-        if request.method == 'POST':
-            body = json.loads(request.body)
-            for item in body:
-                step = Step.objects.get(id=item['id'])
-                step.order = item['order']
-                step.save()
-        scenario_id = request.session.get('scenario')
-        if scenario_id is None:
-            return HttpResponseNotFound('scenario not found')
-        scenario = Scenario.objects.get(id=scenario_id)
-        orca = manager.get(scenario_id, module=scenario.project.module)
-        steps_scenario = Step.objects.filter(
-            scenario=scenario).order_by('order')
-        steps_json = []
-        injectables_available = orca.list_injectables()
-        steps_available = orca.list_steps()
-        for step in steps_scenario:
-            if step.name not in steps_available:
-                continue
             func = orca.get_step(step.name)
             sig = signature(func._func)
             inj_parameters = sig.parameters
@@ -128,6 +99,50 @@ class StepsView(ProjectMixin, TemplateView):
                         'url': f"{reverse('injectables')}{name}",
                         'valid': False
                     })
+                    step.valid = False
+            if not step.valid:
+                step.docstring = (
+                    'One or more injectables are not valid. Your project seems '
+                    'not to be up to date with the module. Please refresh the '
+                    'injectables (Injectables page). If the problem persists '
+                    'remove this step.')
+            step.injectables = injectables
+        kwargs = super().get_context_data(**kwargs)
+        kwargs['steps_available'] = steps_grouped if scenario else []
+        kwargs['steps_scenario'] = steps_scenario
+        kwargs['steps_count'] = len(steps_available)
+        logs = LogEntry.objects.filter(scenario=scenario).order_by('-timestamp')
+        kwargs['logs'] = logs
+        kwargs['show_status'] = True
+        kwargs['left_columns'] = 4
+        kwargs['right_columns'] = 0
+        # ToDo: get room from handler
+
+        prefix = 'ws' if settings.DEBUG else 'wss'
+        kwargs['log_socket'] = \
+            f'{prefix}://{self.request.get_host()}/ws/log/{scenario.id}/'
+        return kwargs
+
+    def list(self, request):
+        if request.method == 'POST':
+            body = json.loads(request.body)
+            for item in body:
+                step = Step.objects.get(id=item['id'])
+                step.order = item['order']
+                step.save()
+        scenario_id = request.session.get('scenario')
+        if scenario_id is None:
+            return HttpResponseNotFound('scenario not found')
+        scenario = self.get_scenario()
+        orca = self.get_orca()
+        steps_scenario = Step.objects.filter(
+            scenario=scenario).order_by('order')
+        steps_json = []
+        steps_available = orca.list_steps()
+        for step in steps_scenario:
+            if step.name not in steps_available:
+                continue
+            func = orca.get_step(step.name)
             started = step.started
             finished = step.finished
             if started:
@@ -142,7 +157,6 @@ class StepsView(ProjectMixin, TemplateView):
                 'success': step.success,
                 'order': step.order,
                 'is_active': step.active,
-                'injectables': injectables,
                 'module': func._func.__module__,
             })
         return JsonResponse(steps_json, safe=False)
@@ -164,8 +178,8 @@ class StepsView(ProjectMixin, TemplateView):
             step_id = request.POST.get('step')
             step = Step.objects.get(id=step_id)
             step.delete()
-        elif request.POST.get('run'):
-            pass
+        elif request.POST.get('abort'):
+            self.abort(request)
         return HttpResponseRedirect(request.path_info)
 
     @staticmethod
@@ -174,13 +188,13 @@ class StepsView(ProjectMixin, TemplateView):
         if request.method == 'PATCH':
             try:
                 step = Step.objects.get(id=step_id)
+                body = json.loads(request.body)
+                is_active = body.get('is_active')
+                step.active = is_active
+                step.save()
             except ObjectDoesNotExist:
-                return JsonResponse({}, safe=False)
-            body = json.loads(request.body)
-            is_active = body.get('is_active')
-            step.active = is_active
-            step.save()
-            return JsonResponse({}, safe=False)
+                pass
+        return HttpResponse(status=200)
 
     @classmethod
     def run(cls, request):
@@ -196,7 +210,6 @@ class StepsView(ProjectMixin, TemplateView):
             orca.logger.error('No steps selected.')
             return HttpResponse(status=400)
         # check if all injectables are available
-        injectables_available = orca.list_injectables()
         steps_available = orca.list_steps()
         for step in active_steps:
             if step.name not in steps_available:
@@ -257,11 +270,11 @@ class StepsView(ProjectMixin, TemplateView):
             return HttpResponse(status=400)
         return HttpResponse(status=200)
 
-    @classmethod
-    def abort(cls, request):
-        scenario_id = request.session.get('scenario')
+    @staticmethod
+    def abort(request, *args, **kwargs):
+        scenario_id = kwargs.get('id')
         manager = OrcaManager()
-        manager.abort(scenario_id)
+        manager.abort(int(scenario_id))
         return HttpResponse(status=200)
 
 
@@ -278,3 +291,10 @@ class LogsView(ProjectMixin, ListView):
             log.filtered_timestamp = log.timestamp.strftime(
                 '%d.%m.%Y %H:%M:%S.%f %Z')
         return logs
+
+    def post(self, request, *args, **kwargs):
+        scenario_id = self.kwargs.get('id')
+        if request.POST.get('clear'):
+            logs = LogEntry.objects.filter(scenario_id=scenario_id)
+            logs.delete()
+        return HttpResponse(status=200)

@@ -7,7 +7,7 @@ from orcaserver.models import Scenario, Run
 from orcaserver.management import OrcaManager
 
 
-class StatusView(ProjectMixin, TemplateView):
+class StatusView(TemplateView):
     template_name = 'orcaserver/status.html'
     #model = Run
     #context_object_name = 'runs'
@@ -65,7 +65,7 @@ class StatusView(ProjectMixin, TemplateView):
         for scn in project.scenario_set.all():
             if scn.id != scenario_id and manager.is_running(scn.id):
                 other_running.append(scenario)
-        is_running = manager.is_running(scenario_id)
+        is_running = manager.is_running(int(scenario_id))
         run, created = Run.objects.get_or_create(scenario=scenario)
         user_name = run.run_by.get_username() if run.run_by else 'unknown'
         start_time = run.started
@@ -77,7 +77,7 @@ class StatusView(ProjectMixin, TemplateView):
         )
         status_text += '<br>'
         status_text += (
-            f'scenario "{scenario.name}" is currently run by user "{user}"'
+            f'scenario "{scenario.name}" is currently run by user "{user_name}"'
             if is_running else f'scenario "{scenario.name}" not in use'
         )
         status = {

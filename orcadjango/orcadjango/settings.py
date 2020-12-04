@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'orcaserver',
     'bootstrap4',
     'channels',
+    'floppyforms'
 ]
 
 MIDDLEWARE = [

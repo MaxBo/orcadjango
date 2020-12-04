@@ -1,7 +1,7 @@
 import orca
 
 
-def group(groupname='Group1', order=1):
+def meta(**kwargs):
     """
     Decorates functions that will be injected into other functions.
     """
@@ -15,7 +15,7 @@ def group(groupname='Group1', order=1):
                 orca.meta = {}
             if name not in orca.meta:
                 orca.meta[name] = {}
-            orca.meta[name]['group'] = groupname
-            orca.meta[name]['order'] = order
+            for k, v in kwargs.items():
+                orca.meta[name][k] = v
         return func
     return decorator

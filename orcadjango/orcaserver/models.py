@@ -50,6 +50,7 @@ class Injectable(NameModel):
     valid = models.BooleanField(null=False, default=True)
     parent_injectables = models.TextField(
         validators=[int_list_validator], default='[]')
+    choices = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f'{self.scenario} - {self.name}'
@@ -117,8 +118,15 @@ class Injectable(NameModel):
 
     def get_form_field(self):
         converter = OrcaTypeMap.get(self.data_class)
-        field = converter.get_field(value=self.validated_value, label=f'Value')
-        field.widget.attrs['placeholder'] = self.docstring
+        if self.choices:
+            choices = self.choices.split(',')
+            choices = tuple(zip(choices, choices))
+            field = converter.get_choice_field(
+                value=self.validated_value, choices=choices)
+        else:
+            field = converter.get_form_field(
+                value=self.validated_value, label=f'Value',
+                placeholder=self.docstring)
         return field
 
 
