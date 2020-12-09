@@ -287,6 +287,8 @@ ol.inherits(GeometryTypeControl, ol.control.Control);
         this.featureCollection.clear();
         // Empty textarea widget
         document.getElementById(this.options.id).value = '';
+        this.interactions.select.getFeatures().clear();
+        this.interactions.select.setActive(false);
         this.enableDrawing();
     };
 
