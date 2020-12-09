@@ -60,12 +60,13 @@ class StatusView(TemplateView):
             scenario = Scenario.objects.get(id=scenario_id)
         except ObjectDoesNotExist:
             return HttpResponseNotFound('scenario not found')
+        scenario_id = int(scenario_id)
         project = scenario.project
         other_running = []
         for scn in project.scenario_set.all():
             if scn.id != scenario_id and manager.is_running(scn.id):
                 other_running.append(scenario)
-        is_running = manager.is_running(int(scenario_id))
+        is_running = manager.is_running(scenario_id)
         run, created = Run.objects.get_or_create(scenario=scenario)
         user_name = run.run_by.get_username() if run.run_by else 'unknown'
         start_time = run.started

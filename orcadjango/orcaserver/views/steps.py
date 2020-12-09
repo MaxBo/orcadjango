@@ -209,7 +209,10 @@ class StepsView(ProjectMixin, TemplateView):
         scenario_id = request.session.get('scenario')
         if not scenario_id:
             return
-        orca = manager.get(scenario_id)
+        scenario_id = int(scenario_id)
+        orca = manager.get(scenario_id, create=False)
+        if not orca:
+            return HttpResponse(status=400)
         scenario = Scenario.objects.get(id=scenario_id)
 
         active_steps = Step.objects.filter(
@@ -281,9 +284,9 @@ class StepsView(ProjectMixin, TemplateView):
 
     @staticmethod
     def abort(request, *args, **kwargs):
-        scenario_id = kwargs.get('id')
+        scenario_id = int(kwargs.get('id'))
         manager = OrcaManager()
-        manager.abort(int(scenario_id))
+        manager.abort(scenario_id)
         return HttpResponse(status=200)
 
 
