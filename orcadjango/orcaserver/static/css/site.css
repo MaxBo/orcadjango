@@ -63,5 +63,6 @@
 }
 
 #steps-scenario tr:hover {
-  background-image: linear-gradient(#f0f0f0 5%, #fcfcfc 20%, white 50%, #fcfcfc 70%, #f0f0f0 95%);
+  background: #fafafa;
+  /*background-image: linear-gradient(#f0f0f0 5%, #fcfcfc 20%, white 50%, #fcfcfc 70%, #f0f0f0 95%);*/
 }
