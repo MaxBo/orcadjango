@@ -41,6 +41,7 @@ class StepsView(ProjectMixin, TemplateView):
         steps_grouped = {}
         steps_available = orca.list_steps()
         meta = getattr(orca, 'meta', {})
+        steps_meta = {}
         for name in steps_available:
             _meta = meta.get(name, {})
             wrapper = orca.get_step(name)
@@ -50,12 +51,14 @@ class StepsView(ProjectMixin, TemplateView):
             if not isinstance(required, list):
                 required = [required]
             required = [r.__name__ if callable(r) else str(r) for r in required]
-            steps_grouped.setdefault(group, []).append({
+            m = {
                 'name': name,
                 'description': wrapper._func.__doc__ or '',
                 'order': order,
                 'required': ', '.join(required),
-            })
+            }
+            steps_meta[name] = m
+            steps_grouped.setdefault(group, []).append(m)
         # order the steps inside the groups
         for group, steps_group in steps_grouped.items():
             steps_grouped[group] = sorted(steps_group, key=lambda x: x['order'])
@@ -72,7 +75,8 @@ class StepsView(ProjectMixin, TemplateView):
                     'with the module. Please remove this step.')
                 continue
             if not step.docstring:
-                step.docstring = orca.get_step(step.name)._func.__doc__
+                step.docstring = steps_meta[step.name]['description']
+            step.required = steps_meta[step.name]['required']
             step.valid = True
 
             func = orca.get_step(step.name)
@@ -114,7 +118,7 @@ class StepsView(ProjectMixin, TemplateView):
         logs = LogEntry.objects.filter(scenario=scenario).order_by('-timestamp')
         kwargs['logs'] = logs
         kwargs['show_status'] = True
-        kwargs['left_columns'] = 4
+        kwargs['left_columns'] = 3
         kwargs['right_columns'] = 0
         # ToDo: get room from handler
 

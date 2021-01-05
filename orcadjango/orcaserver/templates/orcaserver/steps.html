@@ -10,20 +10,22 @@
 {% endif %}
 </h4>
 {% if steps_available %}
-  <h6 style="float: left;">available</h6> &nbsp;&nbsp;(select multiple by clicking rows)
+  <div class="row" style="padding-left: 1em;">
+    <h6 style="float: left;">available</h6> &nbsp;&nbsp;(select multiple by clicking rows)
+  </div>
   <form action='' method="post">
     {% csrf_token %}
-    <input type='hidden' name="steps" id="selected-steps">
-    <div> <!--style="max-height: 800px; overflow-y: scroll;"-->
-      {% if steps_count > 10 %}
-      <input class="btn btn-secondary" title="Add selected steps" type="submit" name='add' value=">>" style="right: -20; top: 30%; position: absolute; padding: 0.2em; padding-top: 0em; z-index: 1;"/>
-      {% endif %}
+    <input type='hidden' name="steps" id="selected-steps"/>
+    {% if steps_count > 10 %}
+    <input class="btn btn-secondary" title="Add selected steps" type="submit" name='add' value=">>" style="right: -40; top: 30%; position: absolute; padding: 0.2em; padding-top: 0em; z-index: 1;"/>
+    {% endif %}
+    <div>  <!--style="overflow-x: scroll;"-->
       <table class="table select table-striped" id="steps-available">
         <thead>
           <tr>
             <th>Group</th>
             <th>Name</th>
-            <th>Required</th>
+            <!--<th>Required</th>-->
             <th>Description</th>
           </tr>
         </thead>
@@ -31,18 +33,18 @@
         {% for group, steps in steps_available.items %}
           {% for step in steps %}
             <tr data-toggle="popover" data-trigger="hover" data-placement="right" onclick="highlightRow(this)" data-step="{{ step.name }}" title="{{ step.name }}"
-            data-content="{{ step.description }} {% if step.required %} <br><br> requires Step(s) <b>{{ step.required }}</b> to be run before {% endif %}">
+            data-content="{{ step.description }} {% if step.required %} <br><br> <i>requires Step(s) <b>{{ step.required }}</b> to be run before </i>{% endif %}">
               <td style="background-color: Snow; color: black; {% if not forloop.last %}border-bottom-style: hidden{% endif %}"> {% if forloop.first %} <b>{{ group }}</b> {% endif %} </td>
               <td> {{ step.name }} </td>
-              <td> {{ step.required }} </td>
-              <td> {{ step.description }} </td>
+              <!--<td> {{ step.required }} </td>-->
+              <td> <i>{{ step.description }}</i> </td>
             </tr>
           {% endfor %}
         {% endfor %}
         </tbody>
       </table>
-      <input class="btn btn-secondary" title="Add selected steps" type="submit" name='add' value="Add >>" style="float: right; margin-top: 10px;"/>
     </div>
+    <input class="btn btn-secondary" title="Add selected steps" type="submit" name='add' value="Add >>" style="float: right; margin-top: 10px;"/>
   </form>
   <div class="row" style="height: 30em;"></div>
 {% endif %}
@@ -52,11 +54,11 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/datatables.min.css' %}">
 <script src="{% static 'js/datatables.min.js' %}"></script>
 <script src="{% static 'js/jquery-ui.min.js' %}"></script>
-<div style="margin-top: 2.3em;">
+<div style="margin-top: 2.3em; padding-left: 4em; background: white;">
   {% if error_message %}<p style="color: red;"><strong>{{ error_message }}</strong></p>{% endif %}
   {% if steps_available %}
   <h6 style="float: left;">in scenario</h6> &nbsp;&nbsp;(change order by dragging and dropping)
-  <table class="table" id="steps-scenario" style="user-select: none;">
+  <table class="table" id="steps-scenario" style="user-select: none; border: 1px solid lightgrey;">
     <thead>
       <tr>
         <th class="index">No.</th>
@@ -73,12 +75,13 @@
     <tbody>
     {% for step in steps_scenario %}
       <tr data-toggle="popover" data-trigger="hover" data-placement="left" data-id="{{ step.id }}" title="{{ step.name }}" style="cursor: move; {% if not step.valid %} color: red; {% endif %}"
-      data-content="<p>{{ step.docstring }}</p>
+      data-content="<p>{{ step.docstring }} </p>
       {% if step.valid %}
         {% for inj in step.injectables %}
         <p><u>{{ inj.name }}</u> - <i>{{ inj.value }}</i></p>
         {% endfor %}
       {% endif %}
+      {% if step.required %} <p> <i>requires Step(s) <b>{{ step.required }}</b> to be run before </i> </p>{% endif %}
       ">
         <td class="index"> {{ forloop.counter0 }} </td>
         <td style="display: none;"> {{ step.id }} </td>
@@ -112,7 +115,7 @@
   <button id="run-scenario" type="button" onclick="runScenario()" class="btn btn-primary" style="float: right;">Run Steps</button>
   <button id="abort-scenario" type="button" onclick="abort()" class="btn btn-danger" style="float: right; display: None;">Abort Run</button>
 </div>
-<div class="bottom-resizable" style="height: 15em;">
+<div class="bottom-resizable" style="height: 15em; z-index: 2;">
   <div style="width: 100%;">
     <h5 style="float: left; margin-top: 15px;"> Log </h5>
     <!--<button onclick="clearLog()" class="btn btn-secondary" style="margin: 10px; float: right;">Clear</button>-->
