@@ -11,6 +11,7 @@ import json
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.utils import timezone
+from dateutil import tz
 
 from orcaserver.management import OrcaManager
 from orcaserver.views import ProjectMixin, apply_injectables
@@ -149,10 +150,11 @@ class StepsView(ProjectMixin, TemplateView):
             func = orca.get_step(step.name)
             started = step.started
             finished = step.finished
+            lz = tz.tzlocal()
             if started:
-                started = started.strftime('%d.%m.%Y %H:%M:%S.%f %Z')
+                started = started.astimezone(lz).strftime('%d.%m.%Y %H:%M:%S')
             if finished:
-                finished = finished.strftime('%d.%m.%Y %H:%M:%S.%f %Z')
+                finished = finished.astimezone(lz).strftime('%d.%m.%Y %H:%M:%S')
             steps_json.append({
                 'id': step.id,
                 'name': step.name,
