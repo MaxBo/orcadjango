@@ -12,6 +12,7 @@ from django.contrib.gis.geos import MultiPolygon, fromstr
 import json
 import ast
 import ogr
+import datetime
 
 from orcaserver.widgets import (DictField, CommaSeparatedCharField,
                                 OgrGeometryField, OsmMultiPolyWidget)
@@ -550,3 +551,34 @@ class GeometryConverter(OrcaTypeMap):
 
     def get_choice_field(self, *args, **kwargs):
         raise NotImplementedError
+
+
+class DateConverter(OrcaTypeMap):
+    data_type = datetime.date
+    date_format = '%d.%m.%Y'
+    form_field = forms.DateField
+
+    def to_str(self, value):
+        if not value:
+            return ''
+        return value.strftime(self.date_format)
+
+    def to_value(self, text):
+        if not text:
+            return
+        try:
+            dt = datetime.datetime.strptime(text, self.date_format).date()
+        except ValueError:
+            return
+        return dt
+
+    def get_choice_field(self, *args, **kwargs):
+        raise NotImplementedError
+
+    def get_form_field(self, value=None, label='Pick a date', **kwargs):
+        field = self.form_field(input_formats=[self.date_format],
+                                label=label, initial=value,
+                                widget=forms.DateInput(format=self.date_format))
+        return field
+
+
