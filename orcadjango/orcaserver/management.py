@@ -163,13 +163,13 @@ class OrcaManager(Singleton):
     def remove(self, instance_id: int):
         if instance_id not in self.instances:
             return
-        thread = self.threads.get(instance_id)
-        if thread and thread.isAlive():
+        if self.is_running(instance_id):
             raise Exception(
                 'The orca instances can not be reset at the moment.'
                 ' A thread is still running.')
+        self.clear_log_handlers(instance_id)
         del(self.instances[instance_id])
-        if thread:
+        if instance_id in self.threads:
             del(self.threads[instance_id])
 
     def create(self, instance_id: int, module: str = None):

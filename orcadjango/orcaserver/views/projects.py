@@ -86,8 +86,8 @@ class ProjectMixin:
                 scenario = None
         return scenario
 
-    def get_orca(self):
-        scenario = self.get_scenario()
+    def get_orca(self, scenario=None):
+        scenario = scenario or self.get_scenario()
         if not scenario:
             return
         module = self.get_module()
