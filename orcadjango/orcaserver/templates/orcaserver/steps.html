@@ -78,17 +78,17 @@
       data-content="<p>{{ step.docstring }} </p>
       {% if step.valid %}
         {% for inj in step.injectables %}
-        <p><u>{{ inj.name }}</u> - <i>{{ inj.value }}</i></p>
+        <p><u>{{ inj.name }}</u> - <i>{{ inj.value|truncatechars:200 }}</i></p>
         {% endfor %}
+        {% if step.required %} <p> <i>requires Step(s) <b>{{ step.required }}</b> to be run before </i> </p>{% endif %}
       {% endif %}
-      {% if step.required %} <p> <i>requires Step(s) <b>{{ step.required }}</b> to be run before </i> </p>{% endif %}
       ">
         <td class="index"> {{ forloop.counter0 }} </td>
         <td style="display: none;"> {{ step.id }} </td>
         <td> {{ step.name }} </td>
         <td class="injectables">
           {% for inj in step.injectables %}
-          <a href="{{ inj.url }}?next={{request.path}}" title="{{ inj.value }}" {% if not inj.valid %} style="color: red;" {% endif %}>
+          <a title="{{ inj.value }}" {% if not inj.valid %} href="/injectables" style="color: red;" {% else %} href="{{ inj.url }}?next={{request.path}}" {% endif %}>
             {{ inj.name }} {% if not inj.valid %} (not valid) {% endif %}
           </a> <br>
           {% endfor %}
