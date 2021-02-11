@@ -1,6 +1,7 @@
 from orcadjango.settings_pg import *
 
 TIMEZONE = 'Europe/Berlin'
+USE_TZ = True
 
 ORCA_MODULES['default'].update({'path': 'extractiontools.steps.extract_data'})
 

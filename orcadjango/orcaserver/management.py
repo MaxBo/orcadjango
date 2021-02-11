@@ -293,7 +293,6 @@ class OrcaManager(Singleton):
         orca = self.get(instance_id)
         logger = orca.logger
         thread = self.threads[instance_id]
-        logger.info(str(thread))
         try:
             iter_vars = iter_vars or [None]
             max_i = len(iter_vars)

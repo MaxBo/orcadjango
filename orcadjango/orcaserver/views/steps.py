@@ -305,9 +305,10 @@ class LogsView(ProjectMixin, ListView):
         """Return the injectables with their values."""
         scenario_id = self.kwargs.get('id')
         logs = LogEntry.objects.filter(scenario_id=scenario_id)
+        lz = tz.tzlocal()
         for log in logs:
-            log.filtered_timestamp = log.timestamp.strftime(
-                '%d.%m.%Y %H:%M:%S.%f %Z')
+            log.filtered_timestamp = log.timestamp.astimezone(lz).strftime(
+                '%d.%m.%Y %H:%M:%S.%f')
         return logs
 
     def post(self, request, *args, **kwargs):
