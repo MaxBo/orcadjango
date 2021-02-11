@@ -112,16 +112,18 @@ class AbortableThread(threading.Thread):
         # returns id of the respective thread
         if hasattr(self, '_thread_id'):
             return self._thread_id
-        for id, thread in threading._active.items():
+        for _id, thread in threading._active.items():
             if thread is self:
-                return id
+                self._thread_id = _id
+                return _id
 
     def abort(self):
         thread_id = self.get_id()
         res = ctypes.pythonapi.PyThreadState_SetAsyncExc(
-            thread_id, ctypes.py_object(Abort))
+            ctypes.c_long(thread_id), ctypes.py_object(Abort))
         if res > 1:
-            ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, 0)
+            ctypes.pythonapi.PyThreadState_SetAsyncExc(
+                ctypes.c_long(thread_id), 0)
             print('Exception raise failure')
 
 
@@ -370,13 +372,14 @@ class OrcaManager(Singleton):
 
                 orca.clear_cache(scope=_CS_ITER)
             logger.info('orca run finished')
+            if thread.on_success:
+                thread.on_success()
         except Abort:
             logger.error('orca run aborted')
             if thread.on_error:
                 thread.on_error()
-                return
-        if thread.on_success:
-            thread.on_success()
+        finally:
+            orca.clear_cache()
 
 
 class OrcaTypeMap:
