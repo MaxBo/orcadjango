@@ -259,9 +259,7 @@
 
   // fetch and update steps in table
   function updateSteps(){
-    fetch(stepUrl, {headers: {
-      'Content-Type': 'application/json'
-    }}).then(data=>{return data.json()}).then(function(res){
+    fetch('/steps/list/').then(data=>{return data.json()}).then(function(res){
       res.forEach(function(step){
         var row = stepsTable.querySelector('tr[data-id="' + step.id + '"]'),
             startCell = row.querySelector('.start'),

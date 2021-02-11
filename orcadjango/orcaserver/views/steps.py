@@ -29,8 +29,6 @@ class StepsView(ProjectMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
         scenario = self.get_scenario()
-        if request.content_type == 'application/json':
-            return self.list(request)
         if not scenario:
             return HttpResponseRedirect(reverse('scenarios'))
         #apply_injectables(scenario)
@@ -127,45 +125,6 @@ class StepsView(ProjectMixin, TemplateView):
         kwargs['log_socket'] = \
             f'{prefix}://{self.request.get_host()}/ws/log/{scenario.id}/'
         return kwargs
-
-    def list(self, request):
-        if request.method == 'POST':
-            body = json.loads(request.body)
-            for item in body:
-                step = Step.objects.get(id=item['id'])
-                step.order = item['order']
-                step.save()
-        scenario_id = request.session.get('scenario')
-        if scenario_id is None:
-            return HttpResponseNotFound('scenario not found')
-        scenario = self.get_scenario()
-        orca = self.get_orca()
-        steps_scenario = Step.objects.filter(
-            scenario=scenario).order_by('order')
-        steps_json = []
-        steps_available = orca.list_steps()
-        for step in steps_scenario:
-            if step.name not in steps_available:
-                continue
-            func = orca.get_step(step.name)
-            started = step.started
-            finished = step.finished
-            lz = tz.tzlocal()
-            if started:
-                started = started.astimezone(lz).strftime('%d.%m.%Y %H:%M:%S')
-            if finished:
-                finished = finished.astimezone(lz).strftime('%d.%m.%Y %H:%M:%S')
-            steps_json.append({
-                'id': step.id,
-                'name': step.name,
-                'started': started,
-                'finished': finished,
-                'success': step.success,
-                'order': step.order,
-                'is_active': step.active,
-                'module': func._func.__module__,
-            })
-        return JsonResponse(steps_json, safe=False)
 
     def post(self, request, *args, **kwargs):
         scenario = self.get_scenario()
@@ -295,6 +254,47 @@ class StepsView(ProjectMixin, TemplateView):
         manager.abort(scenario_id)
         return HttpResponse(status=200)
 
+
+class StepsListView(ProjectMixin, ListView):
+
+    def get(self, request):
+        if request.method == 'POST':
+            body = json.loads(request.body)
+            for item in body:
+                step = Step.objects.get(id=item['id'])
+                step.order = item['order']
+                step.save()
+        scenario_id = request.session.get('scenario')
+        if scenario_id is None:
+            return HttpResponseNotFound('scenario not found')
+        scenario = self.get_scenario()
+        orca = self.get_orca()
+        steps_scenario = Step.objects.filter(
+            scenario=scenario).order_by('order')
+        steps_json = []
+        steps_available = orca.list_steps()
+        for step in steps_scenario:
+            if step.name not in steps_available:
+                continue
+            func = orca.get_step(step.name)
+            started = step.started
+            finished = step.finished
+            lz = tz.tzlocal()
+            if started:
+                started = started.astimezone(lz).strftime('%d.%m.%Y %H:%M:%S')
+            if finished:
+                finished = finished.astimezone(lz).strftime('%d.%m.%Y %H:%M:%S')
+            steps_json.append({
+                'id': step.id,
+                'name': step.name,
+                'started': started,
+                'finished': finished,
+                'success': step.success,
+                'order': step.order,
+                'is_active': step.active,
+                'module': func._func.__module__,
+            })
+        return JsonResponse(steps_json, safe=False)
 
 class LogsView(ProjectMixin, ListView):
     template_name = 'orcaserver/logs.html'

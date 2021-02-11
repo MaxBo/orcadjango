@@ -29,6 +29,7 @@ urlpatterns = [
     #path('logs/detail/<str:id>/', login_required(views.LogsView.detail)),
     path('steps/', login_required(views.StepsView.as_view()), name='steps'),
     path('steps/run/', login_required(views.StepsView.run)),
+    path('steps/list/', login_required(views.StepsListView.as_view())),
     path('steps/abort/<str:id>/', login_required(views.StepsView.abort)),
     path('steps/detail/<str:id>/', login_required(views.StepsView.detail)),
     path('status/detail/<str:id>/', login_required(views.StatusView.detail)),

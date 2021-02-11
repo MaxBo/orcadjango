@@ -355,11 +355,6 @@ class OrcaManager(Singleton):
 
                     orca.clear_cache(scope=_CS_STEP)
 
-                logger.debug(
-                    ('Total time to execute iteration {} '
-                     'with iteration value {!r}: '
-                     '{:.2f} s').format(i, var, time.time() - t1))
-
                 # write out the results for the current iteration
                 if data_out:
                     if (i - 1) % out_interval == 0 or i == max_i:
