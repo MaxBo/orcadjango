@@ -330,31 +330,28 @@ class OrcaManager(Singleton):
                     step_name = step.name
                     orca.add_injectable(
                         'iter_step', orca.iter_step(j, step_name))
-                    print('Running step {!r}'.format(step_name))
-                    with orca.log_start_finish(
-                            'run step {!r}'.format(step_name), logger,
-                            logging.INFO):
-                        step_func = orca.get_step(step_name)
-                        t2 = time.time()
-                        step.started = timezone.now()
-                        step.save()
-                        try:
-                            step_func()
-                            step.success = True
-                        except Exception as e:
-                            step.success = False
-                            step.finished = timezone.now()
-                            step.save()
-                            logger.error(
-                                f'{e.__class__.__module__}.'
-                                f'{e.__class__.__name__} - {str(e)}')
-                            logger.error('Aborting run')
-                            if thread.on_error:
-                                thread.on_error()
-                            return
+                    logger.info(f"Running step '{step_name}'")
+                    step_func = orca.get_step(step_name)
+                    t2 = time.time()
+                    step.started = timezone.now()
+                    step.save()
+                    try:
+                        step_func()
+                        step.success = True
+                    except Exception as e:
+                        step.success = False
                         step.finished = timezone.now()
-                        step.active = False
                         step.save()
+                        logger.error(
+                            f'{e.__class__.__module__}.'
+                            f'{e.__class__.__name__} - {str(e)}')
+                        logger.error('Aborting run')
+                        if thread.on_error:
+                            thread.on_error()
+                        return
+                    step.finished = timezone.now()
+                    step.active = False
+                    step.save()
 
                     orca.clear_cache(scope=_CS_STEP)
 
