@@ -177,6 +177,7 @@ ol.inherits(GeometryTypeControl, ol.control.Control);
         button.title = 'Select Feature (SHIFT+click to select multiple)';
         button.type = 'button';
         icon.classList.add('icon-hand-up');
+        icon.style.margin = 0;
         button.appendChild(icon);
         button.addEventListener('click', function(){
             self.interactions.select.setActive(true);
@@ -195,6 +196,7 @@ ol.inherits(GeometryTypeControl, ol.control.Control);
         icon = document.createElement('i');
         button.type = 'button';
         icon.classList.add('icon-pencil');
+        icon.style.margin = 0;
         button.appendChild(icon);
         button.addEventListener('click', function(){
             self.interactions.select.setActive(false);

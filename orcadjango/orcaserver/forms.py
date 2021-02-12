@@ -31,7 +31,7 @@ class OrcaSettingsForm(forms.Form):
         max_length=100,
         widget=forms.widgets.TextInput(
             attrs={'size': 100, }),
-        label='Python module with orca imports',
+        label='Module to activate',
         initial=get_python_module,
     )
 
@@ -84,7 +84,7 @@ class ProjectForm(forms.Form):
                 value = converter.to_value(value)
             else:
                 value = desc['value']
-            label = f'initial value for "{injectable}" - {desc["docstring"]}'
+            label = f'Initial value for "{injectable}" - {desc["docstring"]}'
             field = converter.get_form_field(value=value, label=label,
                                              placeholder=desc["docstring"])
             self.fields[injectable] = field
