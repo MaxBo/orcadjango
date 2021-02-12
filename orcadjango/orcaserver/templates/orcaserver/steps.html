@@ -64,7 +64,7 @@
         <th class="index">No.</th>
         <th style="display: none;">ID</th>
         <th>Name</th>
-        <th>Injectables</th>
+        <th>Parameters</th>
         <th>Started</th>
         <th>Finished</th>
         <th>Success</th>
@@ -147,10 +147,6 @@
 {% else %}
 <p>no steps available</p>
 {% endif %}
-{% endblock %}
-
-{% block right-content %}
-{% endblock %}
 
 <script>
   function openLogs(){
@@ -362,3 +358,7 @@
   }, false);
 
 </script>
+{% endblock %}
+
+{% block right-content %}
+{% endblock %}

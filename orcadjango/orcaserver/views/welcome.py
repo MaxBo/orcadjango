@@ -9,7 +9,7 @@ class WelcomeView(ProjectMixin, LoginView):
     template_name = 'orcaserver/index.html'
 
     def get_context_data(self, **kwargs):
-        kwargs['left_columns'] = 2
+        kwargs['left_columns'] = 1
         kwargs['center_columns'] = 5
         kwargs['right_columns'] = 2
         return kwargs

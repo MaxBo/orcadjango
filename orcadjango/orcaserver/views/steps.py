@@ -28,6 +28,9 @@ class StepsView(ProjectMixin, TemplateView):
         return self.kwargs.get('id')
 
     def get(self, request, *args, **kwargs):
+        project = self.get_project()
+        if not project:
+            return HttpResponseRedirect(reverse('projects'))
         scenario = self.get_scenario()
         if not scenario:
             return HttpResponseRedirect(reverse('scenarios'))
