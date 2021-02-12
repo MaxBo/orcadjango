@@ -118,7 +118,7 @@ class StepsView(ProjectMixin, TemplateView):
         kwargs['logs'] = logs
         kwargs['show_status'] = True
         kwargs['left_columns'] = 3
-        kwargs['right_columns'] = 0
+        kwargs['right_columns'] = 5
         # ToDo: get room from handler
 
         prefix = 'ws' if settings.DEBUG else 'wss'
