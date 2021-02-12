@@ -3,63 +3,49 @@
 {% bootstrap_javascript jquery='full' %}
 {% load static %}
 <link rel="stylesheet" type="text/css" href="{% static 'css/site.css' %}">
-<link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <head>
-  <title>Miraculix</title>
-  {% if user.is_authenticated %}
+  <title>OrcaDjango</title>
   <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
-  {% endif %}
-  <META NAME="robots" CONTENT="noindex,nofollow">
 </head>
 
 <body>
 {% bootstrap_messages %}
 {% block bootstrap4_content %}
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="/" title="The miraculous data wizard"><b>MIRACULIX</b></a>
+    <a class="navbar-brand" href="/">OrcaDjango</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
         {% if user.is_superuser %}
-        <li class="nav-item" style="margin-right: 1.5em;">
-          <a class="nav-link {% if request.path  == '/settings/' %} active {% endif %}" href="{% url 'settings' %}">
-          <!--<i class="fa fa-cog"></i>-->
-          <i>Modules</i>
-          </a>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path  == '/settings/' %} active {% endif %}" href="{% url 'settings' %}"><i>Settings</i></a>
         </li>
         {% endif %}
         <li class="nav-item">
-          <a class="nav-link {% if request.path  == '/projects/' %} active {% endif %}" href="{% url 'projects' %}"><i class="fa fa-globe"></i>Project</a>
+          <a class="nav-link {% if request.path  == '/projects/' %} active {% endif %}" href="{% url 'projects' %}">Project</a>
         </li>
-        <div style="padding-top: 0.4em;">></div>
         <li class="nav-item">
-          <a class="nav-link {% if request.path  == '/scenarios/' %} active {% endif %}" href="{% url 'scenarios' %}"><i class="fa fa-asterisk"></i>Scenario</a>
+          <a class="nav-link {% if request.path  == '/scenarios/' %} active {% endif %}" href="{% url 'scenarios' %}">Scenario</a>
         </li>
-        <div style="padding-top: 0.4em;">></div>
         <li class="nav-item">
-          <a class="nav-link {% if request.path  == '/injectables/' %} active {% endif %}" href="{% url 'injectables' %}"><i class="fa fa-table"></i>Parameters</a>
+          <a class="nav-link {% if request.path  == '/injectables/' %} active {% endif %}" href="{% url 'injectables' %}">Injectables</a>
         </li>
-        <div style="padding-top: 0.4em;">></div>
-        <li class="nav-item" style="margin-right: 1.5em">
-          <a class="nav-link {% if request.path  == '/steps/' %} active {% endif %}" href="{% url 'steps' %}" ><i style="color: green;" class="fa fa-play-circle"></i>Steps &amp; Run</a>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path  == '/steps/' %} active {% endif %}" href="{% url 'steps' %}">Steps &amp; Run</a>
         </li>
-        <div style="padding-top: 0.4em;">&nbsp;</div>
-        <li class="nav-item" style="margin-right: 2em">
-          <a class="nav-link {% if request.path  == '/status/' %} active {% endif %}" href="{% url 'status' %}"><i class="fa fa-clock-o"></i>Status</a>
+        <li class="nav-item" style="margin-right: 50px">
+          <a class="nav-link {% if request.path  == '/status/' %} active {% endif %}" href="{% url 'status' %}">Status</a>
         </li>
         {% if user.is_superuser %}
         <li class="nav-item">
-          <a class="nav-link" href="/admin"><i class="fa fa-grav"></i><i>Admin</i></a>
+          <a class="nav-link" href="/admin"><i>Admin</i></a>
         </li>
         {% endif %}
       </ul>
-      <p style="position: absolute; right: 50px; padding-top: 1em;">
-      <i class="fa fa-user-o"></i>
+      <p style="position: absolute; right: 50px;">
       {% if user.is_authenticated %}
         angemeldet als "{{ user.get_username }}"
         <a href="{% url 'logout'%}?next={{request.path}}" style="margin-left: 10px">logout</a>
@@ -69,7 +55,7 @@
       </p>
     </div>
   </nav>
-  <div class="row" style="padding-left: 30px; margin-top: 10px;">
+  <div class="row" style="padding-left: 30px;">
     <div class="col-md-8">
         {% if show_project_settings %}
         <div class="row">

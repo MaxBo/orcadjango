@@ -2,17 +2,10 @@
 {% load bootstrap4 %}
 
 {% block content %}
-<div style="max-width: 50em;">
-  <h4> Please select the base module* </h4>
+  <h4> Select the base module </h4>
   <form action='' method="post">
     {% csrf_token %}
     {% bootstrap_form form %}
-    <button class="btn btn-primary" type="submit" name="action" title="Activate the module">
-      <i class="fa fa-star-o"></i>Activate
-    </button>
+    <input type="submit" name="action" value="Import/Reload" class="btn btn-primary">
   </form>
-  * Miraculix can be run with different modules. Each module serves different purposes and therefore contains different steps and parameters.
-  Please select a module from the dropdown menu "Available modules" and it will be filled into the text input "Module to activate". Press "Select" to activate the module.
-  <br>If you happen to know a module on the server that is not listed, you may enter it directly into the text input and press the button.
-</div>
 {% endblock %}

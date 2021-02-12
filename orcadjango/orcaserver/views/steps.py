@@ -28,9 +28,6 @@ class StepsView(ProjectMixin, TemplateView):
         return self.kwargs.get('id')
 
     def get(self, request, *args, **kwargs):
-        project = self.get_project()
-        if not project:
-            return HttpResponseRedirect(reverse('projects'))
         scenario = self.get_scenario()
         if not scenario:
             return HttpResponseRedirect(reverse('scenarios'))
@@ -121,7 +118,7 @@ class StepsView(ProjectMixin, TemplateView):
         kwargs['logs'] = logs
         kwargs['show_status'] = True
         kwargs['left_columns'] = 3
-        kwargs['right_columns'] = 5
+        kwargs['right_columns'] = 0
         # ToDo: get room from handler
 
         prefix = 'ws' if settings.DEBUG else 'wss'
@@ -308,10 +305,9 @@ class LogsView(ProjectMixin, ListView):
         """Return the injectables with their values."""
         scenario_id = self.kwargs.get('id')
         logs = LogEntry.objects.filter(scenario_id=scenario_id)
-        lz = tz.tzlocal()
         for log in logs:
-            log.filtered_timestamp = log.timestamp.astimezone(lz).strftime(
-                '%d.%m.%Y %H:%M:%S.%f')
+            log.filtered_timestamp = log.timestamp.strftime(
+                '%d.%m.%Y %H:%M:%S.%f %Z')
         return logs
 
     def post(self, request, *args, **kwargs):

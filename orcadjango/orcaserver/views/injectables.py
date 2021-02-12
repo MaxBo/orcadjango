@@ -19,15 +19,6 @@ class InjectablesView(ProjectMixin, ListView):
     template_name = 'orcaserver/injectables.html'
     context_object_name = 'grouped_injectables'
 
-    def get(self, request, *args, **kwargs):
-        project = self.get_project()
-        if not project:
-            return HttpResponseRedirect(reverse('projects'))
-        scenario = self.get_scenario()
-        if not scenario:
-            return HttpResponseRedirect(reverse('scenarios'))
-        return super().get(request, *args, **kwargs)
-
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
         kwargs['show_status'] = True

@@ -2,38 +2,32 @@
 {% load bootstrap4 %}
 
 {% block content %}
-  <h4>Parameter "{{ view.name }}"</h4>
-  {{ form.media }}
-  {% if error_message %}<p style="color: red;"><strong>{{ error_message }}</strong></p>{% endif %}
-  <p><i>{{ injectable.docstring }}</i></p>
-  <form action='' method="post">
-    {% csrf_token %}
-    {% if injectable.can_be_changed  %}
-      <div class="row"style="padding: 1em;">
-        {% bootstrap_form form %}
-      </div>
-      <button type="submit" name="back" value="back" title="Back to previous page without saving" class="btn btn-secondary" style="margin-right: 2em;">
-        <i class="fa fa-arrow-circle-left"></i>Back
-      </button>
-      <button type="submit" name="change" value="change" title="Save current value" class="btn btn-primary">
-        <i class="fa fa-floppy-o"></i>Save
-      </button>
-      <button type="submit" name="reset" value="reset" title="Reset parameter value to project default" class="btn btn-warning">
-        <i class="fa fa-undo"></i>Reset
-      </button>
-    {% else %}
-      <table class="table" id="parent_injectables">
-      <thead>
-        <th>Is derived from</th>
-      </thead>
-        {% for parent_name, parent in injectable.parent_injectable_urls.items %}
-          <tr><td><a href={{ parent }}>{{ parent_name }}</a></td></tr>
-        {% endfor %}
-      <thead>
-        <th >Calculated value</th>
-      </thead>
-        <tr><td>{{ injectable.repr_html | safe }}</td></tr>
-      </table>
-    {% endif %}
-  </form>
+    <h4>Injectable "{{ view.name }}"</h4>
+    {{ form.media }}
+    {% if error_message %}<p style="color: red;"><strong>{{ error_message }}</strong></p>{% endif %}
+    <p>{{ injectable.docstring }}</p>
+    <form action='' method="post">
+        {% csrf_token %}
+        {% if injectable.can_be_changed  %}
+            <div class="row">
+                {% bootstrap_form form %}
+            </div>
+            <input type="submit" name="back" title="Back" value="Back" class="btn btn-secondary">
+            <input type="submit" name="change" title="Save current value" value="Save" class="btn btn-primary">
+            <input type="submit" name="reset" value="Reset to default" title="Reset injectable value to project default" class="btn btn-warning">
+        {% else %}
+            <table class="table" id="parent_injectables">
+            <thead>
+              <th >Uses the following injectables as parameters</th>
+            </thead>
+                {% for parent_name, parent in injectable.parent_injectable_urls.items %}
+                    <tr><td><a href={{ parent }}>{{ parent_name }}</a></td></tr>
+                {% endfor %}
+            <thead>
+              <th >Calculated value</th>
+            </thead>
+                <tr><td>{{ injectable.repr_html | safe }}</td></tr>
+            </table>
+        {% endif %}
+    </form>
 {% endblock %}

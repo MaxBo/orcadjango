@@ -32,8 +32,7 @@ class ScenarioHandler(OrcaChannelHandler):
         self.group = f'log_{scenario.id}'
         self.scenario = scenario
         self.setFormatter(logging.Formatter(
-            f'%(asctime)s,%(msecs)03d {scenario.name} - %(message)s',
-            '%d.%m.%Y %H:%M:%S'))
+            f'%(asctime)s {scenario.name} - %(message)s'))
         self.persist = persist
 
     def emit(self, record):
