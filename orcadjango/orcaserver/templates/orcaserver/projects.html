@@ -19,7 +19,7 @@
       <td> {{ project.name }} </td>
       <td> {{ project.description }} </td>
       <td>
-        <a href="/projects/change/{{project.id}}/" title="Edit Project"><i class="fa fa-pencil" style="font-size: 1.5em;"></i></a>
+        <a href="/projects/change/{{project.id}}/">edit</a>
       </td>
     </tr>
   {% endfor %}
@@ -28,27 +28,43 @@
 <form action='' method="post">
   {% csrf_token %}
   <input name="project" style="display: None"/>
-  <button class="btn btn-primary" type="submit" name="select" value="select" title="Set selected project as active" style="margin-right: 1em;">
-    <i class="fa fa-star-o"></i>Select
-  </button>
-  <button class="btn btn-success" href="/projects/create/" title="Add a new Project">
-    <i class="fa fa-plus"></i>Add
-  </button>
-  <button class="btn btn-danger" type="submit" value="delete" name="delete" title="Remove selected project" style="float: right;">
-    <i class="fa fa-trash-o"></i>Remove
-  </button>
+  <input disabled class="btn btn-primary" type="submit" name="select" value="Select"/>
+  <button disabled id="deleteBtn" type="button" class="btn btn-danger" style="float: right;" data-toggle="modal" data-target="#confirm-delete-modal"> Delete </button>
+  <a class="btn btn-secondary" href="/projects/create/" style="float: right; margin-right: 5px;">Add</a>
+
+  <div class="modal fade" id="confirm-delete-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Confirm deletion</h5>
+        </div>
+          <div class="modal-body">
+            Do you really want to delete the selected project?
+          </div>
+        <div class="modal-footer">
+          <input class="btn btn-danger" type="submit" name="delete" value="Confirm"/>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </form>
 
 <script>
   var table = document.getElementById('projects'),
-      projectInput = document.querySelector('input[name="project"]');
+      projectInput = document.querySelector('input[name="project"]'),
+      selectBtn = document.querySelector('input[name="select"]'),
+      deleteBtn = document.getElementById('deleteBtn');
   // highlight row in table on click
   function highlightRow(target){
     for(row of table.rows){
       if (row!=target) row.classList.remove('selected');
     }
     target.classList.toggle('selected');
-    projectInput.value = target.classList.contains('selected') ? target.dataset['id'] : null;
+    var isSelected = target.classList.contains('selected');
+    projectInput.value = isSelected ? target.dataset['id'] : null;
+    selectBtn.disabled = !isSelected;
+    deleteBtn.disabled = !isSelected;
   }
 </script>
 

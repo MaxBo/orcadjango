@@ -3,7 +3,7 @@
 {% block content %}
   <h4>
   {% if request.session.scenario %}
-    List of all Scenario Parameters and their current values
+    List of all Injectables and their current values
   {% else %}
     No scenario selected
   {% endif %}
@@ -11,24 +11,36 @@
   {% if grouped_injectables %}
     <form action='' method="post">
       {% csrf_token %}
-      <button type="submit" value="reset" name="reset" class="btn btn-warning" title="Reset all parameter values to their project defaults.">
-        <i class="fa fa-undo"></i>Reset to project defaults
-      </button>
-      <button type="submit" value="refresh" name="refresh" class="btn btn-primary" title="Synchronize all parameter meta data with the module. Current parameter values are kept.">
-        <i class="fa fa-refresh"></i>Synchronize
-      </button>
+      <button type="button" title="Reset injectable values to project defaults" class="btn btn-warning" data-toggle="modal" data-target="#confirm-reset-modal"> Reset all </button>
+      <input type="submit" name="refresh" title="Synchronize injectable meta data with module keeping current injectable values" value="Refresh all" class="btn btn-primary">
+      <div class="modal fade" id="confirm-reset-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Confirm reset</h5>
+            </div>
+              <div class="modal-body">
+                Do you really want to reset the injectables to the project defaults?
+              </div>
+            <div class="modal-footer">
+              <input class="btn btn-danger" type="submit" name="reset" value="Confirm"/>
+              <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </form>
     <table class="table table-striped" id="injectables">
       <thead>
         <tr>
           <th scope="col">Group</th>
-          <th scope="col">Parameter</th>
+          <th scope="col">injectable</th>
           <th scope="col">Datatype</th>
           <th scope="col">Class</th>
           <th scope="col">Description</th>
           <th scope="col">Value</th>
-          <th scope="col"></th>
-          <th scope="col"></th>
+          <th scope="col">Edit</th>
+          <th scope="col">Parents</th>
         </tr>
       </thead>
       <tbody>
@@ -46,13 +58,13 @@
             <td>{{ injectable.datatype }}</td>
             <td>{{ injectable.data_class }}</td>
             <td>{{ injectable.docstring }}</td>
-            <td>{{ injectable.repr_html | safe | truncatechars:800 }}</td>
+            <td>{{ injectable.repr_html | safe }}</td>
             {% if injectable.can_be_changed %}
-            <td><a style="margin-left: 0.5em;" title="Edit parameter" href="{{ injectable.name }}?next={{request.path}}"><i class="fa fa-pencil" style="font-size: 1.5em;"></i></a></td>
+            <td><a style="margin-left: 10px;" href="{{ injectable.name }}?next={{request.path}}">edit</a></td>
             <td></td>
             {% else %}
-            <td><a style="margin-left: 0.5em;" title="View parameter" href="{{ injectable.name }}/"><i class="fa fa-eye" style="font-size: 1.5em;"></a></td>
-            <td style="white-space: nowrap;" title='Parameter is derived from "{{ injectable.parent_injectable_values | safe }}"'><i class="fa fa-sitemap"></i>&nbsp;{{ injectable.parent_injectable_values | safe }}</td>
+            <td><a style="margin-left: 10px;" href="{{ injectable.name }}/">view</a></td>
+            <td>{{ injectable.parent_injectable_values | safe }}</td>
             {% endif %}
           </tr>
         {% endfor %}

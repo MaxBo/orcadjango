@@ -8,7 +8,7 @@
   <h4> Select a scenario </h4>
   <form action='' method="post">
     {% csrf_token %}
-    <select class="form-control" name='scenario' style="min-width: 200px; width: auto; margin-right: 10px; display: inline;">
+    <select class="form-control" onchange="changeSelection()" name='scenario' style="min-width: 200px; width: auto; margin-right: 10px; display: inline;">
     {% for scenario in scenarios %}
       <option value="{{ scenario.id }}" {% if scenario.id == request.session.scenario %} selected="selected" {% endif %}>
         {{ scenario.name }}
@@ -16,13 +16,31 @@
     {% endfor %}
     </select>
     <input class="btn btn-primary" type="submit" name="select" title="Set as active scenario" value="Select">
-    <input class="btn btn-danger" type="submit" name="delete" title="Delete selected scenario" value="Delete">
+    <button disabled id="deleteBtn" type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete-modal" title="Delete selected scenario"> Delete </button>
     <input class="btn btn-secondary" type="submit" name="reset" title="Reset injectable values of selected scenario to project defaults" value="Reset Injectables">
-    <br>
-    <br>
+    <div class="modal fade" id="confirm-delete-modal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirm deletion</h5>
+          </div>
+            <div class="modal-body">
+              Do you really want to delete the selected scenario?
+            </div>
+          <div class="modal-footer">
+            <input class="btn btn-danger" type="submit" name="delete" value="Confirm"/>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+  <br>
+  <br>
+  <form action='' method="post">
     <h4> Create Scenario </h4>
     {% csrf_token %}
-    <input class="form-control" name="name" title="Name of scenario to create" placeholder="scenario name" style="width: auto; margin-right: 10px; display: inline;">
+    <input class="form-control" name="name" title="Name of scenario to create" placeholder="scenario name" style="width: auto; margin-right: 10px; display: inline;" required>
     <input class="btn btn-primary" type="submit" value="Create New" name="create" title="Create new scenario with input name">
     <input class="btn btn-secondary" type="submit" value="Clone Current" name="clone" title="Create new scenario with input name based on selected scenario keeping its injectable values">
   </form>
@@ -30,4 +48,13 @@
   <h4> No project selected </h4>
   {% endif %}
 </div>
+<script>
+  var scnSelect = document.querySelector('select[name="scenario"]'),
+      deleteBtn = document.getElementById('deleteBtn');
+  // enable disable
+  function changeSelection(){
+    deleteBtn.disabled = !scnSelect.value;
+  }
+  changeSelection();
+</script>
 {% endblock %}
