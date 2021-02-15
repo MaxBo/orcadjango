@@ -88,8 +88,8 @@ class InjectableView(ProjectMixin, FormView):
         except ObjectDoesNotExist:
             kwargs['error_message'] = (
                 'Injectable not found. Your project seems not to be up to date '
-                'with the module. Please refresh the injectables '
-                '(scenario page).')
+                'with the module. Please synchronize the parameters '
+                '(parameters page).')
             kwargs['injectable'] = None
         form = kwargs['form']
         if not form.is_valid():

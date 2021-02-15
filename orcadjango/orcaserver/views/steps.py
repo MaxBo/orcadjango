@@ -101,16 +101,16 @@ class StepsView(ProjectMixin, TemplateView):
                     injectables.append({
                         'id': -1,
                         'name': name,
-                        'value': 'Injectable not found',
+                        'value': 'Parameter not found',
                         'url': f"{reverse('injectables')}{name}",
                         'valid': False
                     })
                     step.valid = False
             if not step.valid:
                 step.docstring = (
-                    'One or more injectables are not valid. Your project seems '
-                    'not to be up to date with the module. Please refresh the '
-                    'injectables (Injectables page). If the problem persists '
+                    'One or more parameters are not valid. Your project seems '
+                    'not to be up to date with the module. Please synchronize the '
+                    'parameters (Parameters page). If the problem persists '
                     'remove this step.')
             step.injectables = injectables
         kwargs = super().get_context_data(**kwargs)
@@ -208,8 +208,8 @@ class StepsView(ProjectMixin, TemplateView):
                 orca.logger.error(
                     'There are steps selected that contain injectables that '
                     'not be found. Your project seems not to be up to date '
-                    'with the module.<br>Please refresh the injectables '
-                    '(scenario page).')
+                    'with the module.<br>Please synchronize the parameters '
+                    '(parameters page).')
                 return HttpResponse(status=400)
         for step in active_steps:
             step.started = None
