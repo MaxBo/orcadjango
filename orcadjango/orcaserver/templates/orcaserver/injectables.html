@@ -3,7 +3,7 @@
 {% block content %}
   <h4>
   {% if request.session.scenario %}
-    List of all Injectables and their current values
+    List of all scenario parameters and their current values
   {% else %}
     No scenario selected
   {% endif %}
@@ -11,8 +11,12 @@
   {% if grouped_injectables %}
     <form action='' method="post">
       {% csrf_token %}
-      <button type="button" title="Reset injectable values to project defaults" class="btn btn-warning" data-toggle="modal" data-target="#confirm-reset-modal"> Reset all </button>
-      <input type="submit" name="refresh" title="Synchronize injectable meta data with module keeping current injectable values" value="Refresh all" class="btn btn-primary">
+      <button type="button" value="reset" name="reset" class="btn btn-warning" title="Reset all parameter values to their project defaults." data-toggle="modal" data-target="#confirm-reset-modal">
+        <i class="fa fa-undo"></i>Reset to project defaults
+      </button>
+      <button type="submit" value="refresh" name="refresh" class="btn btn-primary" title="Synchronize all parameter meta data with the module. Current parameter values are kept.">
+        <i class="fa fa-refresh"></i>Synchronize
+      </button>
       <div class="modal fade" id="confirm-reset-modal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -23,8 +27,8 @@
                 Do you really want to reset the injectables to the project defaults?
               </div>
             <div class="modal-footer">
-              <input class="btn btn-danger" type="submit" name="reset" value="Confirm"/>
-              <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+              <input class="btn btn-warning" type="submit" name="reset" value="Confirm"/>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
             </div>
           </div>
         </div>
@@ -34,42 +38,46 @@
       <thead>
         <tr>
           <th scope="col">Group</th>
-          <th scope="col">injectable</th>
+          <th scope="col">Parameter</th>
           <th scope="col">Datatype</th>
           <th scope="col">Class</th>
           <th scope="col">Description</th>
           <th scope="col">Value</th>
-          <th scope="col">Edit</th>
-          <th scope="col">Parents</th>
+          <th scope="col"></th>
+          <th scope="col"></th>
         </tr>
       </thead>
       <tbody>
-      {% for groupname, injectables in grouped_injectables.items %}
-        {% for injectable in injectables %}
-          <tr
-          {% if not injectable.can_be_changed %}
-            style="background-color: lightgrey;"
-          {% endif %}
-          >
-            <td style="background-color: Snow {% if not forloop.last %} ;border-bottom-style: hidden" {% endif %}">
-                {% if forloop.first %} <b>{{ groupname }}</b> {% endif %}
-            </td>
-            <td>{{ injectable.name }}</td>
-            <td>{{ injectable.datatype }}</td>
-            <td>{{ injectable.data_class }}</td>
-            <td>{{ injectable.docstring }}</td>
-            <td>{{ injectable.repr_html | safe }}</td>
-            {% if injectable.can_be_changed %}
-            <td><a style="margin-left: 10px;" href="{{ injectable.name }}?next={{request.path}}">edit</a></td>
-            <td></td>
-            {% else %}
-            <td><a style="margin-left: 10px;" href="{{ injectable.name }}/">view</a></td>
-            <td>{{ injectable.parent_injectable_values | safe }}</td>
-            {% endif %}
-          </tr>
-        {% endfor %}
-      {% endfor %}
-      </tbody>
+       {% for groupname, injectables in grouped_injectables.items %}
+         {% for injectable in injectables %}
+           <tr
+           {% if not injectable.can_be_changed %}
+             style="background-color: lightgrey;"
+           {% endif %}
+           >
+             <td style="background-color: Snow {% if not forloop.last %} ;border-bottom-style: hidden" {% endif %}">
+                 {% if forloop.first %} <b>{{ groupname }}</b> {% endif %}
+             </td>
+             <td>{{ injectable.name }}</td>
+             <td>{{ injectable.datatype }}</td>
+             <td>{{ injectable.data_class }}</td>
+             <td>{{ injectable.docstring }}</td>
+             <td>{{ injectable.repr_html | safe | truncatechars:800 }}</td>
+             {% if injectable.can_be_changed %}
+             <td><a style="margin-left: 0.5em;" title="Edit parameter" href="{{ injectable.name }}?next={{request.path}}"><i class="fa fa-pencil" style="font-size: 1.5em;"></i></a></td>
+             <td></td>
+             {% else %}
+             <td><a style="margin-left: 0.5em;" title="View parameter" href="{{ injectable.name }}/"><i class="fa fa-eye" style="font-size: 1.5em;"></a></td>
+             {% if injectable.parent_injectable_values %}
+             <td style="white-space: nowrap;" title='Parameter is derived from "{{ injectable.parent_injectable_values | safe }}"'><i class="fa fa-code-fork"></i>&nbsp;{{ injectable.parent_injectable_values | safe }}</td>
+             {% else %}
+             <td></td>
+             {% endif %}
+             {% endif %}
+           </tr>
+         {% endfor %}
+       {% endfor %}
+       </tbody>
     </table>
     <ul>
     </ul>

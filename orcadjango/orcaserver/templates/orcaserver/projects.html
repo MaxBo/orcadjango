@@ -19,7 +19,7 @@
       <td> {{ project.name }} </td>
       <td> {{ project.description }} </td>
       <td>
-        <a href="/projects/change/{{project.id}}/">edit</a>
+        <a href="/projects/change/{{project.id}}/" title="Edit Project"><i class="fa fa-pencil" style="font-size: 1.5em;"></i></a>
       </td>
     </tr>
   {% endfor %}
@@ -28,9 +28,15 @@
 <form action='' method="post">
   {% csrf_token %}
   <input name="project" style="display: None"/>
-  <input disabled class="btn btn-primary" type="submit" name="select" value="Select"/>
-  <button disabled id="deleteBtn" type="button" class="btn btn-danger" style="float: right;" data-toggle="modal" data-target="#confirm-delete-modal"> Delete </button>
-  <a class="btn btn-secondary" href="/projects/create/" style="float: right; margin-right: 5px;">Add</a>
+  <button class="btn btn-primary" type="submit" name="select" value="select" title="Set selected project as active" style="margin-right: 1em;">
+    <i class="fa fa-star-o"></i>Select
+  </button>
+  <a class="btn btn-success" href="/projects/create/" title="Add a new Project">
+    <i class="fa fa-plus"></i>Add
+  </a>
+  <button class="btn btn-danger" type="button" value="delete" name="delete" title="Remove selected project" style="float: right;" data-toggle="modal" data-target="#confirm-delete-modal">
+    <i class="fa fa-trash-o"></i>Remove
+  </button>
 
   <div class="modal fade" id="confirm-delete-modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
