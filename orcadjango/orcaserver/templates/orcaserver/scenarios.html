@@ -16,17 +16,23 @@
     {% endfor %}
     </select>
     <input class="btn btn-primary" type="submit" name="select" title="Set as active scenario" value="Select">
-    <button disabled id="deleteBtn" type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete-modal" title="Delete selected scenario"> Delete </button>
-    <input class="btn btn-secondary" type="submit" name="reset" title="Reset injectable values of selected scenario to project defaults" value="Reset Injectables">
+    <button disabled id="deleteBtn" type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete-modal" title="Remove the selected scenario"> Remove </button>
+    <input class="btn btn-secondary" type="submit" name="reset" title="Reset parameter values of selected scenario to project defaults" value="Reset Injectables">
     <div class="modal fade" id="confirm-delete-modal" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Confirm deletion</h5>
+            <h5 class="modal-title">Confirm removal</h5>
           </div>
-            <div class="modal-body">
-              Do you really want to delete the selected scenario?
-            </div>
+          <div class="modal-body">
+            <p>
+              Do you really want to remove the selected scenario?
+            </p>
+            <p>
+              <i class="fa fa-exclamation-triangle"></i>
+              This does only remove the scenario and its parameters and step-configurations. Possible databases or data folders related to the scenario remain and have to be removed manually or by running suitable steps first, if required.
+            </p>
+          </div>
           <div class="modal-footer">
             <input class="btn btn-danger" type="submit" name="delete" value="Confirm"/>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
