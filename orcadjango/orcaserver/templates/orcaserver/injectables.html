@@ -11,8 +11,24 @@
   {% if grouped_injectables %}
     <form action='' method="post">
       {% csrf_token %}
-      <input type="submit" name="reset" title="Reset injectable values to project defaults" value="Reset all" class="btn btn-warning">
+      <button type="button" title="Reset injectable values to project defaults" class="btn btn-warning" data-toggle="modal" data-target="#confirm-reset-modal"> Reset all </button>
       <input type="submit" name="refresh" title="Synchronize injectable meta data with module keeping current injectable values" value="Refresh all" class="btn btn-primary">
+      <div class="modal fade" id="confirm-reset-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Confirm reset</h5>
+            </div>
+              <div class="modal-body">
+                Do you really want to reset the injectables to the project defaults?
+              </div>
+            <div class="modal-footer">
+              <input class="btn btn-danger" type="submit" name="reset" value="Confirm"/>
+              <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </form>
     <table class="table table-striped" id="injectables">
       <thead>

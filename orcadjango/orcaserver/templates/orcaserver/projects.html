@@ -28,21 +28,43 @@
 <form action='' method="post">
   {% csrf_token %}
   <input name="project" style="display: None"/>
-  <input class="btn btn-primary" type="submit" name="select" value="Select"/>
-  <input class="btn btn-danger" type="submit" name="delete" value="Delete" style="float: right;"/>
+  <input disabled class="btn btn-primary" type="submit" name="select" value="Select"/>
+  <button disabled id="deleteBtn" type="button" class="btn btn-danger" style="float: right;" data-toggle="modal" data-target="#confirm-delete-modal"> Delete </button>
   <a class="btn btn-secondary" href="/projects/create/" style="float: right; margin-right: 5px;">Add</a>
+
+  <div class="modal fade" id="confirm-delete-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Confirm deletion</h5>
+        </div>
+          <div class="modal-body">
+            Do you really want to delete the selected project?
+          </div>
+        <div class="modal-footer">
+          <input class="btn btn-danger" type="submit" name="delete" value="Confirm"/>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </form>
 
 <script>
   var table = document.getElementById('projects'),
-      projectInput = document.querySelector('input[name="project"]');
+      projectInput = document.querySelector('input[name="project"]'),
+      selectBtn = document.querySelector('input[name="select"]'),
+      deleteBtn = document.getElementById('deleteBtn');
   // highlight row in table on click
   function highlightRow(target){
     for(row of table.rows){
       if (row!=target) row.classList.remove('selected');
     }
     target.classList.toggle('selected');
-    projectInput.value = target.classList.contains('selected') ? target.dataset['id'] : null;
+    var isSelected = target.classList.contains('selected');
+    projectInput.value = isSelected ? target.dataset['id'] : null;
+    selectBtn.disabled = !isSelected;
+    deleteBtn.disabled = !isSelected;
   }
 </script>
 
