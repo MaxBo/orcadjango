@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<h4> Select a project </h4>
+<h4> Please select a project <div class="help" style="display: inline;">*</div></h4>
 <table class="table table-striped select" id="projects">
   <thead>
     <tr>
@@ -27,28 +27,76 @@
 </table>
 <form action='' method="post">
   {% csrf_token %}
-  <input name="project" style="display: None"/>
-  <button class="btn btn-primary" type="submit" name="select" value="select" title="Set selected project as active" style="margin-right: 1em;">
+  <input name="project" style="display: None;"/>
+  <button disabled class="btn btn-primary" type="submit" name="select" value="select" title="Set selected project as active" style="margin-right: 1em;">
     <i class="fa fa-star-o"></i>Select
   </button>
-  <button class="btn btn-success" href="/projects/create/" title="Add a new Project">
+  <a class="btn btn-success" href="/projects/create/" title="Add a new project">
     <i class="fa fa-plus"></i>Add
-  </button>
-  <button class="btn btn-danger" type="submit" value="delete" name="delete" title="Remove selected project" style="float: right;">
+  </a>
+  <button disabled class="btn btn-danger" id="deleteBtn" type="button" title="Remove the selected project" style="float: right;" data-toggle="modal" data-target="#confirm-delete-modal">
     <i class="fa fa-trash-o"></i>Remove
   </button>
-</form>
 
+  <div class="modal fade" id="confirm-delete-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Confirm removal</h5>
+        </div>
+          <div class="modal-body">
+            <p>
+              Do you really want to remove the selected project?
+            </p>
+            <p>
+              <i class="fa fa-exclamation-triangle"></i>
+              This does only remove the project with its scenarios, parameters and step-configurations. Possible databases or data folders related to the project remain and have to be removed manually or by running suitable steps first, if required.
+            </p>
+          </div>
+        <div class="modal-footer">
+          <input class="btn btn-danger" type="submit" name="delete" value="Confirm"/>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<div class="help">
+  <p style="margin-top: 5em;">
+  * On the highest level Miraculix configurations are organized in projects. Projects set the outer frame of parameter and run configurations. Only projects created for the currently active module (see top left) are visible in here.
+  </p>
+  <p>
+    To <i>create</i> a new project for the currently active module press "Add". You will be forwarded to the project-creation form to fill in the project settings.
+  </p>
+  <p>
+    You may <i>select</i> an existing project by clicking its row in the table.
+  </p>
+  <p>
+    To set the selected project as your <i>active project</i> click on the "Select" button.
+    Your currently active project is displayed in the top left corner at all times.
+  </p>
+  <p>
+    To <i>remove</i> the selected project press "Remove". This removes the project, its scenarios and settings. Any persistent data resulting from runs is kept.
+  </p>
+  <p>
+    To <i>edit</i> an existing project and its settings click on the pencil icon in the corresponding row within the table.
+  </p>
+</div>
 <script>
   var table = document.getElementById('projects'),
-      projectInput = document.querySelector('input[name="project"]');
+      projectInput = document.querySelector('input[name="project"]'),
+      selectBtn = document.querySelector('button[name="select"]'),
+      deleteBtn = document.getElementById('deleteBtn');
   // highlight row in table on click
   function highlightRow(target){
     for(row of table.rows){
       if (row!=target) row.classList.remove('selected');
     }
     target.classList.toggle('selected');
-    projectInput.value = target.classList.contains('selected') ? target.dataset['id'] : null;
+    var isSelected = target.classList.contains('selected');
+    projectInput.value = isSelected ? target.dataset['id'] : null;
+    selectBtn.disabled = !isSelected;
+    deleteBtn.disabled = !isSelected;
   }
 </script>
 
