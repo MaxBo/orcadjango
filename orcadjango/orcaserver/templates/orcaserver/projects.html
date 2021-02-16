@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<h4> Please select a project* </h4>
+<h4> Please select a project <div class="help" style="display: inline;">*</div></h4>
 <table class="table table-striped select" id="projects">
   <thead>
     <tr>
@@ -27,7 +27,7 @@
 </table>
 <form action='' method="post">
   {% csrf_token %}
-  <input name="project" style="display: None"/>
+  <input name="project" style="display: None;"/>
   <button disabled class="btn btn-primary" type="submit" name="select" value="select" title="Set selected project as active" style="margin-right: 1em;">
     <i class="fa fa-star-o"></i>Select
   </button>
@@ -63,7 +63,7 @@
 </form>
 <div class="help">
   <p style="margin-top: 5em;">
-  * On the highest level Miraculix configurations are organized in projects. Only projects created for the currently active module (top left) are visible in here.
+  * On the highest level Miraculix configurations are organized in projects. Projects set the outer frame of parameter and run configurations. Only projects created for the currently active module (see top left) are visible in here.
   </p>
   <p>
     To <i>create</i> a new project for the currently active module press "Add". You will be forwarded to the project-creation form to fill in the project settings.
@@ -79,7 +79,7 @@
     To <i>remove</i> the selected project press "Remove". This removes the project, its scenarios and settings. Any persistent data resulting from runs is kept.
   </p>
   <p>
-    To <i>edit</i> an existing project and its settings click on the pencil icon of the corresponding row in the table.
+    To <i>edit</i> an existing project and its settings click on the pencil icon in the corresponding row within the table.
   </p>
 </div>
 <script>

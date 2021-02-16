@@ -299,6 +299,7 @@ class StepsListView(ProjectMixin, ListView):
             })
         return JsonResponse(steps_json, safe=False)
 
+
 class LogsView(ProjectMixin, ListView):
     template_name = 'orcaserver/logs.html'
     model = LogEntry

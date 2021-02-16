@@ -3,7 +3,7 @@
 
 {% block content %}
 <div style="max-width: 50em;">
-  <h4> Please select the base module* </h4>
+  <h4> Please select the base module <div class="help" style="display: inline;">*</div> </h4>
   <form action='' method="post">
     {% csrf_token %}
     {% bootstrap_form form %}

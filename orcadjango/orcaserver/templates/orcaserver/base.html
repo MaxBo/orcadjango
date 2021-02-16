@@ -122,7 +122,7 @@ function toggleHelp(){
   var showHelp = showHelpCheck.checked,
       helpContainers = document.querySelectorAll('.help');
   helpContainers.forEach(function(con){
-    con.style.display = (showHelp) ? 'block' : 'none';
+    con.style.visibility = (showHelp) ? 'visible' : 'hidden';
   });
   document.cookie = "showHelp=" + showHelp +"; path=/";
 }
