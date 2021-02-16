@@ -58,7 +58,7 @@
   {% if error_message %}<p style="color: red;"><strong>{{ error_message }}</strong></p>{% endif %}
   {% if steps_available %}
   <h6 style="float: left;">in scenario</h6> &nbsp;&nbsp;(change order by dragging and dropping)
-  <table class="table" id="steps-scenario" style="user-select: none; border: 1px solid lightgrey;">
+  <table class="table" id="steps-scenario">
     <thead>
       <tr>
         <th class="index">No.</th>
@@ -69,12 +69,12 @@
         <th>Finished</th>
         <th>Success</th>
         <th>Active</th>
-        <th>Remove</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
     {% for step in steps_scenario %}
-      <tr data-toggle="popover" data-trigger="hover" data-placement="left" data-id="{{ step.id }}" title="{{ step.name }}" style="cursor: move; {% if not step.valid %} color: red; {% endif %}"
+      <tr class="step" data-toggle="popover" data-trigger="hover" data-placement="left" data-id="{{ step.id }}" title="{{ step.name }}" style="cursor: move; {% if not step.valid %} color: red; {% endif %}"
       data-content="<p>{{ step.docstring }} </p>
       {% if step.valid %}
         {% for inj in step.injectables %}
@@ -83,7 +83,7 @@
         {% if step.required %} <p> <i>requires Step(s) <b>{{ step.required }}</b> to be run before </i> </p>{% endif %}
       {% endif %}
       ">
-        <td class="index"> {{ forloop.counter0 }} </td>
+        <td class="index"> <div class="circle-number">{{ forloop.counter }}</div> </td>
         <td style="display: none;"> {{ step.id }} </td>
         <td> {{ step.name }} </td>
         <td class="injectables">
@@ -95,25 +95,31 @@
         </td>
         <td class="start"> {{ step.started }} </td>
         <td class="finish"> {{ step.finished }} </td>
-        <td class="success" style="text-align: center; vertical-align: middle; color: white;"> </td>
+        <td class="success" style="color: white; font-size: 2em;"> </td>
         <td class="is_active">
           <label>
-            <input title="Activate/deactivate step" type="checkbox" {% if step.active %} checked {% endif %} id="toggle-active" onclick="toggleActiveRow(this, {{ step.id }})" style="transform: scale(2); margin: 0.5em;">
+            <input title="Activate/deactivate step" type="checkbox" {% if step.active %} checked {% endif %} onchange="toggleActiveRow(this, {{ step.id }})" data-onstyle="success" data-toggle="toggle" data-size="mini" style="transform: scale(2); margin: 0.5em;">
           </label>
         </td>
         <td>
           <form action='' method="post">
             {% csrf_token %}
             <input type="hidden" name="step" value="{{ step.id }}">
-            <input title="Remove Step" type="submit" name="remove" class="btn btn-outline-danger" value="X" style="padding: .35rem .6rem; line-height: 1;">
+            <button title="Remove Step" type="submit" name="remove" class="btn btn-outline-danger">
+              <i class="fa fa-trash-o" style="margin: 0;"></i>
+            </button>
           </form>
         </td>
       </tr>
     {% endfor %}
     </tbody>
   </table>
-  <button id="run-scenario" type="button" onclick="runScenario()" class="btn btn-primary" style="float: right;">Run Steps</button>
-  <button id="abort-scenario" type="button" onclick="abort()" class="btn btn-danger" style="float: right; display: None;">Abort Run</button>
+  <button id="run-scenario" type="button" onclick="runScenario()" class="btn btn-success" style="float: right;">
+    <i class="fa fa-play-circle"></i> Run Steps
+  </button>
+  <button id="abort-scenario" type="button" onclick="abort()" class="btn btn-danger" style="float: right; display: None;">
+    <i class="fa fa-ban"></i> Abort Run
+  </button>
 </div>
 <div class="bottom-resizable" style="height: 15em; z-index: 2;">
   <div style="width: 100%;">
@@ -270,15 +276,18 @@
 
         startCell.innerHTML = step.started;
         finishCell.innerHTML = step.finished;
-        activeCheck.checked = step.is_active;
+        successCell.innerHTML = '';
+        $(activeCheck).bootstrapToggle((step.is_active) ? 'on' : 'off', true);
         if (step.finished) {
-          successCell.innerHTML = step.success;
-          successCell.style.background = (step.success) ? 'green' : 'red';
+          successCell.style.color = (step.success) ? 'green' : 'red';
+          var icon = document.createElement('i');
+              faCls = (step.success) ? 'fa-check' : 'fa-ban';
+          icon.classList.add('fa', faCls);
+          successCell.appendChild(icon);
+          successCell.title = (step.success) ? 'last run successful' : 'last run failed';
         }
-        else {
-            successCell.innerHTML = '';
-            successCell.style.background = 'white';
-        }
+        else
+          successCell.title = 'not recently run';
       })
     })
   };
@@ -298,9 +307,9 @@
           rows = stepsTable.querySelectorAll('tbody tr'),
           i = 0;
       rows.forEach(function(row){
-        var index = row.querySelector('.index'),
+        var index = row.querySelector('.circle-number'),
             id = row.dataset['id'];
-        index.innerHTML = i;
+        index.innerHTML = i + 1;
         i += 1;
         data.push({ id: id, order: i});
       })
