@@ -63,7 +63,7 @@
       <div style="position: absolute; right: 3em; display: flex;">
       {% if user.is_authenticated %}
         <i class="fa fa-user-o" style="padding-top: 0.3em;"></i>
-        angemeldet als "{{ user.get_username }}" &nbsp;
+        logged in as "{{ user.get_username }}" &nbsp;
         <a href="{% url 'logout'%}?next={{request.path}}">logout</a>
       {% else %}
         <i class="fa fa-user-o" style="padding-top: 0.3em;"></i>
@@ -72,6 +72,7 @@
       </div>
     </div>
   </nav>
+  {% if user.is_authenticated %}
   <div class="row" style="padding-left: 30px; margin-top: 10px;">
     <div class="col-md-8">
         {% if show_project_settings %}
@@ -97,6 +98,7 @@
       {% endif %}
     </div>
   </div>
+  {% endif %}
   <div class="row" style="margin-top: 10px;">
     <div class="col-md-{% if left_columns is not None %}{{ left_columns }}{% else %}2{% endif %}" style="padding-left: 2em;">
     {% block left-content %}
