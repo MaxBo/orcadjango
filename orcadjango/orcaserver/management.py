@@ -87,7 +87,7 @@ def parse_injectables(orca):
             desc['groupname'] = _meta.get('group', '')
             desc['order'] = _meta.get('order', 10000)
             desc['hidden'] = _meta.get('hidden', False)
-            choices = _meta.get('choices', [])
+            choices = _meta.get('choices', []) or []
             # choices are derived from another injectable
             if callable(choices):
                 choices = orca._injectable_backup.get(choices.__name__)

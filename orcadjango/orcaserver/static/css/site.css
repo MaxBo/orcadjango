@@ -88,7 +88,50 @@ button > i, a > i{
   margin-bottom: 0;
 }
 
-#steps-scenario tr:hover {
+#steps-scenario {
+  user-select: none;
+  border-collapse: separate;
+  border-spacing: 0 1em;
+  /*background-color: #fdfdfd;*/
+}
+
+#steps-scenario tr{
+  background-color: white;
+}
+
+.step {
+  background-image: linear-gradient(white, white, #f8f8f8);
+  margin-top: 1em;
+}
+
+.step:hover {
   background: #fafafa;
-  /*background-image: linear-gradient(#f0f0f0 5%, #fcfcfc 20%, white 50%, #fcfcfc 70%, #f0f0f0 95%);*/
+  background-image: linear-gradient(#f0f0f0, #f8f8f8, #f8f8f8);
+}
+
+.step td {
+  border-top: 1px solid #f7f7f7;
+}
+
+.circle-number {
+    /*background-color: #505050;*/
+    /*color: white;*/
+    /*border-radius: 1em;*/
+    /*width: 2em;*/
+    /*height: 2em;*/
+    /*line-height: 1.9em;*/
+    /*text-align: center;*/
+    /*vertical-align: middle;    */
+
+    box-shadow: inset 0 3px #f3f3f3;
+    background-color: #fafafa;
+    color: #505050;
+    border-radius: 1em;
+    /*border: 2px solid #505050;*/
+    width: 2em;
+    height: 2em;
+    line-height: 1.9em;
+    text-align: center;
+    vertical-align: middle;
+    /*font-weight: bold;*/
 }
