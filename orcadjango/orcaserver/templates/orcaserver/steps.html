@@ -17,7 +17,10 @@
     {% csrf_token %}
     <input type='hidden' name="steps" id="selected-steps"/>
     {% if steps_count > 10 %}
-    <input class="btn btn-secondary" title="Add selected steps" type="submit" name='add' value=">>" style="right: -40; top: 30%; position: absolute; padding: 0.2em; padding-top: 0em; z-index: 1;"/>
+    <input class="btn btn-secondary" title="Add selected steps" type="submit" name='add' value=">>" style="right: -40; top: 20em; position: absolute; padding: 0.2em; padding-top: 0em; z-index: 1;"/>
+    {% endif %}
+    {% if steps_count > 20 %}
+    <input class="btn btn-secondary" title="Add selected steps" type="submit" name='add' value=">>" style="right: -40; top: 60em; position: absolute; padding: 0.2em; padding-top: 0em; z-index: 1;"/>
     {% endif %}
     <div>  <!--style="overflow-x: scroll;"-->
       <table class="table select table-striped" id="steps-available">
