@@ -20,88 +20,92 @@
 <body>
 {% bootstrap_messages %}
 {% block bootstrap4_content %}
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="/" title="The miraculous data wizard"><b>MIRACULIX</b></a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
+  <div class="navbar-wrapper">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="/" title="The miraculous data wizard"><b>MIRACULIX</b></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          {% if user.is_authenticated %}
+          <li class="nav-item" style="margin-right: 1.5em;" title="Module settings">
+            <a class="nav-link {% if request.path  == '/settings/' %} active {% endif %}" href="{% url 'settings' %}">
+            <!--<i class="fa fa-cog"></i>-->
+            <i>Modules</i>
+            </a>
+          </li>
+          <li class="nav-item" title="Project selection">
+            <a class="nav-link {% if request.path  == '/projects/' %} active {% endif %}" href="{% url 'projects' %}"><i class="fa fa-globe"></i>Project</a>
+          </li>
+          <div style="padding-top: 0.4em;">></div>
+          <li class="nav-item" title="Scenario selection">
+            <a class="nav-link {% if request.path  == '/scenarios/' %} active {% endif %}" href="{% url 'scenarios' %}"><i class="fa fa-asterisk"></i>Scenario</a>
+          </li>
+          <div style="padding-top: 0.4em;">></div>
+          <li class="nav-item" title="Parameter overview">
+            <a class="nav-link {% if request.path  == '/injectables/' %} active {% endif %}" href="{% url 'injectables' %}"><i class="fa fa-table"></i>Parameters</a>
+          </li>
+          <div style="padding-top: 0.4em;">></div>
+          <li class="nav-item" style="margin-right: 1.5em" title="Configure and run steps">
+            <a class="nav-link {% if request.path  == '/steps/' %} active {% endif %}" href="{% url 'steps' %}" ><i style="color: green;" class="fa fa-play-circle"></i>Steps &amp; Run</a>
+          </li>
+          <div style="padding-top: 0.4em;">&nbsp;</div>
+          <li class="nav-item" style="margin-right: 2em" title="Project overview and status">
+            <a class="nav-link {% if request.path  == '/status/' %} active {% endif %}" href="{% url 'status' %}"><i class="fa fa-clock-o"></i>Status</a>
+          </li>
+          {% endif %}
+          {% if user.is_superuser %}
+          <li class="nav-item">
+            <a class="nav-link" href="/admin"><i class="fa fa-grav"></i><i>Admin</i></a>
+          </li>
+          {% endif %}
+        </ul>
+        <div style="position: absolute; right: 2em; display: flex;">
         {% if user.is_authenticated %}
-        <li class="nav-item" style="margin-right: 1.5em;" title="Module settings">
-          <a class="nav-link {% if request.path  == '/settings/' %} active {% endif %}" href="{% url 'settings' %}">
-          <!--<i class="fa fa-cog"></i>-->
-          <i>Modules</i>
-          </a>
-        </li>
-        <li class="nav-item" title="Project selection">
-          <a class="nav-link {% if request.path  == '/projects/' %} active {% endif %}" href="{% url 'projects' %}"><i class="fa fa-globe"></i>Project</a>
-        </li>
-        <div style="padding-top: 0.4em;">></div>
-        <li class="nav-item" title="Scenario selection">
-          <a class="nav-link {% if request.path  == '/scenarios/' %} active {% endif %}" href="{% url 'scenarios' %}"><i class="fa fa-asterisk"></i>Scenario</a>
-        </li>
-        <div style="padding-top: 0.4em;">></div>
-        <li class="nav-item" title="Parameter overview">
-          <a class="nav-link {% if request.path  == '/injectables/' %} active {% endif %}" href="{% url 'injectables' %}"><i class="fa fa-table"></i>Parameters</a>
-        </li>
-        <div style="padding-top: 0.4em;">></div>
-        <li class="nav-item" style="margin-right: 1.5em" title="Configure and run steps">
-          <a class="nav-link {% if request.path  == '/steps/' %} active {% endif %}" href="{% url 'steps' %}" ><i style="color: green;" class="fa fa-play-circle"></i>Steps &amp; Run</a>
-        </li>
-        <div style="padding-top: 0.4em;">&nbsp;</div>
-        <li class="nav-item" style="margin-right: 2em" title="Project overview and status">
-          <a class="nav-link {% if request.path  == '/status/' %} active {% endif %}" href="{% url 'status' %}"><i class="fa fa-clock-o"></i>Status</a>
-        </li>
+          <i class="fa fa-user-o" style="padding-top: 0.3em;"></i>
+          logged in as "{{ user.get_username }}" &nbsp;
+          <a href="{% url 'logout'%}?next={{request.path}}">logout</a>
+          <div title="Display Help texts" style="color: #464646; border: solid #808080 1px; border-radius: 5px; margin-left: 2em; padding: 0px 4px 3px 4px; box-shadow: inset 0 0 2px #808080; background: #f8f9fa; float: right;">
+            <i class="fa fa-question-circle" style="vertical-align: middle; font-size: 1.2em;"></i>
+            <input id="showHelp" onchange="toggleHelp()" type="checkbox" data-toggle="toggle" data-size="mini">
+          </div>
+        {% else %}
+          <i class="fa fa-user-o" style="padding-top: 0.3em;"></i>
+          <a href="{% url 'login'%}?next={{request.path}}">Login</a>
         {% endif %}
-        {% if user.is_superuser %}
-        <li class="nav-item">
-          <a class="nav-link" href="/admin"><i class="fa fa-grav"></i><i>Admin</i></a>
-        </li>
-        {% endif %}
-      </ul>
-      <div style="position: absolute; right: 3em; display: flex;">
-      {% if user.is_authenticated %}
-        <i class="fa fa-user-o" style="padding-top: 0.3em;"></i>
-        logged in as "{{ user.get_username }}" &nbsp;
-        <a href="{% url 'logout'%}?next={{request.path}}">logout</a>
-      {% else %}
-        <i class="fa fa-user-o" style="padding-top: 0.3em;"></i>
-        <a href="{% url 'login'%}?next={{request.path}}">Login</a>
-      {% endif %}
+        </div>
       </div>
-    </div>
-  </nav>
-  {% if user.is_authenticated %}
-  <div class="row">
-    <div class="col-md-8">
-        {% if show_project_settings %}
-        <div id="project-settings">
-          <div>
-            Module &nbsp;&nbsp;<a title="Active module" href='/settings'><i>{% if python_module %} {{ python_module }} {% else %} None {% endif %}</i></a>
+    </nav>
+    {% if user.is_authenticated %}
+    <div class="row">
+      <div class="col-md-8">
+          {% if show_project_settings %}
+          <div id="project-settings">
+            <div>
+              Module &nbsp;&nbsp;<a title="Active module" href='/settings'><i>{% if python_module %} {{ python_module }} {% else %} None {% endif %}</i></a>
+            </div>
+            <div>
+              Project &nbsp;&nbsp;&nbsp;<a title="Active project" href='/projects'><h4><i>{% if active_project %} {{ active_project.name }} {% else %} None {% endif %}</i></h4></a>
+            </div>
+            <div>
+              Scenario &nbsp;<a title="Active scenario" href='/scenarios'><h4><i>{% if active_scenario %} {{ active_scenario.name }} {% else %} None {% endif %}</i></h4></a>
+            </div>
           </div>
-          <div>
-            Project &nbsp;&nbsp;&nbsp;<a title="Active project" href='/projects'><h4><i>{% if active_project %} {{ active_project.name }} {% else %} None {% endif %}</i></h4></a>
-          </div>
-          <div>
-            Scenario &nbsp;<a title="Active scenario" href='/scenarios'><h4><i>{% if active_scenario %} {{ active_scenario.name }} {% else %} None {% endif %}</i></h4></a>
-          </div>
+          {% endif %}
+      </div>
+      <div class="col-md-4">
+        {% if show_status %}
+        <div id="status-container">
+          <label id="status-label" style="float: right; margin-left: 1em;"></label>
+          <a href='/status' style="float: right;"> <b> Status:</b> </a>
         </div>
         {% endif %}
-    </div>
-    <div class="col-md-4" style="padding-right: 2em; padding-top: 1em;">
-      <div title="Display Help texts" style="color: #464646; border: solid #808080 1px; border-radius: 5px; margin-left: 2em; padding: 0px 4px 3px 4px; box-shadow: inset 0 0 2px #808080; background: #f8f9fa; float: right;">
-        <i class="fa fa-question-circle" style="vertical-align: middle; font-size: 1.2em;"></i>
-        <input id="showHelp" onchange="toggleHelp()" type="checkbox" data-toggle="toggle" data-size="mini">
       </div>
-      {% if show_status %}
-      <label id="status-label" style="float: right; margin-left: 5px; width: 200px;"></label>
-      <a href='/status' style="float: right;"> <b> Status:</b> </a>
-      {% endif %}
     </div>
   </div>
   {% endif %}
-  <div class="row" style="margin-top: 10px;">
+  <div class="row" style="margin-top: 15em;">
     <div class="col-lg-{% if left_columns is not None %}{{ left_columns }}{% else %}2{% endif %}" style="padding-left: 2em;">
     {% block left-content %}
     {% endblock %}
@@ -158,7 +162,7 @@ toggleHelp();
           if (self.on_update) self.on_update(res);
           statusLabel.innerHTML = res.text;
           var color = (res.running) ? 'red' : (res.other_running_in_project.length > 0) ? 'orange' : 'green';
-          statusLabel.parentNode.style.color = color;
+          statusLabel.style.color = color;
           resolve(res)
         }, function(){reject(res)})
       })

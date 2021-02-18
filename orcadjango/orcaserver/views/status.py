@@ -81,15 +81,15 @@ class StatusView(TemplateView):
         lz = tz.tzlocal()
         if start_time:
             start_time = start_time.astimezone(lz).strftime(TIME_FORMAT)
-        status_text = (
-            'project not in use' if not is_running and len(other_running) == 0
-            else ('project is in use')
-        )
-        status_text += '<br>'
-        status_text += (
-            f'scenario "{scenario.name}" is currently run by user "{user_name}"'
-            if is_running else f'scenario "{scenario.name}" not in use'
-        )
+        status_text = '<div style="white-space: nowrap;">' + (
+            f' Project "{project.name}" not in use' if (
+                not is_running and len(other_running) == 0)
+            else f'Project "{project.name}" is in use'
+        ) + '</div>'
+        status_text += '<div style="white-space: nowrap;">' + (
+            f'Scenario "{scenario.name}" is currently run by user "{user_name}"'
+            if is_running else f'Scenario "{scenario.name}" not in use'
+        ) + '</div>'
         status = {
             'running': is_running,
             'other_running_in_project': [s.name for s in other_running],
