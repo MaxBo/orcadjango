@@ -47,6 +47,7 @@ button > i, a > i{
 
 .navbar {
   box-shadow: 0px 0px 10px 0px rgb(0 0 0 / 26%);
+  z-index: 100;
 }
 
 .navbar-brand {
@@ -165,4 +166,17 @@ button > i, a > i{
 .popover-header {
   background-color: #6cb3ff !IMPORTANT;
   color: white !IMPORTANT;
+}
+
+#project-settings {
+  display: inline-block;
+  padding: 1em 5em 1em 1em;
+  background-color: #f8f9fa;
+  border-radius: 0 0 3em 0;
+  box-shadow: 0px 0px 3px 0px rgb(0 0 0 / 20%);
+}
+
+#project-settings > div {
+  display: flex;
+  min-height: 2em;
 }
