@@ -3,7 +3,7 @@
 {% block content %}
   <h4>
   {% if request.session.scenario %}
-    List of all scenario parameters and their current values
+    List of all scenario parameters and their current values <div class="help" style="display: inline;">*</div>
   {% else %}
     No scenario selected
   {% endif %}
@@ -39,9 +39,11 @@
         <tr>
           <th scope="col">Group</th>
           <th scope="col">Parameter</th>
-          <th scope="col">Datatype</th>
-          <th scope="col">Class</th>
           <th scope="col">Description</th>
+          <th scope="col">Datatype</th>
+          {% if debug %}
+          <th scope="col">Class</th>
+          {% endif %}
           <th scope="col">Value</th>
           <th scope="col"></th>
           <th scope="col"></th>
@@ -58,10 +60,12 @@
              <td style="background-color: Snow {% if not forloop.last %} ;border-bottom-style: hidden" {% endif %}">
                  {% if forloop.first %} <b>{{ groupname }}</b> {% endif %}
              </td>
-             <td>{{ injectable.name }}</td>
+             <td><b>{{ injectable.name }}</b></td>
+             <td><i>{{ injectable.docstring }}</i></td>
              <td>{{ injectable.datatype }}</td>
+             {% if debug %}
              <td>{{ injectable.data_class }}</td>
-             <td>{{ injectable.docstring }}</td>
+             {% endif %}
              <td>{{ injectable.repr_html | safe | truncatechars:800 }}</td>
              {% if injectable.can_be_changed %}
              <td><a style="margin-left: 0.5em;" title="Edit parameter" href="{{ injectable.name }}?next={{request.path}}"><i class="fa fa-pencil" style="font-size: 1.5em;"></i></a></td>
@@ -85,4 +89,28 @@
     <p>no injectables available</p>
   {% endif %}
 
+{% endblock %}
+
+{% block right-content %}
+<div class="help">
+  <p style="margin-top: 5em;">
+  * This page gives an overview of the accessible input parameters for the calculation steps of the active module.
+  </p>
+  <p>
+  A newly created scenario starts with default parameter values. Some of the parameter defaults are set on the project level. You may reset the parameter values to this state by clicking "Reset to project defaults".
+  </p>
+  <p>
+  The tables displays string representations of the current values of the parameters. To <i>edit</i> the values of a parameter click the pencil icon in the corresponding row. You will be forwarded to a form to change the values.
+  </p>
+  <p>
+  Some of the parameters are not editable. Their values are derived from other parameters. This is indicated by a dark grey background of their rows.
+  </p>
+  <p>
+  You don't necessarily have to edit the parameters in here. You will still be able to edit the parameters later while configuring the steps at the "Steps &amp; Run" page.
+  </p>
+  <p>
+  In case programmatic changes were made to the underlying module you might have to synchronize your parameter settings with the updated module.
+  You will be notified at the "Steps &amp; Run" page if this is the case.
+  </p>
+</div>
 {% endblock %}
