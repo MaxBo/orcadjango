@@ -159,6 +159,9 @@
 {% endif %}
 
 <script>
+  const runBtn = document.getElementById('run-scenario'),
+        abortBtn = document.getElementById('abort-scenario');
+
   function openLogs(){
     $("#logs-modal").modal();
     reloadLogs();
@@ -243,6 +246,7 @@
   }
 
   function abort(){
+    abortBtn.disabled = true;
     fetch(abortUrl, {
       method: "POST",
       credentials: "same-origin",
@@ -262,7 +266,8 @@
               updateSteps();
             });
         }
-      else alert('Orca is already running! Abort it or wait.')
+      else alert('Orca is already running! Abort it or wait.');
+      runBtn.disabled = true;
     })
   }
 
@@ -333,15 +338,13 @@
     }).disableSelection();
   }
 
-  const run_button = document.getElementById('run-scenario'),
-        abort_button = document.getElementById('abort-scenario');
-
   $(document).ready(function() {
     $('[data-toggle="popover"]').popover({html: true})
     $.fn.dataTable.ext.errMode = 'none';
     status.on_update = function(res){
-      run_button.style.display = res.running ? 'None' : 'block';
-      abort_button.style.display = abort_button.style.border = animation.style.display = !res.running ? 'None' : 'block';
+      abortBtn.disabled = runBtn.disabled = false;
+      runBtn.style.display = res.running ? 'None' : 'block';
+      abortBtn.style.display = abortBtn.style.border = animation.style.display = !res.running ? 'None' : 'block';
     }
     status.update();
     updateSteps();
