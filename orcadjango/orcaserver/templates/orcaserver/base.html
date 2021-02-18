@@ -73,21 +73,23 @@
     </div>
   </nav>
   {% if user.is_authenticated %}
-  <div class="row" style="padding-left: 30px; margin-top: 10px;">
+  <div class="row">
     <div class="col-md-8">
         {% if show_project_settings %}
-        <div class="row">
-          module &nbsp;<a href='/settings'><i>{% if python_module %} {{ python_module }} {% else %} None {% endif %}</i></a>
-        </div>
-        <div class="row">
-          project &nbsp;<a href='/projects'><h4><i>{% if active_project %} {{ active_project.name }} {% else %} None {% endif %}</i></h4></a>
-        </div>
-        <div class="row">
-          scenario &nbsp;<a href='/scenarios'><h4><i>{% if active_scenario %} {{ active_scenario.name }} {% else %} None {% endif %}</i></h4></a>
+        <div id="project-settings">
+          <div>
+            Module &nbsp;&nbsp;<a href='/settings'><i>{% if python_module %} {{ python_module }} {% else %} None {% endif %}</i></a>
+          </div>
+          <div>
+            Project &nbsp;&nbsp;&nbsp;<a href='/projects'><h4><i>{% if active_project %} {{ active_project.name }} {% else %} None {% endif %}</i></h4></a>
+          </div>
+          <div>
+            Scenario &nbsp;<a href='/scenarios'><h4><i>{% if active_scenario %} {{ active_scenario.name }} {% else %} None {% endif %}</i></h4></a>
+          </div>
         </div>
         {% endif %}
     </div>
-    <div class="col-md-4" style="padding-right: 60px;">
+    <div class="col-md-4" style="padding-right: 2em; padding-top: 1em;">
       <div title="Display Help texts" style="color: #464646; border: solid #808080 1px; border-radius: 5px; margin-left: 2em; padding: 0px 4px 3px 4px; box-shadow: inset 0 0 2px #808080; background: #f8f9fa; float: right;">
         <i class="fa fa-question-circle" style="vertical-align: middle; font-size: 1.2em;"></i>
         <input id="showHelp" onchange="toggleHelp()" type="checkbox" data-toggle="toggle" data-size="mini">
