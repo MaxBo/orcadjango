@@ -161,3 +161,8 @@ button > i, a > i{
   height: 2em;
   line-height: 1.9em;
 }
+
+.popover-header {
+  background-color: #6cb3ff !IMPORTANT;
+  color: white !IMPORTANT;
+}

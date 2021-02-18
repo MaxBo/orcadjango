@@ -94,7 +94,7 @@
         <td class="injectables">
           <div class='sunken'>
             {% for inj in step.injectables %}
-            <a title="{{ inj.value }}" {% if not inj.valid %} href="/injectables" style="color: red;" {% else %} href="{{ inj.url }}?next={{request.path}}" {% endif %}>
+            <a title="{{ inj.value }}" {% if not inj.valid %} href="/injectables" style="color: red!IMPORTANT;" {% else %} href="{{ inj.url }}?next={{request.path}}" {% endif %}>
               {{ inj.name }} {% if not inj.valid %} (not valid) {% endif %}
             </a> <br>
             {% endfor %}
@@ -163,7 +163,7 @@
 
 <script>
   const runBtn = document.getElementById('run-scenario'),
-        abortBtn = document.getElementById('abort-scenario');
+    abortBtn = document.getElementById('abort-scenario');
 
   function openLogs(){
     $("#logs-modal").modal();
@@ -185,44 +185,44 @@
     var logsDiv = document.getElementById('logs-body');
     logsDiv.innerHTML = '<h4>Updating...</h4>';
     fetch('/logs/{{ active_scenario.id }}/').then(function(res){
-        return res.text()
+      return res.text()
     }).then(function(html){
-        var modalBody = document.getElementById('logs-body');
-        modalBody.innerHTML = html;
-        var table = modalBody.querySelector('table');
-        $(table).DataTable({
-          'aoColumnDefs': [{'aTargets': [0], 'iDataSort': 3 }],
-          //'columnDefs': [{'targets': [3], 'visible': false }],
-          'order': [[0, 'desc']]
-        });
+      var modalBody = document.getElementById('logs-body');
+      modalBody.innerHTML = html;
+      var table = modalBody.querySelector('table');
+      $(table).DataTable({
+        'aoColumnDefs': [{'aTargets': [0], 'iDataSort': 3 }],
+        //'columnDefs': [{'targets': [3], 'visible': false }],
+        'order': [[0, 'desc']]
+      });
     });
   }
 
   var chatSocket = new WebSocket('{{ log_socket }}'),
-      logArea = document.querySelector('#wslog');
+    logArea = document.querySelector('#wslog');
 
   chatSocket.onmessage = function(e) {
-      var data = JSON.parse(e.data),
-          message = data['message'],
-          level = data['level'],
-          p = document.createElement('p');
-      p.innerHTML = message;
-      p.style.color = (level == 'ERROR') ? 'red': (level == 'WARNING') ? 'orange': (level == 'DEBUG') ? 'grey' : 'black';
-      logArea.appendChild(p);
-      logArea.scrollTop = logArea.scrollHeight;
+    var data = JSON.parse(e.data),
+      message = data['message'],
+      level = data['level'],
+      p = document.createElement('p');
+    p.innerHTML = message;
+    p.style.color = (level == 'ERROR') ? 'red': (level == 'WARNING') ? 'orange': (level == 'DEBUG') ? 'grey' : 'black';
+    logArea.appendChild(p);
+    logArea.scrollTop = logArea.scrollHeight;
   };
 
   chatSocket.onclose = function(e) {
-      console.error('Chat socket closed unexpectedly');
+    console.error('Chat socket closed unexpectedly');
   };
 
   var stepsTable = document.getElementById('steps-scenario'),
-      stepsAvailableTable = document.getElementById('steps-available'),
-      stepUrl = '/steps/',
-      stepDetailUrl = '/steps/detail/',
-      abortUrl = '/steps/abort/{{ active_scenario.id }}/',
-      csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value,
-      stepsInput = document.getElementById('selected-steps');
+    stepsAvailableTable = document.getElementById('steps-available'),
+    stepUrl = '/steps/',
+    stepDetailUrl = '/steps/detail/',
+    abortUrl = '/steps/abort/{{ active_scenario.id }}/',
+    csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value,
+    stepsInput = document.getElementById('selected-steps');
 
   // highlight row in table on click
   function highlightRow(target){
@@ -239,13 +239,13 @@
 
   // toggle is_active in row
   function toggleActiveRow(checkbox, stepId){
-      var data = {is_active: checkbox.checked};
-      fetch(stepDetailUrl+stepId+'/', {
-        method: "PATCH",
-        body: JSON.stringify(data),
-        credentials: "same-origin",
-        headers: { "X-CSRFToken": csrfToken }
-      });
+    var data = {is_active: checkbox.checked};
+    fetch(stepDetailUrl+stepId+'/', {
+      method: "PATCH",
+      body: JSON.stringify(data),
+      credentials: "same-origin",
+      headers: { "X-CSRFToken": csrfToken }
+    });
   }
 
   function abort(){
@@ -260,15 +260,15 @@
   function runScenario(){
     status.update().then(function(res){
       if (!res.running){
-          fetch('/steps/run/', {
-              method: "POST",
-              credentials: "same-origin",
-              headers: { "X-CSRFToken": csrfToken }
-            }).then(function(){
-              status.update();
-              updateSteps();
-            });
-        }
+        fetch('/steps/run/', {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "X-CSRFToken": csrfToken }
+        }).then(function(){
+          status.update();
+          updateSteps();
+        });
+      }
       else alert('Orca is already running! Abort it or wait.');
       runBtn.disabled = true;
     })
@@ -280,11 +280,11 @@
     fetch('/steps/list/').then(data=>{return data.json()}).then(function(res){
       res.forEach(function(step){
         var row = stepsTable.querySelector('tr[data-id="' + step.id + '"]'),
-            startCell = row.querySelector('.start'),
-            finishCell = row.querySelector('.finish'),
-            activeCell = row.querySelector('.is_active'),
-            activeCheck = activeCell.querySelector('input'),
-            successCell = row.querySelector('.success');
+          startCell = row.querySelector('.start'),
+          finishCell = row.querySelector('.finish'),
+          activeCell = row.querySelector('.is_active'),
+          activeCheck = activeCell.querySelector('input'),
+          successCell = row.querySelector('.success');
 
         startCell.innerHTML = step.started;
         finishCell.innerHTML = step.finished;
@@ -293,7 +293,7 @@
         if (step.finished) {
           successCell.style.color = (step.success) ? 'green' : 'red';
           var icon = document.createElement('i');
-              faCls = (step.success) ? 'fa-check' : 'fa-ban';
+            faCls = (step.success) ? 'fa-check' : 'fa-ban';
           icon.classList.add('fa', faCls);
           successCell.appendChild(icon);
           successCell.title = (step.success) ? 'last run successful' : 'last run failed';
@@ -310,17 +310,17 @@
       var $originals = tr.children();
       var $helper = tr.clone();
       $helper.children().each(function(index) {
-          $(this).width($originals.eq(index).width())
+        $(this).width($originals.eq(index).width())
       });
       return $helper;
     };
     function updateOrder(e, ui) {
       var data = [],
-          rows = stepsTable.querySelectorAll('tbody tr'),
-          i = 0;
+        rows = stepsTable.querySelectorAll('tbody tr'),
+        i = 0;
       rows.forEach(function(row){
         var index = row.querySelector('.circle-number'),
-            id = row.dataset['id'];
+          id = row.dataset['id'];
         index.innerHTML = i + 1;
         i += 1;
         data.push({ id: id, order: i});
@@ -345,16 +345,16 @@
     $('[data-toggle="popover"]').popover({html: true})
     $.fn.dataTable.ext.errMode = 'none';
     status.on_update = function(res){
-		abortBtn.disabled = runBtn.disabled = false;
-		runBtn.style.display = res.running ? 'None' : 'block';
-		abortBtn.style.display = abortBtn.style.border = animation.style.display = !res.running ? 'None' : 'block';
-	    if (!res.running) {
-	        successImg.style.display = (res.success) ? 'block' : 'None';
-	        // only show fail image if run was already started at some point (success is always false after creation of scenario)
-	        failImg.style.display = (!res.success && res.last_start) ? 'block' : 'None';
-	      }
-	      else
-	        successImg.style.display = failImg.style.display = 'None';
+        abortBtn.disabled = runBtn.disabled = false;
+        runBtn.style.display = res.running ? 'None' : 'block';
+        abortBtn.style.display = abortBtn.style.border = animation.style.display = !res.running ? 'None' : 'block';
+        if (!res.running) {
+          successImg.style.display = (res.success) ? 'block' : 'None';
+          // only show fail image if run was already started at some point (success is always false after creation of scenario)
+          failImg.style.display = (!res.success && res.last_start) ? 'block' : 'None';
+        }
+        else
+          successImg.style.display = failImg.style.display = 'None';
     }
     status.update();
     updateSteps();
@@ -363,7 +363,7 @@
   });
 
   var BORDER_SIZE = 4,
-      logDiv = document.querySelector(".bottom-resizable");
+    logDiv = document.querySelector(".bottom-resizable");
 
   let m_pos;
   function resize(e){
@@ -380,7 +380,7 @@
   }, false);
 
   document.addEventListener("mouseup", function(){
-      document.removeEventListener("mousemove", resize, false);
+    document.removeEventListener("mousemove", resize, false);
   }, false);
 
 </script>
