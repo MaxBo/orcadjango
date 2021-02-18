@@ -3,6 +3,7 @@ from django.views.generic.edit import FormView
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
+from django.conf import settings
 from collections import OrderedDict
 import json
 
@@ -31,6 +32,7 @@ class InjectablesView(ProjectMixin, ListView):
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
         kwargs['show_status'] = True
+        kwargs['debug'] = settings.DEBUG
         return kwargs
 
     def get_queryset(self):
