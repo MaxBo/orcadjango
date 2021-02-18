@@ -11,12 +11,15 @@
   {% if grouped_injectables %}
     <form action='' method="post">
       {% csrf_token %}
-      <button type="button" value="reset" name="reset" class="btn btn-warning" title="Reset all parameter values to their project defaults." data-toggle="modal" data-target="#confirm-reset-modal">
-        <i class="fa fa-undo"></i>Reset to project defaults
-      </button>
-      <button type="submit" value="refresh" name="refresh" class="btn btn-primary" title="Synchronize all parameter meta data with the module. Current parameter values are kept.">
-        <i class="fa fa-refresh"></i>Synchronize
-      </button>
+      <div class="row">
+        <a class="btn btn-secondary" style="margin-left: 1em;" href="/steps" title="Proceed to the next page">Proceed ></a>
+        <button type="button" style="margin-left: auto; margin-right: 1em;" value="reset" name="reset" class="btn btn-warning" title="Reset all parameter values to their project defaults." data-toggle="modal" data-target="#confirm-reset-modal">
+          <i class="fa fa-undo"></i>Reset to project defaults
+        </button>
+        <button type="submit" value="refresh" name="refresh" class="btn btn-primary" title="Synchronize all parameter meta data with the module. Current parameter values are kept.">
+          <i class="fa fa-refresh"></i>Synchronize
+        </button>
+      </div>
       <div class="modal fade" id="confirm-reset-modal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">

@@ -6,10 +6,10 @@ USE_TZ = True
 ORCA_MODULES['default'].update({'path': 'extractiontools.steps.extract_data'})
 
 ORCA_MODULES['available'].update({
-    'extraction tools': {
+    'Extraction Tools': {
         'path': 'extractiontools.steps.extract_data',
-        'description': ('Collection of tools to extract data from the europe '
-                        'database and to process it.'),
+        'description': ('Collection of tools to extract data from a europe-wide '
+                        'database and to process the extracted data.'),
         'init': ['database', 'target_srid', 'project_area']
     }
 })

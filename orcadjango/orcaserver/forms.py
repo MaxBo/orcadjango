@@ -31,7 +31,7 @@ class OrcaSettingsForm(forms.Form):
         max_length=100,
         widget=forms.widgets.TextInput(
             attrs={'size': 100, }),
-        label='Module to activate',
+        label='Module path',
         initial=get_python_module,
     )
 
