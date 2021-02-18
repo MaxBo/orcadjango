@@ -106,6 +106,11 @@ class ProjectMixin:
         project = self.get_project()
         scenario = self.get_scenario()
         module = self.get_module()
+        # get pretty name of module
+        if settings.ORCA_MODULES:
+            for k, v in settings.ORCA_MODULES['available'].items():
+                if v.get('path') == module:
+                    module = k
         kwargs['active_project'] = project
         kwargs['active_scenario'] = scenario
         kwargs['python_module'] = module

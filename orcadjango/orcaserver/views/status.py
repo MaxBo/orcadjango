@@ -1,6 +1,7 @@
 from django.views.generic import TemplateView
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse, HttpResponseNotFound
+from django.conf import settings
 
 from orcaserver.models import Scenario, Run
 from orcaserver.management import OrcaManager
@@ -31,6 +32,10 @@ class StatusView(TemplateView):
         manager = OrcaManager()
         runs = Run.objects.all()
         runs_json = []
+        module_names = {}
+        if settings.ORCA_MODULES:
+            for k, v in settings.ORCA_MODULES['available'].items():
+                module_names[v['path']] = k
         for run in runs:
             started = run.started
             finished = run.finished
@@ -43,7 +48,7 @@ class StatusView(TemplateView):
             scenario = run.scenario
             project = scenario.project
             runs_json.append({
-                'module': project.module,
+                'module': module_names.get(project.module, project.module),
                 'project_name': project.name,
                 'scenario_name': scenario.name,
                 'scenario_id': scenario.id,
