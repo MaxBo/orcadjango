@@ -90,6 +90,7 @@ class StatusView(TemplateView):
             'other_running_in_project': [s.name for s in other_running],
             'text': status_text,
             'last_user': user_name,
-            'last_start': start_time
+            'last_start': start_time,
+            'success': run.success
         }
         return JsonResponse(status)
