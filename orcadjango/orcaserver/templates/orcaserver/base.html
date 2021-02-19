@@ -125,6 +125,7 @@
 </body>
 
 <script>
+{% if user.is_authenticated %}
 var showHelpCheck = document.getElementById('showHelp');
 function toggleHelp(){
   var showHelp = showHelpCheck.checked,
@@ -139,6 +140,7 @@ if (document.cookie.includes('showHelp')){
   $(showHelpCheck).bootstrapToggle((showHelp == "true") ? 'on' : 'off');
 }
 toggleHelp();
+{% endif %}
 {% if show_status and active_scenario%}
   var statusUrl = '/status/detail/{{ active_scenario.id }}/',
       statusLabel = document.getElementById('status-label');
