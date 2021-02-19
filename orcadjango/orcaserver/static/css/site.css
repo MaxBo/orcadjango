@@ -76,7 +76,9 @@ button > i, a > i{
   padding: 0 2em 0 2em;
   position: fixed;
   bottom: 0; left: 0; right: 0;
-  background-color: white;
+  height: 246px;
+  z-index: 2;
+  background-color: rgb(248, 249, 250);
 }
 
 .bottom-resizable:after {
@@ -94,7 +96,7 @@ button > i, a > i{
   width: 100%;
   overflow: auto;
   white-space: nowrap;
-  background-color: #fafafa;
+  background-color: white;
   box-shadow: inset 0 0 5px #d5d5d5;
 }
 
@@ -210,4 +212,10 @@ button > i, a > i{
   background: white;
   border-radius: 1em;
   box-shadow: 0px 0px 3px 0px rgb(0 0 0 / 20%);
+}
+
+.log-dock{
+  height: 246px;
+  z-index: 2;
+  background-color: rgb(248, 249, 250);
 }
