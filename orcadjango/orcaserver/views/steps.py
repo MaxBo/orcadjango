@@ -143,7 +143,7 @@ class StepsView(ProjectMixin, TemplateView):
                                     name=step, order=i)
                 i += 1
         elif request.POST.get('remove'):
-            step_id = request.POST.get('step')
+            step_id = request.POST.get('remove')
             step = Step.objects.get(id=step_id)
             step.delete()
         elif request.POST.get('abort'):

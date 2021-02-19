@@ -109,8 +109,7 @@
         <td>
           <form action='' method="post">
             {% csrf_token %}
-            <input type="hidden" name="step" value="{{ step.id }}">
-            <button title="Remove Step" type="submit" name="remove" class="btn btn-outline-danger">
+            <button title="Remove Step" type="submit" value="{{ step.id }}" name="remove" class="btn btn-outline-danger">
               <i class="fa fa-trash-o" style="margin: 0;"></i>
             </button>
           </form>
