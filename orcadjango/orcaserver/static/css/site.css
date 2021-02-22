@@ -184,7 +184,7 @@ button > i, a > i{
   border-radius: 0 0 6em 0;
 }
 
-#project-settings > div {
+#project-settings > div:not(.module-meta) {
   display: flex;
   min-height: 2em;
 }
@@ -204,6 +204,7 @@ button > i, a > i{
   pointer-events: auto;
 }
 
+
 .run-container{
   margin-top: 0.3em;
   margin-left: 2em;
@@ -218,4 +219,20 @@ button > i, a > i{
   height: 246px;
   z-index: 2;
   background-color: rgb(248, 249, 250);
+}
+
+
+.module-meta {
+  max-width: 0px;
+  height: 0px;
+  transition: height 0.5s, max-width 1s, opacity 0.1s;
+  opacity: 0;
+}
+
+.navbar-wrapper:hover .module-meta{
+  opacity: 1;
+  width: auto;
+  transition: height 0.5s, max-width 1s, opacity 2s;
+  max-width: 30em;
+  height: 2em;
 }

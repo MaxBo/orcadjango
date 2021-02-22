@@ -106,14 +106,20 @@ class ProjectMixin:
         project = self.get_project()
         scenario = self.get_scenario()
         module = self.get_module()
+        module_meta = {}
         # get pretty name of module
         if settings.ORCA_MODULES:
             for k, v in settings.ORCA_MODULES['available'].items():
                 if v.get('path') == module:
                     module = k
+                    module_meta = v
         kwargs['active_project'] = project
         kwargs['active_scenario'] = scenario
         kwargs['python_module'] = module
+        kwargs['data_text'] = module_meta.get('data_text')
+        data_url = module_meta.get('data_url', {})
+        kwargs['data_url_name'] = data_url.get('name', data_url.get('url'))
+        kwargs['data_url'] = data_url.get('url')
         kwargs['show_project_settings'] = True
         return kwargs
 

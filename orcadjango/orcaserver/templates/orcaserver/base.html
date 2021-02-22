@@ -83,14 +83,24 @@
           {% if show_project_settings %}
           <div id="project-settings">
             <div>
-              Module &nbsp;&nbsp;<a title="Active module" href='/settings'><i>{% if python_module %} {{ python_module }} {% else %} None {% endif %}</i></a>
-            </div>
-            <div>
               Project &nbsp;&nbsp;&nbsp;<a title="Active project" href='/projects'><h4><i>{% if active_project %} {{ active_project.name }} {% else %} None {% endif %}</i></h4></a>
             </div>
             <div>
               Scenario &nbsp;<a title="Active scenario" href='/scenarios'><h4><i>{% if active_scenario %} {{ active_scenario.name }} {% else %} None {% endif %}</i></h4></a>
             </div>
+            <div class="module-meta" style="margin-bottom: 1em">
+              Module &nbsp;&nbsp;<a title="Active module" href='/settings'><i>{% if python_module %} {{ python_module }} {% else %} None {% endif %}</i></a>
+            </div>
+            {% if data_url %}
+            <div class="module-meta">
+              Results:&nbsp;<a href="{{ data_url }}" target="_blank"> {{ data_url_name }}</a>
+            </div>
+            {% endif %}
+            {% if data_text %}
+              {% for d in data_text %}
+              <div class="module-meta">{{ d }} </div>
+              {% endfor %}
+            {% endif %}
           </div>
           {% endif %}
       </div>
@@ -113,7 +123,6 @@
     <div class="col-lg-{% if center_columns is not None %}{{ center_columns }}{% else %}7{% endif %}" style="padding-left: 2em;">
 
       {% autoescape off %}{% bootstrap_messages %}{% endautoescape %}
-
       {% block content %}{% endblock %}
     </div>
     <div class="col-lg-{% if right_columns is not None %}{{ right_columns }}{% else %}2{% endif %}" style="padding-left: 2em;">
