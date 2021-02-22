@@ -61,6 +61,27 @@
     </div>
   </div>
 </form>
+<script>
+  var table = document.getElementById('projects'),
+      projectInput = document.querySelector('input[name="project"]'),
+      selectBtn = document.querySelector('button[name="select"]'),
+      deleteBtn = document.getElementById('deleteBtn');
+  // highlight row in table on click
+  function highlightRow(target){
+    for(row of table.rows){
+      if (row!=target) row.classList.remove('selected');
+    }
+    target.classList.toggle('selected');
+    var isSelected = target.classList.contains('selected');
+    projectInput.value = isSelected ? target.dataset['id'] : null;
+    selectBtn.disabled = !isSelected;
+    deleteBtn.disabled = !isSelected;
+  }
+</script>
+
+{% endblock %}
+
+{% block right-content %}
 <div class="help">
   <p style="margin-top: 5em;">
   * On the highest level Miraculix configurations are organized in projects. Projects set the outer frame of parameter and run configurations. Only projects created for the currently active module (see top left) are visible in here.
@@ -82,22 +103,4 @@
     To <i>edit</i> an existing project and its settings click on the pencil icon in the corresponding row within the table.
   </p>
 </div>
-<script>
-  var table = document.getElementById('projects'),
-      projectInput = document.querySelector('input[name="project"]'),
-      selectBtn = document.querySelector('button[name="select"]'),
-      deleteBtn = document.getElementById('deleteBtn');
-  // highlight row in table on click
-  function highlightRow(target){
-    for(row of table.rows){
-      if (row!=target) row.classList.remove('selected');
-    }
-    target.classList.toggle('selected');
-    var isSelected = target.classList.contains('selected');
-    projectInput.value = isSelected ? target.dataset['id'] : null;
-    selectBtn.disabled = !isSelected;
-    deleteBtn.disabled = !isSelected;
-  }
-</script>
-
 {% endblock %}
