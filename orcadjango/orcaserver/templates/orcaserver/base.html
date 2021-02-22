@@ -93,7 +93,7 @@
             </div>
             {% if data_url %}
             <div class="module-meta">
-              Results:&nbsp;<a href="{{ data_url }}" target="_blank"> {{ data_url_name }}</a>
+              {{ data_url_name }}:&nbsp;<a title="{{ data_url_name }}" href="{{ data_url_href }}" target="_blank"> {{ data_url }}</a>
             </div>
             {% endif %}
             {% if data_text %}

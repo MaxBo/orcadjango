@@ -14,13 +14,14 @@ ORCA_MODULES['available'].update({
         'init': ['database', 'target_srid', 'project_area'],
         'data_folder': '/opt/dockerfiles/...',
         'data_url': {
-            'name': 'miraculix.ggr-planung.de/results',
-            'url': f'https://{os.environ.get("APACHE_USER")}:'
+            'name': 'Results',
+            'url': 'miraculix.ggr-planung.de/results',
+            'href': f'https://{os.environ.get("APACHE_USER")}:'
             f'{os.environ.get("APACHE_PASS")}@miraculix.ggr-planung.de/results',
         },
         'data_text': [f'PostGIS host: {DB_HOST}',
                       f'PostGIS port: {DB_PORT}',
-                      f'PostGIS user: {DB_USER}']
+                      f'PostGIS user: {DB_USER} (see GGR KeePass)']
     }
 })
 

@@ -118,7 +118,8 @@ class ProjectMixin:
         kwargs['python_module'] = module
         kwargs['data_text'] = module_meta.get('data_text')
         data_url = module_meta.get('data_url', {})
-        kwargs['data_url_name'] = data_url.get('name', data_url.get('url'))
+        kwargs['data_url_name'] = data_url.get('name', 'Data')
+        kwargs['data_url_href'] = data_url.get('href', data_url.get('url'))
         kwargs['data_url'] = data_url.get('url')
         kwargs['show_project_settings'] = True
         return kwargs

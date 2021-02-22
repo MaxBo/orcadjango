@@ -13,7 +13,7 @@
     <form action='' method="post">
       {% csrf_token %}
       <div class="row">
-        <a class="btn btn-secondary" style="margin-left: 1em;" href="/steps" title="Proceed to the next page">Proceed >></a>
+        <a class="btn btn-primary" style="margin-left: 1em;" href="/steps" title="Proceed to the next page">Proceed >></a>
         <button type="button" style="margin-left: auto; margin-right: 1em;" value="reset" name="reset" class="btn btn-warning" title="Reset all parameter values to their project defaults." data-toggle="modal" data-target="#confirm-reset-modal">
           <i class="fa fa-undo"></i>Reset to project defaults
         </button>
@@ -98,23 +98,25 @@
 {% block right-content %}
 <div class="help">
   <p style="margin-top: 5em;">
-  * This page gives an overview of the accessible input parameters for the calculation steps of the active module.
+  * This page gives an <b>overview</b> of the accessible input parameters for the calculation steps of the active module.
+  <b>You don't have to edit the parameters in here</b> (but you can). You will still be able to edit the parameters later while configuring the steps at the <a href="/steps"><b>Steps &amp; Run</b></a> page.
+  Press the "Proceed" button to proceed to "Steps &amp; Run".
   </p>
   <p>
-  A newly created scenario starts with default parameter values. Some of the parameter defaults are set on the project level. You may reset the parameter values to this state by clicking "Reset to project defaults".
+  A newly created scenario starts with <b>default</b> parameter values. Some of the parameter defaults are set on the project level. You may <b>reset</b> the parameter values to this state by clicking "Reset to project defaults".
   </p>
   <p>
-  The tables displays string representations of the current values of the parameters. To <i>edit</i> the values of a parameter click the pencil icon in the corresponding row. You will be forwarded to a form to change the values.
+  The tables displays string representations of the current values of the parameters. To <b>edit</b> the values of a parameter click the pencil icon in the corresponding row. You will be forwarded to a form to change the values.
   </p>
   <p>
   Some of the parameters are not editable. Their values are derived from other parameters. This is indicated by a dark grey background of their rows.
   </p>
   <p>
-  You don't necessarily have to edit the parameters in here. You will still be able to edit the parameters later while configuring the steps at the "Steps &amp; Run" page. Press "Proceed" to proceed to the "Steps &amp; Run" page.
+  In case programmatic changes were made to the underlying module you might have to <b>synchronize</b> your parameter settings with the updated module.
+  You will be notified at the "Steps &amp; Run" page if this is the case.
   </p>
   <p>
-  In case programmatic changes were made to the underlying module you might have to synchronize your parameter settings with the updated module.
-  You will be notified at the "Steps &amp; Run" page if this is the case.
+    <i>You can turn off these help texts with the switch in the top right corner.</i>
   </p>
 </div>
 {% endblock %}
