@@ -5,10 +5,6 @@
   top: 50%;
 }
 
-/*.select th, .select td {*/
-  /*border: 1px solid black;*/
-/*}*/
-
 .select tbody tr {
   cursor: pointer;
 }
@@ -30,8 +26,39 @@ button > i, a > i{
   color: white;
 }
 
-#steps-available{
+.card-header{
+  padding: .25em .5em;
+}
+
+.card-header:hover {
+  background-color: snow;
+}
+
+#steps-available table{
   font-size: 12;
+  width:100%;
+  /*table-layout: fixed;*/
+}
+
+#steps-available button{
+  font-size: 14 !IMPORTANT;
+}
+
+#steps-available button:focus{
+  box-shadow: none !IMPORTANT;
+}
+
+.panel-title::after {
+  content: "\f105";
+  color: #333;
+  font-family: "FontAwesome";
+  font-weight: bold;
+  font-size: 1.2em !IMPORTANT;
+  float: right;
+}
+
+.panel-title[aria-expanded="true"]::after {
+  content: "\f107";
 }
 
 #injectables{
@@ -227,6 +254,7 @@ button > i, a > i{
   height: 0px;
   transition: height 0.5s, max-width 1s, opacity 0.1s;
   opacity: 0;
+  pointer-events: none;
 }
 
 .navbar-wrapper:hover .module-meta{
@@ -235,4 +263,5 @@ button > i, a > i{
   transition: height 0.5s, max-width 1s, opacity 2s;
   max-width: 30em;
   height: 2em;
+  pointer-events: auto;
 }

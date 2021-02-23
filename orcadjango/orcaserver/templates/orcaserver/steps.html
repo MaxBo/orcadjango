@@ -11,39 +11,37 @@
   <div class="row" style="padding-left: 1em;">
     <h6 style="float: left;">Available Steps</h6>
   </div>
-  <form action='' method="post">
+  <form action='' method="post" style="width: 100%;">
     {% csrf_token %}
     <input type='hidden' name="steps" id="selected-steps"/>
     {% if steps_count > 10 %}
-    <input class="btn btn-secondary btn-sm" title="Add selected steps" type="submit" name='add' value=">>" style="right: -40; top: 20em; position: absolute; padding: 0.2em; padding-top: 0em; z-index: 1;"/>
+    <input class="btn btn-secondary btn-sm" title="Add selected steps" type="submit" name='add' value=">>" style="right: -40; top: 10em; position: absolute; padding: 0.2em; padding-top: 0em; z-index: 1;"/>
     {% endif %}
-    {% if steps_count > 20 %}
-    <input class="btn btn-secondary btn-sm" title="Add selected steps" type="submit" name='add' value=">>" style="right: -40; top: 60em; position: absolute; padding: 0.2em; padding-top: 0em; z-index: 1;"/>
-    {% endif %}
-    <div>  <!--style="overflow-x: scroll;"-->
-      <table class="table select" id="steps-available">
-        <thead>
-          <tr>
-            <th>Group</th>
-            <th>Name</th>
-            <!--<th>Required</th>-->
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for group, steps in steps_available.items %}
-          {% for step in steps %}
-            <tr data-toggle="popover" data-trigger="hover" data-placement="right" onclick="highlightRow(this)" data-step="{{ step.name }}" title="{{ step.name }}"
-            data-content="{{ step.description }} {% if step.required %} <br><br> <i>requires Step(s) <b>{{ step.required }}</b> to be run before </i>{% endif %}">
-              <td style="background-color: Snow; color: black; {% if not forloop.last %}border-bottom-style: hidden{% endif %}"> {% if forloop.first %} <b>{{ group }}</b> {% endif %} </td>
-              <td><b> {{ step.name }} </b></td>
-              <!--<td> {{ step.required }} </td>-->
-              <td> <i>{{ step.description }}</i> </td>
-            </tr>
-          {% endfor %}
-        {% endfor %}
-        </tbody>
-      </table>
+    <div class="panel-group" id="steps-available">
+      {% for group, steps in steps_available.items %}
+      <div class="card">
+        <div class="card-header">
+          <h2 class="mb-0">
+            <button title="click to toggle open" class="panel-title btn btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}">
+              <b>{{ group }}</b>
+            </button>
+          </h2>
+        </div>
+        <div id="collapse{{ forloop.counter }}" class="card-collapse collapse">
+          <div class="card-body">
+              <table class="table select available"><tbody>
+              {% for step in steps %}
+                <tr data-toggle="popover" data-trigger="hover" data-placement="right" onclick="highlightRow(this)" data-step="{{ step.name }}" title="{{ step.name }}"
+                data-content="{{ step.description }} {% if step.required %} <br><br> <i>requires Step(s) <b>{{ step.required }}</b> to be run before </i>{% endif %}">
+                  <td><b> {{ step.name }} </b></td>
+                  <td> <i>{{ step.description }}</i> </td>
+                </tr>
+              {% endfor %}
+              </tbody></table>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
     </div>
     <input class="btn btn-secondary btn-sm" title="Add selected steps" type="submit" name='add' value="Add >>" style="float: right; margin-top: 10px;"/>
   </form>
@@ -128,7 +126,6 @@
 <div class="bottom-resizable" style="height: 15em; z-index: 2;">
   <div style="width: 100%;">
     <h5 style="float: left; margin-top: 15px;"> Log </h5>
-    <!--<button onclick="clearLog()" class="btn btn-secondary" style="margin: 10px; float: right;">Clear</button>-->
     <button onclick="openLogs()" class="btn btn-primary btn-sm"  style="margin: 10px; float: right;">
       <i class="fa fa-file-text-o"></i>History
     </button>
@@ -216,7 +213,7 @@
   };
 
   var stepsTable = document.getElementById('steps-scenario'),
-    stepsAvailableTable = document.getElementById('steps-available'),
+    stepsAvailableTables = document.querySelectorAll('.table.available'),
     stepUrl = '/steps/',
     stepDetailUrl = '/steps/detail/',
     abortUrl = '/steps/abort/{{ active_scenario.id }}/',
@@ -227,12 +224,14 @@
   function highlightRow(target){
     target.classList.toggle('selected');
     var inputStr = '';
-    for(row of stepsAvailableTable.rows){
-      if (row.classList.contains('selected')){
-        var step = row.dataset['step'];
-        inputStr += step + ',';
+    stepsAvailableTables.forEach(function(table){
+      for(row of table.rows){
+        if (row.classList.contains('selected')){
+          var step = row.dataset['step'];
+          inputStr += step + ',';
+        }
       }
-    }
+    })
     stepsInput.value = inputStr;
   }
 
@@ -344,16 +343,16 @@
     $('[data-toggle="popover"]').popover({html: true})
     $.fn.dataTable.ext.errMode = 'none';
     status.on_update = function(res){
-        abortBtn.disabled = runBtn.disabled = false;
-        runBtn.style.display = res.running ? 'None' : 'block';
-        abortBtn.style.display = abortBtn.style.border = animation.style.display = !res.running ? 'None' : 'block';
-        if (!res.running) {
-          successImg.style.display = (res.success) ? 'block' : 'None';
-          // only show fail image if run was already started at some point (success is always false after creation of scenario)
-          failImg.style.display = (!res.success && res.last_start) ? 'block' : 'None';
-        }
-        else
-          successImg.style.display = failImg.style.display = 'None';
+      abortBtn.disabled = runBtn.disabled = false;
+      runBtn.style.display = res.running ? 'None' : 'block';
+      abortBtn.style.display = abortBtn.style.border = animation.style.display = !res.running ? 'None' : 'block';
+      if (!res.running) {
+        successImg.style.display = (res.success) ? 'block' : 'None';
+        // only show fail image if run was already started at some point (success is always false after creation of scenario)
+        failImg.style.display = (!res.success && res.last_start) ? 'block' : 'None';
+      }
+      else
+        successImg.style.display = failImg.style.display = 'None';
     }
     status.update();
     updateSteps();
