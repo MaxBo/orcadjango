@@ -22,11 +22,11 @@ button > i, a > i{
 }
 
 .table tbody tr:hover{
-  background-color: snow;
+  background-color: snow !IMPORTANT;
 }
 
 .select tr.selected, .select tr.selected:hover {
-  background-color: #87c1ff !IMPORTANT;
+  background-color: salmon !IMPORTANT;
   color: white;
 }
 
@@ -43,6 +43,11 @@ button > i, a > i{
   width:100%;
   /*table-layout: fixed;*/
 }
+
+#steps-available tr:first-child > td{
+  border-top: none;
+}
+
 
 #steps-available button{
   font-size: 14 !IMPORTANT;
@@ -72,7 +77,7 @@ button > i, a > i{
 .navbar-nav .nav-link.active {
   font-size: 18;
   font-weight: bold;
-  color: #007bff !IMPORTANT;
+  color: salmon !IMPORTANT;
   margin-top: -0.1em;
 }
 
@@ -207,7 +212,7 @@ button > i, a > i{
 }
 
 .popover-header {
-  background-color: #6cb3ff !IMPORTANT;
+  background-color: salmon !IMPORTANT;
   color: white !IMPORTANT;
 }
 
