@@ -110,11 +110,12 @@ button > i, a > i{
 
 .bottom-resizable{
   padding: 0 2em 0 2em;
+  opacity: 0.9;
   position: fixed;
   bottom: 0; left: 0; right: 0;
   height: 246px;
   z-index: 2;
-  background-color: white;
+  background-color: #f8f9fa;
   /*background-color: rgb(248, 249, 250);*/
 }
 
@@ -243,7 +244,7 @@ button > i, a > i{
 
 
 .run-container{
-  margin-top: 0.3em;
+  margin-top: -5em;
   margin-left: 2em;
   padding: 2em;
   padding-bottom: 4em;
