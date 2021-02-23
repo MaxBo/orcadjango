@@ -5,6 +5,10 @@
   top: 50%;
 }
 
+body {
+  overflow-x: hidden;
+}
+
 .select tbody tr {
   cursor: pointer;
 }
@@ -105,7 +109,8 @@ button > i, a > i{
   bottom: 0; left: 0; right: 0;
   height: 246px;
   z-index: 2;
-  background-color: rgb(248, 249, 250);
+  background-color: white;
+  /*background-color: rgb(248, 249, 250);*/
 }
 
 .bottom-resizable:after {
