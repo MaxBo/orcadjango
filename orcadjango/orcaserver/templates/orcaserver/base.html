@@ -83,13 +83,13 @@
           {% if show_project_settings %}
           <div id="project-settings">
             <div>
-              Project &nbsp;&nbsp;&nbsp;<a title="Active project" href='/projects'><h4><i>{% if active_project %} {{ active_project.name }} {% else %} None {% endif %}</i></h4></a>
+              Project: &nbsp;&nbsp;&nbsp;<a title="Active project" href='/projects'><h4><i>{% if active_project %} {{ active_project.name }} {% else %} None {% endif %}</i></h4></a>
             </div>
             <div>
-              Scenario &nbsp;<a title="Active scenario" href='/scenarios'><h4><i>{% if active_scenario %} {{ active_scenario.name }} {% else %} None {% endif %}</i></h4></a>
+              Scenario: &nbsp;<a title="Active scenario" href='/scenarios'><h4><i>{% if active_scenario %} {{ active_scenario.name }} {% else %} None {% endif %}</i></h4></a>
             </div>
             <div class="module-meta" style="margin-bottom: 1em">
-              Module &nbsp;&nbsp;<a title="Active module" href='/settings'><i>{% if python_module %} {{ python_module }} {% else %} None {% endif %}</i></a>
+              Module: &nbsp;&nbsp;<a title="Active module" href='/settings'><i>{% if python_module %} {{ python_module }} {% else %} None {% endif %}</i></a>
             </div>
             {% if data_url %}
             <div class="module-meta">

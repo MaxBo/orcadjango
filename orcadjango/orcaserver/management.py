@@ -7,15 +7,6 @@ import ctypes
 import sys
 import typing
 from inspect import signature, _empty
-from django import forms
-from django.contrib.gis.geos import MultiPolygon, fromstr
-import json
-import ast
-import ogr
-import datetime
-
-from orcaserver.widgets import (DictField, CommaSeparatedCharField,
-                                OgrGeometryField, OsmMultiPolyWidget)
 
 lock = threading.Lock()
 
@@ -51,11 +42,12 @@ def load_module(module_name, orca=None, module_set=None):
             module_set.add(module_name)
     return module
 
-def parse_injectables(orca):
-    injectable_list = orca.list_injectables()
+def parse_injectables(orca, injectables=None):
+    if not injectables:
+        injectables = orca.list_injectables()
     descriptors = {}
     orca_meta = getattr(orca, 'meta', {})
-    for name in injectable_list:
+    for name in injectables:
         desc = {}
         _meta = orca_meta.get(name, {})
         if name.startswith('iter_'):
@@ -87,6 +79,9 @@ def parse_injectables(orca):
             desc['groupname'] = _meta.get('group', '')
             desc['order'] = _meta.get('order', 10000)
             desc['hidden'] = _meta.get('hidden', False)
+            desc['unique'] = _meta.get('unique', False)
+            desc['regex'] = _meta.get('regex')
+            desc['regex_help'] = _meta.get('regex_help')
             choices = _meta.get('choices', []) or []
             # choices are derived from another injectable
             if callable(choices):
@@ -97,6 +92,7 @@ def parse_injectables(orca):
                               f'{datatype_class.__name__}')
         descriptors[name] = desc
     return descriptors
+
 
 class InUseError(Exception):
     ''''''
@@ -371,208 +367,3 @@ class OrcaManager(Singleton):
                 thread.on_error()
         finally:
             orca.clear_cache()
-
-
-class OrcaTypeMap:
-    data_type = None
-    form_field = None
-    description = ''
-
-    @staticmethod
-    def get(module):
-        cls = None
-        try:
-            if isinstance(module, str):
-                module_class = module.split('.')
-                module_name = '.'.join(module_class[:-1])
-                classname = module_class[-1]
-                module = getattr(importlib.import_module(module_name),
-                                 classname, str)
-            for sub in OrcaTypeMap.__subclasses__():
-                if sub.data_type == module:
-                    cls = sub
-                    break
-        except ModuleNotFoundError:
-            pass
-        if not cls:
-            cls = DefaultConverter
-        return cls()
-
-    def to_value(self, text):
-        raise NotImplementedError
-
-    def to_str(self, value):
-        return str(value)
-
-    def get_form_field(self, value=None, label='', placeholder='value'):
-        field = self.form_field(initial=value, label=label)
-        field.widget.attrs['placeholder'] = placeholder
-        return field
-
-    def get_choice_field(self, value=None, choices=(), label='Select'):
-        return forms.ChoiceField(choices=choices, label=label, initial=value)
-
-
-class DefaultConverter(OrcaTypeMap):
-    form_field = forms.CharField
-
-    def to_value(self, text):
-        return ast.literal_eval(text)
-
-
-class IntegerConverter(OrcaTypeMap):
-    data_type = int
-    form_field = forms.IntegerField
-    description = 'integer'
-
-    def to_value(self, text):
-        return int(text)
-
-
-class FloatConverter(OrcaTypeMap):
-    data_type = float
-    form_field = forms.FloatField
-    description = 'float'
-
-    def to_value(self, text):
-        return float(text)
-
-
-class BooleanConverter(OrcaTypeMap):
-    data_type = bool
-    form_field = forms.BooleanField
-    description = 'boolean'
-
-    def get_form_field(self, value, label='', **kwargs):
-        return self.form_field(initial=value, label='True', required=False)
-
-    def to_value(self, text):
-        return text.lower() == 'true'
-
-
-class ListConverter(OrcaTypeMap):
-    data_type = list
-    form_field = CommaSeparatedCharField
-    description = 'comma seperated values'
-
-    def to_str(self, value):
-        return ', '.join(str(v) for v in value)
-
-    def to_value(self, text):
-        return [t.strip() for t in text.split(',')] if text else []
-
-    def get_choice_field(self, value=None, choices=(),
-                         label='Select one or more'):
-        return forms.MultipleChoiceField(choices=choices, label=label,
-                                         widget=forms.CheckboxSelectMultiple,
-                                         initial=value)
-
-
-class DictConverter(OrcaTypeMap):
-    data_type = dict
-    form_field = DictField
-    description = 'dictionary'
-
-    def get_form_field(self, value, label='', **kwargs):
-        return self.form_field(value, label=label)
-
-    def to_str(self, value):
-        return json.dumps(value)
-
-    def to_value(self, text):
-        # workaround
-        # ToDo: remove this
-        try:
-            ret = json.loads(text)
-        except json.decoder.JSONDecodeError:
-            ret = json.loads(text.replace("'",'"'))
-        return ret
-
-
-class StringConverter(OrcaTypeMap):
-    data_type = str
-    form_field = forms.CharField
-    description = 'string'
-
-    def to_value(self, text):
-        return text
-
-
-class GeometryConverter(OrcaTypeMap):
-    data_type = ogr.Geometry
-    form_field = OgrGeometryField
-    srid = 4326
-
-    def to_str(self, value):
-        if not value:
-            #return 'POLYGON EMPTY'
-            return
-        # ToDo: this is inplace, might cause side effects
-        value.FlattenTo2D()
-        return value.ExportToWkt()
-
-    def to_value(self, text):
-        if not text:
-            return
-        geom = ogr.CreateGeometryFromWkt(text)
-        geom.FlattenTo2D()
-        return geom
-
-    def get_form_field(self, value, label='', **kwargs):
-        if value:
-            poly = fromstr(self.to_str(value))
-            if not isinstance(poly, MultiPolygon):
-                poly = MultiPolygon(poly)
-            poly.srid = self.srid
-        else:
-            poly = None
-        return self.form_field(
-            srid=self.srid,
-            geom_type='MultiPolygon',
-            initial=poly,
-            label=label,
-            widget= OsmMultiPolyWidget(
-                attrs={
-                    'map_width': 800,
-                    'map_height': 500,
-                    'display_wkt': True,
-                    'placeholder': ('WKT string (preferably in 3857 to be able '
-                                    'to render it on map)'),
-                    #'default_zoom': 5
-                }
-            )
-        )
-
-    def get_choice_field(self, *args, **kwargs):
-        raise NotImplementedError
-
-
-class DateConverter(OrcaTypeMap):
-    data_type = datetime.date
-    date_format = '%d.%m.%Y'
-    form_field = forms.DateField
-
-    def to_str(self, value):
-        if not value:
-            return ''
-        return value.strftime(self.date_format)
-
-    def to_value(self, text):
-        if not text:
-            return
-        try:
-            dt = datetime.datetime.strptime(text, self.date_format).date()
-        except ValueError:
-            return
-        return dt
-
-    def get_choice_field(self, *args, **kwargs):
-        raise NotImplementedError
-
-    def get_form_field(self, value=None, label='Pick a date', **kwargs):
-        field = self.form_field(input_formats=[self.date_format],
-                                label=label, initial=value,
-                                widget=forms.DateInput(format=self.date_format))
-        return field
-
-

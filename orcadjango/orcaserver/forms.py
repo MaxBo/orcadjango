@@ -5,8 +5,8 @@ import time
 import json
 
 from orcaserver.models import Step
-from orcaserver.management import (OrcaManager, parse_injectables,
-                                   OrcaTypeMap)
+from orcaserver.management import OrcaManager, parse_injectables
+from orcaserver.injectables import OrcaTypeMap
 
 def get_python_module():
     """return the currently set python module"""
@@ -41,6 +41,10 @@ class InjectableValueForm(geoforms.Form):
     def __init__(self, *args, **kwargs):
         inj = kwargs.pop('injectable', None)
         super().__init__(*args, **kwargs)
+        #manager = OrcaManager()
+        #uid = str(time.time())
+        #orca = manager.get(uid, module=module_name)
+        #meta = parse_injectables(orca)
         if inj.can_be_changed:
             self.fields['value'] = inj.get_form_field()
 
@@ -74,7 +78,7 @@ class ProjectForm(forms.Form):
         initial = mod_descs[0].get('init', [])
         manager = OrcaManager()
         uid = str(time.time())
-        orca = manager.get(uid , module=module_name)
+        orca = manager.get(uid, module=module_name)
         meta = parse_injectables(orca)
         for injectable in initial:
             desc = meta[injectable]
@@ -86,7 +90,11 @@ class ProjectForm(forms.Form):
                 value = desc['value']
             label = f'Initial value for "{injectable}" - {desc["docstring"]}'
             field = converter.get_form_field(value=value, label=label,
-                                             placeholder=desc["docstring"])
+                                             placeholder=desc["docstring"],
+                                             pattern=desc['regex'],
+                                             pattern_help=desc['regex_help'],
+                                             unique=desc['unique'],
+                                             injectable=injectable)
             self.fields[injectable] = field
         manager.remove(uid)
 

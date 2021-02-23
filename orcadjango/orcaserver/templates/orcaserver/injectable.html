@@ -4,9 +4,13 @@
 {% block content %}
   <h4>Parameter "{{ view.name }}"</h4>
   {{ form.media }}
-  {% if error_message %}<p style="color: red;"><strong>{{ error_message }}</strong></p>{% endif %}
   <p><i>{{ injectable.docstring }}</i></p>
   <form action='' method="post">
+    {% if error_message %}
+    <div style="color: red;">
+    {{ error_message }}
+    </div>
+    {% endif %}
     {% csrf_token %}
     {% if injectable.can_be_changed  %}
       <div class="row"style="padding: 1em;">

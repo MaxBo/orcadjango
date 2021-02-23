@@ -7,7 +7,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from orcaserver.views import ProjectMixin
 from orcaserver.management import OrcaManager, parse_injectables
 from orcaserver.views.projects import apply_injectables
-from orcaserver.models import Scenario, Injectable, Step
+from orcaserver.models import Scenario, Step
+from orcaserver.injectables import Injectable
 
 overwritable_types = (str, bytes, int, float, complex,
                       tuple, list, dict, set, bool, None.__class__)

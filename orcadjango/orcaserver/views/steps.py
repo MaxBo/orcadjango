@@ -15,7 +15,8 @@ from dateutil import tz
 
 from orcaserver.management import OrcaManager
 from orcaserver.views import ProjectMixin, apply_injectables
-from orcaserver.models import Step, Injectable, Scenario, LogEntry, Run
+from orcaserver.models import Step, Scenario, LogEntry, Run
+from orcaserver.injectables import Injectable
 
 manager = OrcaManager()
 

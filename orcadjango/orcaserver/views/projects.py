@@ -11,8 +11,9 @@ import logging
 from orcadjango.loggers import OrcaChannelHandler
 from orcaserver.models import LogEntry
 from orcaserver.forms import ProjectForm
-from orcaserver.models import Scenario, Project, Injectable
-from orcaserver.management import (OrcaManager, OrcaTypeMap)
+from orcaserver.models import Scenario, Project
+from orcaserver.injectables import Injectable, OrcaTypeMap
+from orcaserver.management import OrcaManager
 
 manager = OrcaManager()
 

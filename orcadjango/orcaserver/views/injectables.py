@@ -8,7 +8,7 @@ from collections import OrderedDict
 import json
 
 from orcaserver.views import ProjectMixin, recreate_injectables
-from orcaserver.models import Injectable
+from orcaserver.injectables import Injectable
 from orcaserver.forms import InjectableValueForm
 from orcaserver.management import OrcaManager
 
