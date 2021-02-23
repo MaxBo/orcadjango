@@ -12,4 +12,5 @@ def meta(**kwargs):
             orca.meta[name] = {}
         for k, v in kwargs.items():
             orca.meta[name][k] = v
+        return func
     return decorator
