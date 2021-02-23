@@ -124,6 +124,9 @@
   </button>
 </div>
 <div class="bottom-resizable" style="height: 15em; z-index: 2; display: flex; overflow-y: hidden;">
+  <div id="resize-handle">
+    <i class="fa fa-arrows-v"></i>
+  </div>
   <div class="col-md-11" style="height: 100%; margin: 0; padding-left: 1em;">
     <div class="row">
       <h5 style="margin-top: 1em;"> Log </h5>
@@ -377,7 +380,8 @@
   });
 
   var BORDER_SIZE = 4,
-    logDiv = document.querySelector(".bottom-resizable");
+      logDiv = document.querySelector(".bottom-resizable"),
+      handle = document.getElementById("resize-handle");
 
   let m_pos;
   function resize(e){
@@ -388,6 +392,12 @@
 
   logDiv.addEventListener("mousedown", function(e){
     if (e.offsetY < BORDER_SIZE) {
+      m_pos = e.y;
+      document.addEventListener("mousemove", resize, false);
+    }
+  }, false);
+  handle.addEventListener("mousedown", function(e){
+    if (e.offsetY < 20) {
       m_pos = e.y;
       document.addEventListener("mousemove", resize, false);
     }
