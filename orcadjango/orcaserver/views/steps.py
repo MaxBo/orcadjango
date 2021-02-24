@@ -77,8 +77,7 @@ class StepsView(ProjectMixin, TemplateView):
                     'Step not found. Your project seems not to be up to date '
                     'with the module. Please remove this step.')
                 continue
-            if not step.docstring:
-                step.docstring = steps_meta[step.name]['description']
+            step.docstring = steps_meta[step.name]['description']
             step.required = steps_meta[step.name]['required']
             step.valid = True
 

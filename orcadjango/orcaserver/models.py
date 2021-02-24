@@ -33,7 +33,6 @@ class Step(NameModel):
     success = models.BooleanField(default=False)
     order = models.IntegerField(null=True)
     active = models.BooleanField(default=True)
-    docstring = models.TextField(null=True, blank=True)
 
 
 class LogEntry(models.Model):
