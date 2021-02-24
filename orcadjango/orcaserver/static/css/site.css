@@ -200,8 +200,7 @@ button > i, a > i{
 }
 
 .step:hover {
-  background: #fafafa;
-  background-image: linear-gradient(#f3f3f3, #f8f8f8, #f8f8f8);
+  background-image: linear-gradient(#fdf3f3, #fdf8f8 20%);
 }
 
 .step td {
@@ -234,7 +233,7 @@ button > i, a > i{
 }
 
 .step:hover .sunken {
-  background-color: inherit;
+  background-color: white;
 }
 
 .circle-number {
