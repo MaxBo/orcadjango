@@ -9,7 +9,7 @@
 </h4>
 {% if steps_available %}
   <div class="row" style="padding-left: 1em;">
-    <h6 style="float: left;">Available Steps</h6>
+    <h6 style="float: left;">Available Steps <sup class="help">1)</sup></h6>
   </div>
   <form action='' method="post" style="width: 100%;">
     {% csrf_token %}
@@ -45,6 +45,22 @@
     </div>
     <input class="btn btn-secondary btn-sm" title="Add selected steps" type="submit" name='add' value="Add >>" style="float: right; margin-top: 10px;"/>
   </form>
+  <div class="help row" style="margin-top: 3em; padding-left: 1em;">
+    <p>
+      <b>1)</b> &nbsp;
+      The available steps provided by the active module are displayed in groups. Click on a group to <b>expand</b> it and to show the
+      steps in it. To <b>select</b> a step click on its row.
+    </p>
+    <p>
+      You can select <b>multiple</b> steps from multiple groups. You can <b>deselect</b> a step by clicking it again.
+    </p>
+    <p>
+      Some steps <b>require</b> other steps to be run before. The requirements of a step are displayed in a tooltip box on hovering its row.
+    </p>
+    <p>
+      To <b>add</b> the selected step(s) to the scenario press the "Add >>" or (if available) the ">>" button.
+    </p>
+  </div>
   <div class="row" style="height: 30em;"></div>
 {% endif %}
 {% endblock %}
@@ -56,7 +72,7 @@
 {% if error_message %}<p style="color: red;"><strong>{{ error_message }}</strong></p>{% endif %}
 {% if steps_available %}
 <div class="run-container">
-  <h4>Scenario Run</h4>
+  <h4>Scenario Run <sup class="help">2)</sup></h4>
   {% if not steps_scenario %}
   <br>
   Please select available steps from the expandable groups to the left and add them to the scenario.
@@ -134,7 +150,7 @@
   </div>
   <div class="col-md-11" style="height: 100%; margin: 0; padding-left: 1em;">
     <div class="row">
-      <h5 style="margin-top: 1em;"> Log </h5>
+      <h5 style="margin-top: 1em; margin-left: 0.8em;"> Log <sup class="help">3)</sup> </h5>
       <button onclick="openLogs()" class="btn btn-primary btn-sm"  style="margin-top: 1em; margin-left: auto; margin-right: 1em; height: 2.2em;">
         <i class="fa fa-file-text-o"></i>History
       </button>
@@ -420,9 +436,41 @@
 {% endblock %}
 
 {% block right-content %}
-<div class="help">
-<!--(select multiple by clicking rows)-->
-<!--(change order by dragging and dropping)-->
+<div class="help" style="padding-right: 1em;">
+  <p>
+    <b>2)</b> &nbsp;
+    The steps that were added to the scenario and can be run to do whatever the steps are there for are displayed in here.
+    To see the purpose of a step and its parameter values hover its row.
+  </p>
+  <p>
+    <b>Before</b> running the steps please make sure that the parameters are set the way you need them to be.
+    To <b>inspect</b> the current values of the <b>parameters</b> hover the row of the step or a single parameter in the row.<b></b>
+    You can <b> edit </b> a parameter by clicking it. You will be forwarded to the parameter form.
+  </p>
+  <p>
+    <b>Remove</b> a step from the scenario by clicking the trash bin icon in its row.
+  </p>
+  <p>
+    The steps will be run in the order they appear in the table from top to bottom. You can <b>change the order</b> by dragging &amp; dropping them within the table.
+  </p>
+  <p>
+    To <b>start</b> the run on the server press the "Run steps" button. Only active steps will be run. You can <b>activate/deactivate</b> a step by pressing the toggle button in its row.
+  </p>
+  <p>
+    You can <b>abort</b> a run by pressing the "Abort" button. The Run will stop at the step that is currently processed. The "Abort" button is only visible while the server is executing the run.
+  </p>
+  <p>
+    The requirements of steps are soft. If you didn't run a step required by a step in this run, the run will most likely fail.
+  </p>
+  <p>
+    <b>3)</b> &nbsp;
+    The Log displays status messages sent by the server while running the steps.
+    Errors are displayed in red, warnings in orange.
+  </p>
+  <p>
+    You can show past messages by pressing the "History" button.
+  </p>
+  <div class="row" style="height: 30em;"></div>
 </div>
 
 {% endblock %}
