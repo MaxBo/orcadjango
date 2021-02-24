@@ -211,7 +211,7 @@ button > i, a > i{
 }
 
 .step:hover {
-  background-image: linear-gradient(#fdf3f3, #fdf8f8 20%);
+  background-image: linear-gradient(#fdf8f8, #fdfcfc 10%, #fdfcfc, #fdf3f3);
 }
 
 .step td {

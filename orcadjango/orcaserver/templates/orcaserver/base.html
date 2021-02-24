@@ -129,16 +129,16 @@
     {% endif %}
   </div>
   <div class="row" style="margin-top: 15em;">
-    <div class="col-lg-{% if left_columns is not None %}{{ left_columns }}{% else %}2{% endif %}" style="padding-left: 2em;">
+    <div class="col-lg-{% if left_columns is not None %}{{ left_columns }}{% else %}2{% endif %}">
     {% block left-content %}
     {% endblock %}
     </div>
-    <div class="col-lg-{% if center_columns is not None %}{{ center_columns }}{% else %}7{% endif %}" style="padding-left: 2em;">
+    <div class="col-lg-{% if center_columns is not None %}{{ center_columns }}{% else %}7{% endif %}">
 
       {% autoescape off %}{% bootstrap_messages %}{% endautoescape %}
       {% block content %}{% endblock %}
     </div>
-    <div class="col-lg-{% if right_columns is not None %}{{ right_columns }}{% else %}2{% endif %}" style="padding-left: 2em;">
+    <div class="col-lg-{% if right_columns is not None %}{{ right_columns }}{% else %}3{% endif %}">
       {% block right-content %}
       {% endblock %}
     </div>

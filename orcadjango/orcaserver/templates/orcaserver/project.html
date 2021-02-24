@@ -2,7 +2,7 @@
 {% load bootstrap4 %}
 
 {% block content %}
-  <h4>{{ title }}</h4>
+  <h4>{{ title }}<div class="help" style="display: inline;">*</div></h4>
   {{ form.media }}
   <form action='' method="post">
     {% csrf_token %}
@@ -14,4 +14,21 @@
       <i class="fa fa-floppy-o"></i>Save Project
     </button>
   </form>
+{% endblock %}
+
+{% block right-content %}
+  <p>
+    * This form lists the project meta data and the project parameters.
+  </p>
+  <p>
+    The initial parameter values set in here determine the defaults for future scenarios in this project. The values can still be overridden within the scenarios later.
+    Editing the parameter values in here will not change the parameter values of already existing scenarios but only for the ones to be created.
+  </p>
+  <p>
+    To <b>confirm</b> your inputs and send them to the server press "Save Project". If your inputs were valid you will be redirected back to the project selection.
+  </p>
+  <p>
+    If the server rejected the form you have to correct the <b>invalid inputs</b>. Reasons can be that inputs were left empty or mismatched a certain type pattern.
+    The reason will be displayed in red beneath the invalid inputs.
+  </p>
 {% endblock %}

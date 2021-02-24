@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<h4>Miraculix Status</h4>
+<h4 style="padding-left: 2em; margin-top: -5em;">Miraculix Status <div class="help" style="display: inline;">*</div></h4>
 <link rel="stylesheet" type="text/css" href="{% static 'css/datatables.min.css' %}">
 <script src="{% static 'js/datatables.min.js' %}"></script>
 <script src="{% static 'js/jquery-ui.min.js' %}"></script>
@@ -181,5 +181,23 @@
   });
 
 </script>
+{% endblock %}
+
+{% block right-content %}
+
+<div class="help" style="padding-right: 1em;">
+  <p>
+    * This page lists all (still) existing scenarios in all projects of all modules that have ever been run to this date.
+  </p>
+  <p>
+    To show the messages logged by the server press the button with the page icon in the row of the scenario.
+  </p>
+  <p>
+    You can <b>abort</b> a run by clicking the "Abort" button that only appears while the scenario is running.
+  </p>
+  <p>
+    Be advised to consult the one who is running a scenario (see column "(Last) Run by") before you abort her/his run.
+  </p>
+</div>
 {% endblock %}
 

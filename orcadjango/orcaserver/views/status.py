@@ -23,8 +23,8 @@ class StatusView(TemplateView):
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
         kwargs['left_columns'] = 0
-        kwargs['center_columns'] = 12
-        kwargs['right_columns'] = 0
+        kwargs['center_columns'] = 10
+        kwargs['right_columns'] = 2
         return kwargs
 
     @staticmethod
