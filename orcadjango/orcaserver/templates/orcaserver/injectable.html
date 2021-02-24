@@ -2,7 +2,7 @@
 {% load bootstrap4 %}
 
 {% block content %}
-  <h4>Parameter "{{ view.name }}"</h4>
+  <h4>Parameter "{{ view.name }}"<div class="help" style="display: inline;">*</div></h4>
   {{ form.media }}
   <p><i>{{ injectable.docstring }}</i></p>
   <form action='' method="post">
@@ -40,4 +40,21 @@
       </table>
     {% endif %}
   </form>
+
+<div class="help" style="margin-top: 5em;">
+  <p>
+    * This form allows you to edit the value of a parameter within the active scenario.
+  </p>
+  <p>
+    To <b>confirm</b> your input press "Save Project". If your inputs were valid you will be redirected back to the page you came from.
+  </p>
+  <p>
+    If the server rejected the form you have to correct the <b>invalid input</b>. Reasons can be that it was left empty or mismatched a certain type pattern.
+    The reason will be displayed in red.
+  </p>
+  <p>
+    To <b>reset</b> the parameter to the current project default press "Reset".
+    <b>Warning</b>: This does not simply fill the default values into the inputs but actually reset the parameter value in place.
+  </p>
+</div>
 {% endblock %}
