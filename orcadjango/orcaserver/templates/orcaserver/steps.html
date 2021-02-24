@@ -53,10 +53,14 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/datatables.min.css' %}">
 <script src="{% static 'js/datatables.min.js' %}"></script>
 <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+{% if error_message %}<p style="color: red;"><strong>{{ error_message }}</strong></p>{% endif %}
+{% if steps_available %}
 <div class="run-container">
-  {% if error_message %}<p style="color: red;"><strong>{{ error_message }}</strong></p>{% endif %}
-  {% if steps_available %}
-  <h4 style="float: left;">Scenario Run</h4> &nbsp;&nbsp;
+  <h4>Scenario Run</h4>
+  {% if not steps_scenario %}
+  <br>
+  Please select available steps from the expandable groups to the left and add them to the scenario.
+  {% else %}
   <table class="table" id="steps-scenario">
     <thead style="text-align: center;">
       <tr>
@@ -122,6 +126,7 @@
   <button id="abort-scenario" type="button" onclick="abort()" class="btn btn-danger" style="float: right; display: None;">
     <i class="fa fa-ban"></i> Abort Run
   </button>
+  {% endif %}
 </div>
 <div class="bottom-resizable" style="height: 15em; z-index: 2; display: flex; overflow-y: hidden;">
   <div id="resize-handle">
@@ -364,9 +369,11 @@
     $('[data-toggle="popover"]').popover({html: true})
     $.fn.dataTable.ext.errMode = 'none';
     status.on_update = function(res){
-      abortBtn.disabled = runBtn.disabled = false;
-      runBtn.style.display = res.running ? 'None' : 'block';
-      abortBtn.style.display = abortBtn.style.border = animation.style.display = !res.running ? 'None' : 'block';
+      if (runBtn && abortBtn) {
+        abortBtn.disabled = runBtn.disabled = false;
+        runBtn.style.display = res.running ? 'None' : 'block';
+        abortBtn.style.display = abortBtn.style.border = animation.style.display = !res.running ? 'None' : 'block';
+      }
       if (!res.running) {
         successImg.style.display = (res.success) ? 'block' : 'None';
         // only show fail image if run was already started at some point (success is always false after creation of scenario)

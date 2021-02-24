@@ -89,18 +89,18 @@
           <div id="project-settings">
             <div>
               Project: &nbsp;&nbsp;&nbsp;
-              <a title="Active project" href='/projects' {% if not active_project %} style="color: red;" {% endif %}>
+              <a title="Active project" href='/projects' style="color: {% if not active_project %} red {% else %} #505050 {% endif %};">
                 <h4><i>{% if active_project %} {{ active_project.name }} {% else %} None {% endif %}</i></h4>
               </a>
             </div>
             <div>
               Scenario: &nbsp;
-              <a title="Active scenario" href='/scenarios' {% if not active_scenario %} style="color: red;" {% endif %}>
+              <a title="Active scenario" href='/scenarios' style="color: {% if not active_scenario %} red {% else %} #505050 {% endif %};">
                 <h4><i>{% if active_scenario %} {{ active_scenario.name }} {% else %} None {% endif %}</i></h4>
               </a>
             </div>
             <div class="module-meta" style="margin-bottom: 1em">
-              Module: &nbsp;&nbsp;<a title="Active module" href='/settings' {% if not python_module %} style="color: red;" {% endif %}>
+              Module: &nbsp;&nbsp;<a title="Active module" href='/settings' style="color: {% if not python_module %} red {% else %} black {% endif %};">
                 <i>{% if python_module %} {{ python_module }} {% else %} None {% endif %}</i>
               </a>
             </div>
@@ -121,7 +121,7 @@
         {% if show_status %}
         <div id="status-container">
           <label id="status-label" style="float: right; margin-left: 1em;"></label>
-          <a href='/status' style="float: right;"> <b> Status:</b> </a>
+          <a href='/status' style="float: right; color: #505050;"> <b> Status:</b> </a>
         </div>
         {% endif %}
       </div>
