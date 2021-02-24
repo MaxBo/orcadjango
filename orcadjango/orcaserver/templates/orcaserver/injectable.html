@@ -4,7 +4,7 @@
 {% block content %}
   <h4>Parameter "{{ view.name }}"<div class="help" style="display: inline;">*</div></h4>
   {{ form.media }}
-  <p><i>{{ injectable.docstring }}</i></p>
+  <p><i>{{ docstring }}</i></p>
   <form action='' method="post">
     {% if error_message %}
     <div style="color: red;">

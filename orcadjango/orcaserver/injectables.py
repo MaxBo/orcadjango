@@ -23,18 +23,10 @@ from orcaserver.models import Scenario, NameModel
 
 class Injectable(NameModel):
     name = models.TextField()
-    scenario = models.ForeignKey(Scenario,
-                                 on_delete=models.CASCADE,
-                                 null=True)
+    scenario = models.ForeignKey(Scenario, on_delete=models.CASCADE, null=True)
     value = models.TextField(null=True)
-    changed = models.BooleanField(default=False)
-    docstring = models.TextField(null=True, blank=True)
-    module = models.TextField(null=True, blank=True)
-    groupname = models.TextField(null=False, blank=False, default='')
-    order = models.IntegerField(null=False, default=1)
     datatype = models.TextField(null=True, blank=True)
     data_class = models.TextField(null=True, blank=True)
-    valid = models.BooleanField(null=False, default=True)
     parent_injectables = models.TextField(
         validators=[int_list_validator], default='[]')
 
@@ -119,7 +111,7 @@ class Injectable(NameModel):
         else:
             field = converter.get_form_field(
                 value=self.validated_value, label=f'Value',
-                placeholder=self.docstring,
+                placeholder=meta['docstring'],
                 pattern=meta['regex'], pattern_help=meta['regex_help'],
                 unique=meta['unique'], injectable=self.name,
                 project=self.scenario.project)
@@ -200,7 +192,7 @@ class OrcaTypeMap:
         field.widget.attrs['placeholder'] = placeholder
         return field
 
-    def get_choice_field(self, value=None, choices=(), label='Select'):
+    def get_choice_field(self, value=None, choices=(), label='Please select:'):
         return forms.ChoiceField(choices=choices, label=label, initial=value)
 
 

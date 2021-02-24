@@ -10,7 +10,7 @@ import json
 from orcaserver.views import ProjectMixin, recreate_injectables
 from orcaserver.injectables import Injectable
 from orcaserver.forms import InjectableValueForm
-from orcaserver.management import OrcaManager
+from orcaserver.management import OrcaManager, parse_injectables
 
 manager = OrcaManager()
 
@@ -41,17 +41,22 @@ class InjectablesView(ProjectMixin, ListView):
         if not scenario:
             return []
         orca = self.get_orca()
-        inj = orca.list_injectables()
-        injectables = Injectable.objects.filter(name__in=inj,
-                                                scenario=scenario)\
-            .order_by('groupname', 'name')
-
-        groups = sorted(set(injectables.values_list('groupname', flat=True)))
+        injectables = parse_injectables(orca)
+        scen_injectables = Injectable.objects.filter(
+            name__in=injectables.keys(), scenario=scenario)
         grouped = {}
-        for group in groups:
-            grouped[group] = injectables\
-                .filter(groupname=group)\
-                .order_by('order', 'name')
+        # enrich injectables in scenario with meta data
+        for inj in scen_injectables:
+            meta = injectables[inj.name]
+            inj.docstring = meta['docstring']
+            inj.order = meta['order']
+            group = meta['groupname']
+            if group not in grouped:
+                grouped[group] = []
+            grouped[group].append(inj)
+        for group, inj_list in grouped.items():
+            grouped[group] = sorted(inj_list, key = lambda i: (i.order, i.name))
+
         grouped = OrderedDict(sorted(grouped.items()))
         return grouped
 
@@ -94,6 +99,7 @@ class InjectableView(ProjectMixin, FormView):
                 '(parameters page).')
             kwargs['injectable'] = None
         form = kwargs['form']
+        kwargs['docstring'] = inj.meta['docstring']
         if not form.is_valid():
             errors = form.errors.get('value', [])
             kwargs['error_message'] = kwargs.get('error_message', []) + errors

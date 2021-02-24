@@ -31,11 +31,6 @@ def recreate_injectables(orca, scenario, keep_values=False):
             inj.value = value
         inj.datatype = desc['datatype']
         inj.data_class = desc['data_class']
-        inj.docstring = desc['docstring']
-        inj.groupname = desc['groupname']
-        inj.module = desc['module']
-        inj.order = desc['order']
-        inj.choices = desc['choices']
         inj.save()
     # add parent injectable ids
     for name, desc in injectables.items():
@@ -112,12 +107,8 @@ class ScenariosView(ProjectMixin, ListView):
             injectables = Injectable.objects.filter(scenario=old_scenario)
             for inj in injectables:
                 new_inj, created = Injectable.objects.get_or_create(
-                    scenario=scenario,
-                    name=inj.name)
+                    scenario=scenario, name=inj.name)
                 new_inj.value = inj.value
-                new_inj.changed = inj.changed
-                new_inj.docstring = inj.docstring
-                new_inj.module = inj.module
                 new_inj.save()
 
             # copy steps
