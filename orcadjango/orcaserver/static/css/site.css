@@ -218,6 +218,7 @@ button > i, a > i{
 .step {
   background-image: linear-gradient(#f8f8f8, #fcfcfc 10%, #fcfcfc, #f3f3f3);
   margin-top: 1em;
+  cursor: move;
 }
 
 .step:hover {
@@ -227,6 +228,10 @@ button > i, a > i{
 .step td {
   border-top: 1px solid #f5f5f5;
   color: #505050;
+}
+
+.step.invalid td {
+  color: red;
 }
 
 .circle-number, .sunken {

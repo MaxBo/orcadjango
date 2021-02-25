@@ -98,7 +98,7 @@
     </thead>
     <tbody style="text-align: center;">
     {% for step in steps_scenario %}
-      <tr class="step" data-toggle="popover" data-trigger="hover" data-placement="left" data-id="{{ step.id }}" title="{{ step.name }}" style="cursor: move; {% if not step.valid %} color: red; {% endif %}"
+      <tr class="step {% if not step.valid %} invalid {% endif %}" data-trigger="hover" data-toggle="popover" data-placement="left" data-id="{{ step.id }}" title="{{ step.name }}"
       data-content="<p>{{ step.docstring }} </p>
       {% if step.valid %}
         {% for inj in step.injectables %}
