@@ -48,7 +48,7 @@ class InjectableValueForm(geoforms.Form):
         if inj.can_be_changed:
             field = inj.get_form_field()
             if field:
-                self.fields['value']
+                self.fields['value'] = field
 
     def clean(self):
         return super().clean()
