@@ -7,9 +7,9 @@
   <form action='' method="post">
     {% csrf_token %}
     {% bootstrap_form form %}
-    <button href="/projects/" title="Back to previous page without saving" class="btn btn-secondary" style="margin-right: 2em;">
+    <a href="/projects/" title="Back to previous page without saving" class="btn btn-secondary" style="margin-right: 2em;">
       <i class="fa fa-arrow-circle-left"></i>Back
-    </button>
+    </a>
     <button type="submit" name="change" value="change" title="Save changes" class="btn btn-primary">
       <i class="fa fa-floppy-o"></i>Save Project
     </button>
