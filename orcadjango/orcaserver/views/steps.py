@@ -90,9 +90,12 @@ class StepsView(ProjectMixin, TemplateView):
                     continue
                 try:
                     inj = Injectable.objects.get(name=name, scenario=scenario)
+                    meta = inj.meta
+                    desc = inj.meta.get('docstring', '') if meta else ''
                     injectables.append({
                         'id': inj.id,
                         'name': name,
+                        'desc': desc,
                         'value': repr(inj.calculated_value),
                         'url': f"{reverse('injectables')}{name}",
                         'valid': True
@@ -101,7 +104,8 @@ class StepsView(ProjectMixin, TemplateView):
                     injectables.append({
                         'id': -1,
                         'name': name,
-                        'value': 'Parameter not found',
+                        'desc': 'Parameter not found',
+                        'value': '',
                         'url': f"{reverse('injectables')}{name}",
                         'valid': False
                     })

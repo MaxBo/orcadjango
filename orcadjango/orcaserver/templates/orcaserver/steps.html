@@ -115,7 +115,7 @@
         <td class="injectables">
           <div class='sunken'>
             {% for inj in step.injectables %}
-            <a title="{{ inj.value }}" {% if not inj.valid %} href="/injectables" style="color: red!IMPORTANT;" {% else %} href="{{ inj.url }}?next={{request.path}}" {% endif %}>
+            <a title="{{ inj.desc }}: {{ inj.value }}" {% if not inj.valid %} href="/injectables" style="color: red!IMPORTANT;" {% else %} href="{{ inj.url }}?next={{request.path}}" {% endif %}>
               {{ inj.name }} {% if not inj.valid %} (not valid) {% endif %}
             </a> <br>
             {% endfor %}
