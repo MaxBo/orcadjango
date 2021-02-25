@@ -58,7 +58,7 @@ class ScenariosView(ProjectMixin, ListView):
     def get_queryset(self):
         """Return the injectables with their values."""
         project = self.request.session.get('project')
-        scenarios = Scenario.objects.filter(project=project)
+        scenarios = Scenario.objects.filter(project=project).order_by('name')
         return scenarios
 
     def post(self, request, *args, **kwargs):

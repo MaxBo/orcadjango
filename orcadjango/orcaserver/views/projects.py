@@ -133,7 +133,8 @@ class ProjectsView(ProjectMixin, ListView):
 
     def get_queryset(self):
         """Return the injectables with their values."""
-        projects = self.model.objects.filter(module=self.get_module())
+        projects = self.model.objects.filter(
+            module=self.get_module()).order_by('name')
         return projects
 
     def post(self, request, *args, **kwargs):
