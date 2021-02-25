@@ -99,10 +99,17 @@ class InjectableView(ProjectMixin, FormView):
                 '(parameters page).')
             kwargs['injectable'] = None
         form = kwargs['form']
-        kwargs['docstring'] = inj.meta['docstring']
-        if not form.is_valid():
-            errors = form.errors.get('value', [])
-            kwargs['error_message'] = kwargs.get('error_message', []) + errors
+        meta = inj.meta
+        if not meta:
+            kwargs['error_message'] = (
+                'Injectable does not exist anymore. Please synchronize the '
+                'parameters (parameters page).')
+            kwargs.pop('injectable')
+        else:
+            kwargs['docstring'] = meta['docstring']
+            if not form.is_valid():
+                errors = form.errors.get('value', [])
+                kwargs['error_message'] = kwargs.get('error_message', []) + errors
         return kwargs
 
     def post(self, request, *args, **kwargs):

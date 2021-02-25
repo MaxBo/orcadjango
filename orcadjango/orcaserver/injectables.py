@@ -103,6 +103,8 @@ class Injectable(NameModel):
     def get_form_field(self):
         converter = OrcaTypeMap.get(self.data_class)
         meta = self.meta
+        if not meta:
+            return
         if meta['choices']:
             choices = meta['choices'].split(',')
             choices = tuple(zip(choices, choices))

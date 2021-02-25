@@ -43,11 +43,15 @@ def load_module(module_name, orca=None, module_set=None):
     return module
 
 def parse_injectables(orca, injectables=None):
+    orca_injectables = orca.list_injectables()
     if not injectables:
-        injectables = orca.list_injectables()
+        injectables = orca_injectables
     descriptors = {}
     orca_meta = getattr(orca, 'meta', {})
     for name in injectables:
+        descriptors[name] = None
+        if name not in orca_injectables:
+            continue
         desc = {}
         _meta = orca_meta.get(name, {})
         if name.startswith('iter_'):
@@ -57,7 +61,6 @@ def parse_injectables(orca, injectables=None):
         datatype = datatype_class.__name__
         desc['datatype'] = datatype
         desc['value'] = value
-
         #  check if the original type is overwritable
         funcwrapper = orca._injectable_function.get(name)
         sig = signature(funcwrapper._func)

@@ -12,32 +12,34 @@
     </div>
     {% endif %}
     {% csrf_token %}
-    {% if injectable.can_be_changed  %}
-      <div class="row"style="padding: 1em;">
-        {% bootstrap_form form %}
-      </div>
-      <button type="submit" name="back" value="back" title="Back to previous page without saving" class="btn btn-secondary" style="margin-right: 2em;">
-        <i class="fa fa-arrow-circle-left"></i>Back
-      </button>
-      <button type="submit" name="change" value="change" title="Save current value" class="btn btn-primary">
-        <i class="fa fa-floppy-o"></i>Save
-      </button>
-      <button type="submit" name="reset" value="reset" title="Reset parameter value to project default" class="btn btn-warning">
-        <i class="fa fa-undo"></i>Reset
-      </button>
-    {% else %}
-      <table class="table" id="parent_injectables">
-      <thead>
-        <th>Is derived from</th>
-      </thead>
-        {% for parent_name, parent in injectable.parent_injectable_urls.items %}
-          <tr><td><a href={{ parent }}>{{ parent_name }}</a></td></tr>
-        {% endfor %}
-      <thead>
-        <th >Calculated value</th>
-      </thead>
-        <tr><td>{{ injectable.repr_html | safe }}</td></tr>
-      </table>
+    {% if injectable %}
+      {% if injectable.can_be_changed  %}
+        <div class="row"style="padding: 1em;">
+          {% bootstrap_form form %}
+        </div>
+        <button type="submit" name="back" value="back" title="Back to previous page without saving" class="btn btn-secondary" style="margin-right: 2em;">
+          <i class="fa fa-arrow-circle-left"></i>Back
+        </button>
+        <button type="submit" name="change" value="change" title="Save current value" class="btn btn-primary">
+          <i class="fa fa-floppy-o"></i>Save
+        </button>
+        <button type="submit" name="reset" value="reset" title="Reset parameter value to project default" class="btn btn-warning">
+          <i class="fa fa-undo"></i>Reset
+        </button>
+      {% else %}
+        <table class="table" id="parent_injectables">
+        <thead>
+          <th>Is derived from</th>
+        </thead>
+          {% for parent_name, parent in injectable.parent_injectable_urls.items %}
+            <tr><td><a href={{ parent }}>{{ parent_name }}</a></td></tr>
+          {% endfor %}
+        <thead>
+          <th >Calculated value</th>
+        </thead>
+          <tr><td>{{ injectable.repr_html | safe }}</td></tr>
+        </table>
+      {% endif %}
     {% endif %}
   </form>
 

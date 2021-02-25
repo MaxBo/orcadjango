@@ -46,7 +46,9 @@ class InjectableValueForm(geoforms.Form):
         #orca = manager.get(uid, module=module_name)
         #meta = parse_injectables(orca)
         if inj.can_be_changed:
-            self.fields['value'] = inj.get_form_field()
+            field = inj.get_form_field()
+            if field:
+                self.fields['value']
 
     def clean(self):
         return super().clean()
