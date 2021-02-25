@@ -37,7 +37,7 @@ ol.inherits(GeometryTypeControl, ol.control.Control);
 
 // TODO: allow deleting individual features (#8972)
 {
-    const wktFormat = new ol.format.WKT();
+    const wktFormat = new ol.format.WKT({splitCollection: true});
 
     function MapWidget(options) {
         this.map = null;
@@ -119,10 +119,19 @@ ol.inherits(GeometryTypeControl, ol.control.Control);
             }
         }
         const features = wktFormat.readFeatures(value, options);
+        window.features=features;
         const extent = ol.extent.createEmpty();
+        const source = this.featureOverlay.getSource();
         features.forEach(function(feature) {
-            this.featureOverlay.getSource().addFeature(feature);
-            ol.extent.extend(extent, feature.getGeometry().getExtent());
+            var geom = feature.getGeometry();
+            if (geom.getType() == "MultiPolygon"){
+                geom.getPolygons().forEach(function(poly){
+                    source.addFeature(new ol.Feature({ geometry: poly }));
+                })
+            }
+            else
+                source.addFeature(feature);
+            ol.extent.extend(extent, geom.getExtent());
         }, this);
         // Center/zoom the map
         this.map.getView().fit(extent);
@@ -308,16 +317,25 @@ ol.inherits(GeometryTypeControl, ol.control.Control);
             } else {
                 if (features[0]) {
                     geometry = features[0].getGeometry().clone();
+                    if (geometry.getType() == 'Polygon') {
+                        var mp = new ol.geom.MultiPolygon();
+                        mp.appendPolygon(geometry);
+                        geometry = mp;
+                    }
                     for (let j = 1; j < features.length; j++) {
-                        switch (geometry.getType()) {
-                        case "MultiPoint":
-                            geometry.appendPoint(features[j].getGeometry().getPoint(0));
-                            break;
-                        case "MultiLineString":
-                            geometry.appendLineString(features[j].getGeometry().getLineString(0));
-                            break;
-                        case "MultiPolygon":
-                            geometry.appendPolygon(features[j].getGeometry().getPolygon(0));
+                        var nextGeom = features[j].getGeometry();
+                        switch (nextGeom.getType()) {
+                            case "MultiPoint":
+                                geometry.appendPoint(nextGeom.getPoint(0));
+                                break;
+                            case "MultiLineString":
+                                geometry.appendLineString(nextGeom.getLineString(0));
+                                break;
+                            case "MultiPolygon":
+                                geometry.appendPolygon(nextGeom.getPolygon(0));
+                                break;
+                            case "Polygon":
+                                geometry.appendPolygon(nextGeom);
                         }
                     }
                 }

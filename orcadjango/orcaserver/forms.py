@@ -41,10 +41,6 @@ class InjectableValueForm(geoforms.Form):
     def __init__(self, *args, **kwargs):
         inj = kwargs.pop('injectable', None)
         super().__init__(*args, **kwargs)
-        #manager = OrcaManager()
-        #uid = str(time.time())
-        #orca = manager.get(uid, module=module_name)
-        #meta = parse_injectables(orca)
         if inj.can_be_changed:
             field = inj.get_form_field()
             if field:
