@@ -60,9 +60,10 @@ class ProjectForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         active_mod = kwargs.pop('module')
-        project_name = kwargs.pop('project_name', '')
-        project_description = kwargs.pop('project_description', '')
-        initial_values = json.loads(kwargs.pop('init', '{}'))
+        project = kwargs.pop('project', None)
+        project_name = project.name if project else ''
+        project_description = project.description if project else ''
+        initial_values = json.loads(project.init) if project else {}
         super().__init__(*args, **kwargs)
         self.fields['name'].initial = project_name
         self.fields['description'].initial = project_description
@@ -96,6 +97,7 @@ class ProjectForm(forms.Form):
                                              pattern=desc['regex'],
                                              pattern_help=desc['regex_help'],
                                              unique=desc['unique'],
+                                             project=project,
                                              injectable=injectable)
             self.fields[injectable] = field
         manager.remove(uid)

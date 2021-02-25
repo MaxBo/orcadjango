@@ -183,9 +183,7 @@ class ProjectView(ProjectMixin, FormView):
         # in get() or post())
         if project_id is not None:
             project = Project.objects.get(id=project_id)
-            kwargs['project_name'] = project.name
-            kwargs['project_description'] = project.description
-            kwargs['init'] = project.init
+            kwargs['project'] = project
         return kwargs
 
     def form_valid(self, form):
