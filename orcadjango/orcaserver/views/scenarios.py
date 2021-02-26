@@ -22,7 +22,7 @@ def recreate_injectables(orca, scenario, keep_values=False):
     init_values = json.loads(project.init)
     # create or reset injectables
     for name, desc in injectables.items():
-        if desc['hidden']:
+        if desc.get('hidden'):
             continue
         inj, created = Injectable.objects.get_or_create(name=name,
                                                         scenario=scenario)
@@ -34,7 +34,7 @@ def recreate_injectables(orca, scenario, keep_values=False):
         inj.save()
     # add parent injectable ids
     for name, desc in injectables.items():
-        if desc['hidden']:
+        if desc.get('hidden'):
             continue
         parent_injectables = []
         inj = Injectable.objects.get(name=name, scenario=scenario)
