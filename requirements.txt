@@ -6,4 +6,5 @@ channels
 channels_redis
 pandas
 xarray
+django-flat-json-widget
 toolz==0.10

@@ -16,8 +16,8 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from orcaserver.management import OrcaManager, parse_injectables
-from orcaserver.widgets import (DictField, CommaSeparatedCharField,
-                                OgrGeometryField, OsmMultiPolyWidget)
+from orcaserver.widgets import (EditableDictWidget, CommaSeparatedCharField,
+                                OgrGeometryField, OsmMultiPolyWidget, DictField)
 from orcaserver.models import Scenario, NameModel
 
 
@@ -114,8 +114,7 @@ class Injectable(NameModel):
             field = converter.get_form_field(
                 value=self.validated_value, label=f'Value',
                 placeholder=meta['docstring'],
-                pattern=meta['regex'], pattern_help=meta['regex_help'],
-                unique=meta['unique'], injectable=self.name,
+                injectable_name=self.name, meta=meta,
                 project=self.scenario.project)
         return field
 
@@ -183,12 +182,16 @@ class OrcaTypeMap:
         return str(value)
 
     def get_form_field(self, value=None, label='', placeholder='value',
-                       pattern=None, pattern_help=None,
-                       unique=False, project=None, injectable=None):
-        validators = [RegexValidator(pattern, pattern_help or pattern)]\
-            if pattern else []
-        if unique and injectable:
-            validators.append(UniqueInjValidator(injectable, project=project))
+                       pattern=None, pattern_help=None, project=None,
+                       injectable_name=None, meta=None):
+        validators = []
+        if meta and meta.get('regex'):
+            regex = meta.get('regex')
+            validators.append(
+                RegexValidator(regex, meta.get('regex_help', regex)))
+        if injectable_name and meta and meta.get('unique'):
+            validators.append(
+                UniqueInjValidator(injectable_name, project=project))
         field = self.form_field(initial=value, label=label,
                                 validators=validators)
         field.widget.attrs['placeholder'] = placeholder
@@ -255,11 +258,15 @@ class ListConverter(OrcaTypeMap):
 
 class DictConverter(OrcaTypeMap):
     data_type = dict
-    form_field = DictField
+    form_field = forms.CharField
     description = 'dictionary'
 
-    def get_form_field(self, value, label='', **kwargs):
-        return self.form_field(value, label=label)
+    def get_form_field(self, value, label='', meta=None,
+                       **kwargs):
+        if meta and not meta.get('editable_keys'):
+            return DictField(value, label=label)
+        return forms.CharField(initial=value, label=label,
+                               widget=EditableDictWidget)
 
     def to_str(self, value):
         return json.dumps(value)

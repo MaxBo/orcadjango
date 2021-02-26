@@ -79,13 +79,8 @@ def parse_injectables(orca, injectables=None):
                     datatype_class = returntype
                     desc['datatype'] = returntype.__name__
             desc['module'] = funcwrapper._func.__module__
-            desc['groupname'] = _meta.get('group', '')
-            desc['order'] = _meta.get('order', 10000)
-            desc['hidden'] = _meta.get('hidden', False)
-            desc['unique'] = _meta.get('unique', False)
-            desc['regex'] = _meta.get('regex')
-            desc['regex_help'] = _meta.get('regex_help')
-            choices = _meta.get('choices', []) or []
+            desc.update(_meta)
+            choices = desc.get('choices', []) or []
             # choices are derived from another injectable
             if callable(choices):
                 choices = orca._injectable_backup.get(choices.__name__)

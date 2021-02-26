@@ -49,8 +49,8 @@ class InjectablesView(ProjectMixin, ListView):
         for inj in scen_injectables:
             meta = injectables[inj.name]
             inj.docstring = meta['docstring']
-            inj.order = meta['order']
-            group = meta['groupname']
+            inj.order = meta.get('order', 10000)
+            group = meta.get('group', '')
             if group not in grouped:
                 grouped[group] = []
             grouped[group].append(inj)

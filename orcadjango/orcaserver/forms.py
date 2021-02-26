@@ -90,11 +90,8 @@ class ProjectForm(forms.Form):
             label = f'Initial value for "{injectable}" - {desc["docstring"]}'
             field = converter.get_form_field(value=value, label=label,
                                              placeholder=desc["docstring"],
-                                             pattern=desc['regex'],
-                                             pattern_help=desc['regex_help'],
-                                             unique=desc['unique'],
-                                             project=project,
-                                             injectable=injectable)
+                                             project=project, meta=desc,
+                                             injectable_name=injectable)
             self.fields[injectable] = field
         manager.remove(uid)
 
