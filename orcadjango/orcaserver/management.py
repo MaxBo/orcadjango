@@ -50,23 +50,25 @@ def parse_injectables(orca, injectables=None):
     orca_meta = getattr(orca, 'meta', {})
     for name in injectables:
         descriptors[name] = None
-        if name not in orca_injectables:
-            continue
         desc = {}
         _meta = orca_meta.get(name, {})
-        if name.startswith('iter_'):
+        if (name not in orca_injectables or name.startswith('iter_')
+            or _meta.get('hidden')):
             continue
-        value = orca._injectable_backup.get(name)
+        if _meta.get('refresh') == 'always':
+            value = orca.get_injectable(name)
+        else:
+            value = orca._injectable_backup.get(name)
         datatype_class = type(value)
         datatype = datatype_class.__name__
         desc['datatype'] = datatype
         desc['value'] = value
-        #  check if the original type is overwritable
+        # check if the original type is overwritable
         funcwrapper = orca._injectable_function.get(name)
         sig = signature(funcwrapper._func)
         if isinstance(funcwrapper, orca._InjectableFuncWrapper):
             desc['docstring'] = funcwrapper._func.__doc__ or ''
-            #  Datatype from annotations:
+            # datatype from annotations
             returntype = sig.return_annotation
             has_returntype = True
             if isinstance(returntype, type) and issubclass(returntype, _empty):
@@ -83,7 +85,11 @@ def parse_injectables(orca, injectables=None):
             choices = desc.get('choices', []) or []
             # choices are derived from another injectable
             if callable(choices):
-                choices = orca._injectable_backup.get(choices.__name__)
+                c_meta = orca.meta.get(choices.__name__)
+                if c_meta and c_meta.get('refresh') == 'always':
+                    choices = orca.get_injectable(choices.__name__)
+                else:
+                    choices = orca._injectable_backup.get(choices.__name__)
             desc['choices'] = ','.join(str(c) for c in choices)
             desc['parameters'] = list(sig.parameters.keys())
         desc['data_class'] = (f'{datatype_class.__module__}.'
