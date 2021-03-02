@@ -2,13 +2,13 @@ from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
+#from django.contrib.admin.views.decorators import staff_member_required
 
 from . import views
 
 urlpatterns = [
     path('', views.WelcomeView.as_view(), name='index'),
-    path('settings/', staff_member_required(views.SettingsView.as_view()),
+    path('settings/', login_required(views.SettingsView.as_view()),
          name='settings'),
     path('projects/', login_required(views.ProjectsView.as_view()),
          name='projects'),
