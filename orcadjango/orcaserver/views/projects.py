@@ -103,6 +103,8 @@ class ProjectMixin:
         return orca
 
     def get_context_data(self, **kwargs):
+        # workaround for forms etc. requesting orca without applying values
+        orca = self.get_orca()
         kwargs = super().get_context_data(**kwargs)
         project = self.get_project()
         scenario = self.get_scenario()
