@@ -343,3 +343,7 @@ button > i, a > i{
   height: 2em;
   pointer-events: auto;
 }
+
+.form-row > .form-group {
+  width: 100%;
+}
