@@ -308,6 +308,9 @@ class GeometryConverter(OrcaTypeMap):
             return
         geom = ogr.CreateGeometryFromWkt(text)
         geom.FlattenTo2D()
+        s_ref = ogr.osr.SpatialReference()
+        s_ref.ImportFromEPSG(self.srid)
+        geom.AssignSpatialReference(s_ref)
         return geom
 
     def get_form_field(self, value, label='', **kwargs):
