@@ -82,7 +82,7 @@ def parse_injectables(orca, injectables=None):
                     desc['datatype'] = returntype.__name__
             desc['module'] = funcwrapper._func.__module__
             desc.update(_meta)
-            choices = desc.get('choices', []) or []
+            choices = desc.get('choices')
             # choices are derived from another injectable
             if callable(choices):
                 c_meta = orca.meta.get(choices.__name__)
@@ -90,7 +90,8 @@ def parse_injectables(orca, injectables=None):
                     choices = orca.get_injectable(choices.__name__)
                 else:
                     choices = orca._injectable_backup.get(choices.__name__)
-            desc['choices'] = ','.join(str(c) for c in choices)
+            if choices is not None:
+                desc['choices'] = ','.join(str(c) for c in choices)
             desc['parameters'] = list(sig.parameters.keys())
         desc['data_class'] = (f'{datatype_class.__module__}.'
                               f'{datatype_class.__name__}')

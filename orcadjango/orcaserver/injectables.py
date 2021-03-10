@@ -105,7 +105,7 @@ class Injectable(NameModel):
         meta = self.meta
         if not meta:
             return
-        if meta['choices'] is not None:
+        if 'choices' in meta:
             choices = meta['choices'].split(',')
             choices = tuple(zip(choices, choices))
             field = converter.get_choice_field(
