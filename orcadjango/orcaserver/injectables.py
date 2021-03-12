@@ -106,14 +106,17 @@ class Injectable(NameModel):
         if not meta:
             return
         if 'choices' in meta:
-            choices = meta['choices'].split(',')
-            choices = tuple(zip(choices, choices))
+            c_meta = meta['choices']
+            if isinstance(c_meta, dict):
+                choices = [(k, f'{v} ({k})' if v else k)
+                           for k, v in c_meta.items()]
+            else:
+                choices = tuple(zip(c_meta, c_meta))
             field = converter.get_choice_field(
                 value=self.validated_value, choices=choices)
         else:
             field = converter.get_form_field(
                 value=self.validated_value, label=f'Value',
-                placeholder=meta['docstring'],
                 injectable_name=self.name, meta=meta,
                 project=self.scenario.project)
         return field

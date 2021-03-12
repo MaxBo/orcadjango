@@ -90,8 +90,7 @@ def parse_injectables(orca, injectables=None):
                     choices = orca.get_injectable(choices.__name__)
                 else:
                     choices = orca._injectable_backup.get(choices.__name__)
-            if choices is not None:
-                desc['choices'] = ','.join(str(c) for c in choices)
+                desc['choices'] = choices
             desc['parameters'] = list(sig.parameters.keys())
         desc['data_class'] = (f'{datatype_class.__module__}.'
                               f'{datatype_class.__name__}')

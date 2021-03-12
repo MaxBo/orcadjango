@@ -89,7 +89,6 @@ class ProjectForm(forms.Form):
                 value = desc['value']
             label = f'Initial value for "{injectable}" - {desc["docstring"]}'
             field = converter.get_form_field(value=value, label=label,
-                                             placeholder=desc["docstring"],
                                              project=project, meta=desc,
                                              injectable_name=injectable)
             self.fields[injectable] = field
