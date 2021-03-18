@@ -35,9 +35,12 @@ function GeometryTypeControl(opt_options) {
 };
 ol.inherits(GeometryTypeControl, ol.control.Control);
 
-// TODO: allow deleting individual features (#8972)
 {
     const wktFormat = new ol.format.WKT({splitCollection: true});
+    proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
+    proj4.defs('EPSG:25833', '+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs');
+    ol.proj.setProj4(proj4);
+    const supportedEPSG = Object.keys(proj4.defs).filter(v => v.startsWith('EPSG:'));
 
     function MapWidget(options) {
         this.map = null;
@@ -113,13 +116,18 @@ ol.inherits(GeometryTypeControl, ol.control.Control);
             value = value.replace(match[0], '');
             re = new RegExp("[0-9]*;");
             let srid = parseInt(match[0].match(re)[0]);
+            // ToDo: define more srids with proj4 or switch to OpenLayers 6
+            if (!supportedEPSG.includes('EPSG:' + srid)){
+                alert('Only SRIDs ' + supportedEPSG.join(', ') + ' are supported atm!');
+                return;
+            }
             options = {
                 dataProjection: 'EPSG:' + srid,
                 featureProjection: 'EPSG:' + this.options.map_srid
             }
         }
         const features = wktFormat.readFeatures(value, options);
-        window.features=features;
+        //window.features=features;
         const extent = ol.extent.createEmpty();
         const source = this.featureOverlay.getSource();
         features.forEach(function(feature) {

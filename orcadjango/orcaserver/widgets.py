@@ -98,6 +98,7 @@ class OsmMultiPolyWidget(geoforms.OSMWidget):
         }
         js = (
             'https://cdnjs.cloudflare.com/ajax/libs/ol3/4.6.5/ol.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js',
             'js/OLMap.js',
         )
 
