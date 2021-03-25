@@ -15,10 +15,11 @@
   <button type="button" class="btn btn-danger" onclick="{{ module }}.clearFeatures()">
     <i class="fa fa-ban"></i>Delete all Features
   </button>
-  <p style="margin-top: 20px;">WKT (well known text)</p>
+  <p style="margin-top: 20px;">(E)WKT (well known text)</p>
   <textarea id="{{ id }}" class="vSerializedField required" cols="150" rows="10" name="{{ name }}">{{ serialized }}</textarea>
   <br>
-  <button type="button"  style="margin-top: 0.5em;" class="btn btn-secondary" onclick="{{ module }}.redraw()" title="Render Wkt on map. Only works with WKT with projection EPSG 3857.">
+  <p> Hint: Use EWKT to provide information about the projection. Otherwise EPSG 3857 is expected.</p>
+  <button type="button"  style="margin-top: 0.5em;" class="btn btn-secondary" onclick="{{ module }}.redraw()" title="Render Wkt on map.">
     <i class="fa fa-map-o"></i>Render Wkt on map
   </button>
   <script>
