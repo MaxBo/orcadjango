@@ -28,14 +28,14 @@
 <form action='' method="post">
   {% csrf_token %}
   <input name="project" style="display: None;"/>
-  <button disabled class="btn btn-primary" type="submit" name="select" value="select" title="Set selected project as active" style="margin-right: 1em;">
-    <i class="fa fa-star-o"></i>Select
-  </button>
-  <a class="btn btn-success" href="/projects/create/" title="Add a new project">
+  <a class="btn btn-success" href="/projects/create/" title="Add a new project" style="margin-right: 0.5em;">
     <i class="fa fa-plus"></i>Add
   </a>
-  <button disabled class="btn btn-danger" id="deleteBtn" type="button" title="Remove the selected project" style="float: right;" data-toggle="modal" data-target="#confirm-delete-modal">
+  <button disabled class="btn btn-danger" id="deleteBtn" type="button" title="Remove the selected project" data-toggle="modal" data-target="#confirm-delete-modal">
     <i class="fa fa-trash-o"></i>Remove
+  </button>
+  <button disabled class="btn btn-primary" type="submit" name="select" value="select" title="Set selected project as active" style="float: right;">
+    <i class="fa fa-star-o"></i>Select
   </button>
 
   <div class="modal fade" id="confirm-delete-modal" tabindex="-1" role="dialog" aria-hidden="true">

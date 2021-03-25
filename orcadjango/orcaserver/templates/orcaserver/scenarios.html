@@ -17,17 +17,17 @@
       {% endfor %}
       </select>
       <br>
-      <button class="btn btn-primary" type="submit" value="select" name="select" title="Set selected scenario as active" style="margin-right: 1em;">
-        <i class="fa fa-star-o"></i>Select
-      </button>
       <button class="btn btn-success" type="button" data-toggle="modal" data-target="#add-scenario-modal" title="Add a new scenario">
         <i class="fa fa-plus"></i>Add
       </button>
       <button class="btn btn-secondary" id="cloneBtn" type="button" data-toggle="modal" data-target="#clone-scenario-modal" title="Clone the selected scenario. New scenario inherits the parameter values of the selected scenario.">
         <i class="fa fa-clone"></i>Clone
       </button>
-      <button disabled id="deleteBtn" type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete-modal" title="Remove the selected scenario" style="float: right;">
+      <button disabled id="deleteBtn" type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete-modal" title="Remove the selected scenario">
         <i class="fa fa-trash-o"></i>Remove
+      </button>
+      <button class="btn btn-primary" type="submit" value="select" name="select" title="Set selected scenario as active" style="float: right;">
+        <i class="fa fa-star-o"></i>Select
       </button>
     </div>
     <div class="modal fade" id="confirm-delete-modal" tabindex="-1" role="dialog" aria-hidden="true">
