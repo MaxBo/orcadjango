@@ -2,7 +2,7 @@ django>=3.0
 orca
 django-bootstrap4
 psycopg2
-channels
+channels>=3.0.1
 channels_redis
 pandas
 xarray
