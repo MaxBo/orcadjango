@@ -41,6 +41,7 @@ SECRET_KEY = 'kfn+e0u++2*k6!r^^o(jlmd+40l*8qdk8(8cwb5dc$v9u9e-jc'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'false').lower() == 'true'
+LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
 
 ALLOWED_HOSTS = ['localhost']
 

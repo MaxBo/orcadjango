@@ -97,7 +97,8 @@ class ProjectMixin:
         if not orca:
             orca = manager.create(scenario.id, module=module)
             handler = ScenarioHandler(scenario, persist=True)
-            handler.setLevel(logging.DEBUG if settings.DEBUG else logging.INFO)
+            level = getattr(logging, settings.LOG_LEVEL, logging.INFO)
+            handler.setLevel(level)
             manager.add_log_handler(scenario.id, handler)
             apply_injectables(orca, scenario)
         return orca
