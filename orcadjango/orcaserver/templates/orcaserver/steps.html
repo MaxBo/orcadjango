@@ -12,7 +12,7 @@
     <div class="row" style="padding-left: 1em;">
       <h6 style="float: left;">Available Steps <sup class="help">1)</sup></h6>
     </div>
-    <form action='' method="post" style="width: 100%;">
+    <form action='' method="post" style="width: 100%; user-select: none; z-index: 1; position: relative;">
       {% csrf_token %}
       <input type='hidden' name="steps" id="selected-steps"/>
       {% if steps_available|length > 5 %}
@@ -32,10 +32,10 @@
             <div class="card-body">
                 <table class="table select available"><tbody>
                 {% for step in steps %}
-                  <tr data-toggle="popover" data-trigger="hover" data-placement="right" onclick="highlightRow(this)" data-step="{{ step.name }}" title="{{ step.name }}"
+                  <tr style="background: white; min-width: 300px;" class="available-step" data-toggle="popover" data-trigger="hover" data-placement="right" onclick="highlightRow(this)" data-step="{{ step.name }}" title="{{ step.name }}"
                   data-content="{{ step.description }} {% if step.required %} <br><br> <i>requires Step(s) <b>{{ step.required }}</b> to be run before </i>{% endif %}">
-                    <td><b> {{ step.name }} </b></td>
-                    <td> <i>{{ step.description }}</i> </td>
+                    <td><b>{{ step.name }}</b></td>
+                    <td><i>{{ step.description }}</i></td>
                   </tr>
                 {% endfor %}
                 </tbody></table>
@@ -132,7 +132,7 @@
         <td>
           <form action='' method="post">
             {% csrf_token %}
-            <button title="Remove Step" type="submit" value="{{ step.id }}" name="remove" class="btn btn-outline-danger">
+            <button title="Remove Step" type="submit" value="{{ step.id }}" name="remove" class="btn btn-outline-danger" onclick="showLoader()">
               <i class="fa fa-trash-o" style="margin: 0;"></i>
             </button>
           </form>
@@ -189,9 +189,12 @@
       <div id="logs-body" class="modal-body" style="overflow-y: auto; max-height: calc(100vh - 200px);">
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button onclick="reloadLogs()" type="button" class="btn btn-primary">Reload</button>
-        <button id='clear-logs-button' onclick="clearLogs()" title="Remove all log entries of this scenario from the database" type="button" class="btn btn-danger">Clear</button>
+        <button onclick="reloadLogs()" type="button" class="btn btn-primary">
+          <i class="fa fa-rotate-right" style="margin: 0;"></i> Reload
+        </button>
+        <button id='clear-logs-button' onclick="clearLogs()" title="Remove all log entries of this scenario from the database" type="button" class="btn btn-danger">
+          <i class="fa fa-trash-o" style="margin: 0;"></i> Clear Logs
+        </button>
       </div>
     </div>
   </div>
@@ -351,6 +354,26 @@
 
   //drag and drop of table rows
   function tableDnD(){
+    //drag & drop from availabe steps to scenario steps list
+    $('.available-step').each(function(i, stepRow){
+      $(stepRow).draggable({
+        revert: 'invalid',
+        helper: 'clone',
+        cursor: 'move',
+        containment: 'document',
+      });
+    });
+    $('.run-container').droppable({
+      accept: '.available-step',
+      classes: {
+        'ui-droppable-hover': 'drop-highlight'
+      },
+      drop: function( event, ui ) {
+        addStep(ui.draggable.data('step'));
+      }
+    });
+
+    // sort table scenario steps list by dragging & droppping inside table
     function fixHelperModified(e, tr) {
       var $originals = tr.children();
       var $helper = tr.clone();
@@ -391,6 +414,22 @@
         }
       },
     }).disableSelection();
+  }
+
+  function addStep(name) {
+    const form = new FormData();
+    form.set('add', true);
+    form.set('steps', name);
+    showLoader();
+    fetch(stepUrl, {
+      method: "POST",
+      body: form,
+      credentials: "same-origin",
+      headers: { "X-CSRFToken": csrfToken }
+    }).then((response) => {
+      //hideLoader();
+      location.reload();
+    });
   }
 
   $(document).ready(function() {

@@ -308,7 +308,6 @@ button > i, a > i{
   pointer-events: auto;
 }
 
-
 .run-container{
   margin-top: -5em;
   margin-left: 2em;
@@ -318,6 +317,12 @@ button > i, a > i{
   border-radius: 1em;
   box-shadow: 0px 0px 3px 0px rgb(0 0 0 / 25%);
   min-height: 20em;
+}
+
+.run-container.drop-highlight {
+  background: #fff5f4;
+  border-color: salmon;
+  border-style: solid;
 }
 
 .log-dock{
@@ -346,4 +351,70 @@ button > i, a > i{
 
 .form-row > .form-group {
   width: 100%;
+}
+
+#loader-overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 1000;
+  background-color: #ffffff82;
+  margin: 0;
+  top: 60px;
+  align-items: center;
+  display: none;
+  cursor: wait;
+}
+
+.loader-wheel {
+  animation: spin 1s infinite linear;
+  border: 2px solid rgba(30, 30, 30, 0.5);
+  border-left: 4px solid salmon;
+  border-radius: 50%;
+  height: 50px;
+  margin-bottom: 10px;
+  width: 50px;
+  margin-left: 15px;
+}
+
+.loader {
+  width: 100px;
+}
+
+.loader-text {
+  color: rgb(110 110 110);
+  font-family: arial, sans-serif;
+  width: 100%;
+  background-color: white;
+}
+
+.loader-text:after {
+  content: 'Please wait';
+  animation: load 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes load {
+  0% {
+    content: 'Please wait';
+  }
+  33% {
+    content: 'Please wait.';
+  }
+  67% {
+    content: 'Please wait..';
+  }
+  100% {
+    content: 'Please wait...';
+  }
 }

@@ -48,6 +48,7 @@ ALLOWED_HOSTS = ['localhost']
 if os.name == 'nt':
     path = os.path.join(sys.prefix, 'Library')
     os.environ['GDAL_DATA'] = os.path.join(path, 'share', 'gdal')
+    GDAL_LIBRARY_PATH = r'C:\Miniconda3\envs\orcadjango\Library\bin\gdal204'
 
 # Application definition
 
@@ -139,6 +140,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/

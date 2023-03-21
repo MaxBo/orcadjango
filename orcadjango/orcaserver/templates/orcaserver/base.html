@@ -19,6 +19,12 @@
 
 <body>
 {% bootstrap_messages %}
+<div id='loader-overlay'>
+  <div class='loader'>
+    <div class='loader-wheel'></div>
+    <div class='loader-text'></div>
+  </div>
+</div>
 {% block bootstrap4_content %}
   <div class="navbar-wrapper">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -149,6 +155,15 @@
 <script>
 {% if user.is_authenticated %}
 var showHelpCheck = document.getElementById('showHelp');
+
+function showLoader(){
+  $('#loader-overlay').attr('style','display: flex');
+}
+
+function hideLoader(){
+  $('#loader-overlay').hide();
+}
+
 function toggleHelp(){
   var showHelp = showHelpCheck.checked,
       helpContainers = document.querySelectorAll('.help');
