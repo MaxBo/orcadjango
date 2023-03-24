@@ -5,7 +5,7 @@
 
 {% block content %}
   {% if request.session.project %}
-  <h4> Please select a scenario <div class="help" style="display: inline;">*</div></h4>
+  <h4> Please select a scenario </h4>
   <form action='' method="post">
     {% csrf_token %}
     <div style="max-width: 40em;">
