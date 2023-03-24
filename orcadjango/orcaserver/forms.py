@@ -5,8 +5,8 @@ import time
 import json
 
 from orcaserver.models import Step
-from orcaserver.management import (OrcaManager, parse_injectables,
-                                   OrcaTypeMap)
+from orcaserver.management import OrcaManager, parse_injectables
+from orcaserver.injectables import OrcaTypeMap
 
 def get_python_module():
     """return the currently set python module"""
@@ -31,7 +31,7 @@ class OrcaSettingsForm(forms.Form):
         max_length=100,
         widget=forms.widgets.TextInput(
             attrs={'size': 100, }),
-        label='Python module with orca imports',
+        label='Module path',
         initial=get_python_module,
     )
 
@@ -42,7 +42,9 @@ class InjectableValueForm(geoforms.Form):
         inj = kwargs.pop('injectable', None)
         super().__init__(*args, **kwargs)
         if inj.can_be_changed:
-            self.fields['value'] = inj.get_form_field()
+            field = inj.get_form_field()
+            if field:
+                self.fields['value'] = field
 
     def clean(self):
         return super().clean()
@@ -54,9 +56,10 @@ class ProjectForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         active_mod = kwargs.pop('module')
-        project_name = kwargs.pop('project_name', '')
-        project_description = kwargs.pop('project_description', '')
-        initial_values = json.loads(kwargs.pop('init', '{}'))
+        project = kwargs.pop('project', None)
+        project_name = project.name if project else ''
+        project_description = project.description if project else ''
+        initial_values = json.loads(project.init) if project else {}
         super().__init__(*args, **kwargs)
         self.fields['name'].initial = project_name
         self.fields['description'].initial = project_description
@@ -74,7 +77,7 @@ class ProjectForm(forms.Form):
         initial = mod_descs[0].get('init', [])
         manager = OrcaManager()
         uid = str(time.time())
-        orca = manager.get(uid , module=module_name)
+        orca = manager.get(uid, module=module_name)
         meta = parse_injectables(orca)
         for injectable in initial:
             desc = meta[injectable]
@@ -84,9 +87,10 @@ class ProjectForm(forms.Form):
                 value = converter.to_value(value)
             else:
                 value = desc['value']
-            label = f'initial value for "{injectable}" - {desc["docstring"]}'
+            label = f'Initial value for "{injectable}" - {desc["docstring"]}'
             field = converter.get_form_field(value=value, label=label,
-                                             placeholder=desc["docstring"])
+                                             project=project, meta=desc,
+                                             injectable_name=injectable)
             self.fields[injectable] = field
         manager.remove(uid)
 

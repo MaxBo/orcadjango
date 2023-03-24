@@ -5,28 +5,46 @@
 
 {% block content %}
   {% if request.session.project %}
-  <h4> Select a scenario </h4>
+  <h4> Please select a scenario <div class="help" style="display: inline;">*</div></h4>
   <form action='' method="post">
     {% csrf_token %}
-    <select class="form-control" onchange="changeSelection()" name='scenario' style="min-width: 200px; width: auto; margin-right: 10px; display: inline;">
-    {% for scenario in scenarios %}
-      <option value="{{ scenario.id }}" {% if scenario.id == request.session.scenario %} selected="selected" {% endif %}>
-        {{ scenario.name }}
-      </option>
-    {% endfor %}
-    </select>
-    <input class="btn btn-primary" type="submit" name="select" title="Set as active scenario" value="Select">
-    <button disabled id="deleteBtn" type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete-modal" title="Delete selected scenario"> Delete </button>
-    <input class="btn btn-secondary" type="submit" name="reset" title="Reset injectable values of selected scenario to project defaults" value="Reset Injectables">
+    <div style="max-width: 40em;">
+      <select class="form-control" onchange="changeSelection()" name='scenario'>
+      {% for scenario in scenarios %}
+        <option value="{{ scenario.id }}" {% if scenario.id == request.session.scenario %} selected="selected" {% endif %}>
+          {{ scenario.name }}
+        </option>
+      {% endfor %}
+      </select>
+      <br>
+      <button class="btn btn-success" type="button" data-toggle="modal" data-target="#add-scenario-modal" title="Add a new scenario">
+        <i class="fa fa-plus"></i>Add
+      </button>
+      <button class="btn btn-secondary" id="cloneBtn" type="button" data-toggle="modal" data-target="#clone-scenario-modal" title="Clone the selected scenario. New scenario inherits the parameter values of the selected scenario.">
+        <i class="fa fa-clone"></i>Clone
+      </button>
+      <button disabled id="deleteBtn" type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete-modal" title="Remove the selected scenario">
+        <i class="fa fa-trash-o"></i>Remove
+      </button>
+      <button class="btn btn-primary" type="submit" value="select" name="select" title="Set selected scenario as active" style="float: right;">
+        <i class="fa fa-star-o"></i>Select
+      </button>
+    </div>
     <div class="modal fade" id="confirm-delete-modal" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Confirm deletion</h5>
+            <h5 class="modal-title">Confirm removal</h5>
           </div>
-            <div class="modal-body">
-              Do you really want to delete the selected scenario?
-            </div>
+          <div class="modal-body">
+            <p>
+              Do you really want to remove the selected scenario?
+            </p>
+            <p>
+              <i class="fa fa-exclamation-triangle"></i>
+              This does only remove the scenario and its parameters and step-configurations. Possible databases or data folders related to the scenario remain and have to be removed manually or by running suitable steps first, if required.
+            </p>
+          </div>
           <div class="modal-footer">
             <input class="btn btn-danger" type="submit" name="delete" value="Confirm"/>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -35,25 +53,61 @@
       </div>
     </div>
   </form>
-  <br>
-  <br>
   <form action='' method="post">
-    <h4> Create Scenario </h4>
     {% csrf_token %}
-    <input class="form-control" name="name" title="Name of scenario to create" placeholder="scenario name" style="width: auto; margin-right: 10px; display: inline;" required>
-    <input class="btn btn-primary" type="submit" value="Create New" name="create" title="Create new scenario with input name">
-    <input class="btn btn-secondary" type="submit" value="Clone Current" name="clone" title="Create new scenario with input name based on selected scenario keeping its injectable values">
+    <div class="modal fade" id="add-scenario-modal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Add scenario</h5>
+          </div>
+          <div class="modal-body">
+            Name of the scenario to create
+            <input class="form-control" name="name" title="Name of scenario to create" placeholder="scenario name" required>
+          </div>
+          <div class="modal-footer">
+            <input class="btn btn-success" type="submit" name="create" value="Confirm"/>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+  <form action='' method="post">
+    {% csrf_token %}
+    <div class="modal fade" id="clone-scenario-modal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Clone scenario</h5>
+          </div>
+          <div class="modal-body">
+            <p>
+            Create a new scenario that inherits the parameter values of the selected scenario.
+            </p>
+            Name of the cloned scenario
+            <input class="form-control" name="name" title="Name of scenario to clone" placeholder="scenario name" required>
+          </div>
+          <div class="modal-footer">
+            <input class="btn btn-success" type="submit" name="clone" value="Confirm"/>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </form>
   {% else %}
-  <h4> No project selected </h4>
+  <h4> Please select a <a href="/projects">project</a> first </h4>
   {% endif %}
 </div>
 <script>
   var scnSelect = document.querySelector('select[name="scenario"]'),
-      deleteBtn = document.getElementById('deleteBtn');
+      deleteBtn = document.getElementById('deleteBtn'),
+      cloneBtn = document.getElementById('cloneBtn');
   // enable disable
   function changeSelection(){
     deleteBtn.disabled = !scnSelect.value;
+    cloneBtn.disabled = !scnSelect.value;
   }
   changeSelection();
 </script>

@@ -3,10 +3,11 @@ from django.core import validators
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
 from django.forms.utils import ErrorList
-from django.contrib.gis.gdal.error import GDALException
 import ogr
 from django.contrib.gis.geos import GEOSException, GEOSGeometry
 from django.contrib.gis import forms as geoforms
+from flat_json_widget.widgets import FlatJsonWidget
+import json
 
 
 class CommaSeparatedCharField(forms.Field):
@@ -97,6 +98,7 @@ class OsmMultiPolyWidget(geoforms.OSMWidget):
         }
         js = (
             'https://cdnjs.cloudflare.com/ajax/libs/ol3/4.6.5/ol.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js',
             'js/OLMap.js',
         )
 
@@ -124,6 +126,20 @@ class OgrGeometryField(geoforms.GeometryField):
                     code='transform_error')
 
         return ogr.CreateGeometryFromWkt(geom.wkt)
+
+
+class EditableDictWidget(FlatJsonWidget):
+    @property
+    def media(self):
+        media = super().media
+        js = ['admin/js/vendor/jquery/jquery.min.js',
+              'admin/js/jquery.init.js'] + media._js
+        css = media._css['all'] + ['css/flat-json.css']
+        return forms.Media(js=js, css={'all': css})
+
+    def render(self, name, value, attrs=None, renderer=None):
+        value = json.dumps(value)
+        return super().render(name, value, attrs=attrs, renderer=renderer)
 
 
 class DictWidget(forms.widgets.MultiWidget):

@@ -2,10 +2,14 @@
 {% load bootstrap4 %}
 
 {% block content %}
-  <h4> Select the base module </h4>
+<div style="max-width: 50em;">
+  <h4> Please select the base module <div class="help" style="display: inline;">*</div> </h4>
   <form action='' method="post">
     {% csrf_token %}
     {% bootstrap_form form %}
-    <input type="submit" name="action" value="Import/Reload" class="btn btn-primary">
+    <button class="btn btn-primary" type="submit" name="action" title="Activate the module">
+      <i class="fa fa-star-o"></i>Activate
+    </button>
   </form>
+</div>
 {% endblock %}

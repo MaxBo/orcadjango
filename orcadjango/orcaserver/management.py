@@ -7,15 +7,6 @@ import ctypes
 import sys
 import typing
 from inspect import signature, _empty
-from django import forms
-from django.contrib.gis.geos import MultiPolygon, fromstr
-import json
-import ast
-import ogr
-import datetime
-
-from orcaserver.widgets import (DictField, CommaSeparatedCharField,
-                                OgrGeometryField, OsmMultiPolyWidget)
 
 lock = threading.Lock()
 
@@ -51,27 +42,33 @@ def load_module(module_name, orca=None, module_set=None):
             module_set.add(module_name)
     return module
 
-def parse_injectables(orca):
-    injectable_list = orca.list_injectables()
+def parse_injectables(orca, injectables=None):
+    orca_injectables = orca.list_injectables()
+    if not injectables:
+        injectables = orca_injectables
     descriptors = {}
     orca_meta = getattr(orca, 'meta', {})
-    for name in injectable_list:
+    for name in injectables:
+        descriptors[name] = None
         desc = {}
         _meta = orca_meta.get(name, {})
-        if name.startswith('iter_'):
+        if (name not in orca_injectables or name.startswith('iter_')
+            or _meta.get('hidden')):
             continue
-        value = orca._injectable_backup.get(name)
+        if _meta.get('refresh') == 'always':
+            value = orca.get_injectable(name)
+        else:
+            value = orca._injectable_backup.get(name)
         datatype_class = type(value)
         datatype = datatype_class.__name__
         desc['datatype'] = datatype
         desc['value'] = value
-
-        #  check if the original type is overwritable
+        # check if the original type is overwritable
         funcwrapper = orca._injectable_function.get(name)
         sig = signature(funcwrapper._func)
         if isinstance(funcwrapper, orca._InjectableFuncWrapper):
             desc['docstring'] = funcwrapper._func.__doc__ or ''
-            #  Datatype from annotations:
+            # datatype from annotations
             returntype = sig.return_annotation
             has_returntype = True
             if isinstance(returntype, type) and issubclass(returntype, _empty):
@@ -84,19 +81,22 @@ def parse_injectables(orca):
                     datatype_class = returntype
                     desc['datatype'] = returntype.__name__
             desc['module'] = funcwrapper._func.__module__
-            desc['groupname'] = _meta.get('group', '')
-            desc['order'] = _meta.get('order', 10000)
-            desc['hidden'] = _meta.get('hidden', False)
-            choices = _meta.get('choices', []) or []
+            desc.update(_meta)
+            choices = desc.get('choices')
             # choices are derived from another injectable
             if callable(choices):
-                choices = orca._injectable_backup.get(choices.__name__)
-            desc['choices'] = ','.join(str(c) for c in choices)
+                c_meta = orca.meta.get(choices.__name__)
+                if c_meta and c_meta.get('refresh') == 'always':
+                    choices = orca.get_injectable(choices.__name__)
+                else:
+                    choices = orca._injectable_backup.get(choices.__name__)
+                desc['choices'] = choices
             desc['parameters'] = list(sig.parameters.keys())
         desc['data_class'] = (f'{datatype_class.__module__}.'
                               f'{datatype_class.__name__}')
         descriptors[name] = desc
     return descriptors
+
 
 class InUseError(Exception):
     ''''''
@@ -224,7 +224,7 @@ class OrcaManager(Singleton):
 
     def abort(self, instance_id):
         thread = self.threads.get(instance_id)
-        if thread:
+        if thread and thread.isAlive():
             orca = self.get(instance_id)
             orca.logger.error('aborting...')
             thread.abort()
@@ -252,7 +252,6 @@ class OrcaManager(Singleton):
         Run steps in series, optionally repeatedly over some sequence.
         The current iteration variable is set as a global injectable
         called ``iter_var``.
-
         Parameters
         ----------
         steps : list of Step
@@ -293,7 +292,6 @@ class OrcaManager(Singleton):
         orca = self.get(instance_id)
         logger = orca.logger
         thread = self.threads[instance_id]
-        logger.info(str(thread))
         try:
             iter_vars = iter_vars or [None]
             max_i = len(iter_vars)
@@ -372,208 +370,3 @@ class OrcaManager(Singleton):
                 thread.on_error()
         finally:
             orca.clear_cache()
-
-
-class OrcaTypeMap:
-    data_type = None
-    form_field = None
-    description = ''
-
-    @staticmethod
-    def get(module):
-        cls = None
-        try:
-            if isinstance(module, str):
-                module_class = module.split('.')
-                module_name = '.'.join(module_class[:-1])
-                classname = module_class[-1]
-                module = getattr(importlib.import_module(module_name),
-                                 classname, str)
-            for sub in OrcaTypeMap.__subclasses__():
-                if sub.data_type == module:
-                    cls = sub
-                    break
-        except ModuleNotFoundError:
-            pass
-        if not cls:
-            cls = DefaultConverter
-        return cls()
-
-    def to_value(self, text):
-        raise NotImplementedError
-
-    def to_str(self, value):
-        return str(value)
-
-    def get_form_field(self, value=None, label='', placeholder='value'):
-        field = self.form_field(initial=value, label=label)
-        field.widget.attrs['placeholder'] = placeholder
-        return field
-
-    def get_choice_field(self, value=None, choices=(), label='Select'):
-        return forms.ChoiceField(choices=choices, label=label, initial=value)
-
-
-class DefaultConverter(OrcaTypeMap):
-    form_field = forms.CharField
-
-    def to_value(self, text):
-        return ast.literal_eval(text)
-
-
-class IntegerConverter(OrcaTypeMap):
-    data_type = int
-    form_field = forms.IntegerField
-    description = 'integer'
-
-    def to_value(self, text):
-        return int(text)
-
-
-class FloatConverter(OrcaTypeMap):
-    data_type = float
-    form_field = forms.FloatField
-    description = 'float'
-
-    def to_value(self, text):
-        return float(text)
-
-
-class BooleanConverter(OrcaTypeMap):
-    data_type = bool
-    form_field = forms.BooleanField
-    description = 'boolean'
-
-    def get_form_field(self, value, label='', **kwargs):
-        return self.form_field(initial=value, label='True', required=False)
-
-    def to_value(self, text):
-        return text.lower() == 'true'
-
-
-class ListConverter(OrcaTypeMap):
-    data_type = list
-    form_field = CommaSeparatedCharField
-    description = 'comma seperated values'
-
-    def to_str(self, value):
-        return ', '.join(str(v) for v in value)
-
-    def to_value(self, text):
-        return [t.strip() for t in text.split(',')] if text else []
-
-    def get_choice_field(self, value=None, choices=(),
-                         label='Select one or more'):
-        return forms.MultipleChoiceField(choices=choices, label=label,
-                                         widget=forms.CheckboxSelectMultiple,
-                                         initial=value)
-
-
-class DictConverter(OrcaTypeMap):
-    data_type = dict
-    form_field = DictField
-    description = 'dictionary'
-
-    def get_form_field(self, value, label='', **kwargs):
-        return self.form_field(value, label=label)
-
-    def to_str(self, value):
-        return json.dumps(value)
-
-    def to_value(self, text):
-        # workaround
-        # ToDo: remove this
-        try:
-            ret = json.loads(text)
-        except json.decoder.JSONDecodeError:
-            ret = json.loads(text.replace("'",'"'))
-        return ret
-
-
-class StringConverter(OrcaTypeMap):
-    data_type = str
-    form_field = forms.CharField
-    description = 'string'
-
-    def to_value(self, text):
-        return text
-
-
-class GeometryConverter(OrcaTypeMap):
-    data_type = ogr.Geometry
-    form_field = OgrGeometryField
-    srid = 4326
-
-    def to_str(self, value):
-        if not value:
-            #return 'POLYGON EMPTY'
-            return
-        # ToDo: this is inplace, might cause side effects
-        value.FlattenTo2D()
-        return value.ExportToWkt()
-
-    def to_value(self, text):
-        if not text:
-            return
-        geom = ogr.CreateGeometryFromWkt(text)
-        geom.FlattenTo2D()
-        return geom
-
-    def get_form_field(self, value, label='', **kwargs):
-        if value:
-            poly = fromstr(self.to_str(value))
-            if not isinstance(poly, MultiPolygon):
-                poly = MultiPolygon(poly)
-            poly.srid = self.srid
-        else:
-            poly = None
-        return self.form_field(
-            srid=self.srid,
-            geom_type='MultiPolygon',
-            initial=poly,
-            label=label,
-            widget= OsmMultiPolyWidget(
-                attrs={
-                    'map_width': 800,
-                    'map_height': 500,
-                    'display_wkt': True,
-                    'placeholder': ('WKT string (preferably in 3857 to be able '
-                                    'to render it on map)'),
-                    #'default_zoom': 5
-                }
-            )
-        )
-
-    def get_choice_field(self, *args, **kwargs):
-        raise NotImplementedError
-
-
-class DateConverter(OrcaTypeMap):
-    data_type = datetime.date
-    date_format = '%d.%m.%Y'
-    form_field = forms.DateField
-
-    def to_str(self, value):
-        if not value:
-            return ''
-        return value.strftime(self.date_format)
-
-    def to_value(self, text):
-        if not text:
-            return
-        try:
-            dt = datetime.datetime.strptime(text, self.date_format).date()
-        except ValueError:
-            return
-        return dt
-
-    def get_choice_field(self, *args, **kwargs):
-        raise NotImplementedError
-
-    def get_form_field(self, value=None, label='Pick a date', **kwargs):
-        field = self.form_field(input_formats=[self.date_format],
-                                label=label, initial=value,
-                                widget=forms.DateInput(format=self.date_format))
-        return field
-
-

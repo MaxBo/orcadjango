@@ -15,7 +15,8 @@ from dateutil import tz
 
 from orcaserver.management import OrcaManager
 from orcaserver.views import ProjectMixin, apply_injectables
-from orcaserver.models import Step, Injectable, Scenario, LogEntry, Run
+from orcaserver.models import Step, Scenario, LogEntry, Run
+from orcaserver.injectables import Injectable
 
 manager = OrcaManager()
 
@@ -28,6 +29,9 @@ class StepsView(ProjectMixin, TemplateView):
         return self.kwargs.get('id')
 
     def get(self, request, *args, **kwargs):
+        project = self.get_project()
+        if not project:
+            return HttpResponseRedirect(reverse('projects'))
         scenario = self.get_scenario()
         if not scenario:
             return HttpResponseRedirect(reverse('scenarios'))
@@ -73,8 +77,7 @@ class StepsView(ProjectMixin, TemplateView):
                     'Step not found. Your project seems not to be up to date '
                     'with the module. Please remove this step.')
                 continue
-            if not step.docstring:
-                step.docstring = steps_meta[step.name]['description']
+            step.docstring = steps_meta[step.name]['description']
             step.required = steps_meta[step.name]['required']
             step.valid = True
 
@@ -87,9 +90,12 @@ class StepsView(ProjectMixin, TemplateView):
                     continue
                 try:
                     inj = Injectable.objects.get(name=name, scenario=scenario)
+                    meta = inj.meta
+                    desc = inj.meta.get('docstring', '') if meta else ''
                     injectables.append({
                         'id': inj.id,
                         'name': name,
+                        'desc': desc,
                         'value': repr(inj.calculated_value),
                         'url': f"{reverse('injectables')}{name}",
                         'valid': True
@@ -98,27 +104,27 @@ class StepsView(ProjectMixin, TemplateView):
                     injectables.append({
                         'id': -1,
                         'name': name,
-                        'value': 'Injectable not found',
+                        'desc': 'Parameter not found',
+                        'value': '',
                         'url': f"{reverse('injectables')}{name}",
                         'valid': False
                     })
                     step.valid = False
             if not step.valid:
                 step.docstring = (
-                    'One or more injectables are not valid. Your project seems '
-                    'not to be up to date with the module. Please refresh the '
-                    'injectables (Injectables page). If the problem persists '
+                    'One or more parameters are not valid. Your project seems '
+                    'not to be up to date with the module. Please synchronize the '
+                    'parameters (Parameters page). If the problem persists '
                     'remove this step.')
             step.injectables = injectables
         kwargs = super().get_context_data(**kwargs)
         kwargs['steps_available'] = steps_grouped if scenario else []
         kwargs['steps_scenario'] = steps_scenario
-        kwargs['steps_count'] = len(steps_available)
         logs = LogEntry.objects.filter(scenario=scenario).order_by('-timestamp')
         kwargs['logs'] = logs
         kwargs['show_status'] = True
         kwargs['left_columns'] = 3
-        kwargs['right_columns'] = 0
+        kwargs['right_columns'] = 2
         # ToDo: get room from handler
 
         prefix = 'ws' if settings.DEBUG else 'wss'
@@ -140,7 +146,7 @@ class StepsView(ProjectMixin, TemplateView):
                                     name=step, order=i)
                 i += 1
         elif request.POST.get('remove'):
-            step_id = request.POST.get('step')
+            step_id = request.POST.get('remove')
             step = Step.objects.get(id=step_id)
             step.delete()
         elif request.POST.get('abort'):
@@ -205,8 +211,8 @@ class StepsView(ProjectMixin, TemplateView):
                 orca.logger.error(
                     'There are steps selected that contain injectables that '
                     'not be found. Your project seems not to be up to date '
-                    'with the module.<br>Please refresh the injectables '
-                    '(scenario page).')
+                    'with the module.<br>Please synchronize the parameters '
+                    '(parameters page).')
                 return HttpResponse(status=400)
         for step in active_steps:
             step.started = None
@@ -296,6 +302,7 @@ class StepsListView(ProjectMixin, ListView):
             })
         return JsonResponse(steps_json, safe=False)
 
+
 class LogsView(ProjectMixin, ListView):
     template_name = 'orcaserver/logs.html'
     model = LogEntry
@@ -305,9 +312,10 @@ class LogsView(ProjectMixin, ListView):
         """Return the injectables with their values."""
         scenario_id = self.kwargs.get('id')
         logs = LogEntry.objects.filter(scenario_id=scenario_id)
+        lz = tz.tzlocal()
         for log in logs:
-            log.filtered_timestamp = log.timestamp.strftime(
-                '%d.%m.%Y %H:%M:%S.%f %Z')
+            log.filtered_timestamp = log.timestamp.astimezone(lz).strftime(
+                '%d.%m.%Y %H:%M:%S.%f')
         return logs
 
     def post(self, request, *args, **kwargs):

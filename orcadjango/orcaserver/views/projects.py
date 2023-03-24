@@ -11,8 +11,9 @@ import logging
 from orcadjango.loggers import OrcaChannelHandler
 from orcaserver.models import LogEntry
 from orcaserver.forms import ProjectForm
-from orcaserver.models import Scenario, Project, Injectable
-from orcaserver.management import (OrcaManager, OrcaTypeMap)
+from orcaserver.models import Scenario, Project
+from orcaserver.injectables import Injectable, OrcaTypeMap
+from orcaserver.management import OrcaManager
 
 manager = OrcaManager()
 
@@ -32,7 +33,8 @@ class ScenarioHandler(OrcaChannelHandler):
         self.group = f'log_{scenario.id}'
         self.scenario = scenario
         self.setFormatter(logging.Formatter(
-            f'%(asctime)s {scenario.name} - %(message)s'))
+            f'%(asctime)s,%(msecs)03d {scenario.name} - %(message)s',
+            '%d.%m.%Y %H:%M:%S'))
         self.persist = persist
 
     def emit(self, record):
@@ -95,19 +97,34 @@ class ProjectMixin:
         if not orca:
             orca = manager.create(scenario.id, module=module)
             handler = ScenarioHandler(scenario, persist=True)
-            handler.setLevel(logging.DEBUG if settings.DEBUG else logging.INFO)
+            level = getattr(logging, settings.LOG_LEVEL, logging.INFO)
+            handler.setLevel(level)
             manager.add_log_handler(scenario.id, handler)
             apply_injectables(orca, scenario)
         return orca
 
     def get_context_data(self, **kwargs):
+        # workaround for forms etc. requesting orca without applying values
+        orca = self.get_orca()
         kwargs = super().get_context_data(**kwargs)
         project = self.get_project()
         scenario = self.get_scenario()
         module = self.get_module()
+        module_meta = {}
+        # get pretty name of module
+        if settings.ORCA_MODULES:
+            for k, v in settings.ORCA_MODULES['available'].items():
+                if v.get('path') == module:
+                    module = k
+                    module_meta = v
         kwargs['active_project'] = project
         kwargs['active_scenario'] = scenario
         kwargs['python_module'] = module
+        kwargs['data_text'] = module_meta.get('data_text')
+        data_url = module_meta.get('data_url', {})
+        kwargs['data_url_name'] = data_url.get('name', 'Data')
+        kwargs['data_url_href'] = data_url.get('href', data_url.get('url'))
+        kwargs['data_url'] = data_url.get('url')
         kwargs['show_project_settings'] = True
         return kwargs
 
@@ -119,7 +136,8 @@ class ProjectsView(ProjectMixin, ListView):
 
     def get_queryset(self):
         """Return the injectables with their values."""
-        projects = self.model.objects.filter(module=self.get_module())
+        projects = self.model.objects.filter(
+            module=self.get_module()).order_by('name')
         return projects
 
     def post(self, request, *args, **kwargs):
@@ -168,9 +186,7 @@ class ProjectView(ProjectMixin, FormView):
         # in get() or post())
         if project_id is not None:
             project = Project.objects.get(id=project_id)
-            kwargs['project_name'] = project.name
-            kwargs['project_description'] = project.description
-            kwargs['init'] = project.init
+            kwargs['project'] = project
         return kwargs
 
     def form_valid(self, form):
@@ -194,7 +210,3 @@ class ProjectView(ProjectMixin, FormView):
             project.init = json.dumps(init)
             project.save()
         return super().form_valid(form)
-
-class ExtractProjectView(ProjectMixin, FormView):
-    ''''''
-

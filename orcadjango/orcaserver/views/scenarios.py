@@ -7,7 +7,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from orcaserver.views import ProjectMixin
 from orcaserver.management import OrcaManager, parse_injectables
 from orcaserver.views.projects import apply_injectables
-from orcaserver.models import Scenario, Injectable, Step
+from orcaserver.models import Scenario, Step
+from orcaserver.injectables import Injectable
 
 overwritable_types = (str, bytes, int, float, complex,
                       tuple, list, dict, set, bool, None.__class__)
@@ -21,7 +22,7 @@ def recreate_injectables(orca, scenario, keep_values=False):
     init_values = json.loads(project.init)
     # create or reset injectables
     for name, desc in injectables.items():
-        if desc['hidden']:
+        if not desc or desc.get('hidden'):
             continue
         inj, created = Injectable.objects.get_or_create(name=name,
                                                         scenario=scenario)
@@ -30,15 +31,10 @@ def recreate_injectables(orca, scenario, keep_values=False):
             inj.value = value
         inj.datatype = desc['datatype']
         inj.data_class = desc['data_class']
-        inj.docstring = desc['docstring']
-        inj.groupname = desc['groupname']
-        inj.module = desc['module']
-        inj.order = desc['order']
-        inj.choices = desc['choices']
         inj.save()
     # add parent injectable ids
     for name, desc in injectables.items():
-        if desc['hidden']:
+        if not desc or desc.get('hidden'):
             continue
         parent_injectables = []
         inj = Injectable.objects.get(name=name, scenario=scenario)
@@ -62,7 +58,7 @@ class ScenariosView(ProjectMixin, ListView):
     def get_queryset(self):
         """Return the injectables with their values."""
         project = self.request.session.get('project')
-        scenarios = Scenario.objects.filter(project=project)
+        scenarios = Scenario.objects.filter(project=project).order_by('name')
         return scenarios
 
     def post(self, request, *args, **kwargs):
@@ -111,12 +107,8 @@ class ScenariosView(ProjectMixin, ListView):
             injectables = Injectable.objects.filter(scenario=old_scenario)
             for inj in injectables:
                 new_inj, created = Injectable.objects.get_or_create(
-                    scenario=scenario,
-                    name=inj.name)
+                    scenario=scenario, name=inj.name)
                 new_inj.value = inj.value
-                new_inj.changed = inj.changed
-                new_inj.docstring = inj.docstring
-                new_inj.module = inj.module
                 new_inj.save()
 
             # copy steps

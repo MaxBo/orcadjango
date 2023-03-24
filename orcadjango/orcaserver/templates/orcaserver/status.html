@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<h4>Orca Status</h4>
+<h4 style="padding-left: 2em; margin-top: -5em;">Status <div class="help" style="display: inline;">*</div></h4>
 <link rel="stylesheet" type="text/css" href="{% static 'css/datatables.min.css' %}">
 <script src="{% static 'js/datatables.min.js' %}"></script>
 <script src="{% static 'js/jquery-ui.min.js' %}"></script>
@@ -18,7 +18,7 @@
       <th>Start</th>
       <th>Stop</th>
       <th>Success</th>
-      <th></th>
+      <th>Logs</th>
       <th></th>
     </tr>
   </thead>
@@ -37,7 +37,6 @@
       <div id="logs-body" class="modal-body" style="overflow-y: auto; max-height: calc(100vh - 200px);">
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button id='reload-logs-button' onclick="reloadLogs()" title="Update Log table" type="button" class="btn btn-primary">Reload</button>
         <button id='clear-logs-button' onclick="clearLogs()" title="Remove all log entries of this scenario from the database" type="button" class="btn btn-danger">Clear</button>
       </div>
@@ -118,36 +117,55 @@
           { 'data': 'run_by'},
           { 'data': 'started'},
           { 'data': 'finished'},
-          { 'data': 'success'}
+          { 'sortable': false },
+          { 'sortable': false },
+          { 'sortable': false }
       ],
       'rowCallback': function(row, data, index){
+        var cell = $(row).find('td:eq(7)');
+        cell.empty();
         if (data['is_running'] == false){
           var color = (data['success'] == true) ? 'green' : 'red',
-              cell = $(row).find('td:eq(7)');
-          //cell.css('background', color);
-          //cell.css('color', 'white');
-          cell.css('color', color);
+              faCls = (data['success'] == true) ? 'fa-check' : 'fa-ban',
+              icon = document.createElement('i');
+          icon.style.color = color;
+          icon.style.fontSize = '1.3em';
+          icon.classList.add('fa', faCls);
+          cell.append(icon);
         }
         var button = document.createElement('button'),
-            cell = document.createElement('td');
-        row.append(cell)
-        button.innerHTML = 'Log';
+            icon = document.createElement('i');
+        cell = $(row).find('td:eq(8)');
+        cell.empty();
+        icon.style.margin = 0;
+        icon.classList.add('fa', 'fa-file-text-o');
+        //button.textContent  = 'Log';
+        //button.style.whiteSpace = 'nowrap';
+        button.prepend(icon);
+        button.title = 'Show Log History';
         button.addEventListener('click', function(){
           openLogs(data['scenario_id']);
         })
         button.classList.add('btn', 'btn-primary');
         cell.append(button);
 
-        cell = document.createElement('td');
-        button = document.createElement('button');
-        button.innerHTML = 'Abort';
-        button.addEventListener('click', function(){
-          abort(data['scenario_id']);
-        })
-        button.classList.add('btn', 'btn-danger');
-        button.style.display = data['is_running'] ? 'block' : 'None';
-        cell.append(button);
-        row.append(cell);
+        cell = $(row).find('td:eq(9)');
+        cell.empty();
+        if (data['is_running']) {
+            button = document.createElement('button');
+            icon = document.createElement('i');
+            button.textContent = 'Abort';
+            button.style.whiteSpace = 'nowrap';
+            button.addEventListener('click', function(){
+              button.disabled = true;
+              abort(data['scenario_id']);
+            })
+            button.classList.add('btn', 'btn-danger');
+            button.title = 'Abort Run';
+            icon.classList.add('fa', 'fa-ban');
+            cell.append(button);
+            button.prepend(icon);
+        }
       },
       searching: false,
       paging: false,
@@ -163,4 +181,3 @@
 
 </script>
 {% endblock %}
-

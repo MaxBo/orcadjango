@@ -2,12 +2,16 @@
 {% load bootstrap4 %}
 
 {% block content %}
-  <h4>{{ title }}</h4>
+  <h4>{{ title }}<div class="help" style="display: inline;">*</div></h4>
   {{ form.media }}
   <form action='' method="post">
     {% csrf_token %}
     {% bootstrap_form form %}
-    <a class="btn btn-secondary" href="/projects/">Back</a>
-    <input type="submit" name="action" value="Save" class="btn btn-primary">
+    <a href="/projects/" title="Back to previous page without saving" class="btn btn-secondary" style="margin-right: 2em;">
+      <i class="fa fa-arrow-circle-left"></i>Back
+    </a>
+    <button type="submit" name="change" value="change" title="Save changes" class="btn btn-primary">
+      <i class="fa fa-floppy-o"></i>Save Project
+    </button>
   </form>
 {% endblock %}

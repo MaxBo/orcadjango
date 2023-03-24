@@ -1,10 +1,13 @@
 from django.views.generic import TemplateView
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse, HttpResponseNotFound
+from django.conf import settings
 
-from orcaserver.views import ProjectMixin
 from orcaserver.models import Scenario, Run
 from orcaserver.management import OrcaManager
+from dateutil import tz
+
+TIME_FORMAT = '%d.%m.%Y %H:%M:%S'
 
 
 class StatusView(TemplateView):
@@ -20,8 +23,8 @@ class StatusView(TemplateView):
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
         kwargs['left_columns'] = 0
-        kwargs['center_columns'] = 12
-        kwargs['right_columns'] = 0
+        kwargs['center_columns'] = 10
+        kwargs['right_columns'] = 2
         return kwargs
 
     @staticmethod
@@ -29,18 +32,23 @@ class StatusView(TemplateView):
         manager = OrcaManager()
         runs = Run.objects.all()
         runs_json = []
+        module_names = {}
+        if settings.ORCA_MODULES:
+            for k, v in settings.ORCA_MODULES['available'].items():
+                module_names[v['path']] = k
         for run in runs:
             started = run.started
             finished = run.finished
             user = run.run_by
+            lz = tz.tzlocal()
             if started:
-                started = started.strftime('%d.%m.%Y %H:%M:%S.%f %Z')
+                started = started.astimezone(lz).strftime(TIME_FORMAT)
             if finished:
-                finished = finished.strftime('%d.%m.%Y %H:%M:%S.%f %Z')
+                finished = finished.astimezone(lz).strftime(TIME_FORMAT)
             scenario = run.scenario
             project = scenario.project
             runs_json.append({
-                'module': project.module,
+                'module': module_names.get(project.module, project.module),
                 'project_name': project.name,
                 'scenario_name': scenario.name,
                 'scenario_id': scenario.id,
@@ -70,22 +78,24 @@ class StatusView(TemplateView):
         run, created = Run.objects.get_or_create(scenario=scenario)
         user_name = run.run_by.get_username() if run.run_by else 'unknown'
         start_time = run.started
+        lz = tz.tzlocal()
         if start_time:
-            start_time = start_time.strftime('%d.%m.%Y %H:%M:%S.%f %Z')
-        status_text = (
-            'project not in use' if not is_running and len(other_running) == 0
-            else ('project is in use')
-        )
-        status_text += '<br>'
-        status_text += (
-            f'scenario "{scenario.name}" is currently run by user "{user_name}"'
-            if is_running else f'scenario "{scenario.name}" not in use'
-        )
+            start_time = start_time.astimezone(lz).strftime(TIME_FORMAT)
+        status_text = '<div style="white-space: nowrap;">' + (
+            f' Project "{project.name}" not in use' if (
+                not is_running and len(other_running) == 0)
+            else f'Project "{project.name}" is in use'
+        ) + '</div>'
+        status_text += '<div style="white-space: nowrap;">' + (
+            f'Scenario "{scenario.name}" is currently run by user "{user_name}"'
+            if is_running else f'Scenario "{scenario.name}" not in use'
+        ) + '</div>'
         status = {
             'running': is_running,
             'other_running_in_project': [s.name for s in other_running],
             'text': status_text,
             'last_user': user_name,
-            'last_start': start_time
+            'last_start': start_time,
+            'success': run.success
         }
         return JsonResponse(status)
