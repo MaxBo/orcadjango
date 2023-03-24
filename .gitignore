@@ -104,3 +104,5 @@ venv.bak/
 .mypy_cache/
 *.wpr
 *.wpu
+
+orcadjango/static
