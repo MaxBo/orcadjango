@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.gis.geos import MultiPolygon, fromstr
 import json
 import ast
-import ogr
+from osgeo import ogr
 import datetime
 from django.core.validators import RegexValidator
 import importlib

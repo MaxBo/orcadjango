@@ -1,10 +1,11 @@
-django>=3.0
+django==4.*
+django-cors-headers==3.*
 orca
-django-bootstrap4
 psycopg2
-channels>=3.0.1
+channels==4.*
 channels_redis
+channels[daphne]
 pandas
 xarray
 django-flat-json-widget
-toolz==0.10
+djangorestframework

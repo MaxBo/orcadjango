@@ -1,1 +1,52 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+@include mat.core();
+@import 'colors.scss';
+
+$app-primary: mat.define-palette(mat.$teal-palette, 500);
+$app-accent: mat.define-palette(mat.$pink-palette, 500);
+
+$app-typography: mat.define-typography-config(
+  $font-family: 'Calibri, Helvetica, sans-serif, Candara, Segoe',
+    //$headline: mat.define-typography-level(54px, 54px, 400),
+    //$title: mat.define-typography-level(28px, 28px, 500),
+    //$subheading-2: mat.define-typography-level(26px, 26px, 400),
+    //$subheading-1: mat.define-typography-level(24px, 24px, 400),
+    // Todo: menu letter spacing 0.14px
+  $body-1: mat.define-typography-level(16px, 24px, 400),//, $letter-spacing: 0.14px),
+  $body-2: mat.define-typography-level(16px, 20px, 400, $letter-spacing: 0.2px),
+  $button: mat.define-typography-level(16px, 16px, 500, $letter-spacing: 1.42px),
+);
+
+$app-theme: mat.define-light-theme((
+  color: (
+    primary: $app-primary,
+    accent: $app-accent,
+  ),
+  typography: $app-typography,
+));
+
+@include mat.core-theme($app-theme);
+@include mat.button-theme($app-theme);
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.main-nav {
+  background-color: $primary;
+  height: 60px;
+  padding-left: 0;
+}
+
+.navbar-brand,.mat-drawer {
+  width: 200px;
+}
+
+.mat-drawer {
+  background-color: #343434;
+}
+
+.mat-drawer-content {
+  background-color: lightgrey;
+}
+
+

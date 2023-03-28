@@ -2,7 +2,7 @@ import logging
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 import json
-from aioredis import errors
+from redis.asyncio import RedisError
 import channels.layers
 
 def send(channel: str, message: str, log_type: str='log_message', **kwargs):
@@ -27,7 +27,7 @@ class OrcaChannelHandler(logging.StreamHandler):
         try:
             send(self.group, self.format(record), log_type='log_message',
                  level=record.levelname)
-        except errors.RedisError as e:
+        except RedisError as e:
             print(e)
 
 

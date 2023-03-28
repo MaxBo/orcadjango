@@ -3,7 +3,7 @@ from django.core import validators
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
 from django.forms.utils import ErrorList
-import ogr
+from osgeo import ogr
 from django.contrib.gis.geos import GEOSException, GEOSGeometry
 from django.contrib.gis import forms as geoforms
 from flat_json_widget.widgets import FlatJsonWidget

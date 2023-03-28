@@ -1,6 +1,3 @@
-{% load bootstrap4 %}
-{% bootstrap_css %}
-{% bootstrap_javascript jquery='full' %}
 {% load static %}
 <link rel="stylesheet" type="text/css" href="{% static 'css/site.css' %}">
 
@@ -10,8 +7,6 @@
 </head>
 
 <body>
-{% bootstrap_messages %}
-{% block bootstrap4_content %}
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="/">OrcaDjango</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -92,7 +87,6 @@
       {% endblock %}
     </div>
   </div>
-{% endblock %}
 </body>
 
 <script>

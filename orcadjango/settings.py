@@ -30,26 +30,37 @@ ORCA_MODULES = {
 REDIS_HOST = os.environ.get('REDIS_HOST', '127.0.0.1')
 REDIS_PORT = os.environ.get('REDIS_PORT', 6379)
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'kfn+e0u++2*k6!r^^o(jlmd+40l*8qdk8(8cwb5dc$v9u9e-jc'
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'false').lower() == 'true'
 LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
 
 ALLOWED_HOSTS = ['localhost']
 
+# GDAL configuration
 if os.name == 'nt':
-    path = os.path.join(sys.prefix, 'Library')
-    os.environ['GDAL_DATA'] = os.path.join(path, 'share', 'gdal')
-    GDAL_LIBRARY_PATH = r'C:\Miniconda3\envs\orcadjango\Library\bin\gdal204'
+    lib_path = os.path.join(sys.exec_prefix, 'Library')
+    if (os.path.exists(os.path.join(lib_path, 'share', 'gdal'))
+            and os.path.exists(os.path.join(lib_path, 'share', 'proj')) ):
+        os.environ['GDAL_DATA'] = os.path.join(lib_path, 'share', 'gdal')
+        os.environ['PROJ_LIB'] = os.path.join(lib_path, 'share', 'proj')
+    else:
+        # preset for GDAL installation via OSGeo4W as recommended by Django, see
+        # https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/#windows
+        osgeo4w_directories = [r'C:\OSGeo4W64', r'C:\OSGeo4W']
+        for OSGEO4W_ROOT in osgeo4w_directories:
+            if os.path.exists(OSGEO4W_ROOT):
+                break
+        else:
+            raise IOError(f'OSGeo4W not installed in {osgeo4w_directories}')
+        os.environ['GDAL_DATA'] = os.path.join(OSGEO4W_ROOT, 'share', 'gdal')
+        os.environ['PROJ_LIB'] = os.path.join(OSGEO4W_ROOT, 'share', 'proj')
+        os.environ['PATH'] = ';'.join([os.environ['PATH'],
+                                       os.path.join(OSGEO4W_ROOT, 'bin')])
 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -58,9 +69,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'orcaserver',
-    'bootstrap4',
-    'channels',
-    'flat_json_widget'
+    'rest_framework',
+    'channels'
 ]
 
 MIDDLEWARE = [
@@ -70,8 +80,22 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware'
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
+
+CSRF_USE_SESSIONS = False
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_NAME = 'XSRF-TOKEN'
+CSRF_HEADER_NAME = 'HTTP_X_XSRF_TOKEN'
 
 ROOT_URLCONF = 'orcadjango.urls'
 
@@ -94,7 +118,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'orcadjango.wsgi.application'
-ASGI_APPLICATION = 'orcadjango.routing.application'
+ASGI_APPLICATION = 'orcadjango.asgi.application'
 
 CHANNEL_LAYERS = {
     "default": {
@@ -107,20 +131,26 @@ CHANNEL_LAYERS = {
 
 use_websockets = True
 
-# Database
-# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
+DB_NAME = os.environ['DB_NAME']
+DB_USER = os.environ['DB_USER']
+DB_PASS = os.environ['DB_PASS']
+DB_HOST = os.environ.get('DB_HOST', 'localhost')
+DB_PORT = os.environ.get('DB_PORT', '5432')
+HOST = os.environ.get('DJANGO_HOST')
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASS,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
+        'OPTIONS': {'sslmode': 'prefer'},
+    },
 }
 
 LOGIN_REDIRECT_URL = '/'
-
-# Password validation
-# https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -139,9 +169,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
-# Internationalization
-# https://docs.djangoproject.com/en/2.1/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -151,10 +178,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = '/static/'

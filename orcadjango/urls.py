@@ -15,13 +15,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include, re_path
+from django.conf import settings
+from django.conf.urls.static import static
+from .views import IndexView
 from .loggers import LogConsumer
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('orcaserver.urls')),
-    path('accounts/', include('django.contrib.auth.urls'))
+    re_path('api/', include('orcaserver.rest_urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
+    re_path('', IndexView.as_view(), name='home'),
 ]
+
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 websocket_urlpatterns = [
     re_path(r'ws/log/(?P<room_name>\w+)/$', LogConsumer.as_asgi()),
