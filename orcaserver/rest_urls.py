@@ -1,8 +1,16 @@
 from rest_framework import routers
+from django.urls import path
 
-from .views import ProjectViewSet
+from orcaserver import views
 
 router = routers.SimpleRouter()
-router.register(r'projects', ProjectViewSet, basename='projects')
+router.register(r'projects', views.ProjectViewSet, basename='projects')
 
-urlpatterns = router.urls
+rest_login_patterns = [
+    path('csrf/', views.get_csrf, name='csrf'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+    path('session/', views.session_view, name='session')
+]
+
+urlpatterns = router.urls + rest_login_patterns

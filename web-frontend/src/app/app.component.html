@@ -1,11 +1,9 @@
 <mat-toolbar class="main-nav">
   <a class="navbar-brand" href="/">OrcaDjango</a>
 </mat-toolbar>
-<mat-sidenav-container fxFlexFill>
-  <mat-drawer-container class="main-container">
-    <mat-drawer mode="side" opened>Drawer content</mat-drawer>
-    <mat-drawer-content>
-      <router-outlet></router-outlet>
-    </mat-drawer-content>
-  </mat-drawer-container>
+<mat-sidenav-container class="main-container">
+  <mat-sidenav class="sidenav" mode="side" opened>Drawer content</mat-sidenav>
+  <mat-sidenav-content class="app-container">
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
 </mat-sidenav-container>

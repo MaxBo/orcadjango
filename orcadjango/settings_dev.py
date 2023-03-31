@@ -6,9 +6,13 @@ INSTALLED_APPS.extend([
     'corsheaders'
 ])
 
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
+
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['localhost']
+CSRF_TRUSTED_ORIGINS = ['http://localhost:4200']
 
 # cors midleware has to be loaded first
 MIDDLEWARE = [

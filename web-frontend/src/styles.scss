@@ -37,15 +37,20 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   padding-left: 0;
 }
 
-.navbar-brand,.mat-drawer {
+.navbar-brand {
   width: 200px;
 }
 
-.mat-drawer {
+.sidenav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
   background-color: #343434;
 }
 
 .mat-drawer-content {
+  margin-left: 200px;
   background-color: lightgrey;
 }
 
