@@ -1,5 +1,6 @@
 import os
 import sys
+from datetime import timedelta
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -61,6 +62,7 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'orcaserver',
     'rest_framework',
+    'rest_framework_simplejwt',
     'channels'
 ]
 
@@ -76,20 +78,18 @@ MIDDLEWARE = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
 }
 
-CSRF_COOKIE_SAMESITE = 'Strict'
-SESSION_COOKIE_SAMESITE = 'Strict'
-CORS_EXPOSE_HEADERS = ['X-Csrftoken']
-CSRF_COOKIE_HTTPONLY = False
-SESSION_COOKIE_HTTPONLY = False
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True
+}
 
 ROOT_URLCONF = 'orcadjango.urls'
 

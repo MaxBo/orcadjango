@@ -3,15 +3,17 @@ import { RouterModule, Routes } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ProjectsComponent } from "./pages/projects/projects.component";
 import { LoginComponent } from "./pages/login/login.component";
+import { AuthGuard } from "./auth.service";
+import { WelcomeComponent } from "./pages/welcome/welcome.component";
 
 
 const routes: Routes = [
-/*  {
+   {
     path: '',
     component: WelcomeComponent,
     canActivate: [AuthGuard],
     pathMatch: 'full'
-  },*/
+  },
   {
     path: 'projects',
     component: ProjectsComponent,

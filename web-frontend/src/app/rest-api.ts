@@ -34,21 +34,14 @@ export class RestService {
   private csrfToken?: string;
   public readonly URLS = {
     projects: `${ environment.apiPath }/projects/`,
-    session: `${ environment.apiPath }/session/`,
+    users: `${ environment.apiPath }/users/`,
+    currentUser: `${ environment.apiPath }/users/current/`,
     login: `${ environment.apiPath }/login/`,
     logout: `${ environment.apiPath }/logout/`,
-    csrf: `${ environment.apiPath }/csrf/`,
+    token: `${ environment.apiPath }/token/`,
+    refreshToken: `${ environment.apiPath }/token/refresh/`,
   }
   constructor(private http: HttpClient) { }
-
-  setCsrf(token: string | undefined) {
-    this.csrfToken = token;
-  }
-  //
-  // private get<Type>(url: string, options?: any) {
-  //   // const headers = new HttpHeaders().set('Content-Type', 'application/json; charset=utf-8');
-  //   return this.http.get<Type>(url, options);
-  // }
 
   private post<Type>(url: string, body: any) {
     // const headers = new HttpHeaders().set('Content-Type', 'application/json; charset=utf-8');
@@ -63,15 +56,8 @@ export class RestService {
     return this.post<User>(this.URLS.login, { username: username, password: password });
   }
 
-  getSession(): Observable<Session>{
-    return this.http.get<Session>(this.URLS.session);
+  getCurrentUser(): Observable<User>{
+    return this.http.get<User>(this.URLS.currentUser);
   }
 
-  getCsrf(): Observable<HttpResponse<any>>{
-    return this.http.get<HttpResponse<any>>(this.URLS.csrf, {observe: 'response'});
-      // .pipe(map((res: any) => {
-/*      console.log(res.headers.keys())
-      return res.headers.get('X-Csrftoken')
-    });*/
-  }
 }

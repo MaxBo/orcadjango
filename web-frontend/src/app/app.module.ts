@@ -4,7 +4,6 @@ import {
   HTTP_INTERCEPTORS,
   HttpClientModule,
   HttpClientXsrfModule,
-  HttpXsrfTokenExtractor
 } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
@@ -21,7 +20,8 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { ReactiveFormsModule } from "@angular/forms";
 import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from "@angular/material/button";
-import { HttpXsrfInterceptor } from "./auth.service";
+import { WelcomeComponent } from './pages/welcome/welcome.component';
+import { TokenInterceptor } from "./auth.service";
 
 @NgModule({
   declarations: [
@@ -29,7 +29,8 @@ import { HttpXsrfInterceptor } from "./auth.service";
     ProjectsComponent,
     ListViewComponent,
     DashViewComponent,
-    LoginComponent
+    LoginComponent,
+    WelcomeComponent
   ],
   imports: [
     BrowserModule,
@@ -49,7 +50,7 @@ import { HttpXsrfInterceptor } from "./auth.service";
     MatButtonModule,
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: HttpXsrfInterceptor , multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })

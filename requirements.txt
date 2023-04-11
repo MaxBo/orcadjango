@@ -9,3 +9,4 @@ pandas
 xarray
 django-flat-json-widget
 djangorestframework
+djangorestframework-simplejwt
