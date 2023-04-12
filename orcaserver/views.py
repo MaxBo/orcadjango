@@ -1,9 +1,6 @@
 from rest_framework import viewsets
-import json
 
 from django.contrib.auth.models import User
-from django.http import JsonResponse
-from django.middleware.csrf import get_token
 
 from .serializers import ProjectSerializer, UserSerializer
 from .models import Project

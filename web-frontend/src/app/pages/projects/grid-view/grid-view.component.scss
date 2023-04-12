@@ -1,0 +1,41 @@
+@import '../../../../colors';
+
+#new-project {
+  width: 200px;
+  height: 180px;
+  cursor: pointer;
+  .mat-mdc-card-header {
+    justify-content: center;
+  }
+  .mat-mdc-card-content {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    .mat-icon {
+      font-size: 80px;
+      height: 80px;
+      width: 80px;
+    }
+  }
+}
+
+.project-card {
+  user-select: none;
+  width: 250px;
+  height: 300px;
+  display:flex;
+  flex-direction: column;
+
+  .mat-mdc-card-header {
+    flex-shrink: 0;
+  }
+
+  .mat-mdc-card-content {
+    flex-grow: 1;
+    overflow: auto;
+  }
+}
+
+.project-card:hover {
+  background-color: $primary-light;
+}

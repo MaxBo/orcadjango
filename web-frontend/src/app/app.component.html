@@ -1,5 +1,21 @@
 <mat-toolbar class="main-nav">
   <a class="navbar-brand" href="/">OrcaDjango</a>
+  <span class="page-links" fxShow="true" fxHide.lt-md="true">
+    <a class="link"
+       title="projects"
+       routerLink="/projects"
+       routerLinkActive="active-link"
+       [routerLinkActiveOptions]="{exact: false}">
+      Projects
+    </a>
+    <a class="link"
+       title="scenarios"
+       routerLink="/scenarios"
+       routerLinkActive="active-link"
+       [routerLinkActiveOptions]="{exact: false}">
+      Scenarios
+    </a>
+  </span>
 </mat-toolbar>
 <mat-sidenav-container class="main-container">
   <mat-sidenav class="sidenav" mode="side" opened>Drawer content</mat-sidenav>

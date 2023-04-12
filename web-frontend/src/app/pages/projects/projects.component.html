@@ -1,1 +1,25 @@
-<p>projects works!</p>
+<div style="display: flex; margin-bottom: 20px;">
+  <mat-icon title="Grid View"
+            class="view-switch material-symbols-outlined"
+            [class.active]="viewType==='grid-view'"
+            (click)="viewType='grid-view'">
+    grid_view
+  </mat-icon>
+  <mat-icon title="List View"
+            class="view-switch material-symbols-outlined"
+            [class.active]="viewType==='list-view'"
+            (click)="viewType='list-view'">
+    list
+  </mat-icon>
+</div>
+<ng-container [ngSwitch]="viewType">
+  <app-grid-view *ngSwitchCase="'grid-view'"
+                 [projects]="projects"
+                 (onCreateProject)="onCreateProject()"
+                 (onEditProject)="editProject($event)"
+                 (projectSelected)="selectProject($event)">
+  </app-grid-view>
+  <app-list-view *ngSwitchCase="'list-view'"
+                 [projects]="projects">
+  </app-list-view>
+</ng-container>

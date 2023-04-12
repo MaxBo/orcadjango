@@ -1,13 +1,14 @@
 import { environment } from "../environments/environment";
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpHeaders, HttpResponse } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
 
 export interface Project {
-  id: number,
+  id?: number,
   name: string,
   description: string,
+  user?: User,
+  code?: string,
   module?: string
 }
 
@@ -18,11 +19,6 @@ export interface User {
   last_name: string
 }
 
-export interface Session {
-  is_authenticated: boolean,
-  user?: User
-}
-
 @Injectable({
   providedIn: 'root'
 })
@@ -31,7 +27,6 @@ export interface Session {
  *
  */
 export class RestService {
-  private csrfToken?: string;
   public readonly URLS = {
     projects: `${ environment.apiPath }/projects/`,
     users: `${ environment.apiPath }/users/`,
@@ -60,4 +55,17 @@ export class RestService {
     return this.http.get<User>(this.URLS.currentUser);
   }
 
+  getUsers(): Observable<User[]>{
+    return this.http.get<User[]>(this.URLS.users);
+  }
+
+  createProject(project: Project): Observable<Project>{
+    let body: any = {
+      name: project.name,
+      description: project.description,
+      code: project.code,
+      user: project.user?.id
+    }
+    return this.http.post<Project>(this.URLS.projects, body);
+  }
 }

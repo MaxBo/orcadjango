@@ -1,0 +1,13 @@
+.view-switch {
+  display: flex;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+}
+.view-switch.active {
+  background: #595959;
+  color: white;
+}
