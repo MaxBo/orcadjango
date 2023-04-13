@@ -17,12 +17,16 @@
     </mat-card>
   </div>
   <div *ngFor="let project of projects">
-    <mat-card class="project-card">
+    <mat-card class="project-card"
+              [ngClass]="{'selected': settings.activeProject$.value?.id === project.id}">
       <mat-card-header>
         <mat-card-title [title]="project.name">{{project.name}}</mat-card-title>
         <mat-card-subtitle [title]="project.code">{{project.code}}</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
+        <p [title]="project.module || 'no module'" style="overflow: hidden; text-overflow: ellipsis;">
+          {{project.module || 'no module'}}
+        </p>
         <p>
           {{project.description}}
         </p>

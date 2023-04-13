@@ -2,6 +2,8 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class NameModel(models.Model):
@@ -28,7 +30,6 @@ class Project(NameModel):
         if self.pk is None:
             self.created = timezone.now()
         return super().save(*args, **kwargs)
-
 
 
 class Scenario(NameModel):
@@ -62,3 +63,34 @@ class Run(models.Model):
     success = models.BooleanField(default=False)
     run_by = models.ForeignKey(settings.AUTH_USER_MODEL,
                                on_delete=models.SET_NULL, null=True)
+
+
+class Profile(models.Model):
+    '''
+    adds additional user information
+    '''
+    user = models.OneToOneField(User, on_delete=models.CASCADE,
+                                related_name='profile')
+    icon = models.ImageField(null=True, blank=True)
+    settings = models.JSONField(default=dict)
+
+    def __str__(self) -> str:
+        return f'{self.__class__.__name__}: {self.user.username}'
+
+    def delete(self, **kwargs):
+        # delete user of profile
+        user = self.user
+        if user:
+            user.delete()
+        super().delete(**kwargs)
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    '''auto create profiles for new users'''
+    if created:
+        Profile(user=instance)
+
+@receiver(post_save, sender=User)
+def save_profile(sender, instance, **kwargs):
+    instance.profile.save()

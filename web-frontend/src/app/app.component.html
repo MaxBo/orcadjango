@@ -16,9 +16,37 @@
       Scenarios
     </a>
   </span>
+  <mat-form-field id="module-select">
+    <mat-label>Module</mat-label>
+    <mat-select (selectionChange)="settings.setModule($event.value)" [value]="settings.module$.value">
+      <mat-option value="">none</mat-option>
+      <mat-option *ngFor="let module of settings.modules" [value]="module.path">
+        {{module.name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
 </mat-toolbar>
 <mat-sidenav-container class="main-container">
-  <mat-sidenav class="sidenav" mode="side" opened>Drawer content</mat-sidenav>
+  <mat-sidenav class="sidenav" mode="side" opened>
+    <mat-card id="active-project">
+      <ng-container *ngIf="settings.activeProject$ | async; else noProject">
+        <mat-card-header>
+          <mat-card-title [title]="settings.activeProject$.value?.name">
+            {{settings.activeProject$.value?.name}}
+          </mat-card-title>
+          <mat-card-subtitle [title]="settings.activeProject$.value?.code">
+            {{settings.activeProject$.value?.code}}
+          </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          {{settings.activeProject$.value?.description}}
+        </mat-card-content>
+      </ng-container>
+      <ng-template #noProject>
+        <mat-card-content>no project selected</mat-card-content>
+      </ng-template>
+    </mat-card>
+  </mat-sidenav>
   <mat-sidenav-content class="app-container">
     <router-outlet></router-outlet>
   </mat-sidenav-content>

@@ -39,3 +39,7 @@
 .project-card:hover {
   background-color: $primary-light;
 }
+
+.project-card.selected {
+  border: 5px solid gold;
+}
