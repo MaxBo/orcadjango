@@ -12,7 +12,7 @@
   </thead>
   <tbody>
     <tr *ngFor="let project of projects"
-        (click)="projectSelected.emit(project)"
+        (click)="onProjectSelected.emit(project)"
         [ngClass]="{'selected': settings.activeProject$.value?.id === project.id}">
       <td> {{ project.name }} </td>
       <td> {{ project.code }} </td>

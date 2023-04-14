@@ -17,7 +17,8 @@ export interface Project {
 export interface Scenario {
   id?: number,
   name: string,
-  project: number
+  project?: number,
+  description: string
 }
 
 export interface User {
@@ -71,6 +72,17 @@ export class RestService {
     return this.http.get<Project>(`${this.URLS.projects}${id}/`);
   }
 
+  createProject(project: Project): Observable<Project>{
+    let body: any = {
+      name: project.name,
+      description: project.description,
+      code: project.code,
+      user: project.user,
+      module: project.module
+    }
+    return this.http.post<Project>(this.URLS.projects, body);
+  }
+
   deleteProject(project: Project): Observable<Project> {
     return this.http.delete<Project>(`${this.URLS.projects}${project.id}/`);
   }
@@ -83,12 +95,29 @@ export class RestService {
     return this.http.get<Scenario>(`${this.URLS.scenarios}${id}/`);
   }
 
+  createScenario(scenario: Scenario): Observable<Project>{
+    let body: any = {
+      name: scenario.name,
+      description: scenario.description,
+      project: scenario.project
+    }
+    return this.http.post<Project>(this.URLS.scenarios, body);
+  }
+
+  deleteScenario(scenario: Scenario): Observable<Project> {
+    return this.http.delete<Project>(`${this.URLS.scenarios}${scenario.id}/`);
+  }
+
+  patchScenario(scenario: Scenario, data: any): Observable<Project> {
+    return this.http.patch<Project>(`${this.URLS.scenarios}${scenario.id}/`, data);
+  }
+
   getProjects(options?: { module: string }): Observable<Project[]> {
     const params: any = options? { module: options.module }: {};
     return this.http.get<Project[]>(this.URLS.projects, { params: params });
   }
 
-  getScenarios(options?: { project: Project }): Observable<Scenario[]> {
+  getScenarios(options?: { project?: Project }): Observable<Scenario[]> {
     const params: any = options?.project? { project: options.project.id }: {};
     return this.http.get<Scenario[]>(this.URLS.scenarios, { params: params });
   }
@@ -107,16 +136,5 @@ export class RestService {
 
   getUsers(): Observable<User[]>{
     return this.http.get<User[]>(this.URLS.users);
-  }
-
-  createProject(project: Project): Observable<Project>{
-    let body: any = {
-      name: project.name,
-      description: project.description,
-      code: project.code,
-      user: project.user,
-      module: project.module
-    }
-    return this.http.post<Project>(this.URLS.projects, body);
   }
 }

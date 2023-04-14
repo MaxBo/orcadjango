@@ -1,6 +1,6 @@
 @import '../../../../colors';
 
-#new-project {
+#new-grid-card {
   width: 200px;
   height: 180px;
   cursor: pointer;
@@ -20,7 +20,7 @@
   }
 }
 
-.project-card {
+.grid-preview-card {
   user-select: none;
   width: 250px;
   height: 300px;
@@ -37,10 +37,10 @@
   }
 }
 
-.project-card:hover {
+.grid-preview-card:hover {
   background-color: $primary-light;
 }
 
-.project-card.selected {
+.grid-preview-card.selected {
   border: 5px solid gold;
 }

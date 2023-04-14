@@ -30,6 +30,9 @@ import { MatDialogModule } from "@angular/material/dialog";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSelectModule } from "@angular/material/select";
 import { ConfirmDialogComponent } from './elements/confirm-dialog/confirm-dialog.component';
+import { ScenarioGridViewComponent } from './pages/scenarios/grid-view/scenario-grid-view.component';
+import { ScenarioListViewComponent } from './pages/scenarios/list-view/scenario-list-view.component';
+import { ScenarioEditDialogComponent } from './pages/scenarios/edit/scenario-edit.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +44,10 @@ import { ConfirmDialogComponent } from './elements/confirm-dialog/confirm-dialog
     WelcomeComponent,
     ScenariosComponent,
     ProjectEditDialogComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    ScenarioGridViewComponent,
+    ScenarioListViewComponent,
+    ScenarioEditDialogComponent
   ],
     imports: [
         BrowserModule,

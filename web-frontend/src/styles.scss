@@ -32,30 +32,21 @@ $app-theme: mat.define-light-theme((
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-.main-nav {
-  background-color: $primary;
-  height: 60px;
-  padding-left: 0;
-}
-
-.navbar-brand {
-  width: 200px;
-}
-
-.sidenav {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 200px;
-  background-color: #343434;
-}
-
-.mat-drawer-content {
-  margin-left: 200px;
-  background-color: lightgrey;
-}
-
 .cdk-overlay-pane.absolute{
   position: absolute!important;
   max-height: 100vh;
+}
+
+.view-switch {
+  display: flex;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+}
+.view-switch.active {
+  background: #595959;
+  color: white;
 }

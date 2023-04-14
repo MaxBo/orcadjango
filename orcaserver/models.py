@@ -36,6 +36,7 @@ class Scenario(NameModel):
     """Scenario"""
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     name = models.TextField()
+    description = models.TextField(blank=True)
 
 
 class Step(NameModel):

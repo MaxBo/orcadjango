@@ -1,0 +1,22 @@
+<button mat-button (click)="onCreateScenario.emit(true)">NEW SCENARIO</button>
+<table class="striped">
+  <thead>
+  <tr>
+    <th>Name</th>
+    <th>Description</th>
+    <th></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let scenario of scenarios"
+      (click)="onScenarioSelected.emit(scenario)"
+      [ngClass]="{'selected': settings.activeScenario$.value?.id === scenario.id}">
+    <td> {{ scenario.name }} </td>
+    <td> {{ scenario.description }} </td>
+    <td>
+      <button mat-button (click)="onEditScenario.emit(scenario); $event.stopPropagation()">EDIT</button>
+      <button mat-button (click)="onDeleteScenario.emit(scenario); $event.stopPropagation()">DELETE</button>
+    </td>
+  </tr>
+  </tbody>
+</table>

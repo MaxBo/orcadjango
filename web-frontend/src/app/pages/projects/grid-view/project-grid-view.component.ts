@@ -3,13 +3,13 @@ import { Project, User } from "../../../rest-api";
 import { UserSettingsService } from "../../../user-settings.service";
 
 @Component({
-  selector: 'app-grid-view',
+  selector: 'app-project-grid-view',
   templateUrl: './project-grid-view.component.html',
   styleUrls: ['./project-grid-view.component.scss']
 })
 export class ProjectGridViewComponent {
   @Input() projects: Project[] = [];
-  @Output() projectSelected = new EventEmitter<Project>();
+  @Output() onProjectSelected = new EventEmitter<Project>();
   @Output() onEditProject = new EventEmitter<Project>();
   @Output() onDeleteProject = new EventEmitter<Project>();
   @Output() onArchiveProject = new EventEmitter<{ project: Project, archive: boolean }>();

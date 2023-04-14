@@ -1,1 +1,30 @@
-<p>scenarios works!</p>
+<div style="display: flex; margin-bottom: 20px;">
+  <mat-icon title="Grid View"
+            class="view-switch material-symbols-outlined"
+            [class.active]="viewType==='grid-view'"
+            (click)="viewType='grid-view'">
+    grid_view
+  </mat-icon>
+  <mat-icon title="List View"
+            class="view-switch material-symbols-outlined"
+            [class.active]="viewType==='list-view'"
+            (click)="viewType='list-view'">
+    list
+  </mat-icon>
+</div>
+<ng-container [ngSwitch]="viewType">
+  <app-scenario-grid-view *ngSwitchCase="'grid-view'"
+                         [scenarios]="scenarios"
+                         (onCreateScenario)="onCreateScenario()"
+                         (onDeleteScenario)="deleteScenario($event)"
+                         (onEditScenario)="editScenario($event)"
+                         (onScenarioSelected)="selectScenario($event)">
+  </app-scenario-grid-view>
+  <app-scenario-list-view *ngSwitchCase="'list-view'"
+                         [scenarios]="scenarios"
+                         (onCreateScenario)="onCreateScenario()"
+                         (onDeleteScenario)="deleteScenario($event)"
+                         (onEditScenario)="editScenario($event)"
+                         (onScenarioSelected)="selectScenario($event)">
+  </app-scenario-list-view>
+</ng-container>

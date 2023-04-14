@@ -2,8 +2,8 @@
      fxLayoutAlign="start start"
      fxLayoutGap="20px 20px grid">
   <div>
-    <mat-card id="new-project"
-              class="project-card"
+    <mat-card id="new-grid-card"
+              class="grid-preview-card"
               title="Create new Project"
               (click)="onCreateProject.emit(true)">
       <mat-card-header>
@@ -17,14 +17,14 @@
     </mat-card>
   </div>
   <div *ngFor="let project of projects">
-    <mat-card class="project-card"
+    <mat-card class="grid-preview-card"
               [ngClass]="{'selected': settings.activeProject$.value?.id === project.id}">
       <mat-card-header style="cursor: pointer"
-                       (click)="projectSelected.emit(project)">
+                       (click)="onProjectSelected.emit(project)">
         <mat-card-title [title]="project.name">{{project.name}}</mat-card-title>
         <mat-card-subtitle [title]="project.code">{{project.code}}</mat-card-subtitle>
       </mat-card-header>
-      <mat-card-content style="cursor: pointer" (click)="projectSelected.emit(project)">
+      <mat-card-content style="cursor: pointer" (click)="onProjectSelected.emit(project)">
         <p [title]="project.module || 'no module'" style="overflow: hidden; text-overflow: ellipsis;">
           {{project.module || 'no module'}}
         </p>

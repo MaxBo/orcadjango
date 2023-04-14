@@ -13,7 +13,6 @@ import { ConfirmDialogComponent } from "../../elements/confirm-dialog/confirm-di
 })
 export class ProjectsComponent implements OnInit{
   projects: Project[] = [];
-  users: User[] = [];
   viewType: 'list-view' | 'grid-view' = 'grid-view';
   @ViewChild('deleteProjectTemplate') deleteProjectTemplate?: TemplateRef<any>;
 
@@ -25,9 +24,6 @@ export class ProjectsComponent implements OnInit{
         this.projects = projects;
       });
     })
-    this.rest.getUsers().subscribe(users => {
-      this.users = users;
-    });
   }
 
   onCreateProject(): void {
@@ -91,7 +87,7 @@ export class ProjectsComponent implements OnInit{
       data: data
     });
     dialogRef.componentInstance.projectConfirmed.subscribe((edited) => {
-      this.rest.patchProject(project, { name: edited.name, description: edited.description, user: edited.user }).subscribe(patched => {
+      this.rest.patchProject(project, { name: edited.name, description: edited.description, user: edited.user, code: edited.code }).subscribe(patched => {
         dialogRef.close();
         Object.assign(project, patched);
       });

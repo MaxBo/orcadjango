@@ -43,6 +43,7 @@ export class UserSettingsService {
   setActiveProject(project: Project | undefined){
     this.cookies.set('project', String(project?.id || ''));
     this.activeProject$.next(project);
+    this.activeScenario$.next(undefined);
   }
 
   setActiveSenario(scenario: Scenario | undefined){
@@ -51,8 +52,12 @@ export class UserSettingsService {
   }
 
   setModule(module: string){
-    console.log(module);
     this.cookies.set('module', module);
     this.module$.next(module);
+    if (module && this.activeProject$.value) {
+      if (this.activeProject$.value.module !== module)
+        this.activeProject$.next(undefined);
+        this.activeScenario$.next(undefined);
+    }
   }
 }

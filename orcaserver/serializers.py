@@ -58,7 +58,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 class ScenarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Scenario
-        fields =  ('id', 'name', 'project')
+        fields =  ('id', 'name', 'project', 'description')
 
 
 class ModuleDataSerializer(serializers.Serializer):
