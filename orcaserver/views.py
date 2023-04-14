@@ -16,7 +16,7 @@ class ProjectViewSet(ProjectMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         module = self.request.query_params.get('module')
-        queryset = Project.objects.filter(module=module) if module is not None \
+        queryset = self.queryset.filter(module=module) if module is not None \
             else self.queryset
         return queryset.order_by('name')
 
@@ -24,6 +24,12 @@ class ProjectViewSet(ProjectMixin, viewsets.ModelViewSet):
 class ScenarioViewSet(ProjectMixin, viewsets.ModelViewSet):
     queryset = Scenario.objects.all()
     serializer_class = ScenarioSerializer
+
+    def get_queryset(self):
+        project = self.request.query_params.get('project')
+        queryset = self.queryset.filter(project=project) if project is not None \
+            else self.queryset
+        return queryset.order_by('name')
 
 
 class UserViewSet(viewsets.ModelViewSet):

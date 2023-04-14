@@ -1,5 +1,5 @@
 <button mat-button (click)="onCreateProject.emit(true)">NEW PROJECT</button>
-<table class="striped">
+<table *ngIf="projects.length > 0" class="striped">
   <thead>
     <tr>
       <th>Name</th>

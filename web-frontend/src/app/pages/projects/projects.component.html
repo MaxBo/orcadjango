@@ -2,13 +2,13 @@
   <mat-icon title="Grid View"
             class="view-switch material-symbols-outlined"
             [class.active]="viewType==='grid-view'"
-            (click)="viewType='grid-view'">
+            (click)="changeView('grid-view')">
     grid_view
   </mat-icon>
   <mat-icon title="List View"
             class="view-switch material-symbols-outlined"
             [class.active]="viewType==='list-view'"
-            (click)="viewType='list-view'">
+            (click)="changeView('list-view')">
     list
   </mat-icon>
 </div>

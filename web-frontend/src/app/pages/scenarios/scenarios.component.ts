@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { RestService, Scenario } from "../../rest-api";
 import { MatDialog } from "@angular/material/dialog";
 import { UserSettingsService } from "../../user-settings.service";
-import { ProjectEditDialogComponent, ProjectEditDialogData } from "../projects/edit/project-edit.component";
 import { ScenarioEditDialogComponent, ScenarioEditDialogData } from "./edit/scenario-edit.component";
+import { ConfirmDialogComponent } from "../../elements/confirm-dialog/confirm-dialog.component";
+import { CookieService } from "ngx-cookie-service";
 
 @Component({
   selector: 'app-scenarios',
@@ -13,10 +14,14 @@ import { ScenarioEditDialogComponent, ScenarioEditDialogData } from "./edit/scen
 export class ScenariosComponent implements OnInit {
   scenarios: Scenario[] = [];
   viewType: 'list-view' | 'grid-view' = 'grid-view';
+  @ViewChild('deleteScenarioTemplate') deleteScenarioTemplate?: TemplateRef<any>;
 
-  constructor(private rest: RestService, private dialog: MatDialog, private settings: UserSettingsService) {}
+  constructor(private rest: RestService, private dialog: MatDialog, protected settings: UserSettingsService,
+              private cookies: CookieService) {}
 
   ngOnInit() {
+    const viewType = this.cookies.get('scenario-view-type');
+    if (viewType === 'list-view') this.viewType = 'list-view';
     this.settings.activeProject$.subscribe(project => {
       this.rest.getScenarios({ project: project }).subscribe(scenarios => {
         this.scenarios = scenarios;
@@ -50,7 +55,27 @@ export class ScenariosComponent implements OnInit {
   }
 
   deleteScenario(scenario: Scenario): void {
-
+    let dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      panelClass: 'absolute',
+      width: '300px',
+      disableClose: true,
+      data: {
+        title: 'Remove Project',
+        subtitle: scenario.name,
+        template: this.deleteScenarioTemplate,
+        closeOnConfirm: false
+      }
+    });
+    dialogRef.componentInstance.confirmed.subscribe(() => {
+      this.rest.deleteScenario(scenario).subscribe(() => {
+        dialogRef.close();
+        const idx = this.scenarios.indexOf(scenario);
+        if (idx > -1) {
+          this.scenarios.splice(idx, 1);
+        }
+        this.settings.setActiveSenario(undefined)
+      })
+    })
   }
 
   editScenario(scenario: Scenario): void {
@@ -59,5 +84,10 @@ export class ScenariosComponent implements OnInit {
 
   selectScenario(scenario: Scenario): void {
     this.settings.setActiveSenario(scenario);
+  }
+
+  changeView(viewType: 'list-view' | 'grid-view'): void {
+    this.viewType = viewType;
+    this.cookies.set('scenario-view-type', viewType);
   }
 }

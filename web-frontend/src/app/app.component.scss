@@ -25,7 +25,7 @@
   padding: 10px;
 }
 
-.sidenav {
+::ng-deep.sidenav {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -35,9 +35,14 @@
   .active-link {
     border: 3px solid gold;
   }
+
+  .mat-drawer-inner-container {
+    overflow-x: hidden;
+  }
 }
 
 .mat-drawer-content {
+  padding: 10px 30px 0 10px;
   margin-left: 200px;
   background-color: lightgrey;
 }

@@ -5,6 +5,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { AuthService } from "../../auth.service";
 import { UserSettingsService } from "../../user-settings.service";
 import { ConfirmDialogComponent } from "../../elements/confirm-dialog/confirm-dialog.component";
+import { CookieService } from "ngx-cookie-service";
 
 @Component({
   selector: 'app-projects',
@@ -16,9 +17,12 @@ export class ProjectsComponent implements OnInit{
   viewType: 'list-view' | 'grid-view' = 'grid-view';
   @ViewChild('deleteProjectTemplate') deleteProjectTemplate?: TemplateRef<any>;
 
-  constructor(private rest: RestService, private dialog: MatDialog, private settings: UserSettingsService) {}
+  constructor(private rest: RestService, private dialog: MatDialog, private settings: UserSettingsService,
+              private cookies: CookieService) {}
 
   ngOnInit() {
+    const viewType = this.cookies.get('project-view-type');
+    if (viewType === 'list-view') this.viewType = 'list-view';
     this.settings.module$.subscribe(module => {
       this.rest.getProjects({ module: module }).subscribe(projects => {
         this.projects = projects;
@@ -66,10 +70,12 @@ export class ProjectsComponent implements OnInit{
     });
     dialogRef.componentInstance.confirmed.subscribe(() => {
       this.rest.deleteProject(project).subscribe(() => {
+        dialogRef.close();
         const idx = this.projects.indexOf(project);
         if (idx > -1) {
           this.projects.splice(idx, 1);
         }
+        this.settings.setActiveProject(undefined);
       })
     })
   }
@@ -102,5 +108,10 @@ export class ProjectsComponent implements OnInit{
 
   selectProject(project: Project): void {
     this.settings.setActiveProject(project);
+  }
+
+  changeView(viewType: 'list-view' | 'grid-view'): void {
+    this.viewType = viewType;
+    this.cookies.set('project-view-type', viewType);
   }
 }
