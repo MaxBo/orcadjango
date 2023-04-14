@@ -3,11 +3,11 @@ import { Project, User } from "../../../rest-api";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BehaviorSubject } from "rxjs";
+import { UserSettingsService } from "../../../user-settings.service";
 
 export interface ProjectEditDialogData {
   project?: Project,
   title: string,
-  users?: User[];
   confirmButtonText?: string,
   cancelButtonText?: string,
   closeOnConfirm?: boolean,
@@ -25,7 +25,7 @@ export class ProjectEditDialogComponent {
   isLoading$ = new BehaviorSubject<boolean>(false);
   @Output() projectConfirmed = new EventEmitter<Project>();
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: ProjectEditDialogData,
+  constructor(@Inject(MAT_DIALOG_DATA) public data: ProjectEditDialogData, protected settings: UserSettingsService,
               private formBuilder: FormBuilder) {
     data.confirmButtonText = data.confirmButtonText || 'Save';
     data.cancelButtonText = data.cancelButtonText || 'Cancel';
@@ -33,7 +33,7 @@ export class ProjectEditDialogComponent {
     this.projectForm = this.formBuilder.group({
       name: this.project?.name || '',
       description: this.project?.description || '',
-      user: this.project?.user?.id || -1,
+      user: this.project?.user || -1,
       code: this.project?.code || ''
     })
   }
@@ -53,7 +53,7 @@ export class ProjectEditDialogComponent {
       id: this.project?.id,
       name: this.projectForm.value.name,
       description: this.projectForm.value.description,
-      user: this.projectForm.value.user,
+      user: (this.projectForm.value.user !== -1)? this.projectForm.value.user: null,
       code: this.projectForm.value.code
     }
     this.projectConfirmed.emit(project);

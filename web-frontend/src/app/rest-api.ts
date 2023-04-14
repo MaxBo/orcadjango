@@ -7,9 +7,11 @@ export interface Project {
   id?: number,
   name: string,
   description: string,
-  user?: User,
+  user?: number,
   code?: string,
-  module?: string
+  module?: string,
+  archived?: boolean,
+  created?: string
 }
 
 export interface Scenario {
@@ -69,6 +71,14 @@ export class RestService {
     return this.http.get<Project>(`${this.URLS.projects}${id}/`);
   }
 
+  deleteProject(project: Project): Observable<Project> {
+    return this.http.delete<Project>(`${this.URLS.projects}${project.id}/`);
+  }
+
+  patchProject(project: Project, data: any): Observable<Project> {
+    return this.http.patch<Project>(`${this.URLS.projects}${project.id}/`, data);
+  }
+
   getScenario(id: number): Observable<Scenario> {
     return this.http.get<Scenario>(`${this.URLS.scenarios}${id}/`);
   }
@@ -104,7 +114,8 @@ export class RestService {
       name: project.name,
       description: project.description,
       code: project.code,
-      user: project.user?.id
+      user: project.user,
+      module: project.module
     }
     return this.http.post<Project>(this.URLS.projects, body);
   }

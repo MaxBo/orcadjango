@@ -40,12 +40,12 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
+    created = serializers.DateTimeField(format="%Y-%m-%d", read_only=True)
     class Meta:
         model = Project
         fields =  ('id', 'name', 'description', 'module', 'code', 'user',
                    'archived', 'created')
         optional_fields = ('module', 'code', 'user', 'archived')
-        read_only_fields = ('created', )
 
     def create(self, validated_data):
         instance = super().create(validated_data)

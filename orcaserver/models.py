@@ -72,6 +72,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE,
                                 related_name='profile')
     icon = models.ImageField(null=True, blank=True)
+    color = models.CharField(max_length=9, default='#FFFFFF')
     settings = models.JSONField(default=dict)
 
     def __str__(self) -> str:

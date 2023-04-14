@@ -4,16 +4,16 @@ import { UserSettingsService } from "../../../user-settings.service";
 
 @Component({
   selector: 'app-grid-view',
-  templateUrl: './grid-view.component.html',
-  styleUrls: ['./grid-view.component.scss']
+  templateUrl: './project-grid-view.component.html',
+  styleUrls: ['./project-grid-view.component.scss']
 })
-export class GridViewComponent {
+export class ProjectGridViewComponent {
   @Input() projects: Project[] = [];
-  @Input() users: User[] = [];
   @Output() projectSelected = new EventEmitter<Project>();
   @Output() onEditProject = new EventEmitter<Project>();
+  @Output() onDeleteProject = new EventEmitter<Project>();
+  @Output() onArchiveProject = new EventEmitter<{ project: Project, archive: boolean }>();
   @Output() onCreateProject = new EventEmitter<boolean>();
 
-  constructor(protected settings: UserSettingsService) {
-  }
+  constructor(protected settings: UserSettingsService) {}
 }

@@ -12,8 +12,8 @@ import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { RouterOutlet } from "@angular/router";
 import { ProjectsComponent } from './pages/projects/projects.component';
-import { ListViewComponent } from './pages/projects/list-view/list-view.component';
-import { GridViewComponent } from './pages/projects/grid-view/grid-view.component';
+import { ProjectListViewComponent } from './pages/projects/list-view/project-list-view.component';
+import { ProjectGridViewComponent } from './pages/projects/grid-view/project-grid-view.component';
 import { LoginComponent } from './pages/login/login.component';
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { ReactiveFormsModule } from "@angular/forms";
@@ -29,17 +29,19 @@ import { ProjectEditDialogComponent } from './pages/projects/edit/project-edit.c
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSelectModule } from "@angular/material/select";
+import { ConfirmDialogComponent } from './elements/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ProjectsComponent,
-    ListViewComponent,
-    GridViewComponent,
+    ProjectListViewComponent,
+    ProjectGridViewComponent,
     LoginComponent,
     WelcomeComponent,
     ScenariosComponent,
-    ProjectEditDialogComponent
+    ProjectEditDialogComponent,
+    ConfirmDialogComponent
   ],
     imports: [
         BrowserModule,

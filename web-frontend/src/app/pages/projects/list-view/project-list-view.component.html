@@ -1,0 +1,30 @@
+<button mat-button (click)="onCreateProject.emit(true)">NEW PROJECT</button>
+<table class="striped">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Code</th>
+      <th>Created</th>
+      <th>User</th>
+      <th>Description</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let project of projects"
+        (click)="projectSelected.emit(project)"
+        [ngClass]="{'selected': settings.activeProject$.value?.id === project.id}">
+      <td> {{ project.name }} </td>
+      <td> {{ project.code }} </td>
+      <td> {{ project.created }} </td>
+      <td> {{ project.description }} </td>
+      <td>
+        <button mat-button (click)="onEditProject.emit(project); $event.stopPropagation()">EDIT</button>
+        <button mat-button (click)="onDeleteProject.emit(project); $event.stopPropagation()">DELETE</button>
+        <button mat-button (click)="onArchiveProject.emit({ project: project, archive: !project.archived}); $event.stopPropagation()">
+          {{!project.archived? 'ARCHIVE': 'UNARCHIVE'}}
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>

@@ -25,6 +25,9 @@ table {
     tr:hover {
       background-color: snow!important;
     }
+    tr.selected {
+      background-color: gold!important;
+    }
   }
 }
 

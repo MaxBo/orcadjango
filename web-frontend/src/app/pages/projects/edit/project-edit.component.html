@@ -36,7 +36,7 @@
       <mat-select formControlName="user"
                   required>
         <mat-option [value]="-1">none</mat-option>
-        <mat-option *ngFor="let user of data.users"
+        <mat-option *ngFor="let user of settings.users"
                     [value]="user.id">
           {{user.username}}
         </mat-option>

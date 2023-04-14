@@ -16,10 +16,22 @@
   <app-grid-view *ngSwitchCase="'grid-view'"
                  [projects]="projects"
                  (onCreateProject)="onCreateProject()"
+                 (onDeleteProject)="deleteProject($event)"
                  (onEditProject)="editProject($event)"
+                 (onArchiveProject)="archiveProject($event.project, $event.archive)"
                  (projectSelected)="selectProject($event)">
   </app-grid-view>
   <app-list-view *ngSwitchCase="'list-view'"
-                 [projects]="projects">
+                 [projects]="projects"
+                 (onCreateProject)="onCreateProject()"
+                 (onDeleteProject)="deleteProject($event)"
+                 (onEditProject)="editProject($event)"
+                 (onArchiveProject)="archiveProject($event.project, $event.archive)"
+                 (projectSelected)="selectProject($event)">
   </app-list-view>
 </ng-container>
+
+<ng-template #deleteProjectTemplate>
+  <p>Do you really want to delete the project?</p>
+  <p>Warning: Only the project, its scenarios and parameters will be deleted. All possibly generated data will remain. </p>
+</ng-template>

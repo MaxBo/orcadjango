@@ -10,6 +10,7 @@ export class UserSettingsService {
   activeScenario$ = new BehaviorSubject<Scenario | undefined>(undefined);
   user$ = new BehaviorSubject<User | undefined>(undefined);
   module$ = new BehaviorSubject<string>('');
+  users: User[] = [];
   modules: Module[] = []
 
   constructor(private cookies: CookieService, private rest: RestService, private auth: AuthService) {
@@ -30,6 +31,9 @@ export class UserSettingsService {
         this.rest.getModules().subscribe(modules => {
           this.module$.next(this.cookies.get('module') || modules.find(mod => mod.default)?.path || '');
           this.modules = modules;
+        });
+        this.rest.getUsers().subscribe(users => {
+          this.users = users;
         });
       }
       this.user$.next(user);
