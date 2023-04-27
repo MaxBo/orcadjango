@@ -1,6 +1,5 @@
 from django.contrib import admin
-from .injectables import Injectable
-from .models import Scenario, Project, Profile
+from .models import Scenario, Project, Profile, Injectable
 
 
 class ProjectAdmin(admin.ModelAdmin):

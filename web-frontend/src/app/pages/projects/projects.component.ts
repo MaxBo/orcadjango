@@ -2,7 +2,6 @@ import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Project, RestService, User } from "../../rest-api";
 import { ProjectEditDialogComponent, ProjectEditDialogData } from "./edit/project-edit.component";
 import { MatDialog } from "@angular/material/dialog";
-import { AuthService } from "../../auth.service";
 import { UserSettingsService } from "../../user-settings.service";
 import { ConfirmDialogComponent } from "../../elements/confirm-dialog/confirm-dialog.component";
 import { CookieService } from "ngx-cookie-service";
@@ -75,7 +74,8 @@ export class ProjectsComponent implements OnInit{
         if (idx > -1) {
           this.projects.splice(idx, 1);
         }
-        this.settings.setActiveProject(undefined);
+        if (project.id === this.settings.activeProject$?.value?.id)
+          this.settings.setActiveProject(undefined);
       })
     })
   }

@@ -15,7 +15,7 @@ export interface ScenarioEditDialogData {
 
 @Component({
   templateUrl: './scenario-edit.component.html',
-  styleUrls: ['./scenario-edit.component.scss']
+  styleUrls: ['./scenario-edit.component.scss', '../../projects/edit/project-edit.component.scss']
 })
 export class ScenarioEditDialogComponent {
   protected scenarioForm: FormGroup;

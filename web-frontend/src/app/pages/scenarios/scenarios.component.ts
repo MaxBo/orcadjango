@@ -73,13 +73,30 @@ export class ScenariosComponent implements OnInit {
         if (idx > -1) {
           this.scenarios.splice(idx, 1);
         }
-        this.settings.setActiveSenario(undefined)
+        if (scenario.id === this.settings.activeScenario$?.value?.id)
+          this.settings.setActiveSenario(undefined)
       })
     })
   }
 
   editScenario(scenario: Scenario): void {
-
+    const data: ScenarioEditDialogData = {
+      title: 'Edit Scenario',
+      confirmButtonText: 'Save',
+      scenario: scenario
+    }
+    const dialogRef = this.dialog.open(ScenarioEditDialogComponent, {
+      panelClass: 'absolute',
+      width: '700px',
+      disableClose: true,
+      data: data
+    });
+    dialogRef.componentInstance.scenarioConfirmed.subscribe((edited) => {
+      this.rest.patchScenario(scenario, { name: edited.name, description: edited.description }).subscribe(patched => {
+        dialogRef.close();
+        Object.assign(scenario, patched);
+      });
+    })
   }
 
   selectScenario(scenario: Scenario): void {

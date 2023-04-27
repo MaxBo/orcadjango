@@ -5,49 +5,12 @@ import json
 from django.core.exceptions import ObjectDoesNotExist
 
 from orcaserver.views import ProjectMixin
-from orcaserver.management import OrcaManager, parse_injectables
-from orcaserver.views.projects import apply_injectables
+from orcaserver.management import OrcaManager,
 from orcaserver.models import Scenario, Step
 from orcaserver.injectables import Injectable
 
 overwritable_types = (str, bytes, int, float, complex,
                       tuple, list, dict, set, bool, None.__class__)
-
-def recreate_injectables(orca, scenario, keep_values=False):
-    '''
-    function to create or reset injectables of scenario
-    '''
-    injectables = parse_injectables(orca)
-    project = scenario.project
-    init_values = json.loads(project.init)
-    # create or reset injectables
-    for name, desc in injectables.items():
-        if not desc or desc.get('hidden'):
-            continue
-        inj, created = Injectable.objects.get_or_create(name=name,
-                                                        scenario=scenario)
-        value = init_values.get(name, desc['value'])
-        if created or not keep_values:
-            inj.value = value
-        inj.datatype = desc['datatype']
-        inj.data_class = desc['data_class']
-        inj.save()
-    # add parent injectable ids
-    for name, desc in injectables.items():
-        if not desc or desc.get('hidden'):
-            continue
-        parent_injectables = []
-        inj = Injectable.objects.get(name=name, scenario=scenario)
-        for parameter in desc.get('parameters', []):
-            try:
-                parent_inj = Injectable.objects.get(scenario=inj.scenario,
-                                                    name=parameter)
-                parent_injectables.append(parent_inj.pk)
-            except ObjectDoesNotExist:
-                orca.logger.warn(f'Injectable {parameter} '
-                                 f'not found in scneario {inj.scenario.name}')
-        inj.parent_injectables = str(parent_injectables)
-        inj.save()
 
 
 class ScenariosView(ProjectMixin, ListView):

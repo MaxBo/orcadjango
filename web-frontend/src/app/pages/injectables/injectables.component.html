@@ -1,0 +1,37 @@
+<table id="injectables-table" class="striped">
+  <thead>
+    <th>
+      Group
+    </th>
+    <th>Parameter</th>
+    <th>Description</th>
+    <th>Datatype</th>
+    <th>Value (string representation)</th>
+    <th></th>
+  </thead>
+  <tbody>
+    <ng-container *ngFor="let group of injectables | keyvalue;">
+      <ng-container *ngFor="let injectable of group.value; let first = first; let last = last;">
+        <tr [ngClass]="{'bb': last, 'locked': !injectable.editable}"
+            (click)="editInjectable(injectable)"
+            [title]="'Wert von ' + injectable.name + (injectable.editable? ' editieren': ' ansehen (abgeleitet)')">
+          <td>
+            <b *ngIf="first">{{group.key}}</b>
+          </td>
+          <td>
+            <b>{{injectable.name}}</b>
+          </td>
+          <td>
+            <i [innerHTML]="injectable.description"></i>
+          </td>
+          <td>
+            {{injectable.datatype}}
+          </td>
+          <td>
+            {{injectable.value}}
+          </td>
+        </tr>
+      </ng-container>
+    </ng-container>
+  </tbody>
+</table>

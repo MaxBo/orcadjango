@@ -5,7 +5,7 @@ import time
 import json
 
 from orcaserver.models import Step
-from orcaserver.management import OrcaManager, parse_injectables
+from orcaserver.management import OrcaManager
 from orcaserver.injectables import OrcaTypeMap
 
 def get_python_module():

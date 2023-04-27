@@ -7,19 +7,10 @@ import logging
 from orcadjango.loggers import OrcaChannelHandler
 from orcaserver.models import LogEntry
 from orcaserver.models import Scenario, Project
-from orcaserver.injectables import Injectable
+from orcaserver.injectables import apply_injectables
 from orcaserver.management import OrcaManager
 
 manager = OrcaManager()
-
-def apply_injectables(orca, scenario):
-    if not scenario:
-        return
-    names = orca.list_injectables()
-    injectables = Injectable.objects.filter(name__in=names, scenario=scenario)
-    for inj in injectables:
-        if inj.can_be_changed:
-            orca.add_injectable(inj.name, inj.validated_value)
 
 
 class ScenarioHandler(OrcaChannelHandler):

@@ -10,4 +10,5 @@ xarray
 django-flat-json-widget
 djangorestframework
 djangorestframework-simplejwt
+drf-nested-routers
 Pillow

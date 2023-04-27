@@ -33,6 +33,8 @@ import { ConfirmDialogComponent } from './elements/confirm-dialog/confirm-dialog
 import { ScenarioGridViewComponent } from './pages/scenarios/grid-view/scenario-grid-view.component';
 import { ScenarioListViewComponent } from './pages/scenarios/list-view/scenario-list-view.component';
 import { ScenarioEditDialogComponent } from './pages/scenarios/edit/scenario-edit.component';
+import { InjectablesComponent } from './pages/injectables/injectables.component';
+import { InjectableEditDialogComponent } from './pages/injectables/edit/injectable-edit.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +49,9 @@ import { ScenarioEditDialogComponent } from './pages/scenarios/edit/scenario-edi
     ConfirmDialogComponent,
     ScenarioGridViewComponent,
     ScenarioListViewComponent,
-    ScenarioEditDialogComponent
+    ScenarioEditDialogComponent,
+    InjectablesComponent,
+    InjectableEditDialogComponent
   ],
     imports: [
         BrowserModule,

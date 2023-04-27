@@ -1,16 +1,17 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from django.contrib.auth.models import User
 
 from .serializers import (ProjectSerializer, UserSerializer,
-                          ScenarioSerializer, ModuleSerializer)
-from .models import Project, Scenario
-from .utils import ProjectMixin
+                          ScenarioSerializer, ModuleSerializer,
+                          InjectableSerializer)
+from .models import Project, Scenario, Injectable
 from django.conf import settings
 from orcaserver.management import OrcaManager
 
 
-class ProjectViewSet(ProjectMixin, viewsets.ModelViewSet):
+class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
 
@@ -21,7 +22,7 @@ class ProjectViewSet(ProjectMixin, viewsets.ModelViewSet):
         return queryset.order_by('name')
 
 
-class ScenarioViewSet(ProjectMixin, viewsets.ModelViewSet):
+class ScenarioViewSet(viewsets.ModelViewSet):
     queryset = Scenario.objects.all()
     serializer_class = ScenarioSerializer
 
@@ -38,11 +39,28 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def get_object(self):
         pk = self.kwargs.get('pk')
-
         if pk == "current":
             return self.request.user
-
         return super().get_object()
+
+
+class InjectableViewSet(viewsets.ModelViewSet):
+    queryset = Injectable.objects.all()
+    serializer_class = InjectableSerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(scenario=self.kwargs['scenario_pk'])
+
+    @action(methods=['POST'], detail=False)
+    def reset(self, request, **kwargs):
+        """
+        route to disaggregate the population to the raster cells
+        """
+        try:
+            scenario = self.queryset.get(**kwargs)
+        except Scenario.DoesNotExist:
+            pass
+        scenario.recreate_injectables()
 
 
 class ModuleViewSet(viewsets.ViewSet):

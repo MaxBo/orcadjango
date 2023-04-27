@@ -2,11 +2,13 @@ import threading
 import importlib
 import time
 import logging
-from django.utils import timezone
 import ctypes
 import sys
 import typing
 from inspect import signature, _empty
+import json
+
+from django.utils import timezone
 
 lock = threading.Lock()
 
@@ -41,61 +43,6 @@ def load_module(module_name, orca=None, module_set=None):
             load_module(module_name, orca=orca, module_set=module_set)
             module_set.add(module_name)
     return module
-
-def parse_injectables(orca, injectables=None):
-    orca_injectables = orca.list_injectables()
-    if not injectables:
-        injectables = orca_injectables
-    descriptors = {}
-    orca_meta = getattr(orca, 'meta', {})
-    for name in injectables:
-        descriptors[name] = None
-        desc = {}
-        _meta = orca_meta.get(name, {})
-        if (name not in orca_injectables or name.startswith('iter_')
-            or _meta.get('hidden')):
-            continue
-        if _meta.get('refresh') == 'always':
-            value = orca.get_injectable(name)
-        else:
-            value = orca._injectable_backup.get(name)
-        datatype_class = type(value)
-        datatype = datatype_class.__name__
-        desc['datatype'] = datatype
-        desc['value'] = value
-        # check if the original type is overwritable
-        funcwrapper = orca._injectable_function.get(name)
-        sig = signature(funcwrapper._func)
-        if isinstance(funcwrapper, orca._InjectableFuncWrapper):
-            desc['docstring'] = funcwrapper._func.__doc__ or ''
-            # datatype from annotations
-            returntype = sig.return_annotation
-            has_returntype = True
-            if isinstance(returntype, type) and issubclass(returntype, _empty):
-                has_returntype = False
-            if has_returntype:
-                if isinstance(returntype, typing._GenericAlias):
-                    datatype_class = returntype.__origin__
-                    desc['datatype'] = str(returntype)
-                else:
-                    datatype_class = returntype
-                    desc['datatype'] = returntype.__name__
-            desc['module'] = funcwrapper._func.__module__
-            desc.update(_meta)
-            choices = desc.get('choices')
-            # choices are derived from another injectable
-            if callable(choices):
-                c_meta = orca.meta.get(choices.__name__)
-                if c_meta and c_meta.get('refresh') == 'always':
-                    choices = orca.get_injectable(choices.__name__)
-                else:
-                    choices = orca._injectable_backup.get(choices.__name__)
-                desc['choices'] = choices
-            desc['parameters'] = list(sig.parameters.keys())
-        desc['data_class'] = (f'{datatype_class.__module__}.'
-                              f'{datatype_class.__name__}')
-        descriptors[name] = desc
-    return descriptors
 
 
 class InUseError(Exception):
@@ -146,6 +93,81 @@ class OrcaManager(Singleton):
     threads = {}
     meta = {}
     default_module = None
+    _mod_instances = {}
+
+    #@property
+    #def descriptors(self):
+        #if self._descriptors is not None:
+            #return self._descriptors
+        #parse_injectables
+
+
+    #def get_orca(self, scenario=None):
+        #scenario = scenario or self.get_scenario()
+        #if not scenario:
+            #return
+        #module = self.get_module()
+        #orca = manager.get(scenario.id, module=module, create=False)
+        #if not orca:
+            #orca = manager.create(scenario.id, module=module)
+            #handler = ScenarioHandler(scenario, persist=True)
+            #level = getattr(logging, settings.LOG_LEVEL, logging.INFO)
+            #handler.setLevel(level)
+            #manager.add_log_handler(scenario.id, handler)
+            #apply_injectables(orca, scenario)
+        #return orca
+
+    def get_meta(self, injectable: str, module: str):
+        orca = self._mod_instances.get(module)
+        if not orca:
+            orca = self._mod_instances[module] = self.create(module=module)
+        orca_injectables = orca.list_injectables()
+        orca_meta = getattr(orca, 'meta', {})
+        desc = {}
+        _meta = orca_meta.get(injectable, {})
+        if (injectable not in orca_injectables or injectable.startswith('iter_')
+            or _meta.get('hidden')):
+            return {}
+        if _meta.get('refresh') == 'always':
+            value = orca.get_injectable(injectable)
+        else:
+            value = orca._injectable_backup.get(injectable)
+        datatype_class = type(value)
+        datatype = datatype_class.__name__
+        desc['datatype'] = datatype
+        desc['value'] = value
+        # check if the original type is overwritable
+        funcwrapper = orca._injectable_function.get(injectable)
+        sig = signature(funcwrapper._func)
+        if isinstance(funcwrapper, orca._InjectableFuncWrapper):
+            desc['docstring'] = funcwrapper._func.__doc__ or ''
+            # datatype from annotations
+            returntype = sig.return_annotation
+            has_returntype = True
+            if isinstance(returntype, type) and issubclass(returntype, _empty):
+                has_returntype = False
+            if has_returntype:
+                if isinstance(returntype, typing._GenericAlias):
+                    datatype_class = returntype.__origin__
+                    desc['datatype'] = str(returntype)
+                else:
+                    datatype_class = returntype
+                    desc['datatype'] = returntype.__name__
+            desc['module'] = funcwrapper._func.__module__
+            desc.update(_meta)
+            choices = desc.get('choices')
+            # choices are derived from another injectable
+            if callable(choices):
+                c_meta = orca.meta.get(choices.__name__)
+                if c_meta and c_meta.get('refresh') == 'always':
+                    choices = orca.get_injectable(choices.__name__)
+                else:
+                    choices = orca._injectable_backup.get(choices.__name__)
+                desc['choices'] = choices
+            desc['parameters'] = list(sig.parameters.keys())
+        desc['data_class'] = (f'{datatype_class.__module__}.'
+                              f'{datatype_class.__name__}')
+        return desc
 
     def set_default_module(self, module: str):
         self.reset()
@@ -174,9 +196,10 @@ class OrcaManager(Singleton):
         if instance_id in self.threads:
             del(self.threads[instance_id])
 
-    def create(self, instance_id: int, module: str = None):
+    def create(self, instance_id: int = None, module: str = None):
         instance = self._create_instance(module or self.default_module)
-        self.instances[instance_id] = instance
+        if (instance_id):
+            self.instances[instance_id] = instance
         return instance
 
     def add_log_handler(self, instance_id: int, handler: logging.StreamHandler):
@@ -239,12 +262,6 @@ class OrcaManager(Singleton):
         for k, v in kwargs.items():
             self.meta[instance_id][k] = v
 
-    def get_meta(self, instance_id: int, *args):
-        meta = self.meta.get(instance_id, {})
-        if args:
-            return {arg: meta.get(arg) for arg in args}
-        return meta
-
     def run(self, instance_id: int, steps, iter_vars=None, data_out=None,
             out_interval=1, out_base_tables=None, out_run_tables=None,
             compress=False, out_base_local=True, out_run_local=True):
@@ -271,7 +288,7 @@ class OrcaManager(Singleton):
             these represent the state of the system before any steps have been
             executed.
             The interval is defined relative to the first iteration. For example,
-            a run begining in 2015 with an out_interval of 2, will write out
+            a run begining in 2015 with an out_interval of 2, will write
             results for 2015, 2017, etc.
         out_base_tables: list of str, optional, default None
             List of base tables to write. If not provided, tables injected
@@ -297,7 +314,7 @@ class OrcaManager(Singleton):
             max_i = len(iter_vars)
             step_names = [step.name for step in steps]
 
-            # get the tables to write out
+            # get the tables to write
             if out_base_tables is None or out_run_tables is None:
                 step_tables = orca.get_step_table_names(step_names)
 
@@ -307,7 +324,7 @@ class OrcaManager(Singleton):
                 if out_run_tables is None:
                     out_run_tables = step_tables
 
-            # write out the base (inputs)
+            # write the base data (inputs)
             if data_out:
                 orca.add_injectable('iter_var', iter_vars[0])
                 orca.write_tables(
@@ -323,14 +340,12 @@ class OrcaManager(Singleton):
                         'running iteration {} with iteration value {!r}'.format(
                             i, var))
 
-                t1 = time.time()
                 for j, step in enumerate(steps):
                     step_name = step.name
                     orca.add_injectable(
                         'iter_step', orca.iter_step(j, step_name))
                     logger.info(f"Running step '{step_name}'")
                     step_func = orca.get_step(step_name)
-                    t2 = time.time()
                     step.started = timezone.now()
                     step.save()
                     try:
@@ -353,7 +368,7 @@ class OrcaManager(Singleton):
 
                     orca.clear_cache(scope=_CS_STEP)
 
-                # write out the results for the current iteration
+                # write the results of the current iteration
                 if data_out:
                     if (i - 1) % out_interval == 0 or i == max_i:
                         orca.write_tables(

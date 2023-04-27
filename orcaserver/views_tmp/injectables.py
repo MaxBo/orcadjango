@@ -7,10 +7,11 @@ from django.conf import settings
 from collections import OrderedDict
 import json
 
-from orcaserver.views import ProjectMixin, recreate_injectables
-from orcaserver.injectables import Injectable
+from orcaserver.views import ProjectMixin
+from orcaserver.injectables import (Injectable, recreate_injectables,
+                                    parse_injectables)
 from orcaserver.forms import InjectableValueForm
-from orcaserver.management import OrcaManager, parse_injectables
+from orcaserver.management import OrcaManager
 
 manager = OrcaManager()
 

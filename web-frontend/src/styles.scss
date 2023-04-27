@@ -50,3 +50,9 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   background: #595959;
   color: white;
 }
+
+table.striped {
+  tbody tr:nth-of-type(odd) {
+    background-color: rgba(0,0,0,.05);
+  }
+}

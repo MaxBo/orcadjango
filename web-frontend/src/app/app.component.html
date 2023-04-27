@@ -16,6 +16,14 @@
        [routerLinkActiveOptions]="{exact: false}">
       Scenarios
     </a>
+    <a *ngIf="settings.activeScenario$ | async"
+       class="link"
+       title="injectables"
+       routerLink="/injectables"
+       routerLinkActive="active-link"
+       [routerLinkActiveOptions]="{exact: false}">
+      Injectables
+    </a>
   </span>
 </mat-toolbar>
 <mat-sidenav-container class="main-container">
