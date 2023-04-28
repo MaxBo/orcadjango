@@ -76,15 +76,6 @@ class ModuleDataSerializer(serializers.Serializer):
     text = serializers.ListSerializer(child=serializers.CharField())
 
 
-class ModuleSerializer(serializers.Serializer):
-    name = serializers.CharField()
-    path = serializers.CharField()
-    description = serializers.CharField()
-    default = serializers.BooleanField()
-    data = ModuleDataSerializer()
-    init = serializers.ListSerializer(child=serializers.CharField())
-
-
 class InjectableSerializer(serializers.ModelSerializer):
     description = serializers.SerializerMethodField()
     group = serializers.CharField(source='meta.group')
@@ -108,5 +99,22 @@ class InjectableSerializer(serializers.ModelSerializer):
 
     def get_description(self, obj):
         return obj.meta.get('docstring', '').strip().replace('\n', '<br>')
+
+
+class ModuleSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    path = serializers.CharField()
+    description = serializers.CharField()
+    default = serializers.BooleanField()
+    data = ModuleDataSerializer()
+    init = serializers.ListSerializer(child=serializers.CharField())
+
+
+class StepSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    group = serializers.CharField()
+    description = serializers.CharField()
+    order = serializers.IntegerField()
+    required = serializers.ListSerializer(child=serializers.CharField())
 
 

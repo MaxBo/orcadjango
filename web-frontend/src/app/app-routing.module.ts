@@ -6,6 +6,7 @@ import { AuthGuard } from "./auth.service";
 import { WelcomeComponent } from "./pages/welcome/welcome.component";
 import { ScenariosComponent } from "./pages/scenarios/scenarios.component";
 import { InjectablesComponent } from "./pages/injectables/injectables.component";
+import { StepsComponent } from "./pages/steps/steps.component";
 
 
 const routes: Routes = [
@@ -35,6 +36,12 @@ const routes: Routes = [
   {
     path: 'injectables',
     component: InjectablesComponent,
+    canActivate: [AuthGuard],
+    pathMatch: 'full'
+  },
+  {
+    path: 'steps',
+    component: StepsComponent,
     canActivate: [AuthGuard],
     pathMatch: 'full'
   },

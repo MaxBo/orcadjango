@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 from .serializers import (ProjectSerializer, UserSerializer,
                           ScenarioSerializer, ModuleSerializer,
-                          InjectableSerializer)
+                          InjectableSerializer, StepSerializer)
 from .models import Project, Scenario, Injectable
 from django.conf import settings
 from orcaserver.management import OrcaManager
@@ -88,4 +88,21 @@ class ModuleViewSet(viewsets.ViewSet):
             }
             modules.append(mod)
         results = ModuleSerializer(modules, many=True)
+        return Response(results.data)
+
+
+class StepViewSet(viewsets.ViewSet):
+    serializer_class = StepSerializer
+
+    def list(self, request):
+        steps = []
+        orca_manager = OrcaManager()
+        mod_p = request.query_params.get('module')
+        module_names = [mod_p] if mod_p else [mod['path'] for mod in
+             settings.ORCA_MODULES.get('available', {}).values()]
+        for module in module_names:
+            names = orca_manager.get_step_names(module)
+            for step in names:
+                steps.append(orca_manager.get_step_meta(step, module))
+        results = StepSerializer(steps, many=True)
         return Response(results.data)

@@ -70,7 +70,7 @@ class Scenario(NameModel):
         orca_manager = OrcaManager()
         descriptors = {}
         for name in inj_names:
-            descriptors[name] = orca_manager.get_meta(name, self.project.module)
+            descriptors[name] = orca_manager.get_injectable_meta(name, self.project.module)
         project = self.project
         init_values = json.loads(project.init)
         # create or reset injectables
@@ -79,7 +79,7 @@ class Scenario(NameModel):
                 continue
             inj, created = Injectable.objects.get_or_create(name=name,
                                                             scenario=self)
-            value = init_values.get(name, desc['value'])
+            value = init_values.get(name, desc.get('value', ''))
             if created or not keep_values:
                 inj.value = value
             inj.datatype = desc['datatype']
@@ -117,7 +117,7 @@ class Injectable(NameModel):
 
     @property
     def meta(self):
-        return OrcaManager().get_meta(self.name, self.scenario.project.module)
+        return OrcaManager().get_injectable_meta(self.name, self.scenario.project.module)
 
     @property
     def parents(self):

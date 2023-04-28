@@ -37,6 +37,7 @@ import { InjectablesComponent } from './pages/injectables/injectables.component'
 import { InjectableEditDialogComponent } from './pages/injectables/edit/injectable-edit.component';
 import { FormsModule } from '@angular/forms';
 import { MatMenuModule } from "@angular/material/menu";
+import { StepsComponent } from './pages/steps/steps.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +54,8 @@ import { MatMenuModule } from "@angular/material/menu";
     ScenarioListViewComponent,
     ScenarioEditDialogComponent,
     InjectablesComponent,
-    InjectableEditDialogComponent
+    InjectableEditDialogComponent,
+    StepsComponent
   ],
   imports: [
     BrowserModule,

@@ -129,12 +129,44 @@ class OrcaManager(Singleton):
             return None
         return funcwrapper._func(*args)
 
-    def get_meta(self, injectable: str, module: str):
+    def get_step_names(self, module: str):
+        orca = self._get_mod_instance(module)
+        return orca.list_steps()
+
+    def get_injectable_names(self, module: str):
+        orca = self._get_mod_instance(module)
+        return orca.list_injectables()
+
+    def _get_mod_instance(self, module: str):
         orca = self._mod_instances.get(module)
         if not orca:
             orca = self._mod_instances[module] = self.create(module=module)
+        return orca
+
+    def _get_orca_meta(self, module: str):
+        return getattr(self._get_mod_instance(module), 'meta', {})
+
+    def get_step_meta(self, step: str, module: str):
+        meta = self._get_orca_meta(module)
+        orca = self._get_mod_instance(module)
+        step_meta = meta[step]
+        required = step_meta.get('required')
+        if not isinstance(required, list):
+            required = [required]
+        required = [r.__name__ if callable(r) else str(r) for r in required]
+        wrapper = orca.get_step(step)
+        return {
+            'name': step,
+            'group': step_meta.get('group', '-'),
+            'order': step_meta.get('order', 1),
+            'docstring': wrapper._func.__doc__ or '',
+            'required': required,
+        }
+
+    def get_injectable_meta(self, injectable: str, module: str):
+        orca = self._get_mod_instance(module)
         orca_injectables = orca.list_injectables()
-        orca_meta = getattr(orca, 'meta', {})
+        orca_meta = self._get_orca_meta(module)
         # defaults (required by serializer)
         desc = {
             'order': 10000000,

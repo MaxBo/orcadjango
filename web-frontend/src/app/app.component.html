@@ -25,6 +25,14 @@
        [routerLinkActiveOptions]="{exact: false}">
       Injectables
     </a>
+    <a *ngIf="settings.activeScenario$ | async"
+       class="link"
+       title="steps and run"
+       routerLink="/steps"
+       routerLinkActive="active-link"
+       [routerLinkActiveOptions]="{exact: false}">
+      Steps & Run
+    </a>
     <button mat-button [matMenuTriggerFor]="userMenu">
       <mat-icon>person_outline</mat-icon>
       {{(auth.user$ | async)?.username || 'not logged in'}}
