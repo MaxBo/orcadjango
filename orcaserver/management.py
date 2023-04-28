@@ -135,7 +135,11 @@ class OrcaManager(Singleton):
             orca = self._mod_instances[module] = self.create(module=module)
         orca_injectables = orca.list_injectables()
         orca_meta = getattr(orca, 'meta', {})
-        desc = {}
+        # defaults (required by serializer)
+        desc = {
+            'order': 10000000,
+            'group': '',
+        }
         _meta = orca_meta.get(injectable, {})
         if (injectable not in orca_injectables or injectable.startswith('iter_')
             or _meta.get('hidden')):

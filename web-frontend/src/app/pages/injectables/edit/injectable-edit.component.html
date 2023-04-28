@@ -1,4 +1,4 @@
-<h4>Injectable "{{injectable.name}}" </h4>
+<h4 mat-dialog-title>Injectable "{{injectable.name}}" </h4>
 <button color="primary"
         mat-icon-button
         mat-dialog-close
@@ -7,7 +7,13 @@
   <mat-icon>close</mat-icon>
 </button>
 <mat-dialog-content>
-  {{injectable.description}}
+  <p [innerHTML]="injectable.description"></p>
+  <ng-container [ngSwitch]="injectable.datatype">
+    <mat-form-field *ngSwitchCase="'str'">
+      <mat-label>Value (String)</mat-label>
+      <input matInput [(ngModel)]="value">
+    </mat-form-field>
+  </ng-container>
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button class="mat-button-dv"
@@ -22,3 +28,4 @@
     Confirm
   </button>
 </mat-dialog-actions>
+

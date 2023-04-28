@@ -135,6 +135,9 @@ class Injectable(NameModel):
             self.name, self.scenario.project.module, *values)
         return conv.to_str(value)
 
+    # can unfortunatelly not be put into serializer field
+    # (serialization usually happens first/last on request,
+    # instance not known there)
     @property
     def deserialized_value(self):
         value = self.value
@@ -142,6 +145,13 @@ class Injectable(NameModel):
             conv = OrcaTypeMap.get(self.data_class)
             value = conv.to_value(value)
         return value
+
+    # can unfortunatelly not be put into custom (writable) serializer field
+    @property
+    def serialized_value(self):
+        if self.parents:
+            return self.derived_value
+        return self.value
 
     @property
     def editable(self):

@@ -7,84 +7,12 @@ import datetime
 from django.core.validators import RegexValidator
 import importlib
 import ast
-from django.db import models
-from django.urls import reverse
 from django.utils.deconstruct import deconstructible
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from django.core.exceptions import ObjectDoesNotExist
-from inspect import signature, _empty
-import typing
 
-from orcaserver.management import OrcaManager
 from orcaserver.widgets import (EditableDictWidget, CommaSeparatedCharField,
                                 OgrGeometryField, OsmMultiPolyWidget, DictField)
-
-
-
-    #@property
-    #def can_be_changed(self):
-        #if self.parent_injectable_values:
-            #return False
-        #conv = OrcaTypeMap.get(self.data_class)
-        ## only data types with an implemented converter should be changable
-        ## via UI, the default converter has no datatype
-        #if not conv.data_type:
-            #return False
-        #return True
-
-    ##@property
-    ##def meta(self):
-        ##return OrcaManager().get_meta(self.name, self.scenario.project.module)
-
-    ##@property
-    ##def calculated_value(self):
-        ##"""The calculated value"""
-        ##if self.can_be_changed:
-            ##return self.value
-        ##orca = OrcaManager().get(self.scenario.id,
-                                 ##module=self.scenario.project.module)
-        ##return orca.get_injectable(self.name)
-
-    #@property
-    #def parent_injectable_values(self):
-        #parent_injectables = ast.literal_eval(self.parent_injectables)
-        #injectables = Injectable.objects.filter(id__in=parent_injectables)
-        #inj_names = injectables.values_list('name', flat=True)
-        #return ','.join(inj_names)
-
-    #@property
-    #def parent_injectable_urls(self):
-        #reverse_url = reverse('injectables')
-        #return {name: f'{reverse_url}{name}'
-                #for name in self.parent_injectable_values.split(',')}
-
-    #def save(self, **kwargs):
-        #if self.value is not None and not isinstance(self.value, str):
-            #conv = OrcaTypeMap.get(self.data_class)
-            #self.value = conv.to_str(self.value)
-        #super().save(**kwargs)
-
-    #def get_form_field(self):
-        #converter = OrcaTypeMap.get(self.data_class)
-        #meta = self.meta
-        #if not meta:
-            #return
-        #if 'choices' in meta:
-            #c_meta = meta['choices']
-            #if isinstance(c_meta, dict):
-                #choices = [(k, f'{v} ({k})' if v else k)
-                           #for k, v in c_meta.items()]
-            #else:
-                #choices = tuple(zip(c_meta, c_meta))
-            #field = converter.get_choice_field(
-                #value=self.validated_value, choices=choices)
-        #else:
-            #field = converter.get_form_field(
-                #value=self.validated_value, label=f'Value',
-                #injectable_name=self.name, meta=meta,
-                #project=self.scenario.project)
-        #return field
 
 
 @deconstructible

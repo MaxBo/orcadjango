@@ -35,6 +35,7 @@ import { ScenarioListViewComponent } from './pages/scenarios/list-view/scenario-
 import { ScenarioEditDialogComponent } from './pages/scenarios/edit/scenario-edit.component';
 import { InjectablesComponent } from './pages/injectables/injectables.component';
 import { InjectableEditDialogComponent } from './pages/injectables/edit/injectable-edit.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -70,7 +71,8 @@ import { InjectableEditDialogComponent } from './pages/injectables/edit/injectab
         FlexLayoutModule,
         MatDialogModule,
         MatProgressSpinnerModule,
-        MatSelectModule
+        MatSelectModule,
+        FormsModule
     ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }

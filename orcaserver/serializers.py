@@ -88,22 +88,25 @@ class ModuleSerializer(serializers.Serializer):
 class InjectableSerializer(serializers.ModelSerializer):
     description = serializers.SerializerMethodField()
     group = serializers.CharField(source='meta.group')
-    value = serializers.SerializerMethodField(
-        method_name='get_serialized_value')
+    order = serializers.CharField(source='meta.order')
+    value = serializers.CharField(source='serialized_value')
 
     class Meta:
         model = Injectable
-        fields = ('id', 'name', 'group', 'scenario', 'value', 'datatype',
-                  'parents', 'description', 'editable')
+        fields = ('id', 'name', 'group', 'order', 'scenario', 'value',
+                  'datatype', 'parents', 'description', 'editable')
         read_only_fields = ('scenario', 'parents', 'datatype', 'name',
-                            'description', 'editable', 'group')
+                            'description', 'editable')
 
-    def get_serialized_value(self, obj):
-        if obj.parents:
-            return obj.derived_value
-        return obj.value
+    def update(self, instance, validated_data):
+        if 'serialized_value' in validated_data:
+            serialized_value = validated_data.pop('serialized_value')
+            validated_data['value'] = serialized_value
+            # ToDo: validation here (can't be done in overwritten validate
+            # function, instance not known there)
+        return super().update(instance, validated_data)
 
     def get_description(self, obj):
-        return obj.meta.get('docstring', '').replace('\n', '<br>')
+        return obj.meta.get('docstring', '').strip().replace('\n', '<br>')
 
 
