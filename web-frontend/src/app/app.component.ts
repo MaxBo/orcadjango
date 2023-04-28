@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { UserSettingsService } from "./user-settings.service";
-import { Module, RestService } from "./rest-api";
+import { AuthService } from "./auth.service";
 
 @Component({
   selector: 'app-root',
@@ -10,5 +10,5 @@ import { Module, RestService } from "./rest-api";
 export class AppComponent {
   title = 'web-frontend';
 
-  constructor(protected settings: UserSettingsService, private rest: RestService) {}
+  constructor(protected settings: UserSettingsService, protected auth: AuthService) {}
 }

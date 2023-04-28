@@ -1,7 +1,8 @@
 <mat-toolbar class="main-nav">
   <a class="navbar-brand" href="/">OrcaDjango</a>
   <span class="page-links" fxShow="true" fxHide.lt-md="true">
-    <a class="link"
+    <a *ngIf="auth.user$ | async"
+       class="link"
        title="projects"
        routerLink="/projects"
        routerLinkActive="active-link"
@@ -24,10 +25,25 @@
        [routerLinkActiveOptions]="{exact: false}">
       Injectables
     </a>
+    <button mat-button [matMenuTriggerFor]="userMenu">
+      <mat-icon>person_outline</mat-icon>
+      {{(auth.user$ | async)?.username || 'not logged in'}}
+    </button>
+    <mat-menu #userMenu>
+      <a *ngIf="(auth.user$ | async) else login"
+         mat-menu-item
+         (click)="auth.logout()" href="">
+        Logout
+      </a>
+      <ng-template #login>
+        <a mat-menu-item routerLink="/login">Login</a>
+      </ng-template>
+    </mat-menu>
   </span>
 </mat-toolbar>
 <mat-sidenav-container class="main-container">
-  <mat-sidenav class="sidenav" mode="side" opened>
+  <mat-sidenav class="sidenav" mode="side" opened
+               *ngIf="auth.user$ | async">
     <mat-form-field id="module-select">
       <mat-label>Module</mat-label>
       <mat-select (selectionChange)="settings.setModule($event.value)" [value]="settings.module$.value">

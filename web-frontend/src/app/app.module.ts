@@ -36,6 +36,7 @@ import { ScenarioEditDialogComponent } from './pages/scenarios/edit/scenario-edi
 import { InjectablesComponent } from './pages/injectables/injectables.component';
 import { InjectableEditDialogComponent } from './pages/injectables/edit/injectable-edit.component';
 import { FormsModule } from '@angular/forms';
+import { MatMenuModule } from "@angular/material/menu";
 
 @NgModule({
   declarations: [
@@ -54,26 +55,27 @@ import { FormsModule } from '@angular/forms';
     InjectablesComponent,
     InjectableEditDialogComponent
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        MatSidenavModule,
-        MatToolbarModule,
-        RouterOutlet,
-        HttpClientModule,
-        MatFormFieldModule,
-        ReactiveFormsModule,
-        MatInputModule,
-        MatButtonModule,
-        MatIconModule,
-        MatCardModule,
-        FlexLayoutModule,
-        MatDialogModule,
-        MatProgressSpinnerModule,
-        MatSelectModule,
-        FormsModule
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    RouterOutlet,
+    HttpClientModule,
+    MatFormFieldModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatCardModule,
+    FlexLayoutModule,
+    MatDialogModule,
+    MatProgressSpinnerModule,
+    MatSelectModule,
+    FormsModule,
+    MatMenuModule
+  ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
   ],
