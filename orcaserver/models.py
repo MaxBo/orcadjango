@@ -7,6 +7,7 @@ from django.dispatch import receiver
 import json
 from django.core.validators import int_list_validator
 
+from .injectables import OrcaTypeMap
 from .management import OrcaManager
 
 class NameModel(models.Model):
@@ -121,6 +122,37 @@ class Injectable(NameModel):
     @property
     def parents(self):
         return json.loads(self.parent_injectables)
+
+    @property
+    def derived_value(self):
+        parents = self.parents
+        if not parents:
+            return self.value
+        values = [Injectable.objects.get(id=p_id).deserialized_value
+                  for p_id in parents]
+        conv = OrcaTypeMap.get(self.data_class)
+        value = OrcaManager().get_calculated_value(
+            self.name, self.scenario.project.module, *values)
+        return conv.to_str(value)
+
+    @property
+    def deserialized_value(self):
+        value = self.value
+        if self.editable:
+            conv = OrcaTypeMap.get(self.data_class)
+            value = conv.to_value(value)
+        return value
+
+    @property
+    def editable(self):
+        if self.parents:
+            return False
+        conv = OrcaTypeMap.get(self.data_class)
+        # only data types with an implemented converter should be changable
+        # via UI, the default converter has no datatype
+        if not conv.data_type:
+            return False
+        return True
 
 
 class Step(NameModel):

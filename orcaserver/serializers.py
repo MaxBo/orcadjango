@@ -3,8 +3,6 @@ from django.contrib.auth.models import User
 
 from orcaserver.management import OrcaManager
 from .models import Project, Profile, Scenario, Injectable
-from .injectables import OrcaTypeMap
-import json
 
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
@@ -89,8 +87,9 @@ class ModuleSerializer(serializers.Serializer):
 
 class InjectableSerializer(serializers.ModelSerializer):
     description = serializers.SerializerMethodField()
-    editable = serializers.SerializerMethodField()
     group = serializers.CharField(source='meta.group')
+    value = serializers.SerializerMethodField(
+        method_name='get_serialized_value')
 
     class Meta:
         model = Injectable
@@ -99,29 +98,12 @@ class InjectableSerializer(serializers.ModelSerializer):
         read_only_fields = ('scenario', 'parents', 'datatype', 'name',
                             'description', 'editable', 'group')
 
+    def get_serialized_value(self, obj):
+        if obj.parents:
+            return obj.derived_value
+        return obj.value
+
     def get_description(self, obj):
         return obj.meta.get('docstring', '').replace('\n', '<br>')
-
-    def get_editable(self, obj):
-        if obj.parents:
-            return False
-        conv = OrcaTypeMap.get(obj.data_class)
-        # only data types with an implemented converter should be changable
-        # via UI, the default converter has no datatype
-        if not conv.data_type:
-            return False
-        return True
-
-
-    #@property
-    #def can_be_changed(self):
-        #if self.parent_injectable_values:
-            #return False
-        #conv = OrcaTypeMap.get(self.data_class)
-        ## only data types with an implemented converter should be changable
-        ## via UI, the default converter has no datatype
-        #if not conv.data_type:
-            #return False
-        #return True
 
 

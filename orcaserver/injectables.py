@@ -47,15 +47,6 @@ from orcaserver.widgets import (EditableDictWidget, CommaSeparatedCharField,
         ##return orca.get_injectable(self.name)
 
     #@property
-    #def validated_value(self):
-        ## ToDo: some validation
-        #value = self.value
-        #if self.can_be_changed:
-            #conv = OrcaTypeMap.get(self.data_class)
-            #value = conv.to_value(value)
-        #return value
-
-    #@property
     #def parent_injectable_values(self):
         #parent_injectables = ast.literal_eval(self.parent_injectables)
         #injectables = Injectable.objects.filter(id__in=parent_injectables)

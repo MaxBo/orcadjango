@@ -1,12 +1,10 @@
 import threading
 import importlib
-import time
 import logging
 import ctypes
 import sys
 import typing
 from inspect import signature, _empty
-import json
 
 from django.utils import timezone
 
@@ -117,6 +115,20 @@ class OrcaManager(Singleton):
             #apply_injectables(orca, scenario)
         #return orca
 
+    def get_calculated_value(self, injectable, module, *args):
+        orca = self._mod_instances.get(module)
+        if not orca:
+            orca = self._mod_instances[module] = self.create(module=module)
+
+        funcwrapper = orca.get_raw_injectable(injectable)
+        sig = signature(funcwrapper._func)
+        parameters = list(sig.parameters.keys())
+        # calculate value if injectable function has parameters (meaning
+        # parent injectables)
+        if not parameters:
+            return None
+        return funcwrapper._func(*args)
+
     def get_meta(self, injectable: str, module: str):
         orca = self._mod_instances.get(module)
         if not orca:
@@ -135,9 +147,8 @@ class OrcaManager(Singleton):
         datatype_class = type(value)
         datatype = datatype_class.__name__
         desc['datatype'] = datatype
-        desc['value'] = value
         # check if the original type is overwritable
-        funcwrapper = orca._injectable_function.get(injectable)
+        funcwrapper = orca.get_raw_injectable(injectable)
         sig = signature(funcwrapper._func)
         if isinstance(funcwrapper, orca._InjectableFuncWrapper):
             desc['docstring'] = funcwrapper._func.__doc__ or ''
@@ -165,6 +176,7 @@ class OrcaManager(Singleton):
                     choices = orca._injectable_backup.get(choices.__name__)
                 desc['choices'] = choices
             desc['parameters'] = list(sig.parameters.keys())
+
         desc['data_class'] = (f'{datatype_class.__module__}.'
                               f'{datatype_class.__name__}')
         return desc
