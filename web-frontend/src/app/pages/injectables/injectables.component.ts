@@ -28,6 +28,7 @@ export class InjectablesComponent implements OnInit {
       if (scenario)
         this.rest.getInjectables(scenario).subscribe(injectables => {
           // this.groups = [...new Set(injectables.map(injectable => injectable.group))].sort();
+          this.injectables = {};
           injectables.forEach(inj => {
             if (!this.injectables[inj.group])
               this.injectables[inj.group] = [];

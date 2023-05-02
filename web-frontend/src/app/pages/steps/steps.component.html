@@ -1,1 +1,43 @@
-<p>steps works!</p>
+<div style="display: flex; user-select: none;">
+  <mat-accordion id="available-steps">
+    <mat-expansion-panel *ngFor="let group of availableSteps | keyvalue;" class="example-container">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{group.key}}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <mat-accordion multi cdkDropList
+                     cdkDropListSortingDisabled
+                     [cdkDropListData]="group.value"
+                     [cdkDropListConnectedTo]="[scenarioStepList]"
+                     class="example-list">
+        <mat-expansion-panel *ngFor="let item of group.value"
+             [cdkDragData]="item" cdkDrag>
+          <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{item.name}}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <i [innerHTML]="item.description"></i>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </mat-expansion-panel>
+  </mat-accordion>
+
+  <div id="scenario-steps">
+    <div class="example-container">
+      <div cdkDropList
+           #scenarioStepList="cdkDropList"
+           [cdkDropListData]="scenarioSteps"
+           class="example-list"
+           (cdkDropListDropped)="drop($event)">
+        <div class="example-box" *ngFor="let item of scenarioSteps"
+             [cdkDragData]="item" cdkDrag>
+          <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+          {{item.name}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

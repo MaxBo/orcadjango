@@ -113,8 +113,11 @@ class ModuleSerializer(serializers.Serializer):
 class StepSerializer(serializers.Serializer):
     name = serializers.CharField()
     group = serializers.CharField()
-    description = serializers.CharField()
+    description = serializers.SerializerMethodField()
     order = serializers.IntegerField()
     required = serializers.ListSerializer(child=serializers.CharField())
+
+    def get_description(self, obj):
+        return obj.get('docstring', '').strip().replace('\n', '<br>')
 
 

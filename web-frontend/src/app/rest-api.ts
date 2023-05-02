@@ -56,6 +56,19 @@ export interface Module {
   }
 }
 
+export interface Step {
+  name: string,
+  description: string,
+  order: number,
+  group: string,
+  required: string[]
+}
+
+export interface ScenarioStep extends Step {
+  id: number,
+  scenario: number
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -74,7 +87,8 @@ export class RestService {
     logout: `${ environment.apiPath }/logout/`,
     token: `${ environment.apiPath }/token/`,
     refreshToken: `${ environment.apiPath }/token/refresh/`,
-    modules: `${ environment.apiPath }/modules/`
+    modules: `${ environment.apiPath }/modules/`,
+    availableSteps: `${ environment.apiPath }/steps/`,
   }
   constructor(private http: HttpClient) { }
 
@@ -172,5 +186,9 @@ export class RestService {
   patchInjectable(injectable: Inj, value: any): Observable<Inj> {
     const injUrl = this.URLS.injectables.replace('{scenarioId}', injectable.scenario.toString());
     return this.http.patch<Inj>(`${injUrl}${injectable.id}/`, {value: value});
+  }
+
+  getAvailableSteps(module: string): Observable<Step[]> {
+    return this.http.get<Step[]>(this.URLS.availableSteps, {params: { module: module }})
   }
 }

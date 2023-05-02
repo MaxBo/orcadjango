@@ -38,6 +38,8 @@ import { InjectableEditDialogComponent } from './pages/injectables/edit/injectab
 import { FormsModule } from '@angular/forms';
 import { MatMenuModule } from "@angular/material/menu";
 import { StepsComponent } from './pages/steps/steps.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MatExpansionModule } from "@angular/material/expansion";
 
 @NgModule({
   declarations: [
@@ -76,7 +78,9 @@ import { StepsComponent } from './pages/steps/steps.component';
     MatProgressSpinnerModule,
     MatSelectModule,
     FormsModule,
-    MatMenuModule
+    MatMenuModule,
+    DragDropModule,
+    MatExpansionModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
