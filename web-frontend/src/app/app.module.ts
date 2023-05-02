@@ -40,6 +40,7 @@ import { MatMenuModule } from "@angular/material/menu";
 import { StepsComponent } from './pages/steps/steps.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatExpansionModule } from "@angular/material/expansion";
+import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 
 @NgModule({
   declarations: [
@@ -80,7 +81,8 @@ import { MatExpansionModule } from "@angular/material/expansion";
     FormsModule,
     MatMenuModule,
     DragDropModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatSlideToggleModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }

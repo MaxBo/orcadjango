@@ -34,21 +34,25 @@ export class StepsComponent {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     }
-    else
-      this.addStep(event.item.data.name, event.currentIndex)
+    else {
+      this.addStep(event.item.data.name, {
+        position: event.currentIndex,
+        description: event.item.data.description
+      })
+    }
   }
 
-  addStep(stepName: string, position: number) {
+  addStep(stepName: string, options?:{ position?: number, description?: string }) {
     this._scenStepNames.push(stepName);
     const newStep: ScenarioStep = {
       id: 1,
       name: stepName,
       group: '',
       order: 1,
-      description: '',
+      description: options?.description || '',
       required: [],
       scenario: 0
     }
-    this.scenarioSteps.splice(position, 0, newStep);
+    this.scenarioSteps.splice(options?.position || 0, 0, newStep);
   }
 }

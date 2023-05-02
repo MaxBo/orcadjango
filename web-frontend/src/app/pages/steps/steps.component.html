@@ -28,18 +28,24 @@
   </mat-accordion>
 
   <div id="scenario-steps">
-    <div class="example-container">
-      <div cdkDropList
-           #scenarioStepList="cdkDropList"
-           [cdkDropListData]="scenarioSteps"
-           class="example-list"
-           (cdkDropListDropped)="drop($event)">
-        <div class="example-box" *ngFor="let item of scenarioSteps"
-             [cdkDragData]="item" cdkDrag>
-          <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-          {{item.name}}
-        </div>
-      </div>
-    </div>
+    <mat-accordion cdkDropList
+                   #scenarioStepList="cdkDropList"
+                   [cdkDropListData]="scenarioSteps"
+                   class="example-list"
+                   (cdkDropListDropped)="drop($event)">
+      <mat-expansion-panel *ngFor="let item of scenarioSteps"
+                           [cdkDragData]="item" cdkDrag>
+        <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{item.name}}
+          </mat-panel-title>
+          <mat-panel-description>
+            <mat-slide-toggle (click)="$event.stopPropagation()"></mat-slide-toggle>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <i [innerHTML]="item.description"></i>
+      </mat-expansion-panel>
+    </mat-accordion>
   </div>
 </div>

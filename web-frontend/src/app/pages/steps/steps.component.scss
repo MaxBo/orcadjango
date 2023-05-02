@@ -7,6 +7,9 @@
 
 #available-steps, #scenario-steps {
   margin: 0 25px 25px 0;
+  .mat-accordion {
+    background-color: #f0f0f0;
+  }
 }
 
 ::ng-deep #available-steps {
@@ -24,6 +27,12 @@
   }
   .cdk-drag-disabled {
     background-color: lightgrey;
+  }
+}
+
+::ng-deep #scenario-steps {
+  .mat-expansion-panel-header, .mat-expansion-panel-header > .mat-content {
+    height: 80px;
   }
 }
 
