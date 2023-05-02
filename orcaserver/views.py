@@ -106,3 +106,11 @@ class StepViewSet(viewsets.ViewSet):
                 steps.append(orca_manager.get_step_meta(step, module))
         results = StepSerializer(steps, many=True)
         return Response(results.data)
+
+
+class ScenarioStepViewSet(viewsets.ModelViewSet):
+    queryset = Injectable.objects.all()
+    serializer_class = InjectableSerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(scenario=self.kwargs['scenario_pk'])

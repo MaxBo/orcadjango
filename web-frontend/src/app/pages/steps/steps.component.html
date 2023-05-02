@@ -3,7 +3,7 @@
     <mat-expansion-panel *ngFor="let group of availableSteps | keyvalue;" class="example-container">
       <mat-expansion-panel-header>
         <mat-panel-title>
-          {{group.key}}
+          <b>{{group.key}}</b>
         </mat-panel-title>
       </mat-expansion-panel-header>
       <mat-accordion multi cdkDropList
@@ -11,8 +11,10 @@
                      [cdkDropListData]="group.value"
                      [cdkDropListConnectedTo]="[scenarioStepList]"
                      class="example-list">
-        <mat-expansion-panel *ngFor="let item of group.value"
-             [cdkDragData]="item" cdkDrag>
+        <mat-expansion-panel class="available-step-item"
+                             *ngFor="let item of group.value"
+                             [cdkDragData]="item" cdkDrag
+                             [cdkDragDisabled]="_scenStepNames.indexOf(item.name) >= 0">
           <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
           <mat-expansion-panel-header>
             <mat-panel-title>

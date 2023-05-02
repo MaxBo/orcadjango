@@ -9,6 +9,31 @@
   margin: 0 25px 25px 0;
 }
 
+::ng-deep #available-steps {
+  .mat-expansion-panel-header-title {
+    font-size: 16px;
+  }
+  .mat-expansion-panel-body {
+    padding: 0;
+  }
+  .available-step-item .mat-expansion-panel-body {
+    padding: 0px 10px 20px 24px ;
+    .mat-expansion-panel-header-title {
+      font-size: 14px;
+    }
+  }
+  .cdk-drag-disabled {
+    background-color: lightgrey;
+  }
+}
+
+.available-step-item:not(.cdk-drag-disabled) {
+  cursor: move;
+  .mat-expansion-panel-header {
+    cursor: move;
+  }
+}
+
 .example-container {
   width: 100%;
   display: inline-block;

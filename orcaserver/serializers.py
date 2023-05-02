@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 
 from orcaserver.management import OrcaManager
-from .models import Project, Profile, Scenario, Injectable
+from .models import Project, Profile, Scenario, Injectable, Step
 
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
@@ -120,4 +120,10 @@ class StepSerializer(serializers.Serializer):
     def get_description(self, obj):
         return obj.get('docstring', '').strip().replace('\n', '<br>')
 
+
+class ScenarioStepSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Step
+        fields = ('id', 'name', 'scenario', 'started', 'finished',
+                  'success', 'order', 'active')
 

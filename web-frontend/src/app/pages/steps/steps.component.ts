@@ -12,6 +12,7 @@ import { sortBy } from "../injectables/injectables.component";
 export class StepsComponent {
   availableSteps: Record<string, Step[]> = {};
   scenarioSteps: Step[] = [];
+  _scenStepNames: string[] = [];
 
   constructor(private rest: RestService, private settings: UserSettingsService) {
     this.settings.module$.subscribe(module => {
@@ -38,6 +39,7 @@ export class StepsComponent {
   }
 
   addStep(stepName: string, position: number) {
+    this._scenStepNames.push(stepName);
     const newStep: ScenarioStep = {
       id: 1,
       name: stepName,
