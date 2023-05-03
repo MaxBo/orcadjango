@@ -5,8 +5,9 @@ from django.contrib.auth.models import User
 
 from .serializers import (ProjectSerializer, UserSerializer,
                           ScenarioSerializer, ModuleSerializer,
-                          InjectableSerializer, StepSerializer)
-from .models import Project, Scenario, Injectable
+                          InjectableSerializer, StepSerializer,
+                          ScenarioStepSerializer)
+from .models import Project, Scenario, Injectable, Step
 from django.conf import settings
 from orcaserver.management import OrcaManager
 
@@ -109,8 +110,13 @@ class StepViewSet(viewsets.ViewSet):
 
 
 class ScenarioStepViewSet(viewsets.ModelViewSet):
-    queryset = Injectable.objects.all()
-    serializer_class = InjectableSerializer
+    queryset = Step.objects.all()
+    serializer_class = ScenarioStepSerializer
 
     def get_queryset(self):
         return self.queryset.filter(scenario=self.kwargs['scenario_pk'])
+
+    def create(self, request, *args, **kwargs):
+        scenario = self.kwargs['scenario_pk']
+        request.data['scenario'] = scenario
+        return super().create(request, *args, **kwargs)

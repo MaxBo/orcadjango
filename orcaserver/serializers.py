@@ -112,6 +112,7 @@ class ModuleSerializer(serializers.Serializer):
 
 class StepSerializer(serializers.Serializer):
     name = serializers.CharField()
+    title = serializers.CharField()
     group = serializers.CharField()
     description = serializers.SerializerMethodField()
     order = serializers.IntegerField()
@@ -122,8 +123,10 @@ class StepSerializer(serializers.Serializer):
 
 
 class ScenarioStepSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Step
         fields = ('id', 'name', 'scenario', 'started', 'finished',
                   'success', 'order', 'active')
-
+        read_only_fields = ('started', 'finished', 'success')
+        optional_fields = ('order', 'active')

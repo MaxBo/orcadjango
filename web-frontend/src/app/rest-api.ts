@@ -58,15 +58,19 @@ export interface Module {
 
 export interface Step {
   name: string,
-  description: string,
   order: number,
-  group: string,
-  required: string[]
+  title?: string,
+  description?: string,
+  group?: string,
+  required?: string[]
 }
 
 export interface ScenarioStep extends Step {
   id: number,
-  scenario: number
+  scenario: number,
+  success: boolean,
+  started?: string,
+  finished?: string
 }
 
 @Injectable({
@@ -81,6 +85,7 @@ export class RestService {
     projects: `${ environment.apiPath }/projects/`,
     scenarios: `${ environment.apiPath }/scenarios/`,
     injectables: `${ environment.apiPath }/scenarios/{scenarioId}/injectables/`,
+    scenarioSteps: `${ environment.apiPath }/scenarios/{scenarioId}/steps/`,
     users: `${ environment.apiPath }/users/`,
     currentUser: `${ environment.apiPath }/users/current/`,
     login: `${ environment.apiPath }/login/`,
@@ -190,5 +195,19 @@ export class RestService {
 
   getAvailableSteps(module: string): Observable<Step[]> {
     return this.http.get<Step[]>(this.URLS.availableSteps, {params: { module: module }})
+  }
+
+  getScenarioSteps(scenario: Scenario): Observable<ScenarioStep[]> {
+    const url = this.URLS.scenarioSteps.replace('{scenarioId}', scenario.id!.toString());
+    return this.http.get<ScenarioStep[]>(url);
+  }
+
+  addScenarioStep(stepName: string, order: number, scenario: Scenario): Observable<ScenarioStep> {
+    const url = this.URLS.scenarioSteps.replace('{scenarioId}', scenario.id!.toString());
+    return this.http.post<ScenarioStep>(url, { name: stepName, order: order });
+  }
+
+  patchScenarioStep(step: ScenarioStep, options?:{ active?: boolean, order?: number }) {
+
   }
 }

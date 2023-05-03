@@ -18,7 +18,7 @@
           <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
           <mat-expansion-panel-header>
             <mat-panel-title>
-              {{item.name}}
+              {{item.title || item.name}}
             </mat-panel-title>
           </mat-expansion-panel-header>
           <i [innerHTML]="item.description"></i>
@@ -38,10 +38,12 @@
         <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
         <mat-expansion-panel-header>
           <mat-panel-title>
-            {{item.name}}
+            {{item.title || item.name}}
           </mat-panel-title>
           <mat-panel-description>
-            <mat-slide-toggle (click)="$event.stopPropagation()"></mat-slide-toggle>
+            <mat-slide-toggle color="primary"
+                              (click)="$event.stopPropagation()">
+            </mat-slide-toggle>
           </mat-panel-description>
         </mat-expansion-panel-header>
         <i [innerHTML]="item.description"></i>

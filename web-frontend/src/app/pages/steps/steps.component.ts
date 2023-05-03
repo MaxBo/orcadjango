@@ -11,48 +11,63 @@ import { sortBy } from "../injectables/injectables.component";
 })
 export class StepsComponent {
   availableSteps: Record<string, Step[]> = {};
-  scenarioSteps: Step[] = [];
+  scenarioSteps: ScenarioStep[] = [];
   _scenStepNames: string[] = [];
 
   constructor(private rest: RestService, private settings: UserSettingsService) {
-    this.settings.module$.subscribe(module => {
-      this.rest.getAvailableSteps(module).subscribe(steps => {
-        this.availableSteps = {};
-        steps.forEach(inj => {
-          if (!this.availableSteps[inj.group])
-            this.availableSteps[inj.group] = [];
-          this.availableSteps[inj.group].push(inj);
-        })
-        Object.keys(this.availableSteps).forEach(group =>
-          this.availableSteps[group] = sortBy(this.availableSteps[group], 'order')
-        );
-      });
+    this.settings.activeScenario$.subscribe(scenario => {
+      this.availableSteps = {};
+      this.scenarioSteps = [];
+      if (scenario) {
+        this.rest.getAvailableSteps(this.settings.module$.value).subscribe(steps => {
+          this.availableSteps = {};
+          steps.forEach(step => {
+            const group = step.group || '';
+            if (!this.availableSteps[group])
+              this.availableSteps[group] = [];
+            this.availableSteps[group].push(step);
+          })
+          Object.keys(this.availableSteps).forEach(group =>
+            this.availableSteps[group] = sortBy(this.availableSteps[group], 'order')
+          );
+          this.rest.getScenarioSteps(scenario).subscribe(steps => {
+            this.scenarioSteps = steps;
+            this._scenStepNames = steps.map(s => s.name);
+            this.scenarioSteps.forEach(s => this._assign_step_meta(s));
+          })
+        });
+      }
     })
   }
 
-  drop(event: CdkDragDrop<Step[]>) {
+  drop(event: CdkDragDrop<any[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     }
     else {
       this.addStep(event.item.data.name, {
         position: event.currentIndex,
-        description: event.item.data.description
+        description: event.item.data.description,
+        title: event.item.data.title
       })
     }
   }
 
-  addStep(stepName: string, options?:{ position?: number, description?: string }) {
-    this._scenStepNames.push(stepName);
-    const newStep: ScenarioStep = {
-      id: 1,
-      name: stepName,
-      group: '',
-      order: 1,
-      description: options?.description || '',
-      required: [],
-      scenario: 0
+  private _assign_step_meta(scenarioStep: ScenarioStep): void {
+    const step = Object.values(this.availableSteps).flat().find(s => s.name === scenarioStep.name);
+    if (step) {
+      scenarioStep.title = step.title;
+      scenarioStep.description = step.description;
+      scenarioStep.group = step.group;
+      scenarioStep.required = step.required;
     }
-    this.scenarioSteps.splice(options?.position || 0, 0, newStep);
+  }
+
+  addStep(stepName: string, options?:{ position?: number, description?: string, title?: string }) {
+    this._scenStepNames.push(stepName);
+    this.rest.addScenarioStep(stepName, options?.position || 1, this.settings.activeScenario$.value!).subscribe(created => {
+      this._assign_step_meta(created);
+      this.scenarioSteps.splice(options?.position || 0, 0, created);
+    })
   }
 }
