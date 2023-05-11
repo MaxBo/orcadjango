@@ -42,6 +42,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatExpansionModule } from "@angular/material/expansion";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { InjectableComponent } from './elements/injectable/injectable.component';
+import { MatCheckboxModule } from "@angular/material/checkbox";
 
 @NgModule({
   declarations: [
@@ -62,30 +63,31 @@ import { InjectableComponent } from './elements/injectable/injectable.component'
     StepsComponent,
     InjectableComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    MatSidenavModule,
-    MatToolbarModule,
-    RouterOutlet,
-    HttpClientModule,
-    MatFormFieldModule,
-    ReactiveFormsModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    MatCardModule,
-    FlexLayoutModule,
-    MatDialogModule,
-    MatProgressSpinnerModule,
-    MatSelectModule,
-    FormsModule,
-    MatMenuModule,
-    DragDropModule,
-    MatExpansionModule,
-    MatSlideToggleModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        MatSidenavModule,
+        MatToolbarModule,
+        RouterOutlet,
+        HttpClientModule,
+        MatFormFieldModule,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatButtonModule,
+        MatIconModule,
+        MatCardModule,
+        FlexLayoutModule,
+        MatDialogModule,
+        MatProgressSpinnerModule,
+        MatSelectModule,
+        FormsModule,
+        MatMenuModule,
+        DragDropModule,
+        MatExpansionModule,
+        MatSlideToggleModule,
+        MatCheckboxModule
+    ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
   ],

@@ -41,7 +41,7 @@ export interface Inj {
   parents: number[],
   parentInjectables?: (Inj | undefined)[],
   editable: boolean,
-  choices?: any[] | object
+  choices?: any[] | Record<string, string>
 }
 
 export interface Module {

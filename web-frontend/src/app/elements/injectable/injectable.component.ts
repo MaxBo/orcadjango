@@ -29,15 +29,11 @@ export class InjectableComponent implements OnInit {
   values: any[] = [];
   // in case of dict input
   valueKeys?: string[];
-  injChoices?: [string, string][];
+  injChoices?: Record<string, string>; //Record<string, [string, boolean]>
+  choiceChecked: boolean[] = [];
+  protected readonly Math = Math;
 
   ngOnInit(): void {
-    if (this.injectable.choices) {
-      if (Array.isArray(this.injectable.choices))
-        this.injChoices = this.injectable.choices.map(c => [c, String(c)]);
-      else
-        this.injChoices = Object.entries(this.injectable.choices).map(([k, v]) => [k, String(v)]);
-    }
     if (this.injectable.datatype === 'dict') {
       this.valueKeys = Object.keys(this.injectable.value);
       this.values = Object.values(this.injectable.value);
@@ -46,11 +42,20 @@ export class InjectableComponent implements OnInit {
       this.values = [this.injectable.value];
     else
       this.values = this.injectable.value || [];
+    if (this.injectable.choices) {
+      if (Array.isArray(this.injectable.choices)) {
+        this.injChoices = Object.fromEntries(this.injectable.choices.map(c => [String(c), '']));
+      }
+      else
+        this.injChoices = this.injectable.choices;
+      if (this.injectable.multi) {
+        this.choiceChecked = Object.keys(this.injChoices!).map(c => this.values.indexOf(c) > -1);
+      }
+    }
   }
 
   protected onValueChanged(event: any, options?: { index?: number }): void {
     console.log(event.target.value)
   }
 
-  protected readonly Math = Math;
 }
