@@ -72,26 +72,30 @@ class AbortableThread(threading.Thread):
             print('Exception raise failure')
 
 
-class Singleton(object):
-    """Singleton Mixin"""
+class ModuleSingleton(object):
     _instance_dict = {}
+    default_module = None
 
     def __new__(cls, *args, **kwargs):
-        key = str(hash(cls))
+        key = args[0] if args else kwargs.get('module', cls.default_module)
         if not key in cls._instance_dict:
             with lock:
-                cls._instance_dict[key] = \
-                    super(Singleton, cls).__new__(cls, *args, **kwargs)
+                cls._instance_dict[key] = super().__new__(cls)
         return cls._instance_dict[key]
 
 
-class OrcaManager(Singleton):
+class OrcaManager(ModuleSingleton):
     ''''''
+    module = None
     instances = {}
     threads = {}
     meta = {}
-    default_module = None
-    _mod_instances = {}
+    _generic_orca = None
+
+    def __init__(self, module=None):
+        self.module = module or self.default_module
+        if not self._generic_orca:
+            self._generic_orca = self.create()
 
     #@property
     #def descriptors(self):
@@ -115,12 +119,8 @@ class OrcaManager(Singleton):
             #apply_injectables(orca, scenario)
         #return orca
 
-    def get_calculated_value(self, injectable, module, *args):
-        orca = self._mod_instances.get(module)
-        if not orca:
-            orca = self._mod_instances[module] = self.create(module=module)
-
-        funcwrapper = orca.get_raw_injectable(injectable)
+    def get_calculated_value(self, injectable, *args):
+        funcwrapper = self._generic_orca.get_raw_injectable(injectable)
         sig = signature(funcwrapper._func)
         parameters = list(sig.parameters.keys())
         # calculate value if injectable function has parameters (meaning
@@ -129,64 +129,55 @@ class OrcaManager(Singleton):
             return None
         return funcwrapper._func(*args)
 
-    def get_step_names(self, module: str):
-        orca = self._get_mod_instance(module)
-        return orca.list_steps()
+    def get_step_names(self):
+        return self._generic_orca.list_steps()
 
     def get_injectable_names(self, module: str):
-        orca = self._get_mod_instance(module)
-        return orca.list_injectables()
+        return self._generic_orca.list_injectables()
 
-    def _get_mod_instance(self, module: str):
-        orca = self._mod_instances.get(module)
-        if not orca:
-            orca = self._mod_instances[module] = self.create(module=module)
-        return orca
+    def _get_orca_meta(self):
+        return getattr(self._generic_orca, 'meta', {})
 
-    def _get_orca_meta(self, module: str):
-        return getattr(self._get_mod_instance(module), 'meta', {})
-
-    def get_step_meta(self, step: str, module: str):
-        meta = self._get_orca_meta(module)
-        orca = self._get_mod_instance(module)
+    def get_step_meta(self, step: str):
+        meta = self._get_orca_meta()
         step_meta = meta[step]
         required = step_meta.get('required')
         if not isinstance(required, list):
             required = [required]
         required = [r.__name__ if callable(r) else str(r) for r in required]
-        wrapper = orca.get_step(step)
+        wrapper = self._generic_orca.get_step(step)
         return {
             'name': step,
+            'title': step_meta.get('title', ''),
             'group': step_meta.get('group', '-'),
             'order': step_meta.get('order', 1),
             'docstring': wrapper._func.__doc__ or '',
             'required': required,
         }
 
-    def get_injectable_meta(self, injectable: str, module: str):
-        orca = self._get_mod_instance(module)
-        orca_injectables = orca.list_injectables()
-        orca_meta = self._get_orca_meta(module)
+    def get_injectable_meta(self, injectable: str):
+        orca_injectables = self._generic_orca.list_injectables()
+        orca_meta = self._get_orca_meta()
         # defaults (required by serializer)
         desc = {
             'order': 10000000,
-            'group': '',
+            'group': ''
         }
         _meta = orca_meta.get(injectable, {})
         if (injectable not in orca_injectables or injectable.startswith('iter_')
             or _meta.get('hidden')):
             return {}
         if _meta.get('refresh') == 'always':
-            value = orca.get_injectable(injectable)
+            value = self._generic_orca.get_injectable(injectable)
         else:
-            value = orca._injectable_backup.get(injectable)
+            value = self._generic_orca._injectable_backup.get(injectable)
         datatype_class = type(value)
         datatype = datatype_class.__name__
         desc['datatype'] = datatype
         # check if the original type is overwritable
-        funcwrapper = orca.get_raw_injectable(injectable)
+        funcwrapper = self._generic_orca.get_raw_injectable(injectable)
         sig = signature(funcwrapper._func)
-        if isinstance(funcwrapper, orca._InjectableFuncWrapper):
+        if isinstance(funcwrapper, self._generic_orca._InjectableFuncWrapper):
             desc['docstring'] = funcwrapper._func.__doc__ or ''
             # datatype from annotations
             returntype = sig.return_annotation
@@ -205,11 +196,11 @@ class OrcaManager(Singleton):
             choices = desc.get('choices')
             # choices are derived from another injectable
             if callable(choices):
-                c_meta = orca.meta.get(choices.__name__)
+                c_meta = self._generic_orca.meta.get(choices.__name__)
                 if c_meta and c_meta.get('refresh') == 'always':
-                    choices = orca.get_injectable(choices.__name__)
+                    choices = self._generic_orca.get_injectable(choices.__name__)
                 else:
-                    choices = orca._injectable_backup.get(choices.__name__)
+                    choices = self._generic_orca._injectable_backup.get(choices.__name__)
                 desc['choices'] = choices
             desc['parameters'] = list(sig.parameters.keys())
 
@@ -217,19 +208,11 @@ class OrcaManager(Singleton):
                               f'{datatype_class.__name__}')
         return desc
 
-    def set_default_module(self, module: str):
-        self.reset()
-        self.default_module = module
-
-    def get(self, instance_id: int, create: bool = True, module: str = None):
+    def get(self, instance_id: int, create: bool = True):
         with lock:
             instance = self.instances.get(instance_id)
-            if instance and module and instance._python_module != module:
-                raise Exception('The requested orca instance was built with '
-                                f'the module {instance._python_module} instead '
-                                f'of the requested module {module}')
             if not instance and create:
-                return self.create(instance_id, module=module)
+                return self.create(instance_id)
             return instance
 
     def remove(self, instance_id: int):
@@ -244,8 +227,8 @@ class OrcaManager(Singleton):
         if instance_id in self.threads:
             del(self.threads[instance_id])
 
-    def create(self, instance_id: int = None, module: str = None):
-        instance = self._create_instance(module or self.default_module)
+    def create(self, instance_id: int = None,):
+        instance = self._create_instance()
         if (instance_id):
             self.instances[instance_id] = instance
         return instance
@@ -260,7 +243,7 @@ class OrcaManager(Singleton):
             return
         instance.logger.handlers.clear()
 
-    def _create_instance(self, module_name) -> 'module':
+    def _create_instance(self) -> 'module':
         spec = importlib.util.find_spec('orca.orca')
         orca = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(orca)
@@ -270,7 +253,7 @@ class OrcaManager(Singleton):
         sys.modules['orca'] = orca
         from orcadjango import decorators
         importlib.reload(decorators)
-        load_module(module_name, orca=orca)
+        load_module(self.module, orca=orca)
         del(spec)
         del(sys.modules['orca'])
         return orca

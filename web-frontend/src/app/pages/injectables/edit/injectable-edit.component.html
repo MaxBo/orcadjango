@@ -8,12 +8,7 @@
 </button>
 <mat-dialog-content>
   <p [innerHTML]="injectable.description"></p>
-  <ng-container [ngSwitch]="injectable.datatype">
-    <mat-form-field *ngSwitchCase="'str'">
-      <mat-label>Value (String)</mat-label>
-      <input matInput [(ngModel)]="value">
-    </mat-form-field>
-  </ng-container>
+  <injectable [injectable]="injectable"></injectable>
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button class="mat-button-dv"

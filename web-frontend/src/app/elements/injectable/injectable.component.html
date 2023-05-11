@@ -1,0 +1,40 @@
+<ng-container *ngIf="injChoices">
+
+</ng-container>
+<ng-container *ngIf="injChoices">
+
+</ng-container>
+<ng-container *ngFor="let value of values; let idx = index;">
+  <ng-container [ngSwitch]="injectable.datatype">
+    <ng-container *ngSwitchDefault>
+      <ng-container *ngTemplateOutlet="stringInput; context: { value: value, index: idx }"></ng-container>
+    </ng-container>
+    <mat-form-field *ngSwitchCase="'int'">
+      <ng-container *ngTemplateOutlet="numberInput; context: { value: value, step: 1, index: idx }"></ng-container>
+    </mat-form-field>
+    <mat-form-field *ngSwitchCase="'float'">
+      <ng-container *ngTemplateOutlet="numberInput; context: { value: value, step: 0.001, index: idx }"></ng-container>
+    </mat-form-field>
+    <mat-form-field *ngSwitchCase="'dict'">
+      <ng-container *ngTemplateOutlet="stringInput; context: { value: valueKeys![idx], index: idx }"></ng-container>
+      <ng-container *ngTemplateOutlet="stringInput; context: { value: value, idx: idx }"></ng-container>
+    </mat-form-field>
+  </ng-container>
+</ng-container>
+
+<ng-template #stringInput let-value="value" let-index="index">
+  <mat-form-field>
+    <mat-label>Value (String)</mat-label>
+    <input type="text" [value]="value" matInput
+           (change)="onValueChanged($event,{ index: index })">
+  </mat-form-field>
+</ng-template>
+
+<ng-template #numberInput let-value="value" let-step="step" let-index="index">
+  <mat-form-field>
+    <mat-label>Value {{(Math.round(value)==value)? '(Integer)': '(Float)'}}</mat-label>
+    <input type="number" [step]="step" [value]="value" matInput
+           (change)="onValueChanged($event,{ index: index })">
+  </mat-form-field>
+</ng-template>
+

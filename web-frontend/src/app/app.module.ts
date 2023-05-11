@@ -41,6 +41,7 @@ import { StepsComponent } from './pages/steps/steps.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatExpansionModule } from "@angular/material/expansion";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
+import { InjectableComponent } from './elements/injectable/injectable.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +59,8 @@ import { MatSlideToggleModule } from "@angular/material/slide-toggle";
     ScenarioEditDialogComponent,
     InjectablesComponent,
     InjectableEditDialogComponent,
-    StepsComponent
+    StepsComponent,
+    InjectableComponent
   ],
   imports: [
     BrowserModule,

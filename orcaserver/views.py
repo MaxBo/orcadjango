@@ -69,7 +69,7 @@ class ModuleViewSet(viewsets.ViewSet):
 
     def list(self, request):
         available = settings.ORCA_MODULES.get('available', {})
-        default_mod = OrcaManager().default_module
+        default_mod = OrcaManager.default_module
         modules = []
         for k, v in available.items():
             path = v.get('path')
@@ -97,14 +97,14 @@ class StepViewSet(viewsets.ViewSet):
 
     def list(self, request):
         steps = []
-        orca_manager = OrcaManager()
         mod_p = request.query_params.get('module')
         module_names = [mod_p] if mod_p else [mod['path'] for mod in
              settings.ORCA_MODULES.get('available', {}).values()]
         for module in module_names:
-            names = orca_manager.get_step_names(module)
+            orca_manager = OrcaManager(module)
+            names = orca_manager.get_step_names()
             for step in names:
-                steps.append(orca_manager.get_step_meta(step, module))
+                steps.append(orca_manager.get_step_meta(step))
         results = StepSerializer(steps, many=True)
         return Response(results.data)
 

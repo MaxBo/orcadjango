@@ -36,10 +36,12 @@ export interface Inj {
   value: any,
   description: string,
   group: string,
-  datatype: string,
+  datatype: 'str' | 'int' | 'list' | 'float' | 'bool' | 'dict',
+  multi: boolean,
   parents: number[],
   parentInjectables?: (Inj | undefined)[],
-  editable: boolean
+  editable: boolean,
+  choices?: any[] | object
 }
 
 export interface Module {

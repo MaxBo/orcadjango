@@ -10,6 +10,7 @@ from django.core.validators import int_list_validator
 from .injectables import OrcaTypeMap
 from .management import OrcaManager
 
+
 class NameModel(models.Model):
     class Meta:
         abstract = True
@@ -47,8 +48,7 @@ class Scenario(NameModel):
         return f'scenario-{self.id}'
 
     def get_orca(self):
-        return OrcaManager().get(self.orca_id, create=True,
-                                 module=self.project.module)
+        return OrcaManager(self.project.module).get(self.orca_id, create=True)
 
     def apply_injectables(self, scenario):
         if not scenario:
@@ -67,10 +67,10 @@ class Scenario(NameModel):
         '''
 
         inj_names = self.get_orca().list_injectables()
-        orca_manager = OrcaManager()
+        orca_manager = OrcaManager(self.project.module)
         descriptors = {}
         for name in inj_names:
-            descriptors[name] = orca_manager.get_injectable_meta(name, self.project.module)
+            descriptors[name] = orca_manager.get_injectable_meta(name)
         project = self.project
         init_values = json.loads(project.init)
         # create or reset injectables
@@ -79,7 +79,7 @@ class Scenario(NameModel):
                 continue
             inj, created = Injectable.objects.get_or_create(name=name,
                                                             scenario=self)
-            value = init_values.get(name, desc.get('value', ''))
+            value = init_values.get(name, desc.get('value'))
             if created or not keep_values:
                 inj.value = value
             inj.datatype = desc['datatype']
@@ -117,7 +117,7 @@ class Injectable(NameModel):
 
     @property
     def meta(self):
-        return OrcaManager().get_injectable_meta(self.name, self.scenario.project.module)
+        return OrcaManager(self.scenario.project.module).get_injectable_meta(self.name)
 
     @property
     def parents(self):
@@ -131,8 +131,8 @@ class Injectable(NameModel):
         values = [Injectable.objects.get(id=p_id).deserialized_value
                   for p_id in parents]
         conv = OrcaTypeMap.get(self.data_class)
-        value = OrcaManager().get_calculated_value(
-            self.name, self.scenario.project.module, *values)
+        value = OrcaManager(self.scenario.project.module).get_calculated_value(
+            self.name, *values)
         return conv.to_str(value)
 
     # can unfortunatelly not be put into serializer field
@@ -149,9 +149,15 @@ class Injectable(NameModel):
     # can unfortunatelly not be put into custom (writable) serializer field
     @property
     def serialized_value(self):
-        if self.parents:
-            return self.derived_value
-        return self.value
+        value = self.derived_value if self.parents else self.value
+        try:
+            ret = json.loads(value)
+        except json.decoder.JSONDecodeError:
+            try:
+                ret = json.loads(value.replace("'",'"'))
+            except json.decoder.JSONDecodeError:
+                return value
+        return ret
 
     @property
     def editable(self):

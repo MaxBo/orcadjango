@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
+import re
 
 from orcaserver.management import OrcaManager
 from .models import Project, Profile, Scenario, Injectable, Step
@@ -53,7 +54,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         instance = super().create(validated_data)
         if not instance.module:
-            instance.module = OrcaManager().default_module
+            instance.module = OrcaManager.default_module
             instance.save()
         return instance
 
@@ -78,16 +79,19 @@ class ModuleDataSerializer(serializers.Serializer):
 
 class InjectableSerializer(serializers.ModelSerializer):
     description = serializers.SerializerMethodField()
+    datatype = serializers.SerializerMethodField()
+    multi = serializers.SerializerMethodField()
+    choices = serializers.SerializerMethodField()
     group = serializers.CharField(source='meta.group')
     order = serializers.CharField(source='meta.order')
-    value = serializers.CharField(source='serialized_value')
+    value = serializers.JSONField(source='serialized_value')
 
     class Meta:
         model = Injectable
-        fields = ('id', 'name', 'group', 'order', 'scenario', 'value',
-                  'datatype', 'parents', 'description', 'editable')
-        read_only_fields = ('scenario', 'parents', 'datatype', 'name',
-                            'description', 'editable')
+        fields = ('id', 'name', 'group', 'order', 'scenario', 'value', 'multi',
+                  'datatype', 'parents', 'description', 'editable', 'choices')
+        read_only_fields = ('scenario', 'parents', 'name', 'editable',
+                            'choices')
 
     def update(self, instance, validated_data):
         if 'serialized_value' in validated_data:
@@ -97,8 +101,25 @@ class InjectableSerializer(serializers.ModelSerializer):
             # function, instance not known there)
         return super().update(instance, validated_data)
 
+    def get_choices(self, obj):
+        return obj.meta.get('choices')
+
     def get_description(self, obj):
         return obj.meta.get('docstring', '').strip().replace('\n', '<br>')
+
+    def get_datatype(self, obj):
+        if 'list' in obj.datatype.lower():
+            # find the type of list elements
+            typ_groups = re.search(r'\[(.*?)\]', obj.datatype)
+            if (typ_groups):
+                return typ_groups.group(1)
+        # we ignore the types and just assume {str: str} dicts
+        if 'dict' in obj.datatype.lower():
+            return 'dict'
+        return obj.datatype
+
+    def get_multi(self, obj):
+        return 'list' in obj.datatype.lower()
 
 
 class ModuleSerializer(serializers.Serializer):
