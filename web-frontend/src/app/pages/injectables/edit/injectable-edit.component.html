@@ -8,16 +8,16 @@
 </button>
 <mat-dialog-content>
   <p [innerHTML]="injectable.description"></p>
-  <injectable [injectable]="injectable"></injectable>
+  <injectable [injectable]="injectable" (valueChanged)="this.value = $event"></injectable>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button mat-button class="mat-button-dv"
+  <button mat-button
           color="primary"
           mat-dialog-close
           style="margin-right: 20px;">
     Cancel
   </button>
-  <button mat-button class="mat-button-dv"
+  <button mat-button
           color="primary"
           (click)="onConfirmClick()">
     Confirm

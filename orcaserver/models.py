@@ -150,6 +150,8 @@ class Injectable(NameModel):
     @property
     def serialized_value(self):
         value = self.derived_value if self.parents else self.value
+        if value is None:
+            return
         try:
             ret = json.loads(value)
         except json.decoder.JSONDecodeError:

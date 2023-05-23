@@ -1,69 +1,22 @@
-<ng-container *ngIf="injChoices && injectable.multi; else single">
-  <div *ngFor="let item of injChoices | keyvalue; let i = index;">
-    <mat-checkbox color="primary" [checked]="choiceChecked[i]">
-      {{item.key}} <ng-container *ngIf="item.value">({{item.value}})</ng-container>
-    </mat-checkbox>
-  </div>
+<ng-container *ngIf="multipleChoice">
+  <multiple-choice [choices]="choiceValues!"
+                   [choiceLabels]="choiceLabels!"
+                   [values]="injectable.value"
+                   (valueChanged)="valueChanged.emit($event)"></multiple-choice>
 </ng-container>
-<ng-template #single>
-  <ng-container *ngFor="let value of values; let idx = index;">
-    <ng-container *ngIf="injChoices">
-      <ng-container *ngTemplateOutlet="choiceSelect; context: { value: value, index: idx, choices: injChoices }"></ng-container>
-    </ng-container>
-    <ng-container *ngIf="!injChoices">
-      <ng-container [ngSwitch]="injectable.datatype">
-        <ng-container *ngSwitchDefault>
-          <ng-container *ngTemplateOutlet="stringInput; context: { value: value, index: idx }"></ng-container>
-        </ng-container>
-        <ng-container *ngSwitchCase="'int'">
-          <ng-container *ngTemplateOutlet="numberInput; context: { value: value, step: 1, index: idx }"></ng-container>
-        </ng-container>
-        <ng-container *ngSwitchCase="'float'">
-          <ng-container *ngTemplateOutlet="numberInput; context: { value: value, step: 0.001, index: idx }"></ng-container>
-        </ng-container>
-        <ng-container *ngSwitchCase="'dict'">
-          <ng-container *ngTemplateOutlet="stringInput; context: { value: valueKeys![idx], index: idx }"></ng-container>
-          <ng-container *ngTemplateOutlet="stringInput; context: { value: value, idx: idx }"></ng-container>
-        </ng-container>
-        <ng-container *ngSwitchCase="'bool'">
-          <ng-container *ngTemplateOutlet="boolInput; context: { value: value, idx: idx }"></ng-container>
-        </ng-container>
-      </ng-container>
-    </ng-container>
+<ng-container *ngIf="!multipleChoice">
+  <ng-container *ngIf="this.injectable.datatype === 'dict'; else base;">
+    <dict [keys]="" [values]=""></dict>
   </ng-container>
+</ng-container>
+<ng-template #base>
+  <div *ngFor="let value of values; let idx = index;">
+    <base-type [value]="value"
+               [type]="this.injectable.datatype"
+               (valueChanged)="valueChanged.emit($event)"></base-type>
+  </div>
+  <div *ngIf="injectable.multi">
+    <button mat-button color="secondary">+ Add</button>
+  </div>
 </ng-template>
 
-<ng-template #stringInput let-value="value" let-index="index">
-  <mat-form-field>
-    <mat-label>Value (String)</mat-label>
-    <input type="text" [value]="value" matInput
-           (change)="onValueChanged($event,{ index: index })">
-  </mat-form-field>
-</ng-template>
-
-<ng-template #numberInput let-value="value" let-step="step" let-index="index">
-  <mat-form-field>
-    <mat-label>Value {{(Math.round(value)==value)? '(Integer)': '(Float)'}}</mat-label>
-    <input type="number" [step]="step" [value]="value" matInput
-           (change)="onValueChanged($event,{ index: index })">
-  </mat-form-field>
-</ng-template>
-
-<ng-template #boolInput let-value="value" let-index="index">
-  no
-  <mat-slide-toggle color="primary"
-                    (change)="onValueChanged($event,{ index: index })">
-  </mat-slide-toggle>
-  yes
-</ng-template>
-
-<ng-template #choiceSelect let-value="value" let-choices="choices" let-index="index">
-  <mat-form-field>
-    <mat-label>Select one</mat-label>
-    <mat-select [value]="value">
-      <mat-option *ngFor="let item of choices | keyvalue" [value]="item.key">
-        {{item.key}} <ng-container *ngIf="item.value">({{item.value}})</ng-container>
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-</ng-template>

@@ -43,6 +43,9 @@ import { MatExpansionModule } from "@angular/material/expansion";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { InjectableComponent } from './elements/injectable/injectable.component';
 import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MultipleChoiceComponent } from './elements/injectable/multiple-choice/multiple-choice.component';
+import { BaseTypeComponent } from './elements/injectable/base-type/base-type.component';
+import { DictComponent } from './elements/injectable/dict/dict.component';
 
 @NgModule({
   declarations: [
@@ -61,7 +64,10 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
     InjectablesComponent,
     InjectableEditDialogComponent,
     StepsComponent,
-    InjectableComponent
+    InjectableComponent,
+    MultipleChoiceComponent,
+    BaseTypeComponent,
+    DictComponent
   ],
     imports: [
         BrowserModule,

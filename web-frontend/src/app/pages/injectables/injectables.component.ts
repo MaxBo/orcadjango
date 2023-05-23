@@ -51,7 +51,7 @@ export class InjectablesComponent implements OnInit {
     dialogRef.componentInstance.valueConfirmed.subscribe((value) => {
       this.rest.patchInjectable(injectable, value).subscribe(patched => {
         dialogRef.close();
-        Object.assign(injectable, patched);
+        injectable.value = patched.value;
       });
     })
   }

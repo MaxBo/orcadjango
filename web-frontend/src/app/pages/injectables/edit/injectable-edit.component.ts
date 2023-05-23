@@ -30,9 +30,6 @@ export class InjectableEditDialogComponent {
   }
 
   onConfirmClick() {
-/*    const injectable: Inj = Object.assign({}, this.injectable);
-    injectable.value = this.value;*/
     this.valueConfirmed.emit(this.value);
   }
-
 }

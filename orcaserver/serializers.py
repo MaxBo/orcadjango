@@ -4,6 +4,7 @@ import re
 
 from orcaserver.management import OrcaManager
 from .models import Project, Profile, Scenario, Injectable, Step
+from .injectables import OrcaTypeMap
 
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
@@ -96,7 +97,8 @@ class InjectableSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         if 'serialized_value' in validated_data:
             serialized_value = validated_data.pop('serialized_value')
-            validated_data['value'] = serialized_value
+            conv = OrcaTypeMap.get(instance.data_class)
+            validated_data['value'] = conv.to_str(serialized_value)
             # ToDo: validation here (can't be done in overwritten validate
             # function, instance not known there)
         return super().update(instance, validated_data)
