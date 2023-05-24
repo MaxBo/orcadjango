@@ -5,12 +5,14 @@ import { BaseInputComponent } from "../injectable.component";
   selector: 'dict',
   templateUrl: './dict.component.html',
   styleUrls: ['./dict.component.scss'],
+  inputs: ['edit'],
   outputs: ['valueChanged']
 })
 export class DictComponent extends BaseInputComponent implements OnInit {
   @Input() dict!: Record<string, any>;
   keys: string[] = [];
   values: any[] = [];
+  protected JSON = JSON;
 
   ngOnInit() {
     this.keys = Object.keys(this.dict);

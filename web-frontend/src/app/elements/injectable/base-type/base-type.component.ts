@@ -5,6 +5,7 @@ import { BaseInputComponent } from "../injectable.component";
   selector: 'base-type',
   templateUrl: './base-type.component.html',
   styleUrls: ['./base-type.component.scss'],
+  inputs: ['edit'],
   outputs: ['valueChanged']
 })
 export class BaseTypeComponent extends BaseInputComponent implements OnInit {

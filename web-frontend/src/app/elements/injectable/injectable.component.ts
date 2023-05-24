@@ -11,6 +11,7 @@ export abstract class BaseInputComponent {
   selector: 'injectable',
   templateUrl: './injectable.component.html',
   styleUrls: ['./injectable.component.scss'],
+  inputs: ['edit'],
   outputs: ['valueChanged']
 })
 export class InjectableComponent extends BaseInputComponent implements OnInit {

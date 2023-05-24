@@ -1,4 +1,4 @@
-<ng-container [ngSwitch]="type">
+<ng-container *ngIf="edit; else preview;" [ngSwitch]="type">
   <ng-container *ngSwitchDefault>
     <mat-form-field>
       <mat-label>Value (String)</mat-label>
@@ -39,3 +39,6 @@
     </mat-form-field>
   </ng-container>
 </ng-container>
+<ng-template #preview>
+  {{value}}
+</ng-template>

@@ -5,6 +5,7 @@ import { BaseInputComponent } from "../injectable.component";
   selector: 'multiple-choice',
   templateUrl: './multiple-choice.component.html',
   styleUrls: ['./multiple-choice.component.scss'],
+  inputs: ['edit'],
   outputs: ['valueChanged']
 })
 export class MultipleChoiceComponent extends BaseInputComponent implements OnInit {

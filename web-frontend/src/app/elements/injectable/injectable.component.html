@@ -2,20 +2,24 @@
   <multiple-choice [choices]="choiceValues!"
                    [choiceLabels]="choiceLabels!"
                    [values]="injectable.value"
+                   [edit]="edit"
                    (valueChanged)="valueChanged.emit($event)"></multiple-choice>
 </ng-container>
 <ng-container *ngIf="!multipleChoice">
   <ng-container *ngIf="injectable.datatype === 'dict'; else base;">
-    <dict [dict]="injectable.value" (valueChanged)="valueChanged.emit($event)"></dict>
+    <dict [dict]="injectable.value"
+          [edit]="edit"
+          (valueChanged)="valueChanged.emit($event)"></dict>
   </ng-container>
 </ng-container>
 <ng-template #base>
   <div *ngFor="let value of values; let idx = index;">
     <base-type [value]="value"
                [type]="injectable.datatype"
+               [edit]="edit"
                (valueChanged)="valueChanged.emit($event)"></base-type>
   </div>
-  <div *ngIf="injectable.multi">
+  <div *ngIf="injectable.multi && edit">
     <button mat-button color="secondary">+ Add</button>
   </div>
 </ng-template>

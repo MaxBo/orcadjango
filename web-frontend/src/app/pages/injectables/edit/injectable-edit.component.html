@@ -8,7 +8,9 @@
 </button>
 <mat-dialog-content>
   <p [innerHTML]="injectable.description"></p>
-  <injectable [injectable]="injectable" (valueChanged)="this.value = $event"></injectable>
+  <injectable [injectable]="injectable"
+              [edit]="true"
+              (valueChanged)="this.value = $event"></injectable>
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button
