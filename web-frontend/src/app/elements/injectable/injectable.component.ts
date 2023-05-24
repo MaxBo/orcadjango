@@ -19,6 +19,7 @@ export class InjectableComponent extends BaseInputComponent implements OnInit {
   choiceLabels?: string[];
   multipleChoice: boolean = false;
   protected values: any[] = [];
+  protected Object = Object;
 
   ngOnInit(): void {
     this.multipleChoice = !!this.injectable.choices && this.injectable.multi;

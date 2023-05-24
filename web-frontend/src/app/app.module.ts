@@ -46,6 +46,7 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MultipleChoiceComponent } from './elements/injectable/multiple-choice/multiple-choice.component';
 import { BaseTypeComponent } from './elements/injectable/base-type/base-type.component';
 import { DictComponent } from './elements/injectable/dict/dict.component';
+import { MatDividerModule } from "@angular/material/divider";
 
 @NgModule({
   declarations: [
@@ -92,7 +93,8 @@ import { DictComponent } from './elements/injectable/dict/dict.component';
         DragDropModule,
         MatExpansionModule,
         MatSlideToggleModule,
-        MatCheckboxModule
+        MatCheckboxModule,
+        MatDividerModule
     ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }

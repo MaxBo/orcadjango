@@ -5,14 +5,14 @@
                    (valueChanged)="valueChanged.emit($event)"></multiple-choice>
 </ng-container>
 <ng-container *ngIf="!multipleChoice">
-  <ng-container *ngIf="this.injectable.datatype === 'dict'; else base;">
-    <dict [keys]="" [values]=""></dict>
+  <ng-container *ngIf="injectable.datatype === 'dict'; else base;">
+    <dict [dict]="injectable.value" (valueChanged)="valueChanged.emit($event)"></dict>
   </ng-container>
 </ng-container>
 <ng-template #base>
   <div *ngFor="let value of values; let idx = index;">
     <base-type [value]="value"
-               [type]="this.injectable.datatype"
+               [type]="injectable.datatype"
                (valueChanged)="valueChanged.emit($event)"></base-type>
   </div>
   <div *ngIf="injectable.multi">
