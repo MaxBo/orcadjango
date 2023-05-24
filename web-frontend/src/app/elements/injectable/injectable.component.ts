@@ -2,7 +2,7 @@ import { Component, EventEmitter, Injectable, Input, OnInit, Output } from '@ang
 import { Inj } from "../../rest-api";
 
 @Injectable()
-export abstract class BaseInputComponent {
+export abstract class BaseInjectableComponent {
   @Input() edit = false;
   @Output() valueChanged = new EventEmitter<any>();
 }
@@ -14,7 +14,7 @@ export abstract class BaseInputComponent {
   inputs: ['edit'],
   outputs: ['valueChanged']
 })
-export class InjectableComponent extends BaseInputComponent implements OnInit {
+export class InjectableComponent extends BaseInjectableComponent implements OnInit {
   @Input() injectable!: Inj;
   choiceValues?: any[];
   choiceLabels?: string[];

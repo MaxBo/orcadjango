@@ -152,6 +152,10 @@ class Injectable(NameModel):
         value = self.derived_value if self.parents else self.value
         if value is None:
             return
+        # force flattening to 2D for geometries (very clunky)
+        if self.datatype.lower() == 'geometry':
+            conv = OrcaTypeMap.get(self.data_class)
+            return conv.to_str(conv.to_value(value))
         try:
             ret = json.loads(value)
         except json.decoder.JSONDecodeError:

@@ -36,7 +36,7 @@
             {{!!injectable.choices}}
           </td>
           <td>
-            <injectable [injectable]="injectable"></injectable>
+            <injectable [injectable]="injectable" (click)="$event.stopPropagation()"></injectable>
           </td>
         </tr>
       </ng-container>

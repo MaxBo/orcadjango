@@ -118,7 +118,7 @@ class InjectableSerializer(serializers.ModelSerializer):
         # we ignore the types and just assume {str: str} dicts
         if 'dict' in obj.datatype.lower():
             return 'dict'
-        return obj.datatype
+        return obj.datatype.lower()
 
     def get_multi(self, obj):
         return 'list' in obj.datatype.lower()

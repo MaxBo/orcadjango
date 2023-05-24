@@ -1,0 +1,5 @@
+<ng-container *ngIf="edit; else preview">
+</ng-container>
+<ng-template #preview>
+  <div [id]="mapId" [style.height]="height"></div>
+</ng-template>

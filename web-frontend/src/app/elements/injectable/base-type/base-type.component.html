@@ -1,11 +1,4 @@
 <ng-container *ngIf="edit; else preview;" [ngSwitch]="type">
-  <ng-container *ngSwitchDefault>
-    <mat-form-field>
-      <mat-label>Value (String)</mat-label>
-      <input type="text" [value]="$any(value)" matInput
-             (change)="valueChanged.emit($event.target?.value)">
-    </mat-form-field>
-  </ng-container>
   <ng-container *ngSwitchCase="'int'">
     <mat-form-field>
       <mat-label>Value (Integer)</mat-label>
@@ -36,6 +29,13 @@
           {{choice}} <ng-container *ngIf="choiceLabels && choiceLabels[i]">({{choiceLabels[i]}})</ng-container>
         </mat-option>
       </mat-select>
+    </mat-form-field>
+  </ng-container>
+  <ng-container *ngSwitchDefault>
+    <mat-form-field>
+      <mat-label>Value (String)</mat-label>
+      <input type="text" [value]="$any(value)" matInput
+             (change)="valueChanged.emit($event.target?.value)">
     </mat-form-field>
   </ng-container>
 </ng-container>

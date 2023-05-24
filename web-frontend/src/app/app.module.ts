@@ -47,6 +47,7 @@ import { MultipleChoiceComponent } from './elements/injectable/multiple-choice/m
 import { BaseTypeComponent } from './elements/injectable/base-type/base-type.component';
 import { DictComponent } from './elements/injectable/dict/dict.component';
 import { MatDividerModule } from "@angular/material/divider";
+import { GeometryComponent } from './elements/injectable/geometry/geometry.component';
 
 @NgModule({
   declarations: [
@@ -68,7 +69,8 @@ import { MatDividerModule } from "@angular/material/divider";
     InjectableComponent,
     MultipleChoiceComponent,
     BaseTypeComponent,
-    DictComponent
+    DictComponent,
+    GeometryComponent
   ],
     imports: [
         BrowserModule,

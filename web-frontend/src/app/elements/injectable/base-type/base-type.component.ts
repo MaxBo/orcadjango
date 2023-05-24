@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { BaseInputComponent } from "../injectable.component";
+import { BaseInjectableComponent } from "../injectable.component";
 
 @Component({
   selector: 'base-type',
@@ -8,7 +8,7 @@ import { BaseInputComponent } from "../injectable.component";
   inputs: ['edit'],
   outputs: ['valueChanged']
 })
-export class BaseTypeComponent extends BaseInputComponent implements OnInit {
+export class BaseTypeComponent extends BaseInjectableComponent implements OnInit {
   @Input() value!: number | string | boolean;
   @Input() choices!: any[];
   @Input() choiceLabels?: string[];

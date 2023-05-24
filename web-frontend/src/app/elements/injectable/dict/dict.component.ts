@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { BaseInputComponent } from "../injectable.component";
+import { BaseInjectableComponent } from "../injectable.component";
 
 @Component({
   selector: 'dict',
@@ -8,7 +8,7 @@ import { BaseInputComponent } from "../injectable.component";
   inputs: ['edit'],
   outputs: ['valueChanged']
 })
-export class DictComponent extends BaseInputComponent implements OnInit {
+export class DictComponent extends BaseInjectableComponent implements OnInit {
   @Input() dict!: Record<string, any>;
   keys: string[] = [];
   values: any[] = [];

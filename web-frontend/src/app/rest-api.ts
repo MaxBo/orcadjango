@@ -36,7 +36,7 @@ export interface Inj {
   value: any,
   description: string,
   group: string,
-  datatype: 'str' | 'int' | 'list' | 'float' | 'bool' | 'dict',
+  datatype: 'str' | 'int' | 'list' | 'float' | 'bool' | 'dict' | 'geometry',
   multi: boolean,
   parents: number[],
   parentInjectables?: (Inj | undefined)[],
@@ -180,7 +180,6 @@ export class RestService {
       injectables.map(inj => {
         inj.parentInjectables = inj.parents.map(parentId => injectables.find(inj => inj.id === parentId));
       })
-      console.log(injectables);
       return injectables;
     }));
   }
