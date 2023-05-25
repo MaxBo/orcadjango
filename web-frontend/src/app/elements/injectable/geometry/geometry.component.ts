@@ -11,7 +11,8 @@ import VectorLayer from "ol/layer/Vector";
 import { Fill, Stroke, Style } from "ol/style";
 import VectorSource from "ol/source/Vector";
 import { Vector } from "ol/layer";
-import { Draw } from "ol/interaction";
+import { Draw, Select } from "ol/interaction";
+import { click, always } from 'ol/events/condition';
 
 @Component({
   selector: 'geometry',
@@ -29,10 +30,11 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
   mapId = `map-${uuid()}`;
   map?: Map;
   view?: View;
+  editMode: 'select' | 'draw' | 'none' = 'select'
 
   ngOnInit() {
     if (!this.height)
-      this.height = this.edit? '500px': '200px';
+      this.height = this.edit? '400px': '200px';
   }
 
   ngAfterViewInit() {
@@ -45,6 +47,7 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
       this.initPreview();
     else
       this.initEdit();
+    this.onModeChanged();
   }
 
   initMap() {
@@ -105,10 +108,42 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
     const draw = new Draw({
       source: source,
       type: 'Polygon',
-    }); // global so we can remove it later
+    });
+    this.featureLayer.set('draw', draw);
+
+    const selected = new Style({
+      fill: new Fill({
+        color: 'rgba(16, 74, 229, 0.3)',
+      }),
+      stroke: new Stroke({
+        color: 'rgba(16, 74, 229,)',
+        width: 2,
+      }),
+    });
+    const select = new Select({
+      condition: click,
+      layers: [this.featureLayer],
+      style: selected,
+      toggleCondition: always,
+      multi: true
+    })
+    this.featureLayer.set('select', select);
+
+    this.map?.addInteraction(select);
     this.map?.addInteraction(draw);
 
     this.map?.addLayer(this.featureLayer);
     this.map?.getView().fit(source.getExtent());
+  }
+
+  onModeChanged() {
+    const draw = this.featureLayer?.get('draw');
+    draw?.setActive(this.editMode === 'draw');
+
+    const select = this.featureLayer?.get('select');
+    select?.setActive(this.editMode === 'select');
+    if (this.editMode !== 'select') {
+      select?.getFeatures().clear();
+    }
   }
 }

@@ -1,5 +1,17 @@
 <ng-container *ngIf="edit; else preview">
-  <div [id]="mapId" [style.height]="height"></div>
+  <mat-button-toggle-group [(ngModel)]="editMode" (change)="onModeChanged()">
+    <mat-button-toggle value="select" title="Select features">
+      <mat-icon class="material-symbols-outlined">arrow_selector_tool</mat-icon>
+    </mat-button-toggle>
+    <mat-button-toggle value="draw" title="Draw Features">
+      <mat-icon class="material-symbols-outlined">edit_square</mat-icon>
+    </mat-button-toggle>
+    <mat-button-toggle value="none" title="Edit Off">
+      <mat-icon>block</mat-icon>
+    </mat-button-toggle>
+  </mat-button-toggle-group>
+  <div [id]="mapId" class="map"
+       [style.height]="height"></div>
 </ng-container>
 <ng-template #preview>
   <div [id]="mapId" [style.height]="height"></div>

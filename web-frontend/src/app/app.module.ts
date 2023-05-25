@@ -48,6 +48,7 @@ import { BaseTypeComponent } from './elements/injectable/base-type/base-type.com
 import { DictComponent } from './elements/injectable/dict/dict.component';
 import { MatDividerModule } from "@angular/material/divider";
 import { GeometryComponent } from './elements/injectable/geometry/geometry.component';
+import { MatButtonToggleModule } from "@angular/material/button-toggle";
 
 @NgModule({
   declarations: [
@@ -96,7 +97,8 @@ import { GeometryComponent } from './elements/injectable/geometry/geometry.compo
         MatExpansionModule,
         MatSlideToggleModule,
         MatCheckboxModule,
-        MatDividerModule
+        MatDividerModule,
+        MatButtonToggleModule
     ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
