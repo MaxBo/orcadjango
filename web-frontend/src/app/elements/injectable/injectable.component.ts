@@ -15,12 +15,12 @@ export abstract class BaseInjectableComponent {
   outputs: ['valueChanged']
 })
 export class InjectableComponent extends BaseInjectableComponent implements OnInit {
-  @Input() injectable!: Inj;
   choiceValues?: any[];
   choiceLabels?: string[];
   multipleChoice: boolean = false;
   protected values: any[] = [];
   protected Object = Object;
+  @Input() injectable!: Inj;
 
   ngOnInit(): void {
     this.multipleChoice = !!this.injectable.choices && this.injectable.multi;

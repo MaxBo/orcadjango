@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Inj, RestService } from "../../rest-api";
 import { UserSettingsService } from "../../user-settings.service";
 import { ProjectEditDialogComponent, ProjectEditDialogData } from "../projects/edit/project-edit.component";
@@ -51,7 +51,9 @@ export class InjectablesComponent implements OnInit {
     dialogRef.componentInstance.valueConfirmed.subscribe((value) => {
       this.rest.patchInjectable(injectable, value).subscribe(patched => {
         dialogRef.close();
-        injectable.value = patched.value;
+        // workaround to force update of injectable
+        setTimeout(() => injectable.value = undefined);
+        setTimeout(() => injectable.value = patched.value);
       });
     })
   }

@@ -47,8 +47,7 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
   ngAfterViewInit() {
     this.wktSrid = this.srid;
     const format = new WKT();
-    const feature = format.readFeature(this.wkt);
-    this.geom = feature.getGeometry();
+    this.geom = format.readGeometry(this.wkt);
     this.initMap();
     if (!this.edit)
       this.initPreview();
@@ -215,6 +214,7 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
     if (features.length === 0) {
       this.geom = undefined;
       this.wktInput = '';
+      this.emitChange();
       return;
     }
     const format = new WKT();
@@ -225,9 +225,11 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
     }
     const out = fs.clone();
     this.geom = fs.clone();
-    this.geom?.transform(this.map?.getView().getProjection().getCode(), `EPSG:${this.srid}`)
+    this.geom?.transform(this.map?.getView().getProjection().getCode(), `EPSG:${this.srid}`);
     out.transform(this.map?.getView().getProjection().getCode(), `EPSG:${this.wktSrid}`);
     this.wktInput = format.writeGeometry(out);
+
+    this.emitChange();
   }
 
   changeSrid(srid: number) {
@@ -249,5 +251,11 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
       source.addFeature(new Feature(geom));
       this.zoomToExtent();
     }
+    this.emitChange();
+  }
+  private emitChange() {
+    const format = new WKT();
+    const wkt = this.geom? format.writeGeometry(this.geom): '';
+    this.valueChanged.emit(wkt);
   }
 }

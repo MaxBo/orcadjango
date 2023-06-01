@@ -195,6 +195,8 @@ class GeometryConverter(OrcaTypeMap):
         if not value:
             #return 'POLYGON EMPTY'
             return
+        if (isinstance(value, str)):
+            return value
         # ToDo: this is inplace, might cause side effects
         value.FlattenTo2D()
         return value.ExportToWkt()
