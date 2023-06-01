@@ -44,7 +44,7 @@ export class InjectablesComponent implements OnInit {
   editInjectable(injectable: Inj): void {
     const dialogRef = this.dialog.open(InjectableEditDialogComponent, {
       panelClass: 'absolute',
-      width: '700px',
+      width: '1200px',
       disableClose: true,
       data: { injectable: injectable }
     });
