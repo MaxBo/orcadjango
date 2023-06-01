@@ -12,7 +12,7 @@ export class BaseTypeComponent extends BaseInjectableComponent implements OnInit
   @Input() value!: number | string | boolean;
   @Input() choices!: any[];
   @Input() choiceLabels?: string[];
-  @Input() step = 1;
+  @Input() step = 0.01;
   @Input() type?:  'str' | 'bool' | 'int' | 'float' | 'choice';
 
   ngOnInit() {

@@ -220,8 +220,12 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
     const format = new WKT();
     let fs = features[0].getGeometry().clone();
     if (features.length > 1) {
-      fs = new MultiPolygon([]);
-      features.forEach((feature: Feature<any>) => fs.appendPolygon(feature.getGeometry()));
+      if (!(fs instanceof MultiPolygon)) {
+        fs = new MultiPolygon([fs.getCoordinates()]);
+      }
+      features.forEach((feature: Feature<any>, i: number) => {
+        if (i > 0) fs.appendPolygon(feature.getGeometry());
+      });
     }
     const out = fs.clone();
     this.geom = fs.clone();
