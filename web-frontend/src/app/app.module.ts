@@ -49,6 +49,7 @@ import { DictComponent } from './elements/injectable/dict/dict.component';
 import { MatDividerModule } from "@angular/material/divider";
 import { GeometryComponent } from './elements/injectable/geometry/geometry.component';
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
+import { DerivedInjectableDialogComponent } from './pages/injectables/derived/derived-injectable.component';
 
 @NgModule({
   declarations: [
@@ -71,7 +72,8 @@ import { MatButtonToggleModule } from "@angular/material/button-toggle";
     MultipleChoiceComponent,
     BaseTypeComponent,
     DictComponent,
-    GeometryComponent
+    GeometryComponent,
+    DerivedInjectableDialogComponent
   ],
     imports: [
         BrowserModule,

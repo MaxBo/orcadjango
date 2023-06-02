@@ -5,7 +5,7 @@ import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { UserSettingsService } from "../../../user-settings.service";
 
 @Component({
-  selector: 'app-edit',
+  selector: 'app-injectable-edit',
   templateUrl: './injectable-edit.component.html',
   styleUrls: ['./injectable-edit.component.scss']
 })

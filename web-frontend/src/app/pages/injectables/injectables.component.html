@@ -12,7 +12,7 @@
     <th></th>
   </thead>
   <tbody>
-    <ng-container *ngFor="let group of injectables | keyvalue;">
+    <ng-container *ngFor="let group of groupedInjectables | keyvalue;">
       <ng-container *ngFor="let injectable of group.value; let first = first; let last = last;">
         <tr [ngClass]="{'bb': last, 'locked': !injectable.editable}"
             (click)="editInjectable(injectable)"
