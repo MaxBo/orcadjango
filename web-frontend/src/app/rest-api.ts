@@ -184,6 +184,11 @@ export class RestService {
     }));
   }
 
+  getInjectable(id: number, scenario: Scenario): Observable<Inj> {
+    const injUrl = this.URLS.injectables.replace('{scenarioId}', scenario.id!.toString());
+    return this.http.get<Inj>(`${injUrl}${id}/`);
+  }
+
   resetInjectables(scenario: Scenario): Observable<Inj[]> {
     const injUrl = this.URLS.injectables.replace('{scenarioId}', scenario.id!.toString());
     return this.http.post<Inj[]>(`${injUrl}reset/`, {});

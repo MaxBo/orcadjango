@@ -59,6 +59,7 @@ export class InjectablesComponent implements OnInit {
           // workaround to force update of injectable
           setTimeout(() => injectable.value = undefined);
           setTimeout(() => injectable.value = patched.value);
+          this.updateChildren(injectable);
         });
       })
     }
@@ -75,5 +76,17 @@ export class InjectablesComponent implements OnInit {
         this.editInjectable((injectable));
       })
     }
+  }
+
+  updateChildren(injectable: Inj) {
+    const children = this.flatInjectables.filter(inj => inj.parents.indexOf(injectable.id) >= 0);
+    const scenario = this.settings.activeScenario$.value;
+    if (!scenario) return;
+    children.forEach(inj => {
+      this.rest.getInjectable(inj.id, scenario).subscribe(updated => {
+        setTimeout(() => inj.value = undefined);
+        setTimeout(() => inj.value = updated.value);
+      });
+    })
   }
 }
