@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { Inj, RestService, ScenarioStep, Step } from "../../rest-api";
+import { Inj, ScenarioStep, Step } from "../../rest-api";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
-import { UserSettingsService } from "../../user-settings.service";
 import { InjectablesComponent, sortBy } from "../injectables/injectables.component";
+import { BehaviorSubject, forkJoin, Observable } from "rxjs";
 
 @Component({
   selector: 'app-steps',
@@ -13,6 +13,7 @@ export class StepsComponent extends InjectablesComponent {
   availableSteps: Record<string, Step[]> = {};
   scenarioSteps: ScenarioStep[] = [];
   _scenStepNames: string[] = [];
+  stepsLoading$ = new BehaviorSubject<boolean>(false);
 
   // constructor(private rest: RestService, private settings: UserSettingsService)
   override ngOnInit() {
@@ -47,6 +48,14 @@ export class StepsComponent extends InjectablesComponent {
   drop(event: CdkDragDrop<any[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      const observables: Observable<ScenarioStep>[] = [];
+      this.stepsLoading$.next(true);
+      event.container.data.forEach((step, i) => {
+        observables.push(this.rest.patchScenarioStep(step, { order: i }))
+      })
+      forkJoin(observables).subscribe(() => {
+        this.stepsLoading$.next(false);
+      })
     }
     else {
       this.addStep(event.item.data.name, {
@@ -78,5 +87,13 @@ export class StepsComponent extends InjectablesComponent {
 
   getInjectables(step: ScenarioStep): Inj[] {
     return this.injectables.filter(inj => step.injectables?.includes(inj.name));
+  }
+
+  toggleActive(active: boolean, step: ScenarioStep) {
+    this.stepsLoading$.next(true);
+    this.rest.patchScenarioStep(step, { active: active }).subscribe(patched => {
+        step.active = patched.active;
+      this.stepsLoading$.next(false);
+      })
   }
 }

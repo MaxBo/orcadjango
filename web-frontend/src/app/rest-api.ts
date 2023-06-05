@@ -72,6 +72,7 @@ export interface ScenarioStep extends Step {
   id: number,
   scenario: number,
   success: boolean,
+  active?: boolean,
   started?: string,
   finished?: string
 }
@@ -214,7 +215,8 @@ export class RestService {
     return this.http.post<ScenarioStep>(url, { name: stepName, order: order });
   }
 
-  patchScenarioStep(step: ScenarioStep, options?:{ active?: boolean, order?: number }) {
-
+  patchScenarioStep(step: ScenarioStep, options?:{ active?: boolean, order?: number }): Observable<ScenarioStep>{
+    const url = this.URLS.scenarioSteps.replace('{scenarioId}', step.scenario.toString());
+    return this.http.patch<ScenarioStep>(`${url}${step.id}/`, options);
   }
 }

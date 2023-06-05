@@ -27,30 +27,32 @@
     </mat-expansion-panel>
   </mat-accordion>
 
-  <div id="scenario-steps">
+  <div id="scenario-steps" [ngClass]="{'deactivated': (stepsLoading$ | async)}">
     <mat-accordion cdkDropList
                    #scenarioStepList="cdkDropList"
                    [cdkDropListData]="scenarioSteps"
                    class="example-list"
                    (cdkDropListDropped)="drop($event)">
-      <mat-expansion-panel *ngFor="let item of scenarioSteps"
-                           [cdkDragData]="item" cdkDrag>
+      <mat-expansion-panel *ngFor="let step of scenarioSteps"
+                           [cdkDragData]="step" cdkDrag>
         <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
         <mat-expansion-panel-header>
           <mat-panel-title>
-            {{item.title || item.name}}
+            {{step.title || step.name}}
           </mat-panel-title>
           <mat-panel-description>
-            <mat-slide-toggle color="primary"
+            <mat-slide-toggle [checked]="step.active"
+                              color="primary"
                               style="margin-left: auto"
-                              (click)="$event.stopPropagation()">
+                              (click)="$event.stopPropagation();"
+                              (change)="toggleActive($event.checked, step)" >
             </mat-slide-toggle>
           </mat-panel-description>
         </mat-expansion-panel-header>
-        <i [innerHTML]="item.description"></i>
+        <i [innerHTML]="step.description"></i>
         <h4>Injectables</h4>
         <table class="striped">
-          <tr *ngFor="let injectable of getInjectables(item)">
+          <tr *ngFor="let injectable of getInjectables(step)">
             <td style="padding-right: 15px;">
               <b>{{injectable.name}}</b>
             </td>

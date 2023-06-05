@@ -2,7 +2,12 @@
   width: 300px;
 }
 #scenario-steps {
+  position: relative;
   width: 600px;
+}
+
+#scenario-steps.deactivated {
+  pointer-events: none;
 }
 
 #available-steps, #scenario-steps {
