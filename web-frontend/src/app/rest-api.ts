@@ -64,7 +64,8 @@ export interface Step {
   title?: string,
   description?: string,
   group?: string,
-  required?: string[]
+  required?: string[],
+  injectables?: string[]
 }
 
 export interface ScenarioStep extends Step {

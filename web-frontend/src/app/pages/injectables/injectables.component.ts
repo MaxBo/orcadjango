@@ -22,15 +22,15 @@ export function sortBy(array: any[], attr: string, options: { reverse: boolean }
 export class InjectablesComponent implements OnInit {
   // grouped injectables
   groupedInjectables: Record<string, Inj[]> = {};
-  private flatInjectables: Inj[] = [];
+  protected injectables: Inj[] = [];
 
-  constructor(private rest: RestService, private settings: UserSettingsService, private dialog: MatDialog){}
+  constructor(protected rest: RestService, protected settings: UserSettingsService, protected dialog: MatDialog){}
 
   ngOnInit() {
     this.settings.activeScenario$.subscribe(scenario => {
       if (scenario)
         this.rest.getInjectables(scenario).subscribe(injectables => {
-          this.flatInjectables = injectables;
+          this.injectables = injectables;
           // this.groups = [...new Set(injectables.map(injectable => injectable.group))].sort();
           this.groupedInjectables = {};
           injectables.forEach(inj => {
@@ -64,7 +64,7 @@ export class InjectablesComponent implements OnInit {
       })
     }
     else {
-      const parents = injectable.parents.map(pId => this.flatInjectables.find(inj => inj.id === pId ))
+      const parents = injectable.parents.map(pId => this.injectables.find(inj => inj.id === pId ))
       const dialogRef = this.dialog.open(DerivedInjectableDialogComponent, {
         panelClass: 'absolute',
         width: '700px',
@@ -79,7 +79,7 @@ export class InjectablesComponent implements OnInit {
   }
 
   updateChildren(injectable: Inj) {
-    const children = this.flatInjectables.filter(inj => inj.parents.indexOf(injectable.id) >= 0);
+    const children = this.injectables.filter(inj => inj.parents.indexOf(injectable.id) >= 0);
     const scenario = this.settings.activeScenario$.value;
     if (!scenario) return;
     children.forEach(inj => {

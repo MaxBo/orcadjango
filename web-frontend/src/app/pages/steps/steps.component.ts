@@ -1,40 +1,44 @@
 import { Component } from '@angular/core';
-import { RestService, ScenarioStep, Step } from "../../rest-api";
+import { Inj, RestService, ScenarioStep, Step } from "../../rest-api";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { UserSettingsService } from "../../user-settings.service";
-import { sortBy } from "../injectables/injectables.component";
+import { InjectablesComponent, sortBy } from "../injectables/injectables.component";
 
 @Component({
   selector: 'app-steps',
   templateUrl: './steps.component.html',
   styleUrls: ['./steps.component.scss']
 })
-export class StepsComponent {
+export class StepsComponent extends InjectablesComponent {
   availableSteps: Record<string, Step[]> = {};
   scenarioSteps: ScenarioStep[] = [];
   _scenStepNames: string[] = [];
 
-  constructor(private rest: RestService, private settings: UserSettingsService) {
+  // constructor(private rest: RestService, private settings: UserSettingsService)
+  override ngOnInit() {
     this.settings.activeScenario$.subscribe(scenario => {
       this.availableSteps = {};
       this.scenarioSteps = [];
       if (scenario) {
-        this.rest.getAvailableSteps(this.settings.module$.value).subscribe(steps => {
-          this.availableSteps = {};
-          steps.forEach(step => {
-            const group = step.group || '';
-            if (!this.availableSteps[group])
-              this.availableSteps[group] = [];
-            this.availableSteps[group].push(step);
-          })
-          Object.keys(this.availableSteps).forEach(group =>
-            this.availableSteps[group] = sortBy(this.availableSteps[group], 'order')
-          );
-          this.rest.getScenarioSteps(scenario).subscribe(steps => {
-            this.scenarioSteps = steps;
-            this._scenStepNames = steps.map(s => s.name);
-            this.scenarioSteps.forEach(s => this._assign_step_meta(s));
-          })
+        this.rest.getInjectables(scenario).subscribe(injectables => {
+          this.injectables = injectables;
+          this.rest.getAvailableSteps(this.settings.module$.value).subscribe(steps => {
+            this.availableSteps = {};
+            steps.forEach(step => {
+              const group = step.group || '';
+              if (!this.availableSteps[group])
+                this.availableSteps[group] = [];
+              this.availableSteps[group].push(step);
+            })
+            Object.keys(this.availableSteps).forEach(group =>
+              this.availableSteps[group] = sortBy(this.availableSteps[group], 'order')
+            );
+            this.rest.getScenarioSteps(scenario).subscribe(steps => {
+              this.scenarioSteps = steps;
+              this._scenStepNames = steps.map(s => s.name);
+              this.scenarioSteps.forEach(s => this._assign_step_meta(s));
+            })
+          });
         });
       }
     })
@@ -60,6 +64,7 @@ export class StepsComponent {
       scenarioStep.description = step.description;
       scenarioStep.group = step.group;
       scenarioStep.required = step.required;
+      scenarioStep.injectables = step.injectables;
     }
   }
 
@@ -69,5 +74,9 @@ export class StepsComponent {
       this._assign_step_meta(created);
       this.scenarioSteps.splice(options?.position || 0, 0, created);
     })
+  }
+
+  getInjectables(step: ScenarioStep): Inj[] {
+    return this.injectables.filter(inj => step.injectables?.includes(inj.name));
   }
 }

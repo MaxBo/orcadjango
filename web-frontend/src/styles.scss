@@ -62,7 +62,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 table.striped {
-  tbody tr:nth-of-type(odd) {
+  tr:nth-of-type(odd) {
     background-color: rgba(0,0,0,.05);
   }
 }

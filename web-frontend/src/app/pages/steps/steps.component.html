@@ -42,11 +42,26 @@
           </mat-panel-title>
           <mat-panel-description>
             <mat-slide-toggle color="primary"
+                              style="margin-left: auto"
                               (click)="$event.stopPropagation()">
             </mat-slide-toggle>
           </mat-panel-description>
         </mat-expansion-panel-header>
         <i [innerHTML]="item.description"></i>
+        <h4>Injectables</h4>
+        <table class="striped">
+          <tr *ngFor="let injectable of getInjectables(item)">
+            <td style="padding-right: 15px;">
+              <b>{{injectable.name}}</b>
+            </td>
+            <td style="min-width: 200px;" *ngIf="injectable.value !== undefined">
+              <injectable [injectable]="injectable"></injectable>
+            </td>
+            <td>
+              <button mat-button (click)="editInjectable(injectable)">{{injectable.editable? "EDIT": "SHOW"}}</button>
+            </td>
+          </tr>
+        </table>
       </mat-expansion-panel>
     </mat-accordion>
   </div>

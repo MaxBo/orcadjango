@@ -146,12 +146,17 @@ class OrcaManager(ModuleSingleton):
             required = [required]
         required = [r.__name__ if callable(r) else str(r) for r in required]
         wrapper = self._generic_orca.get_step(step)
+        sig = signature(wrapper._func)
+        inj_parameters = sig.parameters
+        inj_available = self._generic_orca.list_injectables()
+        injectables = [pinj for pinj in inj_parameters if pinj in inj_available]
         return {
             'name': step,
             'title': step_meta.get('title', ''),
             'group': step_meta.get('group', '-'),
             'order': step_meta.get('order', 1),
             'docstring': wrapper._func.__doc__ or '',
+            'injectables': injectables,
             'required': required,
         }
 

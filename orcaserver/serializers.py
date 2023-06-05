@@ -140,6 +140,7 @@ class StepSerializer(serializers.Serializer):
     description = serializers.SerializerMethodField()
     order = serializers.IntegerField()
     required = serializers.ListSerializer(child=serializers.CharField())
+    injectables = serializers.ListSerializer(child=serializers.CharField())
 
     def get_description(self, obj):
         return obj.get('docstring', '').strip().replace('\n', '<br>')

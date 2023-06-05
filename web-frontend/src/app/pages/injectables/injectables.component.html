@@ -35,8 +35,10 @@
           <td>
             {{!!injectable.choices}}
           </td>
-          <td>
-            <injectable *ngIf="injectable.value !== undefined" [injectable]="injectable" (click)="$event.stopPropagation()"></injectable>
+          <td style="min-width: 200px;">
+            <injectable *ngIf="injectable.value !== undefined"
+                        [injectable]="injectable"
+                        (click)="$event.stopPropagation()"></injectable>
           </td>
         </tr>
       </ng-container>
