@@ -24,7 +24,7 @@ from rest_framework_simplejwt.views import (
 )
 
 from .views import IndexView
-from .loggers import LogConsumer
+from orcadjango.loggers import ScenarioLogConsumer
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -40,5 +40,5 @@ urlpatterns = [
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 websocket_urlpatterns = [
-    re_path(r'ws/log/(?P<room_name>\w+)/$', LogConsumer.as_asgi()),
+    re_path(r'ws/scenariolog/(?P<scenario_id>\w+)/$', ScenarioLogConsumer.as_asgi()),
 ]

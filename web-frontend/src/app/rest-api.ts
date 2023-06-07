@@ -77,6 +77,14 @@ export interface ScenarioStep extends Step {
   finished?: string
 }
 
+export interface ScenarioLogEntry {
+  user?: number,
+  level: 'ERROR' | 'INFO' | 'DEBUG' | 'INTER',
+  timestamp?: string,
+  message: string,
+  scenario?: { success?: boolean, finished?: boolean }
+}
+
 @Injectable({
   providedIn: 'root'
 })

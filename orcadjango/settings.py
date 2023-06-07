@@ -183,14 +183,14 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'level': 'INFO',
         },
-        'orca_channel': {
-            'level': 'DEBUG',
-            'class': 'orcadjango.loggers.OrcaChannelHandler',
+        'web_socket': {
+            'level': 'INFO',
+            'class': 'datentool.loggers.WebSocketHandler',
         },
     },
     'loggers': {
-        'OrcaLog': {
-            'handlers': ['orca_channel'],
+        'ScenarioLog': {
+            'handlers': ['web_socket'],
             'level': 'DEBUG',
             'propagate': False,
         },

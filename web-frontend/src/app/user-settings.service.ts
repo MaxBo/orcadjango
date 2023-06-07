@@ -1,8 +1,9 @@
-import { Injectable } from "@angular/core";
+import { EventEmitter, Injectable } from "@angular/core";
 import { CookieService } from "ngx-cookie-service";
-import { Module, Project, RestService, Scenario, User } from "./rest-api";
+import { Module, Project, RestService, Scenario, ScenarioLogEntry, User } from "./rest-api";
 import { BehaviorSubject } from "rxjs";
 import { AuthService } from "./auth.service";
+import { environment } from "../environments/environment";
 
 @Injectable({ providedIn: 'root' })
 export class UserSettingsService {
@@ -11,7 +12,11 @@ export class UserSettingsService {
   user$ = new BehaviorSubject<User | undefined>(undefined);
   module$ = new BehaviorSubject<string>('');
   users: User[] = [];
-  modules: Module[] = []
+  modules: Module[] = [];
+  scenarioLogSocket?: WebSocket;
+  onScenarioLogMessage = new EventEmitter<ScenarioLogEntry>;
+  private readonly wsURL: string;
+  private retries = 0;
 
   constructor(private cookies: CookieService, private rest: RestService, private auth: AuthService) {
     this.auth.user$.subscribe(user => {
@@ -38,6 +43,8 @@ export class UserSettingsService {
       }
       this.user$.next(user);
     })
+    const host = environment.backend? environment.backend.replace('http://', ''): window.location.hostname;
+    this.wsURL = `${(environment.production && host.indexOf('localhost') === -1)? 'wss:': 'ws:'}//${host}/ws/scenario/`;
   }
 
   setActiveProject(project: Project | undefined){
@@ -59,5 +66,20 @@ export class UserSettingsService {
         this.activeProject$.next(undefined);
         this.activeScenario$.next(undefined);
     }
+  }
+
+  connect(): void {
+    if (this.activeScenario$.value === undefined) return;
+    if (this.retries > 10) return;
+    this.scenarioLogSocket = new WebSocket(`${this.wsURL}${this.activeScenario$.value}/`);
+    this.scenarioLogSocket.onopen = e => this.retries = 0;
+    this.scenarioLogSocket.onmessage = e => {
+      const logEntry = JSON.parse(e.data);
+      this.onScenarioLogMessage.emit(logEntry);
+    }
+    this.scenarioLogSocket.onclose = e => {
+      this.retries += 1;
+      this.connect();
+    };
   }
 }

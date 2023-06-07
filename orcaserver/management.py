@@ -97,28 +97,6 @@ class OrcaManager(ModuleSingleton):
         if not self._generic_orca:
             self._generic_orca = self.create()
 
-    #@property
-    #def descriptors(self):
-        #if self._descriptors is not None:
-            #return self._descriptors
-        #parse_injectables
-
-
-    #def get_orca(self, scenario=None):
-        #scenario = scenario or self.get_scenario()
-        #if not scenario:
-            #return
-        #module = self.get_module()
-        #orca = manager.get(scenario.id, module=module, create=False)
-        #if not orca:
-            #orca = manager.create(scenario.id, module=module)
-            #handler = ScenarioHandler(scenario, persist=True)
-            #level = getattr(logging, settings.LOG_LEVEL, logging.INFO)
-            #handler.setLevel(level)
-            #manager.add_log_handler(scenario.id, handler)
-            #apply_injectables(orca, scenario)
-        #return orca
-
     def get_calculated_value(self, injectable, *args):
         funcwrapper = self._generic_orca.get_raw_injectable(injectable)
         sig = signature(funcwrapper._func)
