@@ -177,20 +177,20 @@ STATIC_URL = '/static/'
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
             'level': 'INFO',
         },
-        'web_socket': {
+        'scenario_web_socket': {
             'level': 'INFO',
-            'class': 'datentool.loggers.WebSocketHandler',
+            'class': 'orcadjango.loggers.ScenarioHandler',
         },
     },
     'loggers': {
         'ScenarioLog': {
-            'handlers': ['web_socket'],
+            'handlers': ['scenario_web_socket'],
             'level': 'DEBUG',
             'propagate': False,
         },

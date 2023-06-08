@@ -19,6 +19,12 @@ export class UserSettingsService {
   private retries = 0;
 
   constructor(private cookies: CookieService, private rest: RestService, private auth: AuthService) {
+    this.activeScenario$.subscribe(scenario => {
+      this.disconnect();
+      this.connect();
+    });
+    const host = environment.backend? environment.backend.replace('http://', ''): window.location.hostname;
+    this.wsURL = `${(environment.production && host.indexOf('localhost') === -1)? 'wss:': 'ws:'}//${host}/ws/scenariolog/`;
     this.auth.user$.subscribe(user => {
       if (user) {
         const projectId = this.cookies.get('project');
@@ -43,8 +49,6 @@ export class UserSettingsService {
       }
       this.user$.next(user);
     })
-    const host = environment.backend? environment.backend.replace('http://', ''): window.location.hostname;
-    this.wsURL = `${(environment.production && host.indexOf('localhost') === -1)? 'wss:': 'ws:'}//${host}/ws/scenario/`;
   }
 
   setActiveProject(project: Project | undefined){
@@ -68,13 +72,22 @@ export class UserSettingsService {
     }
   }
 
+  disconnect(): void {
+    if (!this.scenarioLogSocket) return;
+    this.scenarioLogSocket.onclose = e => {};
+    this.scenarioLogSocket.close();
+    this.retries = 0;
+  }
+
   connect(): void {
     if (this.activeScenario$.value === undefined) return;
     if (this.retries > 10) return;
-    this.scenarioLogSocket = new WebSocket(`${this.wsURL}${this.activeScenario$.value}/`);
+    this.scenarioLogSocket = new WebSocket(`${this.wsURL}${this.activeScenario$.value.id}/`);
     this.scenarioLogSocket.onopen = e => this.retries = 0;
     this.scenarioLogSocket.onmessage = e => {
+      console.log(e)
       const logEntry = JSON.parse(e.data);
+      console.log(e.data)
       this.onScenarioLogMessage.emit(logEntry);
     }
     this.scenarioLogSocket.onclose = e => {

@@ -69,7 +69,7 @@ class ScenarioLogConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         '''join room'''
         self.scenario_id = self.scope['url_route']['kwargs']['scenario_id']
-        self.room_name = f'scenario_{self.scenario.id}'
+        self.room_name = f'scenario_{self.scenario_id}'
         try:
             await self.channel_layer.group_add(
                     self.room_name,
