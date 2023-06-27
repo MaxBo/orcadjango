@@ -227,4 +227,9 @@ export class RestService {
     const url = this.URLS.scenarioSteps.replace('{scenarioId}', step.scenario.toString());
     return this.http.patch<ScenarioStep>(`${url}${step.id}/`, options);
   }
+
+  startRun(scenario: Scenario) {
+    const url = this.URLS.scenarioSteps.replace('{scenarioId}', scenario.id!.toString());
+    return this.http.post(`${url}run/`,{});
+  }
 }

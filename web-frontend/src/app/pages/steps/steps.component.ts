@@ -96,4 +96,10 @@ export class StepsComponent extends InjectablesComponent {
       this.stepsLoading$.next(false);
       })
   }
+
+  run() {
+    const scenario = this.settings.activeScenario$.value;
+    if (!scenario) return;
+    this.rest.startRun(scenario).subscribe();
+  }
 }

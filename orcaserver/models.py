@@ -65,9 +65,8 @@ class Scenario(NameModel):
         '''
         function to create or reset injectables of scenario
         '''
-
-        inj_names = self.get_orca().list_injectables()
         orca_manager = OrcaManager(self.project.module)
+        inj_names = orca_manager.get_injectable_names()
         descriptors = {}
         for name in inj_names:
             descriptors[name] = orca_manager.get_injectable_meta(name)

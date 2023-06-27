@@ -50,6 +50,7 @@ import { MatDividerModule } from "@angular/material/divider";
 import { GeometryComponent } from './elements/injectable/geometry/geometry.component';
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { DerivedInjectableDialogComponent } from './pages/injectables/derived/derived-injectable.component';
+import { ScenarioLogComponent } from './elements/log/scenario-log.component';
 
 @NgModule({
   declarations: [
@@ -73,7 +74,8 @@ import { DerivedInjectableDialogComponent } from './pages/injectables/derived/de
     BaseTypeComponent,
     DictComponent,
     GeometryComponent,
-    DerivedInjectableDialogComponent
+    DerivedInjectableDialogComponent,
+    ScenarioLogComponent
   ],
     imports: [
         BrowserModule,

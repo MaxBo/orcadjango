@@ -33,6 +33,13 @@ class ScenarioViewSet(viewsets.ModelViewSet):
             else self.queryset
         return queryset.order_by('name')
 
+    @action(detail=True, methods=['post'])
+    def run(self, request, **kwargs):
+        scenario = Scenario.objects.get(id=kwargs.get('scenario_pk'))
+        orca = scenario.get_orca()
+        active_steps = Step.objects.filter(
+            scenario=scenario, active=True).order_by('order')
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -54,9 +61,6 @@ class InjectableViewSet(viewsets.ModelViewSet):
 
     @action(methods=['POST'], detail=False)
     def reset(self, request, **kwargs):
-        """
-        route to disaggregate the population to the raster cells
-        """
         try:
             scenario = self.queryset.get(**kwargs)
         except Scenario.DoesNotExist:
@@ -107,6 +111,92 @@ class StepViewSet(viewsets.ViewSet):
                 steps.append(orca_manager.get_step_meta(step))
         results = StepSerializer(steps, many=True)
         return Response(results.data)
+
+
+    @classmethod
+    def run(cls, request):
+        scenario_id = request.session.get('scenario')
+        if not scenario_id:
+            return
+        scenario_id = int(scenario_id)
+        orca = manager.get(scenario_id, create=False)
+        if not orca:
+            return HttpResponse(status=400)
+        scenario = Scenario.objects.get(id=scenario_id)
+
+        active_steps = Step.objects.filter(
+            scenario=scenario, active=True).order_by('order')
+        if len(active_steps) == 0:
+            orca.logger.error('No steps selected.')
+            return HttpResponse(status=400)
+        # check if all injectables are available
+        injectables_available = orca.list_injectables()
+        steps_available = orca.list_steps()
+        for step in active_steps:
+            if step.name not in steps_available:
+                orca.logger.error(
+                    'There are steps selected that can not be found in the '
+                    'module. Your project seems not to be up to date '
+                    'with the module. Please remove those steps.')
+                return HttpResponse(status=400)
+            func = orca.get_step(step.name)
+            sig = signature(func._func)
+            inj_parameters = sig.parameters
+            required = list(set(inj_parameters) & set(injectables_available))
+            inj_db = Injectable.objects.filter(name__in=required,
+                                               scenario=scenario)
+            if len(required) > len(inj_db):
+                orca.logger.error(
+                    'There are steps selected that contain injectables that '
+                    'not be found. Your project seems not to be up to date '
+                    'with the module.<br>Please synchronize the parameters '
+                    '(parameters page).')
+                return HttpResponse(status=400)
+        for step in active_steps:
+            step.started = None
+            step.finished = None
+            step.success = False
+            step.save()
+        apply_injectables(orca, scenario)
+        if manager.is_running(scenario.id):
+            orca.logger.error('Orca is already running. Please wait for it to '
+                         'finish or abort it.')
+            return HttpResponse(status=400)
+
+        message = f'Running Steps for scenario "{scenario.name}"'
+        orca.logger.info(message)
+
+        run, created = Run.objects.get_or_create(scenario=scenario)
+        run.run_by = request.user
+        run.success = False
+        run.started = timezone.now()
+        run.finished =  None
+        run.save()
+
+        def on_success():
+            run.success = True
+            run.finished = timezone.now()
+            run.save()
+        def on_error():
+            run.success = False
+            run.finished = timezone.now()
+            run.save()
+
+        try:
+            manager.start(scenario.id, steps=active_steps,
+                          on_success=on_success, on_error=on_error)
+        # ToDo: specific exceptions
+        except Exception as e:
+            orca.logger.error(str(e))
+            return HttpResponse(status=400)
+        return HttpResponse(status=200)
+
+    @staticmethod
+    def abort(request, *args, **kwargs):
+        scenario_id = int(kwargs.get('id'))
+        manager = OrcaManager()
+        manager.abort(scenario_id)
+        return HttpResponse(status=200)
 
 
 class ScenarioStepViewSet(viewsets.ModelViewSet):
