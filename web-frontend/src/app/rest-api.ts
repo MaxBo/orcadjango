@@ -229,7 +229,7 @@ export class RestService {
   }
 
   startRun(scenario: Scenario) {
-    const url = this.URLS.scenarioSteps.replace('{scenarioId}', scenario.id!.toString());
-    return this.http.post(`${url}run/`,{});
+    const url = this.URLS.scenarios;
+    return this.http.post(`${url}${scenario.id}/run/`,{});
   }
 }

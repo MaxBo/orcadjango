@@ -49,15 +49,18 @@ class WebSocketHandler(logging.StreamHandler):
 
 
 class ScenarioHandler(WebSocketHandler):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, scenario, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.scenario_id = scenario.id
+        self.room = f'scenario_{scenario.id}'
+        self.setFormatter(logging.Formatter(
+            f'%(asctime)s,%(msecs)03d {scenario.name} - %(message)s',
+            '%d.%m.%Y %H:%M:%S'))
 
     def emit(self, record):
-        scenario_id = record.scenario
-        self.room = f'scenario_{scenario_id}'
         from orcaserver.models import LogEntry
         LogEntry.objects.create(
-            scenario=scenario_id,
+            scenario=self.scenario_id,
             message=record.getMessage(),
             timestamp=timezone.now(),
             level=record.levelname

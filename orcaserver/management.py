@@ -13,6 +13,9 @@ lock = threading.Lock()
 _CS_STEP = 'steps'
 _CS_ITER = 'iteration'
 
+logger = logging.getLogger('scenario')
+
+
 def load_module(module_name, orca=None, module_set=None):
     if not orca:
         import orca
@@ -88,17 +91,16 @@ class OrcaManager(ModuleSingleton):
     ''''''
     module = None
     instances = {}
-    threads = {}
     meta = {}
-    _generic_orca = None
+    __generic_instance = None
 
     def __init__(self, module=None):
         self.module = module or self.default_module
-        if not self._generic_orca:
-            self._generic_orca = self.create()
+        if not self.__generic_instance:
+            self.__generic_instance = self.create_instance()
 
     def get_calculated_value(self, injectable, *args):
-        funcwrapper = self._generic_orca.get_raw_injectable(injectable)
+        funcwrapper = self.__generic_instance.orca.get_raw_injectable(injectable)
         sig = signature(funcwrapper._func)
         parameters = list(sig.parameters.keys())
         # calculate value if injectable function has parameters (meaning
@@ -108,25 +110,25 @@ class OrcaManager(ModuleSingleton):
         return funcwrapper._func(*args)
 
     def get_step_names(self):
-        return self._generic_orca.list_steps()
+        return self.__generic_instance.orca.list_steps()
 
-    def get_injectable_names(self, module: str):
-        return self._generic_orca.list_injectables()
+    def get_injectable_names(self):
+        return self.__generic_instance.orca.list_injectables()
 
     def _get_orca_meta(self):
-        return getattr(self._generic_orca, 'meta', {})
+        return getattr(self.__generic_instance.orca, 'meta', {})
 
     def get_step_meta(self, step: str):
         meta = self._get_orca_meta()
-        step_meta = meta[step]
+        step_meta = meta.get(step, {})
         required = step_meta.get('required')
         if not isinstance(required, list):
             required = [required]
         required = [r.__name__ if callable(r) else str(r) for r in required]
-        wrapper = self._generic_orca.get_step(step)
+        wrapper = self.__generic_instance.orca.get_step(step)
         sig = signature(wrapper._func)
         inj_parameters = sig.parameters
-        inj_available = self._generic_orca.list_injectables()
+        inj_available = self.__generic_instance.orca.list_injectables()
         injectables = [pinj for pinj in inj_parameters if pinj in inj_available]
         return {
             'name': step,
@@ -139,7 +141,7 @@ class OrcaManager(ModuleSingleton):
         }
 
     def get_injectable_meta(self, injectable: str):
-        orca_injectables = self._generic_orca.list_injectables()
+        orca_injectables = self.__generic_instance.orca.list_injectables()
         orca_meta = self._get_orca_meta()
         # defaults (required by serializer)
         desc = {
@@ -151,16 +153,16 @@ class OrcaManager(ModuleSingleton):
             or _meta.get('hidden')):
             return {}
         if _meta.get('refresh') == 'always':
-            value = self._generic_orca.get_injectable(injectable)
+            value = self.__generic_instance.orca.get_injectable(injectable)
         else:
-            value = self._generic_orca._injectable_backup.get(injectable)
+            value = self.__generic_instance.orca._injectable_backup.get(injectable)
         datatype_class = type(value)
         datatype = datatype_class.__name__
         desc['datatype'] = datatype
         # check if the original type is overwritable
-        funcwrapper = self._generic_orca.get_raw_injectable(injectable)
+        funcwrapper = self.__generic_instance.orca.get_raw_injectable(injectable)
         sig = signature(funcwrapper._func)
-        if isinstance(funcwrapper, self._generic_orca._InjectableFuncWrapper):
+        if isinstance(funcwrapper, self.__generic_instance.orca._InjectableFuncWrapper):
             desc['docstring'] = funcwrapper._func.__doc__ or ''
             # datatype from annotations
             returntype = sig.return_annotation
@@ -179,54 +181,49 @@ class OrcaManager(ModuleSingleton):
             choices = desc.get('choices')
             # choices are derived from another injectable
             if callable(choices):
-                c_meta = self._generic_orca.meta.get(choices.__name__)
+                c_meta = self.__generic_instance.orca.meta.get(choices.__name__)
                 if c_meta and c_meta.get('refresh') == 'always':
-                    choices = self._generic_orca.get_injectable(choices.__name__)
+                    choices = self.__generic_instance.orca.get_injectable(choices.__name__)
                 else:
-                    choices = self._generic_orca._injectable_backup.get(choices.__name__)
+                    choices = self.__generic_instance.orca._injectable_backup.get(choices.__name__)
                 desc['choices'] = choices
             desc['parameters'] = list(sig.parameters.keys())
 
         desc['data_class'] = (f'{datatype_class.__module__}.'
                               f'{datatype_class.__name__}')
+        desc['default'] = self.__generic_instance.orca.get_injectable(injectable)
         return desc
 
-    def get(self, instance_id: int, create: bool = True):
+    def get_instance(self, instance_id: int, create: bool = True):
         with lock:
             instance = self.instances.get(instance_id)
             if not instance and create:
-                return self.create(instance_id)
+                return self.create_instance(instance_id)
             return instance
 
-    def remove(self, instance_id: int):
-        if instance_id not in self.instances:
-            return
-        if self.is_running(instance_id):
-            raise Exception(
-                'The orca instances can not be reset at the moment.'
-                ' A thread is still running.')
-        self.clear_log_handlers(instance_id)
-        del(self.instances[instance_id])
-        if instance_id in self.threads:
-            del(self.threads[instance_id])
-
-    def create(self, instance_id: int = None,):
-        instance = self._create_instance()
+    def create_instance(self, instance_id: int = None):
+        instance = OrcaWrapper(self.module)
         if (instance_id):
             self.instances[instance_id] = instance
         return instance
 
-    def add_log_handler(self, instance_id: int, handler: logging.StreamHandler):
-        instance = self.instances[instance_id]
-        instance.logger.addHandler(handler)
+    def reset(self):
+        with lock:
+            if 'orca' in sys.modules:
+                del(sys.modules['orca'])
+            for iid in list(self.instances.keys()):
+                self.instances[iid].remove()
+                del(self.instances[iid])
 
-    def clear_log_handlers(self, instance_id: int):
-        instance = self.instances.get(instance_id)
-        if not instance:
-            return
-        instance.logger.handlers.clear()
 
-    def _create_instance(self) -> 'module':
+class OrcaWrapper():
+
+    def __init__(self, module: str):
+        self.thread = None
+        self.module = module
+        self.orca = self.__create_instance()
+
+    def __create_instance(self) -> 'module':
         spec = importlib.util.find_spec('orca.orca')
         orca = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(orca)
@@ -241,44 +238,46 @@ class OrcaManager(ModuleSingleton):
         del(sys.modules['orca'])
         return orca
 
-    def reset(self):
-        with lock:
-            if 'orca' in sys.modules:
-                del(sys.modules['orca'])
-            for iid in list(self.instances.keys()):
-                self.remove(iid)
+    def add_log_handler(self, handler: logging.StreamHandler):
+        self.orca.logger.addHandler(handler)
 
-    def start(self, instance_id: int, steps, on_success=None,
-              on_error=None):
-        thread = self.threads.get(instance_id)
-        if thread and thread.isAlive():
+    def clear_log_handlers(self):
+        self.orca.logger.handlers.clear()
+
+    def set_value(self, injectable: str, value):
+        self.orca.add_injectable(injectable, value)
+
+    def start(self, steps, on_success=None, on_error=None):
+        if self.thread and self.thread.isAlive():
             raise InUseError('Thread is already running')
-        thread = self.threads[instance_id] = AbortableThread(
-            target=self.run, args=(instance_id, steps))
-        thread.on_success = on_success
-        thread.on_error = on_error
-        thread.start()
+        self.thread = AbortableThread(
+            target=self.__run, args=(id(self), steps))
+        self.thread.on_success = on_success
+        self.thread.on_error = on_error
+        message = f'Starting run...'
+        self.orca.logger.info(message)
+        self.thread.start()
 
-    def abort(self, instance_id):
-        thread = self.threads.get(instance_id)
-        if thread and thread.isAlive():
-            orca = self.get(instance_id)
-            orca.logger.error('aborting...')
-            thread.abort()
+    def abort(self):
+        if self.thread and self.thread.isAlive():
+            self.orca.logger.error('aborting...')
+            self.thread.abort()
 
-    def is_running(self, instance_id: int):
-        thread = self.threads.get(instance_id)
-        return thread.isAlive() if thread else False
+    def is_running(self):
+        return self.thread.isAlive() if self.thread else False
 
-    def add_meta(self, instance_id, **kwargs):
-        if instance_id not in self.meta:
-            self.meta[instance_id] = {}
-        for k, v in kwargs.items():
-            self.meta[instance_id][k] = v
+    def remove(self):
+        if self.is_running(id(self)):
+            raise Exception(
+                'The orca instances can not be reset at the moment.'
+                ' A thread is still running.')
+        if self.thread:
+            del(self.thread)
+        self.clear_log_handlers()
 
-    def run(self, instance_id: int, steps, iter_vars=None, data_out=None,
-            out_interval=1, out_base_tables=None, out_run_tables=None,
-            compress=False, out_base_local=True, out_run_local=True):
+    def __run(self, steps, iter_vars=None, data_out=None,
+              out_interval=1, out_base_tables=None, out_run_tables=None,
+              compress=False, out_base_local=True, out_run_local=True):
         """
         Run steps in series, optionally repeatedly over some sequence.
         The current iteration variable is set as a global injectable
@@ -320,9 +319,7 @@ class OrcaManager(ModuleSingleton):
             For tables in out_run_tables, whether to store only local columns (True)
             or both, local and computed columns (False).
         """
-        orca = self.get(instance_id)
-        logger = orca.logger
-        thread = self.threads[instance_id]
+        logger = self.orca.logger
         try:
             iter_vars = iter_vars or [None]
             max_i = len(iter_vars)
@@ -330,7 +327,7 @@ class OrcaManager(ModuleSingleton):
 
             # get the tables to write
             if out_base_tables is None or out_run_tables is None:
-                step_tables = orca.get_step_table_names(step_names)
+                step_tables = self.orca.get_step_table_names(step_names)
 
                 if out_base_tables is None:
                     out_base_tables = step_tables
@@ -340,14 +337,14 @@ class OrcaManager(ModuleSingleton):
 
             # write the base data (inputs)
             if data_out:
-                orca.add_injectable('iter_var', iter_vars[0])
-                orca.write_tables(
+                self.orca.add_injectable('iter_var', iter_vars[0])
+                self.orca.write_tables(
                     data_out, out_base_tables, 'base', compress=compress,
                     local=out_base_local)
 
             # run the steps
             for i, var in enumerate(iter_vars, start=1):
-                orca.add_injectable('iter_var', var)
+                self.orca.add_injectable('iter_var', var)
 
                 if var is not None:
                     logger.debug(
@@ -356,10 +353,10 @@ class OrcaManager(ModuleSingleton):
 
                 for j, step in enumerate(steps):
                     step_name = step.name
-                    orca.add_injectable(
-                        'iter_step', orca.iter_step(j, step_name))
+                    self.orca.add_injectable(
+                        'iter_step', self.orca.iter_step(j, step_name))
                     logger.info(f"Running step '{step_name}'")
-                    step_func = orca.get_step(step_name)
+                    step_func = self.orca.get_step(step_name)
                     step.started = timezone.now()
                     step.save()
                     try:
@@ -373,29 +370,29 @@ class OrcaManager(ModuleSingleton):
                             f'{e.__class__.__module__}.'
                             f'{e.__class__.__name__} - {str(e)}')
                         logger.error('Aborting run')
-                        if thread.on_error:
-                            thread.on_error()
+                        if self.thread.on_error:
+                            self.thread.on_error()
                         return
                     step.finished = timezone.now()
                     step.active = False
                     step.save()
 
-                    orca.clear_cache(scope=_CS_STEP)
+                    self.orca.clear_cache(scope=_CS_STEP)
 
                 # write the results of the current iteration
                 if data_out:
                     if (i - 1) % out_interval == 0 or i == max_i:
-                        orca.write_tables(
+                        self.orca.write_tables(
                             data_out, out_run_tables, var,
                             compress=compress, local=out_run_local)
 
-                orca.clear_cache(scope=_CS_ITER)
+                self.orca.clear_cache(scope=_CS_ITER)
             logger.info('orca run finished')
-            if thread.on_success:
-                thread.on_success()
+            if self.thread.on_success:
+                self.thread.on_success()
         except Abort:
             logger.error('orca run aborted')
-            if thread.on_error:
-                thread.on_error()
+            if self.thread.on_error:
+                self.thread.on_error()
         finally:
-            orca.clear_cache()
+            self.orca.clear_cache()

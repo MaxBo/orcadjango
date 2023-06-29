@@ -47,20 +47,6 @@ class Scenario(NameModel):
     def orca_id(self):
         return f'scenario-{self.id}'
 
-    def get_orca(self):
-        return OrcaManager(self.project.module).get(self.orca_id, create=True)
-
-    def apply_injectables(self, scenario):
-        if not scenario:
-            return
-        orca = self.get_orca()
-        inj_names = orca.list_injectables()
-        injectables = Injectable.objects.filter(name__in=inj_names,
-                                                scenario=scenario)
-        for inj in injectables:
-            if inj.can_be_changed:
-                orca.add_injectable(inj.name, inj.validated_value)
-
     def recreate_injectables(self, keep_values=False):
         '''
         function to create or reset injectables of scenario
@@ -78,7 +64,10 @@ class Scenario(NameModel):
                 continue
             inj, created = Injectable.objects.get_or_create(name=name,
                                                             scenario=self)
-            value = init_values.get(name, desc.get('value'))
+            value = init_values.get(name)
+            if not value:
+                conv = OrcaTypeMap.get(desc['data_class'])
+                value = conv.to_str(desc.get('default'))
             if created or not keep_values:
                 inj.value = value
             inj.datatype = desc['datatype']
@@ -139,10 +128,8 @@ class Injectable(NameModel):
     # instance not known there)
     @property
     def deserialized_value(self):
-        value = self.value
-        if self.editable:
-            conv = OrcaTypeMap.get(self.data_class)
-            value = conv.to_value(value)
+        conv = OrcaTypeMap.get(self.data_class)
+        value = conv.to_value(self.value)
         return value
 
     # can unfortunatelly not be put into custom (writable) serializer field
@@ -195,7 +182,6 @@ class LogEntry(models.Model):
 
 class Run(models.Model):
     scenario = models.ForeignKey(Scenario, on_delete=models.CASCADE)
-    models.OneToOneField(Scenario, on_delete=models.CASCADE)
     started = models.DateTimeField(null=True)
     finished = models.DateTimeField(null=True)
     success = models.BooleanField(default=False)

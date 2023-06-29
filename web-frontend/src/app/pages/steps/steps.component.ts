@@ -35,7 +35,7 @@ export class StepsComponent extends InjectablesComponent {
               this.availableSteps[group] = sortBy(this.availableSteps[group], 'order')
             );
             this.rest.getScenarioSteps(scenario).subscribe(steps => {
-              this.scenarioSteps = steps;
+              this.scenarioSteps = sortBy(steps, 'order');
               this._scenStepNames = steps.map(s => s.name);
               this.scenarioSteps.forEach(s => this._assign_step_meta(s));
             })
