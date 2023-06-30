@@ -49,7 +49,7 @@ export class InjectablesComponent implements OnInit {
     if (injectable.editable) {
       const dialogRef = this.dialog.open(InjectableEditDialogComponent, {
         panelClass: 'absolute',
-        // width: '1200px',
+        minWidth: '400px',
         disableClose: true,
         data: { injectable: injectable }
       });
@@ -67,7 +67,6 @@ export class InjectablesComponent implements OnInit {
       const parents = injectable.parents.map(pId => this.injectables.find(inj => inj.id === pId ))
       const dialogRef = this.dialog.open(DerivedInjectableDialogComponent, {
         panelClass: 'absolute',
-        // width: '700px',
         disableClose: true,
         data: { injectable: injectable, parents: parents }
       });

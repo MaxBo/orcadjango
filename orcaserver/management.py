@@ -248,10 +248,10 @@ class OrcaWrapper():
         self.orca.add_injectable(injectable, value)
 
     def start(self, steps, on_success=None, on_error=None):
-        if self.thread and self.thread.isAlive():
+        if self.is_running():
             raise InUseError('Thread is already running')
         self.thread = AbortableThread(
-            target=self.__run, args=(id(self), steps))
+            target=self.__run, args=(steps, ))
         self.thread.on_success = on_success
         self.thread.on_error = on_error
         message = f'Starting run...'
@@ -259,15 +259,15 @@ class OrcaWrapper():
         self.thread.start()
 
     def abort(self):
-        if self.thread and self.thread.isAlive():
+        if self.is_running():
             self.orca.logger.error('aborting...')
             self.thread.abort()
 
     def is_running(self):
-        return self.thread.isAlive() if self.thread else False
+        return self.thread.is_alive() if self.thread else False
 
     def remove(self):
-        if self.is_running(id(self)):
+        if self.is_running():
             raise Exception(
                 'The orca instances can not be reset at the moment.'
                 ' A thread is still running.')

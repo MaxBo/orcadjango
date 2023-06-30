@@ -22,8 +22,8 @@ def apply_injectables(scenario):
     injectables = Injectable.objects.filter(name__in=inj_names,
                                             scenario=scenario)
     for inj in injectables:
-        if inj.can_be_changed:
-            orca.set_value(inj.name, inj.validated_value)
+        if inj.editable:
+            orca.set_value(inj.name, inj.deserialized_value)
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -79,11 +79,12 @@ class ScenarioViewSet(viewsets.ModelViewSet):
                        'with the module. Please synchronize the parameters.')
                 return Response({'message': msg}, status.HTTP_400_BAD_REQUEST)
 
-        active_steps.update(started=False, finished=False, success=False)
+        active_steps.update(started=None, finished=None, success=False)
         apply_injectables(scenario)
+
         orca.clear_log_handlers()
-        orca.add_log_handler(handler)
         handler = ScenarioHandler(scenario)
+        orca.add_log_handler(handler)
 
         run, created = Run.objects.get_or_create(scenario=scenario)
         run.run_by = request.user
@@ -95,10 +96,12 @@ class ScenarioViewSet(viewsets.ModelViewSet):
         def on_success():
             run.success = True
             run.finished = timezone.now()
+            print('success')
             run.save()
         def on_error():
             run.success = False
             run.finished = timezone.now()
+            print('error')
             run.save()
 
         try:

@@ -13,7 +13,7 @@ export class BaseTypeComponent extends BaseInjectableComponent implements OnInit
   @Input() choices!: any[];
   @Input() choiceLabels?: string[];
   @Input() step = 0.01;
-  @Input() type?:  'str' | 'bool' | 'int' | 'float' | 'choice';
+  @Input() type?:  'str' | 'bool' | 'int' | 'float' | 'choice' | 'dataframe' | 'dataset';
 
   ngOnInit() {
     if (!this.type) {
@@ -35,5 +35,8 @@ export class BaseTypeComponent extends BaseInjectableComponent implements OnInit
       this.value = Math.round(Number(this.value));
       this.step = Math.ceil(this.step);
     }
+    // ToDo: make own injectable components for these types
+    if (this.type === 'dataframe' || this.type === 'dataset')
+      this.value = JSON.stringify(this.value);
   }
 }

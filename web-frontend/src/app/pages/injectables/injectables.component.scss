@@ -18,7 +18,7 @@
     font-size: 12px;
 
     td:first-child {
-      background-color: snow;
+      background-color: #ffeeee;
     }
 
     tr {
@@ -30,12 +30,17 @@
     }
 
     tr:hover td:not(:first-child) {
-      background-color: snow;
+      background-color: #ffeeee;
     }
 
     tr.locked td:not(:first-child) {
       background-image: repeating-linear-gradient(
           -45deg, #f1f1f1, #f1f1f1 4px, #fafafa 4px, #fafafa 10px) !important;
+    }
+
+    tr.locked:hover td:not(:first-child) {
+      background-image: repeating-linear-gradient(
+          -45deg, #f1f1f1, #f1f1f1 4px, #ffeeee 4px, #ffeeee 10px) !important;
     }
   }
 }
