@@ -3,8 +3,10 @@ from django.contrib.auth.models import User
 import re
 
 from orcaserver.management import OrcaManager
-from .models import Project, Profile, Scenario, Injectable, Step
+from .models import Project, Profile, Scenario, Injectable, Step, Run
 from .injectables import OrcaTypeMap
+
+DATETIME_FORMAT = "%d.%m.%Y %H:%M:%S"
 
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
@@ -61,14 +63,33 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
 class ScenarioSerializer(serializers.ModelSerializer):
+    last_run = serializers.SerializerMethodField()
+
     class Meta:
         model = Scenario
-        fields =  ('id', 'name', 'project', 'description')
+        fields =  ('id', 'name', 'project', 'description', 'last_run')
 
     def create(self, validated_data):
         instance = super().create(validated_data)
         instance.recreate_injectables()
         return instance
+
+    def get_last_run(self, obj):
+        runs = Run.objects.filter(scenario=obj).order_by('finished')
+        if not runs:
+            return
+        return RunSerializer(runs.last()).data
+
+
+class RunSerializer(serializers.ModelSerializer):
+    started = serializers.DateTimeField(format=DATETIME_FORMAT,
+                                        required=False, read_only=True)
+    finished = serializers.DateTimeField(format=DATETIME_FORMAT,
+                                         required=False, read_only=True)
+    class Meta:
+        model = Run
+        fields =  ('started', 'finished', 'success', 'run_by')
+
 
 
 class ModuleDataSerializer(serializers.Serializer):
@@ -147,7 +168,10 @@ class StepSerializer(serializers.Serializer):
 
 
 class ScenarioStepSerializer(serializers.ModelSerializer):
-
+    started = serializers.DateTimeField(format=DATETIME_FORMAT,
+                                        required=False, read_only=True)
+    finished = serializers.DateTimeField(format=DATETIME_FORMAT,
+                                         required=False, read_only=True)
     class Meta:
         model = Step
         fields = ('id', 'name', 'scenario', 'started', 'finished',

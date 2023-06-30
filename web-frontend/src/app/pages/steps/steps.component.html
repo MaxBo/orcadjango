@@ -41,6 +41,16 @@
             {{step.title || step.name}}
           </mat-panel-title>
           <mat-panel-description>
+            <mat-icon *ngIf="step.finished && step.success"
+                      title="failed"
+                      style="color: green" >
+              done
+            </mat-icon>
+            <mat-icon *ngIf="step.finished && !step.success"
+                      title="success"
+                      style="color: red" class="material-symbols-outlined">
+              cancel
+            </mat-icon>
             <mat-slide-toggle [checked]="step.active"
                               color="primary"
                               style="margin-left: auto"
@@ -50,20 +60,26 @@
           </mat-panel-description>
         </mat-expansion-panel-header>
         <i [innerHTML]="step.description"></i>
-        <h4>Injectables</h4>
-        <table class="striped">
-          <tr *ngFor="let injectable of getInjectables(step)">
-            <td style="padding-right: 15px;">
-              <b>{{injectable.name}}</b>
-            </td>
-            <td style="min-width: 200px;" *ngIf="injectable.value !== undefined">
-              <injectable [injectable]="injectable"></injectable>
-            </td>
-            <td>
-              <button mat-button (click)="editInjectable(injectable)">{{injectable.editable? "EDIT": "SHOW"}}</button>
-            </td>
-          </tr>
-        </table>
+        <p *ngIf="step.started">Started: {{step.started}}</p>
+        <p *ngIf="step.finished">Finished: {{step.finished}}</p>
+        <p *ngIf="step.finished && step.success" style="color: green">Success</p>
+        <p *ngIf="step.finished && !step.success" style="color: red">Failed</p>
+        <ng-container *ngIf="getInjectables(step).length > 0">
+          <h4>Injectables</h4>
+          <table class="striped">
+            <tr *ngFor="let injectable of getInjectables(step)">
+              <td style="padding-right: 15px;">
+                <b>{{injectable.name}}</b>
+              </td>
+              <td style="min-width: 200px;" *ngIf="injectable.value !== undefined">
+                <injectable [injectable]="injectable"></injectable>
+              </td>
+              <td>
+                <button mat-button (click)="editInjectable(injectable)">{{injectable.editable? "EDIT": "SHOW"}}</button>
+              </td>
+            </tr>
+          </table>
+        </ng-container>
       </mat-expansion-panel>
     </mat-accordion>
     <button mat-button (click)="run()">RUN CALCULATIONS</button>

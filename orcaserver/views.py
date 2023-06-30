@@ -96,12 +96,10 @@ class ScenarioViewSet(viewsets.ModelViewSet):
         def on_success():
             run.success = True
             run.finished = timezone.now()
-            print('success')
             run.save()
         def on_error():
             run.success = False
             run.finished = timezone.now()
-            print('error')
             run.save()
 
         try:

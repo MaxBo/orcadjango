@@ -22,11 +22,18 @@ export interface Project {
   created?: string
 }
 
+interface ScenarioRun {
+  success: boolean,
+  started: string,
+  finished: string
+}
+
 export interface Scenario {
   id?: number,
   name: string,
   project?: number,
-  description: string
+  description: string,
+  last_run?: ScenarioRun
 }
 
 export interface Inj {

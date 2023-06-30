@@ -369,12 +369,25 @@ class OrcaWrapper():
                         logger.error(
                             f'{e.__class__.__module__}.'
                             f'{e.__class__.__name__} - {str(e)}')
-                        logger.error('Aborting run')
+                        logger.error(f'{step_name} failed',
+                                     extra={'status': {
+                                         'step': {
+                                             'name': step_name,
+                                             'finished': True,
+                                             'success': False
+                                         }}})
                         if self.thread.on_error:
                             self.thread.on_error()
                         return
                     step.finished = timezone.now()
                     step.active = False
+                    logger.info(f'{step_name} finished',
+                                extra={'status': {
+                                    'step': {
+                                        'name': step_name,
+                                        'finished': True,
+                                        'success': True
+                                    }}})
                     step.save()
 
                     self.orca.clear_cache(scope=_CS_STEP)
