@@ -52,6 +52,7 @@ import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { DerivedInjectableDialogComponent } from './pages/injectables/derived/derived-injectable.component';
 import { ScenarioLogComponent } from './elements/log/scenario-log.component';
 import { UserPreviewComponent } from './pages/projects/user-preview/user-preview.component';
+import { ProfileComponent } from './pages/profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -77,7 +78,8 @@ import { UserPreviewComponent } from './pages/projects/user-preview/user-preview
     GeometryComponent,
     DerivedInjectableDialogComponent,
     ScenarioLogComponent,
-    UserPreviewComponent
+    UserPreviewComponent,
+    ProfileComponent
   ],
     imports: [
         BrowserModule,

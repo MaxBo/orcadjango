@@ -23,10 +23,10 @@ table {
       cursor: pointer;
     }
     tr:hover {
-      background-color: snow!important;
+      background-color: #ffeeee !important;
     }
     tr.selected {
-      background-color: gold!important;
+      border: 3px solid salmon;
     }
   }
 }

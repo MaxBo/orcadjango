@@ -1,0 +1,54 @@
+<div style="width: 500px;">
+  <form [formGroup]="accountForm">
+    <div fxLayout="column">
+      <mat-form-field appearance="fill">
+        <mat-label>username</mat-label>
+        <input matInput formControlName="username" required>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>first name</mat-label>
+        <input matInput formControlName="firstName"/>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>last name</mat-label>
+        <input matInput formControlName="lastName"/>
+      </mat-form-field>
+    </div>
+  </form>
+  <img [src]="imageSrc" *ngIf="imageSrc" style="height: 300px; width:500px">
+  <div fxLayout="row">
+    <mat-label style="margin-right: 10px">Profile picture</mat-label>
+    <button type="button" mat-raised-button (click)="imageInput.click()">Choose File</button>
+    <input #imageInput hidden
+           type="file" accept="image/*"
+           (change)="onImageChange($event.target.files)">
+  </div>
+  <mat-checkbox #passCheck
+                color="primary"
+                style="margin-bottom: 10px;"
+                (change)="onTogglePassChange(passCheck.checked)">
+    Change password
+  </mat-checkbox>
+  <form [formGroup]="passwordForm">
+    <div fxLayout="column">
+      <mat-form-field appearance="fill">
+        <mat-label>password</mat-label>
+        <input matInput formControlName="password"
+               [type]="showAccountPassword ? 'text' : 'password'"
+               placeholder="·········" required>
+        <mat-icon matSuffix (click)="showAccountPassword = !showAccountPassword">
+          {{showAccountPassword? 'visibility': 'visibility_off'}}
+        </mat-icon>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>confirm password</mat-label>
+        <input matInput formControlName="confirmPass"
+               [type]="showAccountPassword ? 'text' : 'password'"
+               placeholder="·········" required>
+        <mat-icon matSuffix (click)="showConfirmPassword = !showConfirmPassword">
+          {{showConfirmPassword? 'visibility': 'visibility_off'}}
+        </mat-icon>
+      </mat-form-field>
+    </div>
+  </form>
+</div>

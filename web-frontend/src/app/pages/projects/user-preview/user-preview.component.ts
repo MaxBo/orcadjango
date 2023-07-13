@@ -10,16 +10,16 @@ export class UserPreviewComponent {
   @Input()
   set user(user: User) {
     this._user = user;
-    this.iconUrl = user.profile.icon;
-    this.color = user.profile.color;
-    if (user.first_name) {
-      this.initials = user.first_name[0];
-      if (user.last_name) {
-        this.initials += user.last_name[0];
+    this.iconUrl = user?.profile?.icon;
+    this.color = user?.profile?.color;
+    if (user?.first_name) {
+      this.initials = user?.first_name[0];
+      if (user?.last_name) {
+        this.initials += user?.last_name[0];
       }
     }
     else {
-      this.initials = user.username[0];
+      this.initials = user?.username[0];
     }
   }
 

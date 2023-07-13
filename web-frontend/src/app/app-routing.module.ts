@@ -7,6 +7,7 @@ import { WelcomeComponent } from "./pages/welcome/welcome.component";
 import { ScenariosComponent } from "./pages/scenarios/scenarios.component";
 import { InjectablesComponent } from "./pages/injectables/injectables.component";
 import { StepsComponent } from "./pages/steps/steps.component";
+import { ProfileComponent } from "./pages/profile/profile.component";
 
 
 const routes: Routes = [
@@ -19,6 +20,12 @@ const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
+    pathMatch: 'full'
+  },
+  {
+    path: 'profile',
+    component: ProfileComponent,
+    canActivate: [AuthGuard],
     pathMatch: 'full'
   },
   {
