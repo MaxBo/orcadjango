@@ -33,21 +33,25 @@
        [routerLinkActiveOptions]="{exact: false}">
       Steps & Run
     </a>
-    <button mat-button [matMenuTriggerFor]="userMenu">
-      <mat-icon>person_outline</mat-icon>
-      {{(auth.user$ | async)?.username || 'not logged in'}}
-    </button>
-    <mat-menu #userMenu>
-      <a *ngIf="(auth.user$ | async) else login"
-         mat-menu-item
-         (click)="auth.logout()" href="">
-        Logout
-      </a>
-      <ng-template #login>
-        <a mat-menu-item routerLink="/login">Login</a>
-      </ng-template>
-    </mat-menu>
   </span>
+  <button mat-button id="userButton" [matMenuTriggerFor]="userMenu">
+    <div style="display: flex; height: 45px;">
+      <span style="line-height: 44px; margin-right: 10px;">
+        {{(auth.user$ | async)?.username || 'not logged in'}}
+      </span>
+      <app-user-preview *ngIf="(auth.user$ | async)" [user]="auth.user$.value"></app-user-preview>
+    </div>
+  </button>
+  <mat-menu #userMenu>
+    <a *ngIf="(auth.user$ | async) else login"
+       mat-menu-item
+       (click)="auth.logout()" href="">
+      Logout
+    </a>
+    <ng-template #login>
+      <a mat-menu-item routerLink="/login">Login</a>
+    </ng-template>
+  </mat-menu>
 </mat-toolbar>
 <mat-sidenav-container class="main-container">
   <mat-sidenav class="sidenav" mode="side" opened
@@ -67,7 +71,11 @@
               [routerLinkActiveOptions]="{exact: false}">
       <ng-container *ngIf="settings.activeProject$ | async; else noProject">
         <mat-card-header>
-          <mat-card-title>Project</mat-card-title>
+          <app-user-preview *ngIf="settings.activeProject$.value?.user"
+                            [user]="settings.getUser(settings.activeProject$.value!.user)"
+                            style="margin-left: auto;"></app-user-preview>
+          <mat-card-title [title]="settings.activeProject$.value?.name">{{settings.activeProject$.value?.name}}</mat-card-title>
+          <mat-card-subtitle [title]="settings.activeProject$.value?.code">{{settings.activeProject$.value?.code}}</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
           <p>{{settings.activeProject$.value?.name}}</p>

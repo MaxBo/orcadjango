@@ -13,6 +13,11 @@
   padding-left: 0;
 }
 
+#userButton {
+  align-self: center;
+  margin-left: auto;
+}
+
 .main-container {
   position: absolute;
   top: 64px;
@@ -33,7 +38,7 @@
   background-color: #343434;
 
   .active-link {
-    border: 3px solid gold;
+    border: 3px solid salmon;
   }
 
   .mat-drawer-inner-container {
@@ -48,13 +53,14 @@
 }
 
 .mat-toolbar {
+  padding-left: 10px;
   .link, .navbar-brand {
     text-decoration: none;
     color: #00000099;
   }
 
   .navbar-brand {
-    width: 200px;
+    width: 190px;
   }
 
   .link {

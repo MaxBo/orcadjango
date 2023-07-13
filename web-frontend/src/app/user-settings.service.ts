@@ -95,4 +95,8 @@ export class UserSettingsService {
       this.connect();
     };
   }
+
+  getUser(id: number | undefined): User | undefined {
+    return this.users.find(user => user.id === id);
+  }
 }

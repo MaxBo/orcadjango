@@ -51,6 +51,7 @@ import { GeometryComponent } from './elements/injectable/geometry/geometry.compo
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { DerivedInjectableDialogComponent } from './pages/injectables/derived/derived-injectable.component';
 import { ScenarioLogComponent } from './elements/log/scenario-log.component';
+import { UserPreviewComponent } from './pages/projects/user-preview/user-preview.component';
 
 @NgModule({
   declarations: [
@@ -75,7 +76,8 @@ import { ScenarioLogComponent } from './elements/log/scenario-log.component';
     DictComponent,
     GeometryComponent,
     DerivedInjectableDialogComponent,
-    ScenarioLogComponent
+    ScenarioLogComponent,
+    UserPreviewComponent
   ],
     imports: [
         BrowserModule,

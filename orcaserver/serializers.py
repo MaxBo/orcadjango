@@ -13,7 +13,7 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('icon', )
+        fields = ('icon', 'color')
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -75,6 +75,7 @@ class ScenarioSerializer(serializers.ModelSerializer):
         return instance
 
     def get_last_run(self, obj):
+        # actually atm there will only be one, just in case
         runs = Run.objects.filter(scenario=obj).order_by('finished')
         if not runs:
             return

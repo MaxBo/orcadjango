@@ -16,4 +16,5 @@ export class ProjectGridViewComponent {
   @Output() onCreateProject = new EventEmitter<boolean>();
 
   constructor(protected settings: UserSettingsService) {}
+
 }

@@ -4,11 +4,17 @@ import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 
+interface Profile {
+  color: string;
+  icon: string;
+}
+
 export interface User {
   id: number,
   username: string,
   first_name: string,
-  last_name: string
+  last_name: string,
+  profile: Profile
 }
 
 export interface Project {

@@ -27,7 +27,7 @@
     </mat-expansion-panel>
   </mat-accordion>
 
-  <div id="scenario-steps" [ngClass]="{'deactivated': (stepsLoading$ | async)}">
+  <div id="scenario-steps" [ngClass]="{'deactivated': (stepsLoading$ | async)}" style="min-width: 500px">
     <mat-accordion cdkDropList
                    #scenarioStepList="cdkDropList"
                    [cdkDropListData]="scenarioSteps"
@@ -85,7 +85,9 @@
     <button mat-button (click)="run()">RUN CALCULATIONS</button>
   </div>
 
-  <div style="width: 300px">
-    <app-scenario-log></app-scenario-log>
-  </div>
+  <mat-card style="width: 800px; height: 600px;">
+    <mat-card-content style="height: 100%;">
+      <app-scenario-log height="calc(100% - 30px)"></app-scenario-log>
+    </mat-card-content>
+  </mat-card>
 </div>
