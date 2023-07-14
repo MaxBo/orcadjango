@@ -1,4 +1,5 @@
-<div class="user-prev" style="color: {{color}}; border-color: {{color}}">
+<div *ngIf="!_user?.profile?.icon" class="user-prev" style="color: {{color}}; border-color: {{color}}">
   <div *ngIf="!_user">-</div>
-  <div *ngIf="_user">{{initials}}</div>
+  <div *ngIf="_user && !_user.profile.icon">{{initials}}</div>
 </div>
+<img *ngIf="_user?.profile?.icon" class="user-prev" [style.background-image]="'url(' + _user?.profile?.icon + ')'" style="border-color: {{color}}">

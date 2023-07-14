@@ -34,10 +34,14 @@ urlpatterns = [
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('api/token/refresh/', TokenRefreshView.as_view(),
          name='token_refresh'),
-    re_path('', IndexView.as_view(), name='home'),
+    # match all routes to the home page (entry point to angular) to let angular
+    # handle the routing, /api and /static routes are still handled by django
+    # automatically, for some reason /media is not, so it is excluded here
+    re_path('^(?!media).*', IndexView.as_view(), name='home'),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 websocket_urlpatterns = [
     re_path(r'ws/scenariolog/(?P<scenario_id>\w+)/$', ScenarioLogConsumer.as_asgi()),

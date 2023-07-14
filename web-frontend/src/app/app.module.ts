@@ -53,6 +53,7 @@ import { DerivedInjectableDialogComponent } from './pages/injectables/derived/de
 import { ScenarioLogComponent } from './elements/log/scenario-log.component';
 import { UserPreviewComponent } from './pages/projects/user-preview/user-preview.component';
 import { ProfileComponent } from './pages/profile/profile.component';
+import { ColorPickerModule } from "ngx-color-picker";
 
 @NgModule({
   declarations: [
@@ -106,7 +107,8 @@ import { ProfileComponent } from './pages/profile/profile.component';
         MatSlideToggleModule,
         MatCheckboxModule,
         MatDividerModule,
-        MatButtonToggleModule
+        MatButtonToggleModule,
+        ColorPickerModule
     ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }

@@ -212,6 +212,10 @@ export class RestService {
     return this.http.get<Inj>(`${injUrl}${id}/`);
   }
 
+  patchUser(id: number, data: FormData): Observable<User> {
+    return this.http.patch<User>(`${this.URLS.users}${id}/`, data);
+  }
+
   resetInjectables(scenario: Scenario): Observable<Inj[]> {
     const injUrl = this.URLS.injectables.replace('{scenarioId}', scenario.id!.toString());
     return this.http.post<Inj[]>(`${injUrl}reset/`, {});

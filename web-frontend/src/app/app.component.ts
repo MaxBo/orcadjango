@@ -10,5 +10,7 @@ import { AuthService } from "./auth.service";
 export class AppComponent {
   title = 'web-frontend';
 
-  constructor(protected settings: UserSettingsService, protected auth: AuthService) {}
+  constructor(protected settings: UserSettingsService, protected auth: AuthService) {
+    this.auth.getCurrentUser().subscribe();
+  }
 }

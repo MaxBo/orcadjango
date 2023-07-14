@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from collections import OrderedDict
 import re
 
 from orcaserver.management import OrcaManager
@@ -18,11 +19,27 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(required=False)
+    password = serializers.CharField(write_only=True, required=False)
 
     class Meta:
         model = User
         fields = ('id', 'username', 'first_name', 'last_name',
-                  'is_superuser', 'profile')
+                  'is_superuser', 'profile', 'password')
+
+    def to_internal_value(self, data):
+        value = super().to_internal_value(data)
+        # manual parsing of profile
+        # didn't get parsing of nested multiform data to work otherwise
+        profile = OrderedDict()
+        for k in data.keys():
+            match = re.search(r'profile\[(.*?)\]', k)
+            if not match:
+                continue
+            skey = match.group(1)
+            profile[skey] = data[k]
+        if profile:
+            value['profile'] = profile
+        return value
 
     def create(self, validated_data):
         profile_data = validated_data.pop('profile', {})
@@ -34,15 +51,22 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
     def update(self, instance, validated_data):
+        # ToDo: return permission error or move to view permissions
+        user = self.context['request'].user
+        if not user or user.id != instance.id and not user.is_superuser:
+            return instance
         profile_data = validated_data.pop('profile', {})
-        profile = instance.profile
-        if not profile:
-            profile = Profile(user=instance)
-            instance.profile = profile
-        for k, v in profile_data.items():
-            setattr(profile, k, v)
+        password = validated_data.pop('password', None)
+        if profile_data:
+            if not instance.profile:
+                profile = Profile.objects.create(user=instance)
+            profile = ProfileSerializer().update(instance.profile, profile_data)
         profile.save()
-        return super().update(instance, validated_data)
+        instance = super().update(instance, validated_data)
+        if password:
+            instance.set_password(password)
+            instance.save()
+        return instance
 
 
 class ProjectSerializer(serializers.ModelSerializer):
