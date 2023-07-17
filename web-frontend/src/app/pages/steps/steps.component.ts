@@ -20,28 +20,31 @@ export class StepsComponent extends InjectablesComponent {
     this.settings.activeScenario$.subscribe(scenario => {
       this.availableSteps = {};
       this.scenarioSteps = [];
-      if (scenario) {
-        this.rest.getInjectables(scenario).subscribe(injectables => {
-          this.injectables = injectables;
-          this.rest.getAvailableSteps(this.settings.module$.value).subscribe(steps => {
-            this.availableSteps = {};
-            steps.forEach(step => {
-              const group = step.group || '';
-              if (!this.availableSteps[group])
-                this.availableSteps[group] = [];
-              this.availableSteps[group].push(step);
-            })
-            Object.keys(this.availableSteps).forEach(group =>
-              this.availableSteps[group] = sortBy(this.availableSteps[group], 'order')
-            );
-            this.rest.getScenarioSteps(scenario).subscribe(steps => {
-              this.scenarioSteps = sortBy(steps, 'order');
-              this._scenStepNames = steps.map(s => s.name);
-              this.scenarioSteps.forEach(s => this._assign_step_meta(s));
-            })
-          });
+      if (!scenario) return;
+      this.settings.setLoading(true);
+      this.rest.getInjectables(scenario).subscribe(injectables => {
+        this.injectables = injectables;
+        this.rest.getAvailableSteps(this.settings.module$.value).subscribe(steps => {
+          this.availableSteps = {};
+          steps.forEach(step => {
+            const group = step.group || '';
+            if (!this.availableSteps[group])
+              this.availableSteps[group] = [];
+            this.availableSteps[group].push(step);
+          })
+          Object.keys(this.availableSteps).forEach(group => {
+              // this.availableSteps[group] = sortBy(this.availableSteps[group], 'name');
+              this.availableSteps[group] = sortBy(this.availableSteps[group], 'order');
+            }
+          );
+          this.rest.getScenarioSteps(scenario).subscribe(steps => {
+            this.scenarioSteps = sortBy(steps, 'order');
+            this._scenStepNames = steps.map(s => s.name);
+            this.scenarioSteps.forEach(s => this._assign_step_meta(s));
+            this.settings.setLoading(false);
+          })
         });
-      }
+      });
     })
   }
 

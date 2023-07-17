@@ -23,8 +23,10 @@ export class ScenariosComponent implements OnInit {
     const viewType = this.cookies.get('scenario-view-type');
     if (viewType === 'list-view') this.viewType = 'list-view';
     this.settings.activeProject$.subscribe(project => {
+      this.settings.setLoading(true);
       this.rest.getScenarios({ project: project }).subscribe(scenarios => {
         this.scenarios = scenarios;
+        this.settings.setLoading(false);
       });
     })
   }

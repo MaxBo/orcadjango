@@ -110,6 +110,9 @@
     </mat-card>
   </mat-sidenav>
   <mat-sidenav-content class="app-container">
+    <div class="loadOverlay" *ngIf="settings.isLoading$ | async">
+      <mat-spinner [diameter]="50"></mat-spinner>
+    </div>
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>

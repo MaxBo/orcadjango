@@ -23,8 +23,10 @@ export class ProjectsComponent implements OnInit{
     const viewType = this.cookies.get('project-view-type');
     if (viewType === 'list-view') this.viewType = 'list-view';
     this.settings.module$.subscribe(module => {
+      this.settings.setLoading(true);
       this.rest.getProjects({ module: module }).subscribe(projects => {
         this.projects = projects;
+        this.settings.setLoading(false);
       });
     })
   }

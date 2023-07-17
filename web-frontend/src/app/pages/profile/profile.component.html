@@ -24,7 +24,7 @@
     <div fxLayout="row" style="align-items: center; margin: 5px 0 15px 0;">
       <img id="image-preview" [style.background-image]="'url(' + imageSrc + ')'" [style.border-color]="colorSelection">
   <!--    <button type="button" mat-raised-button (click)="imageInput.click()">Choose File</button>-->
-      <input #imageInput style="margin-left: 10px;"
+      <input style="margin-left: 10px;"
              type="file" accept="image/*"
              (change)="onImageChange($event.target.files)">
     </div>

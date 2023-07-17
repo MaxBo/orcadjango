@@ -1,7 +1,6 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Inj, RestService } from "../../rest-api";
 import { UserSettingsService } from "../../user-settings.service";
-import { ProjectEditDialogComponent, ProjectEditDialogData } from "../projects/edit/project-edit.component";
 import { MatDialog } from "@angular/material/dialog";
 import { InjectableEditDialogComponent } from "./edit/injectable-edit.component";
 import { DerivedInjectableDialogComponent } from "./derived/derived-injectable.component";
@@ -21,27 +20,31 @@ export function sortBy(array: any[], attr: string, options: { reverse: boolean }
 })
 export class InjectablesComponent implements OnInit {
   // grouped injectables
-  groupedInjectables: Record<string, Inj[]> = {};
+  groupedInjectables?: Record<string, Inj[]>;
   protected injectables: Inj[] = [];
 
   constructor(protected rest: RestService, protected settings: UserSettingsService, protected dialog: MatDialog){}
 
   ngOnInit() {
     this.settings.activeScenario$.subscribe(scenario => {
-      if (scenario)
-        this.rest.getInjectables(scenario).subscribe(injectables => {
-          this.injectables = injectables;
-          // this.groups = [...new Set(injectables.map(injectable => injectable.group))].sort();
-          this.groupedInjectables = {};
-          injectables.forEach(inj => {
-            if (!this.groupedInjectables[inj.group])
-              this.groupedInjectables[inj.group] = [];
-            this.groupedInjectables[inj.group].push(inj);
-          })
-          Object.keys(this.groupedInjectables).forEach(group =>
-            this.groupedInjectables[group] = sortBy(this.groupedInjectables[group], 'order')
-          );
+      if (!scenario) return;
+      this.settings.setLoading(true);
+      this.rest.getInjectables(scenario).subscribe(injectables => {
+        this.injectables = injectables;
+        // this.groups = [...new Set(injectables.map(injectable => injectable.group))].sort();
+        this.groupedInjectables = {};
+        injectables.forEach(inj => {
+          if (!this.groupedInjectables![inj.group])
+            this.groupedInjectables![inj.group] = [];
+          this.groupedInjectables![inj.group].push(inj);
         })
+        Object.keys(this.groupedInjectables).forEach(group => {
+            // this.groupedInjectables[group] = sortBy(this.groupedInjectables[group], 'name');
+            this.groupedInjectables![group] = sortBy(this.groupedInjectables![group], 'order');
+          }
+        );
+        this.settings.setLoading(false);
+      })
     })
   }
 
