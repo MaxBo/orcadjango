@@ -2,21 +2,21 @@ import { Component, Input, OnInit } from '@angular/core';
 import { BaseInjectableComponent } from "../injectable.component";
 
 @Component({
-  selector: 'dict',
+  selector: 'inj-dict',
   templateUrl: './dict.component.html',
   styleUrls: ['./dict.component.scss'],
   inputs: ['edit'],
   outputs: ['valueChanged']
 })
 export class DictComponent extends BaseInjectableComponent implements OnInit {
-  @Input() dict!: Record<string, any>;
+  @Input() value!: Record<string, any>;
   keys: string[] = [];
   values: any[] = [];
   protected JSON = JSON;
 
   ngOnInit() {
-    this.keys = Object.keys(this.dict);
-    this.values = Object.values(this.dict);
+    this.keys = Object.keys(this.value);
+    this.values = Object.values(this.value);
   }
 
   onValueChanged(key: string, value: any, index: number) {

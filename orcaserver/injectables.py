@@ -188,13 +188,13 @@ class GeometryConverter(OrcaTypeMap):
 
 class DateConverter(OrcaTypeMap):
     data_type = datetime.date
-    date_format = '%d.%m.%Y'
+    date_format = '%Y-%m-%d'
     form_field = forms.DateField
 
-    def to_str(self, value):
-        if not value:
-            return ''
-        return value.strftime(self.date_format)
+    #def to_str(self, value):
+        #if not value:
+            #return ''
+        #return value.strftime(self.date_format)
 
     def to_value(self, text):
         if not text:

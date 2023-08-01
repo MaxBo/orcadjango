@@ -1,0 +1,15 @@
+<ng-container *ngIf="edit; else preview">
+  <mat-form-field>
+    <mat-label>Choose a date</mat-label>
+    <input matInput
+           [matDatepicker]="picker"
+           [(ngModel)]="date"
+           (ngModelChange)="onValueChanged()">
+    <mat-hint>MM/DD/YYYY</mat-hint>
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+</ng-container>
+<ng-template #preview>
+  {{toRepr()}}
+</ng-template>

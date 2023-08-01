@@ -54,6 +54,23 @@ import { ScenarioLogComponent } from './elements/log/scenario-log.component';
 import { UserPreviewComponent } from './pages/projects/user-preview/user-preview.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { ColorPickerModule } from "ngx-color-picker";
+import { DateComponent } from './elements/injectable/date/date.component';
+import { MatDatepickerModule } from "@angular/material/datepicker";
+import { MatNativeDateModule } from '@angular/material/core';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MomentDateAdapter } from '@angular/material-moment-adapter';
+
+const DATE_FORMAT = {
+  parse: {
+    dateInput: 'DD.MM.YYYY',
+  },
+  display: {
+    dateInput: 'DD.MM.YYYY',
+    monthYearLabel: 'MMMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY'
+  }
+};
 
 @NgModule({
   declarations: [
@@ -80,7 +97,8 @@ import { ColorPickerModule } from "ngx-color-picker";
     DerivedInjectableDialogComponent,
     ScenarioLogComponent,
     UserPreviewComponent,
-    ProfileComponent
+    ProfileComponent,
+    DateComponent
   ],
     imports: [
         BrowserModule,
@@ -108,10 +126,14 @@ import { ColorPickerModule } from "ngx-color-picker";
         MatCheckboxModule,
         MatDividerModule,
         MatButtonToggleModule,
-        ColorPickerModule
+        ColorPickerModule,
+        MatDatepickerModule,
+        MatNativeDateModule
     ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
+    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    { provide: MAT_DATE_FORMATS, useValue: DATE_FORMAT }
   ],
   bootstrap: [AppComponent]
 })

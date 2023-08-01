@@ -88,6 +88,13 @@ export class StepsComponent extends InjectablesComponent {
     })
   }
 
+  removeStep(step: ScenarioStep): void {
+    this.rest.deleteScenarioStep(step).subscribe(() => {
+      const idx = this.scenarioSteps.indexOf(step);
+      this.scenarioSteps.splice(idx, 1);
+    });
+  }
+
   getInjectables(step: ScenarioStep): Inj[] {
     return this.injectables.filter(inj => step.injectables?.includes(inj.name));
   }

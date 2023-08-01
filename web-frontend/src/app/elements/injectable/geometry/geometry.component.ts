@@ -17,7 +17,7 @@ import { FullScreen } from "ol/control";
 import { FeatureLike } from "ol/Feature";
 
 @Component({
-  selector: 'geometry',
+  selector: 'inj-geometry',
   templateUrl: './geometry.component.html',
   styleUrls: ['./geometry.component.scss', '../../../../../node_modules/ol/ol.css'],
   inputs: ['edit'],

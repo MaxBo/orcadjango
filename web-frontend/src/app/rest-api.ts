@@ -240,6 +240,11 @@ export class RestService {
     return this.http.post<ScenarioStep>(url, { name: stepName, order: order });
   }
 
+  deleteScenarioStep(step: ScenarioStep): Observable<Project> {
+    const url = this.URLS.scenarioSteps.replace('{scenarioId}', step.scenario.toString());
+    return this.http.delete<Project>(`${url}${step.id}/`);
+  }
+
   patchScenarioStep(step: ScenarioStep, options?:{ active?: boolean, order?: number }): Observable<ScenarioStep>{
     const url = this.URLS.scenarioSteps.replace('{scenarioId}', step.scenario.toString());
     return this.http.patch<ScenarioStep>(`${url}${step.id}/`, options);

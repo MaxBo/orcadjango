@@ -42,28 +42,32 @@
           </mat-panel-title>
           <mat-panel-description>
             <mat-icon *ngIf="step.finished && step.success"
-                      title="failed"
+                      title="success"
                       style="color: green" >
               done
             </mat-icon>
             <mat-icon *ngIf="step.finished && !step.success"
-                      title="success"
+                      title="failed"
                       style="color: red" class="material-symbols-outlined">
               cancel
             </mat-icon>
-            <mat-slide-toggle [checked]="step.active"
-                              color="primary"
-                              style="margin-left: auto"
-                              (click)="$event.stopPropagation();"
-                              (change)="toggleActive($event.checked, step)" >
-            </mat-slide-toggle>
+            <div style="margin-left: auto; display: flex; align-items: center;">
+              <mat-slide-toggle [checked]="step.active"
+                                color="primary"
+                                (click)="$event.stopPropagation();"
+                                (change)="toggleActive($event.checked, step)" >
+              </mat-slide-toggle>
+              <button mat-button (click)="removeStep(step); $event.stopPropagation();" title="Remove step">
+                <mat-icon style="color: red;" class="material-icons-outlined">delete_forever</mat-icon>
+              </button>
+            </div>
           </mat-panel-description>
         </mat-expansion-panel-header>
         <i [innerHTML]="step.description"></i>
         <p *ngIf="step.started">Started: {{step.started}}</p>
         <p *ngIf="step.finished">Finished: {{step.finished}}</p>
         <p *ngIf="step.finished && step.success" style="color: green">Success</p>
-        <p *ngIf="step.finished && !step.success" style="color: red">Failed</p>
+        <p *ngIf="step.finished && !step.success" style="color: red;">Failed</p>
         <ng-container *ngIf="getInjectables(step).length > 0">
           <h4>Injectables</h4>
           <table class="striped">

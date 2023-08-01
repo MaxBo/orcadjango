@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { BaseInjectableComponent } from "../injectable.component";
 
 @Component({
-  selector: 'base-type',
+  selector: 'inj-base-type',
   templateUrl: './base-type.component.html',
   styleUrls: ['./base-type.component.scss'],
   inputs: ['edit'],

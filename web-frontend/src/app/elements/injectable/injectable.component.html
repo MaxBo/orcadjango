@@ -7,21 +7,26 @@
 </ng-container>
 <ng-container *ngIf="!multipleChoice" [ngSwitch]="injectable.datatype">
   <ng-container *ngSwitchCase="'dict'">
-    <dict [dict]="injectable.value"
-          [edit]="edit"
-          (valueChanged)="valueChanged.emit($event)"></dict>
+    <inj-dict [value]="injectable.value"
+              [edit]="edit"
+              (valueChanged)="valueChanged.emit($event)"></inj-dict>
   </ng-container>
   <ng-container *ngSwitchCase="'geometry'">
-    <geometry [wkt]="injectable.value"
+    <inj-geometry [wkt]="injectable.value"
+                  [edit]="edit"
+                  (valueChanged)="valueChanged.emit($event)"></inj-geometry>
+  </ng-container>
+  <ng-container *ngSwitchCase="'date'">
+    <inj-date [value]="injectable.value"
               [edit]="edit"
-              (valueChanged)="valueChanged.emit($event)"></geometry>
+              (valueChanged)="valueChanged.emit($event)"></inj-date>
   </ng-container>
   <ng-container *ngSwitchDefault>
     <div *ngFor="let value of values; let idx = index;">
-      <base-type [value]="value"
-                 [type]="injectable.datatype"
-                 [edit]="edit"
-                 (valueChanged)="valueChanged.emit($event)"></base-type>
+      <inj-base-type [value]="value"
+                     [type]="injectable.datatype"
+                     [edit]="edit"
+                     (valueChanged)="valueChanged.emit($event)"></inj-base-type>
     </div>
     <div *ngIf="injectable.multi && edit">
       <button mat-button color="secondary">+ Add</button>
