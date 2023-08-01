@@ -9,30 +9,38 @@
        [routerLinkActiveOptions]="{exact: false}">
       Projects
     </a>
-    <a *ngIf="settings.activeProject$ | async"
-       class="link"
-       title="scenarios"
-       routerLink="/scenarios"
-       routerLinkActive="active-link"
-       [routerLinkActiveOptions]="{exact: false}">
-      Scenarios
-    </a>
-    <a *ngIf="settings.activeScenario$ | async"
-       class="link"
-       title="injectables"
-       routerLink="/injectables"
-       routerLinkActive="active-link"
-       [routerLinkActiveOptions]="{exact: false}">
-      Injectables
-    </a>
-    <a *ngIf="settings.activeScenario$ | async"
-       class="link"
-       title="steps and run"
-       routerLink="/steps"
-       routerLinkActive="active-link"
-       [routerLinkActiveOptions]="{exact: false}">
-      Steps & Run
-    </a>
+    <ng-container *ngIf="settings.activeProject$ | async">
+      <mat-icon iconPositionEnd>arrow_right</mat-icon>
+      <a *ngIf="settings.activeProject$ | async"
+         class="link"
+         title="scenarios"
+         routerLink="/scenarios"
+         routerLinkActive="active-link"
+         [routerLinkActiveOptions]="{exact: false}">
+        Scenarios
+      </a>
+    </ng-container>
+    <ng-container *ngIf="settings.activeScenario$ | async">
+      <mat-icon iconPositionEnd>arrow_right</mat-icon>
+      <a *ngIf="settings.activeScenario$ | async"
+         class="link"
+         title="injectables"
+         routerLink="/injectables"
+         routerLinkActive="active-link"
+         [routerLinkActiveOptions]="{exact: false}">
+        Injectables
+      </a>
+    </ng-container>
+    <ng-container *ngIf="settings.activeScenario$ | async">
+      <mat-icon iconPositionEnd>arrow_right</mat-icon>
+      <a class="link"
+         title="steps and run"
+         routerLink="/steps"
+         routerLinkActive="active-link"
+         [routerLinkActiveOptions]="{exact: false}">
+        Steps & Run
+      </a>
+    </ng-container>
   </span>
   <button mat-button id="userButton" [matMenuTriggerFor]="userMenu">
     <div style="display: flex; height: 45px;">
@@ -114,7 +122,7 @@
     </ng-container>
   </mat-sidenav>
   <mat-sidenav-content class="app-container">
-    <div class="loadOverlay" *ngIf="settings.isLoading$ | async">
+    <div class="load-overlay" *ngIf="settings.isLoading$ | async">
       <mat-spinner [diameter]="50"></mat-spinner>
     </div>
     <router-outlet></router-outlet>

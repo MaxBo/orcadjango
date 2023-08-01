@@ -16,7 +16,7 @@ export class ProjectsComponent implements OnInit{
   viewType: 'list-view' | 'grid-view' = 'grid-view';
   @ViewChild('deleteProjectTemplate') deleteProjectTemplate?: TemplateRef<any>;
 
-  constructor(private rest: RestService, private dialog: MatDialog, private settings: UserSettingsService,
+  constructor(private rest: RestService, private dialog: MatDialog, protected settings: UserSettingsService,
               private cookies: CookieService) {}
 
   ngOnInit() {

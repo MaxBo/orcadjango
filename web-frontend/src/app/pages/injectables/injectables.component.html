@@ -1,47 +1,59 @@
-<table *ngIf="groupedInjectables" id="injectables-table" class="striped">
-  <thead>
-    <th>
-      Group
-    </th>
-    <th>Parameter</th>
-    <th>Description</th>
-    <th>Datatype</th>
-    <th>multi</th>
-    <th>has choices</th>
-    <th>Value</th>
-    <th></th>
-  </thead>
-  <tbody>
-    <ng-container *ngFor="let group of groupedInjectables | keyvalue;">
-      <ng-container *ngFor="let injectable of group.value; let first = first; let last = last;">
-        <tr [ngClass]="{'bb': last, 'locked': !injectable.editable}"
-            (click)="editInjectable(injectable)"
-            [title]="'Wert von ' + injectable.name + (injectable.editable? ' editieren': ' ansehen (abgeleitet)')">
-          <td>
-            <b *ngIf="first">{{group.key}}</b>
-          </td>
-          <td>
-            <b>{{injectable.name}}</b>
-          </td>
-          <td>
-            <i [innerHTML]="injectable.description"></i>
-          </td>
-          <td>
-            {{injectable.datatype}}
-          </td>
-          <td>
-            {{injectable.multi}}
-          </td>
-          <td>
-            {{!!injectable.choices}}
-          </td>
-          <td style="min-width: 200px;">
-            <injectable *ngIf="injectable.value !== undefined"
-                        [injectable]="injectable"
-                        (click)="$event.stopPropagation()"></injectable>
-          </td>
-        </tr>
-      </ng-container>
-    </ng-container>
-  </tbody>
-</table>
+<ng-container *ngIf="groupedInjectables">
+  <div style="width: calc(100% - 100px)">
+    <table id="injectables-table"
+           class="striped">
+      <thead>
+        <th>
+          Group
+        </th>
+        <th>Parameter</th>
+        <th>Description</th>
+        <th>Datatype</th>
+        <th>multi</th>
+        <th>has choices</th>
+        <th>Value</th>
+        <th></th>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let group of groupedInjectables | keyvalue;">
+          <ng-container *ngFor="let injectable of group.value; let first = first; let last = last;">
+            <tr [ngClass]="{'bb': last, 'locked': !injectable.editable}"
+                (click)="editInjectable(injectable)"
+                [title]="'Wert von ' + injectable.name + (injectable.editable? ' editieren': ' ansehen (abgeleitet)')">
+              <td>
+                <b *ngIf="first">{{group.key}}</b>
+              </td>
+              <td>
+                <b>{{injectable.name}}</b>
+              </td>
+              <td>
+                <i [innerHTML]="injectable.description"></i>
+              </td>
+              <td>
+                {{injectable.datatype}}
+              </td>
+              <td>
+                {{injectable.multi}}
+              </td>
+              <td>
+                {{!!injectable.choices}}
+              </td>
+              <td style="min-width: 200px;">
+                <injectable *ngIf="injectable.value !== undefined"
+                            [injectable]="injectable"
+                            (click)="$event.stopPropagation()"></injectable>
+              </td>
+            </tr>
+          </ng-container>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+  <button mat-button
+          class="next"
+          style="right: 30px;"
+          routerLink="/steps">
+    Next
+    <mat-icon iconPositionEnd>arrow_right</mat-icon>
+  </button>
+</ng-container>

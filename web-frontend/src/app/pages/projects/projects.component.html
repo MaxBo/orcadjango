@@ -1,35 +1,43 @@
-<div style="display: flex; margin-bottom: 20px;">
-  <mat-icon title="Grid View"
-            class="view-switch material-symbols-outlined"
-            [class.active]="viewType==='grid-view'"
-            (click)="changeView('grid-view')">
-    grid_view
-  </mat-icon>
-  <mat-icon title="List View"
-            class="view-switch material-symbols-outlined"
-            [class.active]="viewType==='list-view'"
-            (click)="changeView('list-view')">
-    list
-  </mat-icon>
+<div style="width: calc(100% - 100px)">
+  <div style="display: flex; margin-bottom: 20px;">
+    <mat-icon title="Grid View"
+              class="view-switch material-symbols-outlined"
+              [class.active]="viewType==='grid-view'"
+              (click)="changeView('grid-view')">
+      grid_view
+    </mat-icon>
+    <mat-icon title="List View"
+              class="view-switch material-symbols-outlined"
+              [class.active]="viewType==='list-view'"
+              (click)="changeView('list-view')">
+      list
+    </mat-icon>
+  </div>
+  <ng-container [ngSwitch]="viewType">
+    <app-project-grid-view *ngSwitchCase="'grid-view'"
+                           [projects]="projects"
+                           (onCreateProject)="onCreateProject()"
+                           (onDeleteProject)="deleteProject($event)"
+                           (onEditProject)="editProject($event)"
+                           (onArchiveProject)="archiveProject($event.project, $event.archive)"
+                           (onProjectSelected)="selectProject($event)">
+    </app-project-grid-view>
+    <app-project-list-view *ngSwitchCase="'list-view'"
+                           [projects]="projects"
+                           (onCreateProject)="onCreateProject()"
+                           (onDeleteProject)="deleteProject($event)"
+                           (onEditProject)="editProject($event)"
+                           (onArchiveProject)="archiveProject($event.project, $event.archive)"
+                           (onProjectSelected)="selectProject($event)">
+    </app-project-list-view>
+  </ng-container>
 </div>
-<ng-container [ngSwitch]="viewType">
-  <app-project-grid-view *ngSwitchCase="'grid-view'"
-                 [projects]="projects"
-                 (onCreateProject)="onCreateProject()"
-                 (onDeleteProject)="deleteProject($event)"
-                 (onEditProject)="editProject($event)"
-                 (onArchiveProject)="archiveProject($event.project, $event.archive)"
-                 (onProjectSelected)="selectProject($event)">
-  </app-project-grid-view>
-  <app-project-list-view *ngSwitchCase="'list-view'"
-                 [projects]="projects"
-                 (onCreateProject)="onCreateProject()"
-                 (onDeleteProject)="deleteProject($event)"
-                 (onEditProject)="editProject($event)"
-                 (onArchiveProject)="archiveProject($event.project, $event.archive)"
-                 (onProjectSelected)="selectProject($event)">
-  </app-project-list-view>
-</ng-container>
+<button mat-button *ngIf="settings.activeProject$ | async"
+        class="next"
+        routerLink="/scenarios">
+  Next
+  <mat-icon iconPositionEnd>arrow_right</mat-icon>
+</button>
 
 <ng-template #deleteProjectTemplate>
   <p>Do you really want to delete the project?</p>

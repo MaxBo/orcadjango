@@ -55,23 +55,28 @@
     color: #00000099;
   }
 
+  mat-icon {
+    align-self: center;
+  }
+
   .navbar-brand {
     width: 190px;
   }
 
   .link {
-    padding: 17px 10px 0 10px;
+    text-align: center;
   }
 
   .page-links {
     display: flex;
-    height: 100%;
+    //height: 100%;
     color: #00000099;
     transition: font-size 0.2s;
   }
 
   .page-links .link {
-    margin-right: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
     transition: font-size 0.2s, color 0.3s, border-bottom-color 0.4s;
   }
 
@@ -115,7 +120,7 @@
   border-color: salmon;
 }
 
-.loadOverlay {
+.load-overlay {
   position: fixed;
   width: 100%;
   height: 100%;

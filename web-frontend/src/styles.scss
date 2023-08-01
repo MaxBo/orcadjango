@@ -67,7 +67,7 @@ table.striped {
   }
 }
 
-.loadOverlay {
+.load-overlay {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -78,4 +78,10 @@ table.striped {
   background-color: rgba(0,0,0,0.2);
   z-index: 100;
   cursor: not-allowed;
+}
+
+button.next {
+  position: fixed;
+  top: 50%;
+  right: 20px;
 }
