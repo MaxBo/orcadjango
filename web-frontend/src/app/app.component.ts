@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Injectable, Input, Output } from '@angular/core';
+import { Component, Injectable } from '@angular/core';
 import { UserSettingsService } from "./user-settings.service";
 import { AuthService } from "./auth.service";
 import { BehaviorSubject } from "rxjs";

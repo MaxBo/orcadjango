@@ -52,7 +52,13 @@
   </button>
   <mat-menu #userMenu>
     <ng-container *ngIf="(auth.user$ | async) else login">
-      <a mat-menu-item routerLink="/profile">
+      <a mat-menu-item
+         *ngIf="(settings.user$ | async)?.is_superuser"
+         [href]="settings.host + '/admin/'" target="_blank">
+        Django Admin
+      </a>
+      <a mat-menu-item
+         routerLink="/profile">
         Profile
       </a>
       <a mat-menu-item
@@ -65,6 +71,7 @@
     </ng-template>
   </mat-menu>
 </mat-toolbar>
+
 <mat-sidenav-container class="main-container">
   <mat-sidenav class="sidenav" mode="side" opened
                *ngIf="auth.user$ | async">

@@ -12,6 +12,7 @@ export class UserSettingsService {
   user$ = new BehaviorSubject<User | undefined>(undefined);
   module$ = new BehaviorSubject<string>('');
   users: User[] = [];
+  host: string = '';
   modules: Module[] = [];
   scenarioLogSocket?: WebSocket;
   onScenarioLogMessage = new EventEmitter<ScenarioLogEntry>;
@@ -23,8 +24,9 @@ export class UserSettingsService {
       this.disconnect();
       this.connect();
     });
-    const host = environment.backend? environment.backend.replace('http://', ''): window.location.hostname;
-    this.wsURL = `${(environment.production && host.indexOf('localhost') === -1)? 'wss:': 'ws:'}//${host}/ws/scenariolog/`;
+    this.host = environment.backend? environment.backend: window.location.origin;
+    const strippedHost = environment.backend? environment.backend.replace('http://', ''): window.location.hostname;
+    this.wsURL = `${(environment.production && strippedHost.indexOf('localhost') === -1)? 'wss:': 'ws:'}//${strippedHost}/ws/scenariolog/`;
     this.auth.user$.subscribe(user => {
       if (user) {
         const projectId = this.cookies.get('project');
