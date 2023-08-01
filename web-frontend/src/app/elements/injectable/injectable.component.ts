@@ -26,8 +26,12 @@ export class InjectableComponent extends BaseInjectableComponent implements OnIn
     this.multipleChoice = !!this.injectable.choices && this.injectable.multi;
     if (!this.injectable.multi)
       this.values = [this.injectable.value];
-    else
-      this.values = this.injectable.value || [];
+    else {
+      if (typeof(this.injectable.value) === 'string')
+        this.values = this.injectable.value.split(',')
+      else
+        this.values = this.injectable.value || [];
+    }
     if (this.injectable.choices) {
       if (Array.isArray(this.injectable.choices)) {
         this.choiceValues = this.injectable.choices;
@@ -37,5 +41,20 @@ export class InjectableComponent extends BaseInjectableComponent implements OnIn
         this.choiceLabels = Object.values(this.injectable.choices);
       }
     }
+  }
+
+  listValueChanged(index: number, value: any): void {
+    this.values[index] = value;
+    this.valueChanged.emit(this.values);
+  }
+
+  appendListValue(value?: any): void {
+    this.values.push(value);
+    this.valueChanged.emit(this.values);
+  }
+
+  removeListValue(index: number): void {
+    this.values.splice(index, 1);
+    this.valueChanged.emit(this.values);
   }
 }

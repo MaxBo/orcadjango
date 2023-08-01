@@ -69,6 +69,7 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
+    <p style="color: white; margin-left: 10px;">Project</p>
     <mat-card id="active-project"
               routerLink="/projects"
               routerLinkActive="active-link"
@@ -79,11 +80,12 @@
           <app-user-preview *ngIf="settings.activeProject$.value?.user"
                             [user]="settings.getUser(settings.activeProject$.value!.user)"
                             style="margin-left: auto;"></app-user-preview>
-          <mat-card-title [title]="settings.activeProject$.value?.name">{{settings.activeProject$.value?.name}}</mat-card-title>
+          <mat-card-title [title]="settings.activeProject$.value?.name">
+            {{settings.activeProject$.value?.name}}
+          </mat-card-title>
           <mat-card-subtitle [title]="settings.activeProject$.value?.code">{{settings.activeProject$.value?.code}}</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
-          <p>{{settings.activeProject$.value?.name}}</p>
           <p *ngIf="settings.activeProject$.value?.code">{{settings.activeProject$.value?.code}}</p>
           <p>{{settings.activeProject$.value?.description}}</p>
         </mat-card-content>
@@ -92,22 +94,24 @@
         <mat-card-content>no project selected</mat-card-content>
       </ng-template>
     </mat-card>
-    <mat-card *ngIf="settings.activeProject$ | async" id="active-scenario"
-              routerLink="/scenarios"
-              routerLinkActive="active-link"
-              [routerLinkActiveOptions]="{exact: false}">
-      <ng-container *ngIf="settings.activeScenario$ | async; else noScenario">
-        <mat-card-header>
-          <mat-card-title>Scenario</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <p>{{settings.activeScenario$.value?.name}}</p>
-        </mat-card-content>
-      </ng-container>
-      <ng-template #noScenario>
-        <mat-card-content>no scenario selected</mat-card-content>
-      </ng-template>
-    </mat-card>
+    <ng-container *ngIf="settings.activeProject$ | async">
+      <p style="color: white; margin-left: 10px;">Scenario</p>
+      <mat-card id="active-scenario"
+                routerLink="/scenarios"
+                routerLinkActive="active-link"
+                [routerLinkActiveOptions]="{exact: false}">
+        <ng-container *ngIf="settings.activeScenario$ | async; else noScenario">
+          <mat-card-header>
+            <mat-card-title>{{settings.activeScenario$.value?.name}}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+          </mat-card-content>
+        </ng-container>
+        <ng-template #noScenario>
+          <mat-card-content>no scenario selected</mat-card-content>
+        </ng-template>
+      </mat-card>
+    </ng-container>
   </mat-sidenav>
   <mat-sidenav-content class="app-container">
     <div class="loadOverlay" *ngIf="settings.isLoading$ | async">
