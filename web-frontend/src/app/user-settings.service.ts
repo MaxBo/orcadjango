@@ -11,15 +11,12 @@ export class UserSettingsService {
   activeScenario$ = new BehaviorSubject<Scenario | undefined>(undefined);
   user$ = new BehaviorSubject<User | undefined>(undefined);
   module$ = new BehaviorSubject<string>('');
-  isLoading$ = new BehaviorSubject<boolean>(false);
   users: User[] = [];
   modules: Module[] = [];
   scenarioLogSocket?: WebSocket;
   onScenarioLogMessage = new EventEmitter<ScenarioLogEntry>;
   private readonly wsURL: string;
   private retries = 0;
-  private _isLoading = false;
-  private loadCount = 0;
 
   constructor(private cookies: CookieService, private rest: RestService, private auth: AuthService) {
     this.activeScenario$.subscribe(scenario => {
@@ -101,14 +98,5 @@ export class UserSettingsService {
 
   getUser(id: number | undefined): User | undefined {
     return this.users.find(user => user.id === id);
-  }
-
-  setLoading(isLoading: boolean) {
-    this.loadCount += isLoading? 1: -1;
-    const iL = this.loadCount > 0;
-    if (iL != this._isLoading){
-      this._isLoading = iL;
-      this.isLoading$.next(this._isLoading);
-    }
   }
 }

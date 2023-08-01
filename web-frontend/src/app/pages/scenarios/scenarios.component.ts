@@ -5,28 +5,31 @@ import { UserSettingsService } from "../../user-settings.service";
 import { ScenarioEditDialogComponent, ScenarioEditDialogData } from "./edit/scenario-edit.component";
 import { ConfirmDialogComponent } from "../../elements/confirm-dialog/confirm-dialog.component";
 import { CookieService } from "ngx-cookie-service";
+import { PageComponent } from "../../app.component";
 
 @Component({
   selector: 'app-scenarios',
   templateUrl: './scenarios.component.html',
   styleUrls: ['./scenarios.component.scss']
 })
-export class ScenariosComponent implements OnInit {
+export class ScenariosComponent extends PageComponent implements OnInit {
   scenarios: Scenario[] = [];
   viewType: 'list-view' | 'grid-view' = 'grid-view';
   @ViewChild('deleteScenarioTemplate') deleteScenarioTemplate?: TemplateRef<any>;
 
   constructor(private rest: RestService, private dialog: MatDialog, protected settings: UserSettingsService,
-              private cookies: CookieService) {}
+              private cookies: CookieService) {
+    super();
+  }
 
   ngOnInit() {
     const viewType = this.cookies.get('scenario-view-type');
     if (viewType === 'list-view') this.viewType = 'list-view';
     this.settings.activeProject$.subscribe(project => {
-      this.settings.setLoading(true);
+      this.setLoading(true);
       this.rest.getScenarios({ project: project }).subscribe(scenarios => {
         this.scenarios = scenarios;
-        this.settings.setLoading(false);
+        this.setLoading(false);
       });
     })
   }

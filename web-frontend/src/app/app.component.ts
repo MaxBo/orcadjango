@@ -1,6 +1,23 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Injectable, Input, Output } from '@angular/core';
 import { UserSettingsService } from "./user-settings.service";
 import { AuthService } from "./auth.service";
+import { BehaviorSubject } from "rxjs";
+
+@Injectable()
+export abstract class PageComponent {
+  isLoading$ = new BehaviorSubject<boolean>(false);
+  private _isLoading = false;
+  private loadCount = 0;
+
+  setLoading(isLoading: boolean) {
+    this.loadCount += isLoading? 1: -1;
+    const iL = this.loadCount > 0;
+    if (iL != this._isLoading){
+      this._isLoading = iL;
+      this.isLoading$.next(this._isLoading);
+    }
+  }
+}
 
 @Component({
   selector: 'app-root',

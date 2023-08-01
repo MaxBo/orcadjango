@@ -5,28 +5,31 @@ import { MatDialog } from "@angular/material/dialog";
 import { UserSettingsService } from "../../user-settings.service";
 import { ConfirmDialogComponent } from "../../elements/confirm-dialog/confirm-dialog.component";
 import { CookieService } from "ngx-cookie-service";
+import { PageComponent } from "../../app.component";
 
 @Component({
   selector: 'app-projects',
   templateUrl: './projects.component.html',
   styleUrls: ['./projects.component.scss']
 })
-export class ProjectsComponent implements OnInit{
+export class ProjectsComponent extends PageComponent implements OnInit{
   projects: Project[] = [];
   viewType: 'list-view' | 'grid-view' = 'grid-view';
   @ViewChild('deleteProjectTemplate') deleteProjectTemplate?: TemplateRef<any>;
 
   constructor(private rest: RestService, private dialog: MatDialog, protected settings: UserSettingsService,
-              private cookies: CookieService) {}
+              private cookies: CookieService) {
+    super();
+  }
 
   ngOnInit() {
     const viewType = this.cookies.get('project-view-type');
     if (viewType === 'list-view') this.viewType = 'list-view';
     this.settings.module$.subscribe(module => {
-      this.settings.setLoading(true);
+      this.setLoading(true);
       this.rest.getProjects({ module: module }).subscribe(projects => {
         this.projects = projects;
-        this.settings.setLoading(false);
+        this.setLoading(false);
       });
     })
   }

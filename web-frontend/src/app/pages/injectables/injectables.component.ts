@@ -4,6 +4,7 @@ import { UserSettingsService } from "../../user-settings.service";
 import { MatDialog } from "@angular/material/dialog";
 import { InjectableEditDialogComponent } from "./edit/injectable-edit.component";
 import { DerivedInjectableDialogComponent } from "./derived/derived-injectable.component";
+import { PageComponent } from "../../app.component";
 
 export function sortBy(array: any[], attr: string, options: { reverse: boolean } = { reverse: false }): any[]{
   let sorted = array.sort((a, b) =>
@@ -18,17 +19,19 @@ export function sortBy(array: any[], attr: string, options: { reverse: boolean }
   templateUrl: './injectables.component.html',
   styleUrls: ['./injectables.component.scss']
 })
-export class InjectablesComponent implements OnInit {
+export class InjectablesComponent extends PageComponent implements OnInit {
   // grouped injectables
   groupedInjectables?: Record<string, Inj[]>;
   protected injectables: Inj[] = [];
 
-  constructor(protected rest: RestService, protected settings: UserSettingsService, protected dialog: MatDialog){}
+  constructor(protected rest: RestService, protected settings: UserSettingsService, protected dialog: MatDialog){
+    super();
+  }
 
   ngOnInit() {
     this.settings.activeScenario$.subscribe(scenario => {
       if (!scenario) return;
-      this.settings.setLoading(true);
+      this.setLoading(true);
       this.rest.getInjectables(scenario).subscribe(injectables => {
         this.injectables = injectables;
         // this.groups = [...new Set(injectables.map(injectable => injectable.group))].sort();
@@ -43,7 +46,7 @@ export class InjectablesComponent implements OnInit {
             this.groupedInjectables![group] = sortBy(this.groupedInjectables![group], 'order');
           }
         );
-        this.settings.setLoading(false);
+        this.setLoading(false);
       })
     })
   }

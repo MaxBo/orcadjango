@@ -6,6 +6,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 import json
 from django.core.validators import int_list_validator
+from django.core.exceptions import ObjectDoesNotExist
 
 from .injectables import OrcaTypeMap
 from .management import OrcaManager
@@ -105,7 +106,15 @@ class Injectable(NameModel):
 
     @property
     def meta(self):
-        return OrcaManager(self.scenario.project.module).get_injectable_meta(self.name)
+        try:
+            inj = OrcaManager(
+                self.scenario.project.module).get_injectable_meta(self.name)
+        # there is a rare possibility that scenario is deleted right at this moment.
+        # injectable will follow but there is a short period where this might
+        # cause an exception
+        except ObjectDoesNotExist:
+            return {'group': '', 'order': '',}
+        return inj
 
     @property
     def parents(self):

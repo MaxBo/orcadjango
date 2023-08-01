@@ -3,6 +3,7 @@ import { Inj, ScenarioStep, Step } from "../../rest-api";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { InjectablesComponent, sortBy } from "../injectables/injectables.component";
 import { BehaviorSubject, forkJoin, Observable } from "rxjs";
+import { PageComponent } from "../../app.component";
 
 @Component({
   selector: 'app-steps',
@@ -21,7 +22,7 @@ export class StepsComponent extends InjectablesComponent {
       this.availableSteps = {};
       this.scenarioSteps = [];
       if (!scenario) return;
-      this.settings.setLoading(true);
+      this.setLoading(true);
       this.rest.getInjectables(scenario).subscribe(injectables => {
         this.injectables = injectables;
         this.rest.getAvailableSteps(this.settings.module$.value).subscribe(steps => {
@@ -41,7 +42,7 @@ export class StepsComponent extends InjectablesComponent {
             this.scenarioSteps = sortBy(steps, 'order');
             this._scenStepNames = steps.map(s => s.name);
             this.scenarioSteps.forEach(s => this._assign_step_meta(s));
-            this.settings.setLoading(false);
+            this.setLoading(false);
           })
         });
       });

@@ -119,29 +119,3 @@
 .active-link {
   border-color: salmon;
 }
-
-.load-overlay {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0,0,0,0.2);
-  z-index: 100;
-  cursor: progress;
-
-  mat-spinner {
-    left: 45%;
-    top: 45%;
-    background-color: white;
-    border: 6px solid white;
-    border-radius: 10px;
-    box-shadow: 1px 0px 3px 1px #a7a7a7;
-
-    > svg {
-      margin: 10px;
-    }
-  }
-}
