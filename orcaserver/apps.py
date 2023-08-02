@@ -8,4 +8,6 @@ class OrcaserverConfig(AppConfig):
     name = 'orcaserver'
 
     def ready(self):
-        OrcaManager.default_module = settings.ORCA_MODULES['default']['path']
+        default_module = settings.ORCA_MODULES['default']
+        module_path = settings.ORCA_MODULES['available'][default_module]['path']
+        OrcaManager.default_module = module_path

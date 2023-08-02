@@ -60,6 +60,7 @@ export interface Inj {
 
 export interface Module {
   name: string,
+  title: string,
   path: string,
   description: string,
   init: string[],
@@ -119,7 +120,7 @@ export class RestService {
     token: `${ environment.apiPath }/token/`,
     refreshToken: `${ environment.apiPath }/token/refresh/`,
     modules: `${ environment.apiPath }/modules/`,
-    availableSteps: `${ environment.apiPath }/steps/`,
+    availableSteps: `${ environment.apiPath }/modules/{module}/steps/`,
   }
   constructor(private http: HttpClient) { }
 
@@ -228,7 +229,8 @@ export class RestService {
   }
 
   getAvailableSteps(module: string): Observable<Step[]> {
-    return this.http.get<Step[]>(this.URLS.availableSteps, {params: { module: module }})
+    const url = this.URLS.availableSteps.replace('{module}', module);
+    return this.http.get<Step[]>(url);
   }
 
   getScenarioSteps(scenario: Scenario): Observable<ScenarioStep[]> {

@@ -30,7 +30,7 @@
     </mat-expansion-panel>
   </mat-accordion>
 
-  <div id="scenario-steps" [ngClass]="{'deactivated': (stepsLoading$ | async)}" style="min-width: 500px">
+  <div id="scenario-steps" [ngClass]="{'deactivated': (stepsLoading$ | async)}" style="min-width: 600px">
     <mat-accordion cdkDropList
                    #scenarioStepList="cdkDropList"
                    [cdkDropListData]="scenarioSteps"

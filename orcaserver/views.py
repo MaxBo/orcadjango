@@ -9,8 +9,8 @@ from django.conf import settings
 
 from .serializers import (ProjectSerializer, UserSerializer,
                           ScenarioSerializer, ModuleSerializer,
-                          InjectableSerializer, StepSerializer,
-                          ScenarioStepSerializer)
+                          ScenarioInjectableSerializer, StepSerializer,
+                          ScenarioStepSerializer, InjectableSerializer)
 from .models import Project, Scenario, Injectable, Step, Run
 from orcaserver.management import OrcaManager
 from orcadjango.loggers import ScenarioHandler
@@ -133,9 +133,39 @@ class UserViewSet(viewsets.ModelViewSet):
         return super().get_object()
 
 
-class InjectableViewSet(viewsets.ModelViewSet):
-    queryset = Injectable.objects.all()
+class DummyInjectable():
+    ''''''
+
+
+class InjectableViewSet(viewsets.ViewSet):
     serializer_class = InjectableSerializer
+
+    def list(self, request, **kwargs):
+        injectables = []
+        module_name = kwargs['module_pk']
+        module = settings.ORCA_MODULES['available'].get(module_name)
+        if not module:
+            return Response({})
+        orca_manager = OrcaManager(module['path'])
+        names = orca_manager.get_injectable_names()
+        for inj in names:
+            injectable = DummyInjectable()
+            meta = orca_manager.get_injectable_meta(inj)
+            if not meta:
+                continue
+            injectable.meta = meta
+            injectable.name = inj
+            injectable.data_class = meta.get('data_class')
+            injectable.value = meta.get('default')
+            injectable.datatype = meta.get('datatype')
+            injectables.append(injectable)
+        results = InjectableSerializer(injectables, many=True)
+        return Response(results.data)
+
+
+class ScenarioInjectableViewSet(viewsets.ModelViewSet):
+    queryset = Injectable.objects.all()
+    serializer_class = ScenarioInjectableSerializer
 
     def get_queryset(self):
         return self.queryset.filter(scenario=self.kwargs['scenario_pk'])
@@ -154,12 +184,14 @@ class ModuleViewSet(viewsets.ViewSet):
 
     def list(self, request):
         available = settings.ORCA_MODULES.get('available', {})
+        # that's the path to the module
         default_mod = OrcaManager.default_module
         modules = []
         for k, v in available.items():
             path = v.get('path')
             mod = {
                 'name': k,
+                'title': v.get('title', k),
                 'path': path,
                 'description': v.get('description', ''),
                 'default': path == default_mod,
@@ -180,16 +212,16 @@ class ModuleViewSet(viewsets.ViewSet):
 class StepViewSet(viewsets.ViewSet):
     serializer_class = StepSerializer
 
-    def list(self, request):
+    def list(self, request, **kwargs):
         steps = []
-        mod_p = request.query_params.get('module')
-        module_names = [mod_p] if mod_p else [mod['path'] for mod in
-             settings.ORCA_MODULES.get('available', {}).values()]
-        for module in module_names:
-            orca_manager = OrcaManager(module)
-            names = orca_manager.get_step_names()
-            for step in names:
-                steps.append(orca_manager.get_step_meta(step))
+        module_name = kwargs['module_pk']
+        module = settings.ORCA_MODULES['available'].get(module_name)
+        if not module:
+            return Response({})
+        orca_manager = OrcaManager(module['path'])
+        names = orca_manager.get_step_names()
+        for step in names:
+            steps.append(orca_manager.get_step_meta(step))
         results = StepSerializer(steps, many=True)
         return Response(results.data)
 

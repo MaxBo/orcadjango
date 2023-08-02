@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from collections import OrderedDict
 import re
+import json
 
 from orcaserver.management import OrcaManager
 from .models import Project, Profile, Scenario, Injectable, Step, Run
@@ -116,38 +117,44 @@ class RunSerializer(serializers.ModelSerializer):
         fields =  ('started', 'finished', 'success', 'run_by')
 
 
-
-class ModuleDataSerializer(serializers.Serializer):
-    name = serializers.CharField()
-    url = serializers.CharField()
-    href = serializers.CharField()
-    text = serializers.ListSerializer(child=serializers.CharField())
-
-
-class InjectableSerializer(serializers.ModelSerializer):
+class InjectableSerializer(serializers.Serializer):
+    '''computed injectables of the module'''
     description = serializers.SerializerMethodField()
     datatype = serializers.SerializerMethodField()
     multi = serializers.SerializerMethodField()
     choices = serializers.SerializerMethodField()
+    value = serializers.SerializerMethodField(method_name='get_serialized_value')
     group = serializers.CharField(source='meta.group')
     order = serializers.CharField(source='meta.order')
-    value = serializers.JSONField(source='serialized_value')
 
-    class Meta:
-        model = Injectable
-        fields = ('id', 'name', 'group', 'order', 'scenario', 'value', 'multi',
-                  'datatype', 'parents', 'description', 'editable', 'choices')
-        read_only_fields = ('scenario', 'parents', 'name', 'editable',
-                            'choices')
+    def get_derived_value(self, obj):
+        parents = obj.parents
+        if not parents:
+            return self.value
+        values = [Injectable.objects.get(id=p_id).deserialized_value
+                  for p_id in parents]
+        conv = OrcaTypeMap.get(obj.data_class)
+        value = OrcaManager(obj.scenario.project.module).get_calculated_value(
+            obj.name, *values)
+        return conv.to_str(value)
 
-    def update(self, instance, validated_data):
-        if 'serialized_value' in validated_data:
-            serialized_value = validated_data.pop('serialized_value')
-            conv = OrcaTypeMap.get(instance.data_class)
-            validated_data['value'] = conv.to_str(serialized_value)
-            # ToDo: validation here (can't be done in overwritten validate
-            # function, instance not known there)
-        return super().update(instance, validated_data)
+    # can unfortunatelly not be put into custom (writable) serializer field
+    def get_serialized_value(self, obj):
+        value = self.get_derived_value(obj) if obj.parents else self.value
+        if value is None:
+            return
+        # force flattening to 2D for geometries (very clunky)
+        if self.datatype.lower() == 'geometry':
+            conv = OrcaTypeMap.get(obj.data_class)
+            return conv.to_str(conv.to_value(value))
+        try:
+            ret = json.loads(value)
+        except json.decoder.JSONDecodeError:
+            try:
+                ret = json.loads(value.replace("'",'"'))
+            except json.decoder.JSONDecodeError:
+                return value
+        return ret
 
     def get_choices(self, obj):
         return obj.meta.get('choices')
@@ -170,8 +177,38 @@ class InjectableSerializer(serializers.ModelSerializer):
         return 'list' in obj.datatype.lower()
 
 
+class ScenarioInjectableSerializer(InjectableSerializer,
+                                   serializers.ModelSerializer):
+    '''injectables with values from database for a specific scenario'''
+    value = serializers.JSONField(source='serialized_value')
+
+    class Meta:
+        model = Injectable
+        fields = ('id', 'name', 'group', 'order', 'scenario', 'value', 'multi',
+                  'datatype', 'parents', 'description', 'editable', 'choices')
+        read_only_fields = ('scenario', 'parents', 'name', 'editable',
+                            'choices')
+
+    def update(self, instance, validated_data):
+        if 'serialized_value' in validated_data:
+            serialized_value = validated_data.pop('serialized_value')
+            conv = OrcaTypeMap.get(instance.data_class)
+            validated_data['value'] = conv.to_str(serialized_value)
+            # ToDo: validation here (can't be done in overwritten validate
+            # function, instance not known there)
+        return super().update(instance, validated_data)
+
+
+class ModuleDataSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    url = serializers.CharField()
+    href = serializers.CharField()
+    text = serializers.ListSerializer(child=serializers.CharField())
+
+
 class ModuleSerializer(serializers.Serializer):
     name = serializers.CharField()
+    title = serializers.CharField()
     path = serializers.CharField()
     description = serializers.CharField()
     default = serializers.BooleanField()

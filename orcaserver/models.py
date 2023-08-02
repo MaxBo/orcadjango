@@ -121,46 +121,6 @@ class Injectable(NameModel):
         return json.loads(self.parent_injectables)
 
     @property
-    def derived_value(self):
-        parents = self.parents
-        if not parents:
-            return self.value
-        values = [Injectable.objects.get(id=p_id).deserialized_value
-                  for p_id in parents]
-        conv = OrcaTypeMap.get(self.data_class)
-        value = OrcaManager(self.scenario.project.module).get_calculated_value(
-            self.name, *values)
-        return conv.to_str(value)
-
-    # can unfortunatelly not be put into serializer field
-    # (serialization usually happens first/last on request,
-    # instance not known there)
-    @property
-    def deserialized_value(self):
-        conv = OrcaTypeMap.get(self.data_class)
-        value = conv.to_value(self.value)
-        return value
-
-    # can unfortunatelly not be put into custom (writable) serializer field
-    @property
-    def serialized_value(self):
-        value = self.derived_value if self.parents else self.value
-        if value is None:
-            return
-        # force flattening to 2D for geometries (very clunky)
-        if self.datatype.lower() == 'geometry':
-            conv = OrcaTypeMap.get(self.data_class)
-            return conv.to_str(conv.to_value(value))
-        try:
-            ret = json.loads(value)
-        except json.decoder.JSONDecodeError:
-            try:
-                ret = json.loads(value.replace("'",'"'))
-            except json.decoder.JSONDecodeError:
-                return value
-        return ret
-
-    @property
     def editable(self):
         if self.parents:
             return False
@@ -170,6 +130,15 @@ class Injectable(NameModel):
         if not conv.data_type:
             return False
         return True
+
+    # can unfortunatelly not be put into serializer field
+    # (serialization usually happens first/last on request,
+    # instance not known there)
+    @property
+    def deserialized_value(self):
+        conv = OrcaTypeMap.get(self.data_class)
+        value = conv.to_value(self.value)
+        return value
 
 
 class Step(NameModel):

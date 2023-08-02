@@ -6,12 +6,10 @@ from datetime import timedelta
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 ORCA_MODULES = {
-    'default': {
-        'path': 'orcaserver.tests.dummy_orca_stuff',
-        'template': 'orcaserver/project.html',
-    },
+    'default': 'dummy_orca_stuff',
     'available': {
-        'test module': {
+        'dummy_orca_stuff': {
+            'title': 'Test module',
             'path': 'orcaserver.tests.dummy_orca_stuff',
             'description': 'module used for testing',
             'init': ['inj_list', 'inj_dict'],

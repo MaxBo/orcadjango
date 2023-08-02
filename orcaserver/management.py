@@ -235,7 +235,8 @@ class OrcaWrapper():
         importlib.reload(decorators)
         load_module(self.module, orca=orca)
         del(spec)
-        del(sys.modules['orca'])
+        if 'orca' in sys.modules:
+            del(sys.modules['orca'])
         return orca
 
     def add_log_handler(self, handler: logging.StreamHandler):
