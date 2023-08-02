@@ -14,6 +14,7 @@ from .serializers import (ProjectSerializer, UserSerializer,
 from .models import Project, Scenario, Injectable, Step, Run
 from orcaserver.management import OrcaManager
 from orcadjango.loggers import ScenarioHandler
+from .injectables import OrcaTypeMap
 
 def apply_injectables(scenario):
     orca_manager = OrcaManager(scenario.project.module)
@@ -133,10 +134,6 @@ class UserViewSet(viewsets.ModelViewSet):
         return super().get_object()
 
 
-class DummyInjectable():
-    ''''''
-
-
 class InjectableViewSet(viewsets.ViewSet):
     serializer_class = InjectableSerializer
 
@@ -149,15 +146,21 @@ class InjectableViewSet(viewsets.ViewSet):
         orca_manager = OrcaManager(module['path'])
         names = orca_manager.get_injectable_names()
         for inj in names:
-            injectable = DummyInjectable()
             meta = orca_manager.get_injectable_meta(inj)
             if not meta:
                 continue
-            injectable.meta = meta
-            injectable.name = inj
-            injectable.data_class = meta.get('data_class')
-            injectable.value = meta.get('default')
-            injectable.datatype = meta.get('datatype')
+            # that's a little weird, but we create injectables to be able
+            # to use the same functions as in scenario injectable serialization
+            data_class = meta.get('data_class')
+            conv = OrcaTypeMap.get(data_class)
+            value = conv.to_str(meta.get('default'))
+            injectable = Injectable(
+                name=inj,
+                value=value,
+                meta=meta,
+                data_class=data_class,
+                datatype=meta.get('datatype'),
+            )
             injectables.append(injectable)
         results = InjectableSerializer(injectables, many=True)
         return Response(results.data)

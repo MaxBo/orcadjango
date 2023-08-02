@@ -101,20 +101,28 @@ class Injectable(NameModel):
     parent_injectables = models.TextField(
         validators=[int_list_validator], default='[]')
 
+    def __init__(self, *args, **kwargs):
+        self.__meta = kwargs.pop('meta', None)
+        super().__init__(*args, **kwargs)
+
     def __str__(self):
         return f'{self.scenario} - {self.name}'
 
     @property
     def meta(self):
+        '''buffered meta data for serialization'''
+        if self.__meta:
+            return self.__meta
         try:
-            inj = OrcaManager(
+            meta = OrcaManager(
                 self.scenario.project.module).get_injectable_meta(self.name)
         # there is a rare possibility that scenario is deleted right at this moment.
         # injectable will follow but there is a short period where this might
         # cause an exception
         except ObjectDoesNotExist:
-            return {'group': '', 'order': '',}
-        return inj
+            meta = {'group': '', 'order': '',}
+        self.__meta = meta
+        return meta
 
     @property
     def parents(self):
@@ -131,6 +139,18 @@ class Injectable(NameModel):
             return False
         return True
 
+    @property
+    def derived_value(self):
+        parents = self.parents
+        if not parents:
+            return self.value
+        values = [Injectable.objects.get(id=p_id).deserialized_value
+                  for p_id in parents]
+        conv = OrcaTypeMap.get(self.data_class)
+        value = OrcaManager(self.scenario.project.module).get_calculated_value(
+            self.name, *values)
+        return conv.to_str(value)
+
     # can unfortunatelly not be put into serializer field
     # (serialization usually happens first/last on request,
     # instance not known there)
@@ -139,6 +159,25 @@ class Injectable(NameModel):
         conv = OrcaTypeMap.get(self.data_class)
         value = conv.to_value(self.value)
         return value
+
+    # can unfortunatelly not be put into custom (writable) serializer field
+    @property
+    def serialized_value(self):
+        value = self.derived_value if self.parents else self.value
+        if value is None:
+            return
+        # force flattening to 2D for geometries (very clunky)
+        if self.datatype.lower() == 'geometry':
+            conv = OrcaTypeMap.get(self.data_class)
+            return conv.to_str(conv.to_value(value))
+        try:
+            ret = json.loads(value)
+        except json.decoder.JSONDecodeError:
+            try:
+                ret = json.loads(value.replace("'",'"'))
+            except json.decoder.JSONDecodeError:
+                return value
+        return ret
 
 
 class Step(NameModel):

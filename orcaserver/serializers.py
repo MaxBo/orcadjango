@@ -119,42 +119,14 @@ class RunSerializer(serializers.ModelSerializer):
 
 class InjectableSerializer(serializers.Serializer):
     '''computed injectables of the module'''
+    name = serializers.CharField()
     description = serializers.SerializerMethodField()
     datatype = serializers.SerializerMethodField()
     multi = serializers.SerializerMethodField()
     choices = serializers.SerializerMethodField()
-    value = serializers.SerializerMethodField(method_name='get_serialized_value')
     group = serializers.CharField(source='meta.group')
     order = serializers.CharField(source='meta.order')
-
-    def get_derived_value(self, obj):
-        parents = obj.parents
-        if not parents:
-            return self.value
-        values = [Injectable.objects.get(id=p_id).deserialized_value
-                  for p_id in parents]
-        conv = OrcaTypeMap.get(obj.data_class)
-        value = OrcaManager(obj.scenario.project.module).get_calculated_value(
-            obj.name, *values)
-        return conv.to_str(value)
-
-    # can unfortunatelly not be put into custom (writable) serializer field
-    def get_serialized_value(self, obj):
-        value = self.get_derived_value(obj) if obj.parents else self.value
-        if value is None:
-            return
-        # force flattening to 2D for geometries (very clunky)
-        if self.datatype.lower() == 'geometry':
-            conv = OrcaTypeMap.get(obj.data_class)
-            return conv.to_str(conv.to_value(value))
-        try:
-            ret = json.loads(value)
-        except json.decoder.JSONDecodeError:
-            try:
-                ret = json.loads(value.replace("'",'"'))
-            except json.decoder.JSONDecodeError:
-                return value
-        return ret
+    value = serializers.JSONField(source='serialized_value')
 
     def get_choices(self, obj):
         return obj.meta.get('choices')
@@ -180,7 +152,6 @@ class InjectableSerializer(serializers.Serializer):
 class ScenarioInjectableSerializer(InjectableSerializer,
                                    serializers.ModelSerializer):
     '''injectables with values from database for a specific scenario'''
-    value = serializers.JSONField(source='serialized_value')
 
     class Meta:
         model = Injectable
