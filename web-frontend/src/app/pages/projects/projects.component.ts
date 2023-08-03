@@ -27,7 +27,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
     if (viewType === 'list-view') this.viewType = 'list-view';
     this.settings.module$.subscribe(module => {
       this.setLoading(true);
-      this.rest.getProjects({ module: module }).subscribe(projects => {
+      this.rest.getProjects({ module: module?.path || '' }).subscribe(projects => {
         this.projects = projects;
         this.setLoading(false);
       });
@@ -52,7 +52,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
       data: data
     });
     dialogref.componentInstance.projectConfirmed.subscribe(project => {
-      project.module = this.settings.module$.value;
+      project.module = this.settings.module$.value?.path || '';
       this.rest.createProject(project).subscribe(created => {
         dialogref.close();
         this.projects.push(created);

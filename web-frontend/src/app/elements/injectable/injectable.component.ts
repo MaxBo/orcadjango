@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Injectable, Input, OnInit, Output } from '@angular/core';
-import { Inj } from "../../rest-api";
+import { ScenarioInjectable } from "../../rest-api";
 
 @Injectable()
 export abstract class BaseInjectableComponent {
@@ -20,7 +20,7 @@ export class InjectableComponent extends BaseInjectableComponent implements OnIn
   multipleChoice: boolean = false;
   protected values: any[] = [];
   protected Object = Object;
-  @Input() injectable!: Inj;
+  @Input() injectable!: ScenarioInjectable;
 
   ngOnInit(): void {
     this.multipleChoice = !!this.injectable.choices && this.injectable.multi;

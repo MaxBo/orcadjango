@@ -79,7 +79,7 @@
       <mat-label>Module</mat-label>
       <mat-select (selectionChange)="settings.setModule($event.value)" [value]="settings.module$.value">
         <mat-option value="">none</mat-option>
-        <mat-option *ngFor="let module of settings.modules" [value]="module.path">
+        <mat-option *ngFor="let module of settings.modules" [value]="module.name">
           {{module.title}}
         </mat-option>
       </mat-select>

@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable } from "@angular/core";
 import { CookieService } from "ngx-cookie-service";
-import { Module, Project, RestService, Scenario, ScenarioLogEntry, User } from "./rest-api";
+import { Inj, Module, Project, RestService, Scenario, ScenarioLogEntry, User } from "./rest-api";
 import { BehaviorSubject } from "rxjs";
 import { AuthService } from "./auth.service";
 import { environment } from "../environments/environment";
@@ -10,7 +10,8 @@ export class UserSettingsService {
   activeProject$ = new BehaviorSubject<Project | undefined>(undefined);
   activeScenario$ = new BehaviorSubject<Scenario | undefined>(undefined);
   user$ = new BehaviorSubject<User | undefined>(undefined);
-  module$ = new BehaviorSubject<string>('');
+  module$ = new BehaviorSubject<Module | undefined>(undefined);
+  moduleInjectables: Inj[] = [];
   users: User[] = [];
   host: string = '';
   modules: Module[] = [];
@@ -42,14 +43,24 @@ export class UserSettingsService {
           })
         }
         this.rest.getModules().subscribe(modules => {
-          this.module$.next(this.cookies.get('module') || modules.find(mod => mod.default)?.path || '');
           this.modules = modules;
+          const modName = this.cookies.get('module');
+          const module = modules.find(mod => mod.name === modName) || modules.find(mod => mod.default);
+          if (module)
+            this.module$.next(module);
         });
         this.rest.getUsers().subscribe(users => {
           this.users = users;
         });
       }
       this.user$.next(user);
+    })
+    this.module$.subscribe(module => {
+      if (!module) {
+        this.moduleInjectables = [];
+        return;
+      }
+      this.rest.getInjectables(module.name).subscribe(injectables => this.moduleInjectables = injectables);
     })
   }
 
@@ -64,11 +75,12 @@ export class UserSettingsService {
     this.activeScenario$.next(scenario);
   }
 
-  setModule(module: string){
-    this.cookies.set('module', module);
+  setModule(moduleName: string){
+    this.cookies.set('module', moduleName);
+    const module = this.modules.find(mod => mod.name === moduleName);
     this.module$.next(module);
     if (module && this.activeProject$.value) {
-      if (this.activeProject$.value.module !== module)
+      if (this.activeProject$.value.module !== module.path)
         this.activeProject$.next(undefined);
         this.activeScenario$.next(undefined);
     }

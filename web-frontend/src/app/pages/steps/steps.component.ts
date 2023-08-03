@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Inj, ScenarioStep, Step } from "../../rest-api";
+import { ScenarioInjectable, ScenarioStep, Step } from "../../rest-api";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { InjectablesComponent, sortBy } from "../injectables/injectables.component";
 import { BehaviorSubject, forkJoin, Observable } from "rxjs";
@@ -23,9 +23,10 @@ export class StepsComponent extends InjectablesComponent {
       this.scenarioSteps = [];
       if (!scenario) return;
       this.setLoading(true);
-      this.rest.getInjectables(scenario).subscribe(injectables => {
+      this.rest.getScenarioInjectables(scenario).subscribe(injectables => {
         this.injectables = injectables;
-        this.rest.getAvailableSteps(this.settings.module$.value).subscribe(steps => {
+        if (!this.settings.module$.value) return;
+        this.rest.getAvailableSteps(this.settings.module$.value.name).subscribe(steps => {
           this.availableSteps = {};
           steps.forEach(step => {
             const group = step.group || '';
@@ -96,7 +97,7 @@ export class StepsComponent extends InjectablesComponent {
     });
   }
 
-  getInjectables(step: ScenarioStep): Inj[] {
+  getInjectables(step: ScenarioStep): ScenarioInjectable[] {
     return this.injectables.filter(inj => step.injectables?.includes(inj.name));
   }
 

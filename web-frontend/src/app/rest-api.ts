@@ -44,18 +44,21 @@ export interface Scenario {
 }
 
 export interface Inj {
-  id: number,
   name: string,
-  scenario: number,
   value: any,
   description: string,
   group: string,
   datatype: 'str' | 'int' | 'list' | 'float' | 'bool' | 'dict' | 'geometry',
   multi: boolean,
-  parents: number[],
-  parentInjectables?: (Inj | undefined)[],
-  editable: boolean,
   choices?: any[] | Record<string, string>
+}
+
+export interface ScenarioInjectable extends Inj {
+  id: number,
+  scenario: number,
+  parents: number[],
+  parentInjectables?: (ScenarioInjectable | undefined)[],
+  editable: boolean
 }
 
 export interface Module {
@@ -111,7 +114,7 @@ export class RestService {
   public readonly URLS = {
     projects: `${ environment.apiPath }/projects/`,
     scenarios: `${ environment.apiPath }/scenarios/`,
-    injectables: `${ environment.apiPath }/scenarios/{scenarioId}/injectables/`,
+    scenarioInjectables: `${ environment.apiPath }/scenarios/{scenarioId}/injectables/`,
     scenarioSteps: `${ environment.apiPath }/scenarios/{scenarioId}/steps/`,
     users: `${ environment.apiPath }/users/`,
     currentUser: `${ environment.apiPath }/users/current/`,
@@ -120,6 +123,7 @@ export class RestService {
     token: `${ environment.apiPath }/token/`,
     refreshToken: `${ environment.apiPath }/token/refresh/`,
     modules: `${ environment.apiPath }/modules/`,
+    injectables: `${ environment.apiPath }/modules/{module}/injectables/`,
     availableSteps: `${ environment.apiPath }/modules/{module}/steps/`,
   }
   constructor(private http: HttpClient) { }
@@ -187,6 +191,11 @@ export class RestService {
     return this.http.get<Module[]>(this.URLS.modules);
   }
 
+  getInjectables(module: string): Observable<Inj[]> {
+    const url = this.URLS.injectables.replace('{module}', module);
+    return this.http.get<Inj[]>(url);
+  }
+
   login(username: string, password: string): Observable<User> {
     return this.post<User>(this.URLS.login, { username: username, password: password });
   }
@@ -199,9 +208,9 @@ export class RestService {
     return this.http.get<User[]>(this.URLS.users);
   }
 
-  getInjectables(scenario: Scenario): Observable<Inj[]> {
-    const url = this.URLS.injectables.replace('{scenarioId}', scenario.id!.toString());
-    return this.http.get<Inj[]>(url).pipe(map( injectables => {
+  getScenarioInjectables(scenario: Scenario): Observable<ScenarioInjectable[]> {
+    const url = this.URLS.scenarioInjectables.replace('{scenarioId}', scenario.id!.toString());
+    return this.http.get<ScenarioInjectable[]>(url).pipe(map(injectables => {
       injectables.map(inj => {
         inj.parentInjectables = inj.parents.map(parentId => injectables.find(inj => inj.id === parentId));
       })
@@ -209,23 +218,23 @@ export class RestService {
     }));
   }
 
-  getInjectable(id: number, scenario: Scenario): Observable<Inj> {
-    const injUrl = this.URLS.injectables.replace('{scenarioId}', scenario.id!.toString());
-    return this.http.get<Inj>(`${injUrl}${id}/`);
+  getScenarioInjectable(id: number, scenario: Scenario): Observable<ScenarioInjectable> {
+    const injUrl = this.URLS.scenarioInjectables.replace('{scenarioId}', scenario.id!.toString());
+    return this.http.get<ScenarioInjectable>(`${injUrl}${id}/`);
   }
 
   patchUser(id: number, data: FormData): Observable<User> {
     return this.http.patch<User>(`${this.URLS.users}${id}/`, data);
   }
 
-  resetInjectables(scenario: Scenario): Observable<Inj[]> {
-    const injUrl = this.URLS.injectables.replace('{scenarioId}', scenario.id!.toString());
-    return this.http.post<Inj[]>(`${injUrl}reset/`, {});
+  resetInjectables(scenario: Scenario): Observable<ScenarioInjectable[]> {
+    const injUrl = this.URLS.scenarioInjectables.replace('{scenarioId}', scenario.id!.toString());
+    return this.http.post<ScenarioInjectable[]>(`${injUrl}reset/`, {});
   }
 
-  patchInjectable(injectable: Inj, value: any): Observable<Inj> {
-    const injUrl = this.URLS.injectables.replace('{scenarioId}', injectable.scenario.toString());
-    return this.http.patch<Inj>(`${injUrl}${injectable.id}/`, {value: value});
+  patchScenarioInjectable(injectable: ScenarioInjectable, value: any): Observable<ScenarioInjectable> {
+    const injUrl = this.URLS.scenarioInjectables.replace('{scenarioId}', injectable.scenario.toString());
+    return this.http.patch<ScenarioInjectable>(`${injUrl}${injectable.id}/`, {value: value});
   }
 
   getAvailableSteps(module: string): Observable<Step[]> {

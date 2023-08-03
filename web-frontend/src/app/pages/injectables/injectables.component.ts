@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Inj, RestService } from "../../rest-api";
+import { ScenarioInjectable, RestService } from "../../rest-api";
 import { UserSettingsService } from "../../user-settings.service";
 import { MatDialog } from "@angular/material/dialog";
 import { InjectableEditDialogComponent } from "./edit/injectable-edit.component";
@@ -21,8 +21,8 @@ export function sortBy(array: any[], attr: string, options: { reverse: boolean }
 })
 export class InjectablesComponent extends PageComponent implements OnInit {
   // grouped injectables
-  groupedInjectables?: Record<string, Inj[]>;
-  protected injectables: Inj[] = [];
+  groupedInjectables?: Record<string, ScenarioInjectable[]>;
+  protected injectables: ScenarioInjectable[] = [];
 
   constructor(protected rest: RestService, protected settings: UserSettingsService, protected dialog: MatDialog){
     super();
@@ -32,7 +32,7 @@ export class InjectablesComponent extends PageComponent implements OnInit {
     this.settings.activeScenario$.subscribe(scenario => {
       if (!scenario) return;
       this.setLoading(true);
-      this.rest.getInjectables(scenario).subscribe(injectables => {
+      this.rest.getScenarioInjectables(scenario).subscribe(injectables => {
         this.injectables = injectables;
         // this.groups = [...new Set(injectables.map(injectable => injectable.group))].sort();
         this.groupedInjectables = {};
@@ -51,7 +51,7 @@ export class InjectablesComponent extends PageComponent implements OnInit {
     })
   }
 
-  editInjectable(injectable: Inj): void {
+  editInjectable(injectable: ScenarioInjectable): void {
     if (injectable.editable) {
       const dialogRef = this.dialog.open(InjectableEditDialogComponent, {
         panelClass: 'absolute',
@@ -60,7 +60,7 @@ export class InjectablesComponent extends PageComponent implements OnInit {
         data: { injectable: injectable }
       });
       dialogRef.componentInstance.valueConfirmed.subscribe((value) => {
-        this.rest.patchInjectable(injectable, value).subscribe(patched => {
+        this.rest.patchScenarioInjectable(injectable, value).subscribe(patched => {
           dialogRef.close();
           // workaround to force update of injectable
           setTimeout(() => injectable.value = undefined);
@@ -83,12 +83,12 @@ export class InjectablesComponent extends PageComponent implements OnInit {
     }
   }
 
-  updateChildren(injectable: Inj) {
+  updateChildren(injectable: ScenarioInjectable) {
     const children = this.injectables.filter(inj => inj.parents.indexOf(injectable.id) >= 0);
     const scenario = this.settings.activeScenario$.value;
     if (!scenario) return;
     children.forEach(inj => {
-      this.rest.getInjectable(inj.id, scenario).subscribe(updated => {
+      this.rest.getScenarioInjectable(inj.id, scenario).subscribe(updated => {
         setTimeout(() => inj.value = undefined);
         setTimeout(() => inj.value = updated.value);
       });

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Inject, Output } from '@angular/core';
-import { Inj } from "../../../rest-api";
+import { ScenarioInjectable } from "../../../rest-api";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { UserSettingsService } from "../../../user-settings.service";
 
@@ -9,11 +9,11 @@ import { UserSettingsService } from "../../../user-settings.service";
   styleUrls: ['./derived-injectable.component.scss']
 })
 export class DerivedInjectableDialogComponent {
-  protected injectable: Inj;
-  protected parents: Inj[];
-  @Output() injectableClicked = new EventEmitter<Inj>();
+  protected injectable: ScenarioInjectable;
+  protected parents: ScenarioInjectable[];
+  @Output() injectableClicked = new EventEmitter<ScenarioInjectable>();
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: { injectable: Inj, parents: Inj[] }, protected settings: UserSettingsService) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { injectable: ScenarioInjectable, parents: ScenarioInjectable[] }, protected settings: UserSettingsService) {
     this.injectable = data.injectable;
     this.parents = data.parents;
   }
