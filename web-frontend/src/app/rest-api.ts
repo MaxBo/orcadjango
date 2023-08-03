@@ -22,6 +22,7 @@ export interface Project {
   id?: number,
   name: string,
   description: string,
+  init: string[],
   user?: number,
   code?: string,
   module?: string,
@@ -46,19 +47,19 @@ export interface Scenario {
 export interface Inj {
   name: string,
   value: any,
-  description: string,
-  group: string,
+  description?: string,
+  group?: string,
   datatype: 'str' | 'int' | 'list' | 'float' | 'bool' | 'dict' | 'geometry',
-  multi: boolean,
+  multi?: boolean,
   choices?: any[] | Record<string, string>
 }
 
 export interface ScenarioInjectable extends Inj {
   id: number,
   scenario: number,
-  parents: number[],
+  parents?: number[],
   parentInjectables?: (ScenarioInjectable | undefined)[],
-  editable: boolean
+  editable?: boolean
 }
 
 export interface Module {
@@ -212,7 +213,7 @@ export class RestService {
     const url = this.URLS.scenarioInjectables.replace('{scenarioId}', scenario.id!.toString());
     return this.http.get<ScenarioInjectable[]>(url).pipe(map(injectables => {
       injectables.map(inj => {
-        inj.parentInjectables = inj.parents.map(parentId => injectables.find(inj => inj.id === parentId));
+        inj.parentInjectables = (inj.parents || []).map(parentId => injectables.find(inj => inj.id === parentId));
       })
       return injectables;
     }));

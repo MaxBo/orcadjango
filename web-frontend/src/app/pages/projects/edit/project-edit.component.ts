@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Inject, Input, Output, TemplateRef } from '@angular/core';
-import { Project, User } from "../../../rest-api";
+import { Inj, Project, User } from "../../../rest-api";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BehaviorSubject } from "rxjs";
@@ -53,7 +53,8 @@ export class ProjectEditDialogComponent {
       name: this.projectForm.value.name,
       description: this.projectForm.value.description,
       user: (this.projectForm.value.user !== -1)? this.projectForm.value.user: null,
-      code: this.projectForm.value.code
+      code: this.projectForm.value.code,
+      init: []
     }
     this.projectConfirmed.emit(project);
   }

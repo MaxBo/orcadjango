@@ -37,9 +37,10 @@ export class InjectablesComponent extends PageComponent implements OnInit {
         // this.groups = [...new Set(injectables.map(injectable => injectable.group))].sort();
         this.groupedInjectables = {};
         injectables.forEach(inj => {
-          if (!this.groupedInjectables![inj.group])
-            this.groupedInjectables![inj.group] = [];
-          this.groupedInjectables![inj.group].push(inj);
+          const group = inj.group || 'general'
+          if (!this.groupedInjectables![group])
+            this.groupedInjectables![group] = [];
+          this.groupedInjectables![group].push(inj);
         })
         Object.keys(this.groupedInjectables).forEach(group => {
             // this.groupedInjectables[group] = sortBy(this.groupedInjectables[group], 'name');
@@ -70,7 +71,7 @@ export class InjectablesComponent extends PageComponent implements OnInit {
       })
     }
     else {
-      const parents = injectable.parents.map(pId => this.injectables.find(inj => inj.id === pId ))
+      const parents = (injectable.parents || []).map(pId => this.injectables.find(inj => inj.id === pId ))
       const dialogRef = this.dialog.open(DerivedInjectableDialogComponent, {
         panelClass: 'absolute',
         disableClose: true,
@@ -84,7 +85,7 @@ export class InjectablesComponent extends PageComponent implements OnInit {
   }
 
   updateChildren(injectable: ScenarioInjectable) {
-    const children = this.injectables.filter(inj => inj.parents.indexOf(injectable.id) >= 0);
+    const children = this.injectables.filter(inj => (inj.parents || []).indexOf(injectable.id) >= 0);
     const scenario = this.settings.activeScenario$.value;
     if (!scenario) return;
     children.forEach(inj => {

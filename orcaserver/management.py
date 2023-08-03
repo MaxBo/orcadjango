@@ -94,8 +94,8 @@ class OrcaManager(ModuleSingleton):
     meta = {}
     __generic_instance = None
 
-    def __init__(self, module=None):
-        self.module = module or self.default_module
+    def __init__(self, module_path=None):
+        self.module = module_path or self.default_module
         if not self.__generic_instance:
             self.__generic_instance = self.create_instance()
 

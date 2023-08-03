@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from collections import OrderedDict
 import re
 import json
+from django.conf import settings
 
 from orcaserver.management import OrcaManager
 from .models import Project, Profile, Scenario, Injectable, Step, Run
@@ -72,19 +73,43 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     created = serializers.DateTimeField(format="%Y-%m-%d", read_only=True)
+    injectables = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
         fields =  ('id', 'name', 'description', 'module', 'code', 'user',
-                   'archived', 'created')
+                   'archived', 'created', 'injectables')
         optional_fields = ('module', 'code', 'user', 'archived')
 
     def create(self, validated_data):
         instance = super().create(validated_data)
         if not instance.module:
-            instance.module = OrcaManager.default_module
+            default_mod_path = settings.ORCA_MODULES['available']['path']
+            instance.module = default_mod_path
             instance.save()
         return instance
+
+    def get_injectables(self, obj):
+        orca_manager = OrcaManager(obj.module)
+        module = settings.ORCA_MODULES['available'].get(obj.module_name)
+        if not module:
+            return []
+        init_names = module.get('init')
+        init_proj_values = json.loads(obj.init)
+        injectables = []
+        for inj_name in init_names:
+            value = init_proj_values.get(inj_name, None)
+            meta = orca_manager.get_injectable_meta(inj_name)
+            injectable = Injectable(
+                name=inj_name,
+                value=json.dumps(value) if value else '',
+                meta=meta,
+                datatype=meta.get('datatype'),
+                data_class=meta.get('data_class')
+            )
+            injectables.append(injectable)
+        results = InjectableSerializer(injectables, many=True)
+        return results.data
 
 
 class ScenarioSerializer(serializers.ModelSerializer):

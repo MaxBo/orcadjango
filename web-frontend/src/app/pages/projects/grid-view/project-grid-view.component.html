@@ -39,7 +39,7 @@
         <p>
           {{project.description}}
         </p>
-<!--        <injectable *ngIf="project"></injectable>-->
+<!--        <injectable *ngIf="project" [injectable]=""></injectable>-->
       </mat-card-content>
       <mat-card-actions>
         <button mat-button (click)="onEditProject.emit(project)">EDIT</button>

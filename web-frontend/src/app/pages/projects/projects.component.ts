@@ -42,7 +42,8 @@ export class ProjectsComponent extends PageComponent implements OnInit{
       project: {
         name: '',
         description: '',
-        user: user?.id
+        user: user?.id,
+        init: []
       }
     }
     const dialogref = this.dialog.open(ProjectEditDialogComponent, {

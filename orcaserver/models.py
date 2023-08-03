@@ -23,6 +23,7 @@ class NameModel(models.Model):
 class Project(NameModel):
     name = models.TextField()
     description = models.TextField(blank=True)
+    # module path
     module = models.TextField(default='')
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     code = models.TextField(blank=True, default='')
@@ -36,6 +37,13 @@ class Project(NameModel):
         if self.pk is None:
             self.created = timezone.now()
         return super().save(*args, **kwargs)
+
+    @property
+    def module_name(self):
+        '''returns the name of the module, 'module' field stores the path only'''
+        for mod_name in settings.ORCA_MODULES['available'].keys():
+            if settings.ORCA_MODULES['available'][mod_name]['path'] == self.module:
+                return mod_name
 
 
 class Scenario(NameModel):
