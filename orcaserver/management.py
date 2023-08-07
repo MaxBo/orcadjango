@@ -15,7 +15,6 @@ _CS_ITER = 'iteration'
 
 logger = logging.getLogger('scenario')
 
-
 def load_module(module_name, orca=None, module_set=None):
     if not orca:
         import orca
@@ -39,7 +38,7 @@ def load_module(module_name, orca=None, module_set=None):
     # reload the parent modules
     parent_modules = getattr(module, '__parent_modules__', [])
     for module_name in parent_modules:
-        #  if the are not reloaded yet
+        #  if the modules are not reloaded yet
         if not module_name in module_set:
             load_module(module_name, orca=orca, module_set=module_set)
             module_set.add(module_name)
@@ -224,20 +223,21 @@ class OrcaWrapper():
         self.orca = self.__create_instance()
 
     def __create_instance(self) -> 'module':
-        spec = importlib.util.find_spec('orca.orca')
-        orca = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(orca)
-        # append a logger
-        orca.logger = logging.getLogger(str(id(orca)))
-        orca.logger.setLevel(logging.DEBUG)
-        sys.modules['orca'] = orca
-        from orcadjango import decorators
-        importlib.reload(decorators)
-        load_module(self.module, orca=orca)
-        del(spec)
-        if 'orca' in sys.modules:
-            del(sys.modules['orca'])
-        return orca
+        with lock:
+            spec = importlib.util.find_spec('orca.orca')
+            orca = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(orca)
+            # append a logger
+            orca.logger = logging.getLogger(str(id(orca)))
+            orca.logger.setLevel(logging.DEBUG)
+            sys.modules['orca'] = orca
+            from orcadjango import decorators
+            importlib.reload(decorators)
+            load_module(self.module, orca=orca)
+            del(spec)
+            if 'orca' in sys.modules:
+                del(sys.modules['orca'])
+            return orca
 
     def add_log_handler(self, handler: logging.StreamHandler):
         self.orca.logger.addHandler(handler)
