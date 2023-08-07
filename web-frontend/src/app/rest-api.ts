@@ -145,7 +145,8 @@ export class RestService {
       description: project.description,
       code: project.code,
       user: project.user,
-      module: project.module
+      module: project.module,
+      injectables: project.injectables
     }
     return this.http.post<Project>(this.URLS.projects, body);
   }

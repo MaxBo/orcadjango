@@ -1,5 +1,5 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { Project, RestService, User } from "../../rest-api";
+import { Inj, Project, RestService, User } from "../../rest-api";
 import { ProjectEditDialogComponent, ProjectEditDialogData } from "./edit/project-edit.component";
 import { MatDialog } from "@angular/material/dialog";
 import { UserSettingsService } from "../../user-settings.service";
@@ -36,6 +36,8 @@ export class ProjectsComponent extends PageComponent implements OnInit{
 
   onCreateProject(): void {
     const user = this.settings.user$.value;
+    const initInjectableNames = this.settings.module$.value?.init || [];
+    let injectables: Inj[] = initInjectableNames.map(name => this.settings.moduleInjectables.find(inj => inj.name === name)!).filter(i => i !== undefined);
     const data: ProjectEditDialogData = {
       title: 'Create new Project',
       confirmButtonText: 'Create',
@@ -43,7 +45,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
         name: '',
         description: '',
         user: user?.id,
-        injectables: [],
+        injectables: injectables,
         init: []
       }
     }

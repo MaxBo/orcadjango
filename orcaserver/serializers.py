@@ -121,7 +121,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields =  ('id', 'name', 'description', 'module', 'code', 'user',
                    'archived', 'created', 'injectables')
-        optional_fields = ('module', 'code', 'user', 'archived')
+        optional_fields = ('module', 'code', 'user', 'archived', 'injectables')
 
     def create(self, validated_data):
         instance = super().create(validated_data)

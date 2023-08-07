@@ -79,11 +79,9 @@ export class UserSettingsService {
     this.cookies.set('module', moduleName);
     const module = this.modules.find(mod => mod.name === moduleName);
     this.module$.next(module);
-    if (module && this.activeProject$.value) {
-      if (this.activeProject$.value.module !== module.path)
-        this.activeProject$.next(undefined);
-        this.activeScenario$.next(undefined);
-    }
+    if (this.activeProject$.value && this.activeProject$.value.module !== module?.path)
+      this.activeProject$.next(undefined);
+      this.activeScenario$.next(undefined);
   }
 
   disconnect(): void {

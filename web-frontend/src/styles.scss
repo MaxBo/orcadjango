@@ -99,7 +99,7 @@ button.next {
   background-color: rgba(0,0,0,0.2);
   z-index: 100;
   cursor: progress;
-  pointer-events: none;
+  //pointer-events: none;
 
   mat-spinner {
     left: 45%;
