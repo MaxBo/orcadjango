@@ -73,10 +73,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ProjectInjectablesSerializerField(serializers.Field):
 
-    def __init__(self, method_name=None, **kwargs):
-        self.method_name = method_name
+    def __init__(self, **kwargs):
         kwargs['source'] = '*'
-        kwargs['read_only'] = False
         super().__init__(**kwargs)
 
     def to_representation(self, obj):
@@ -92,7 +90,7 @@ class ProjectInjectablesSerializerField(serializers.Field):
             meta = orca_manager.get_injectable_meta(inj_name)
             injectable = Injectable(
                 name=inj_name,
-                value=value,
+                value=json.dumps(value) if not isinstance(value, str) else value,
                 meta=meta,
                 datatype=meta.get('datatype', ''),
                 data_class=meta.get('data_class', '')
