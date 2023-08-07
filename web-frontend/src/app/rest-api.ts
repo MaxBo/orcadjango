@@ -24,6 +24,7 @@ export interface Project {
   description: string,
   init: string[],
   injectables: Inj[],
+  previewInjectable?: Inj;
   user?: number,
   code?: string,
   module?: string,
@@ -182,7 +183,13 @@ export class RestService {
 
   getProjects(options?: { module: string }): Observable<Project[]> {
     const params: any = options? { module: options.module }: {};
-    return this.http.get<Project[]>(this.URLS.projects, { params: params });
+    return this.http.get<Project[]>(this.URLS.projects, { params: params }).pipe(map(projects => {
+      // ToDo: determine which injectables serve as previews via API somehow
+      projects.forEach(project => {
+        project.previewInjectable = project.injectables.find(inj => inj.name === 'project_area');
+      })
+      return projects;
+    }));
   }
 
   getScenarios(options?: { project?: Project }): Observable<Scenario[]> {

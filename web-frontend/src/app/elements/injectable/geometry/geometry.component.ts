@@ -41,7 +41,7 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
   ngOnInit() {
     this.wktInput = this.wkt;
     if (!this.height)
-      this.height = this.edit? '400px': '200px';
+      this.height = this.edit? '400px': '160px';
   }
 
   ngAfterViewInit() {

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Injectable, Input, OnInit, Output } from '@angular/core';
-import { Inj } from "../../rest-api";
+import { Inj, User } from "../../rest-api";
 
 @Injectable()
 export abstract class BaseInjectableComponent {
@@ -20,25 +20,36 @@ export class InjectableComponent extends BaseInjectableComponent implements OnIn
   multipleChoice: boolean = false;
   protected values: any[] = [];
   protected Object = Object;
-  @Input() injectable!: Inj;
+  protected _injectable?: Inj;
+  @Input()
+  set injectable(injectable: Inj) {
+    setTimeout(() => this._injectable = undefined);
+    setTimeout(() => this._injectable = injectable);
+    this._injectable = injectable;
+    this.init();
+  }
 
   ngOnInit(): void {
-    this.multipleChoice = (!!this.injectable.choices && this.injectable.multi) || false;
-    if (!this.injectable.multi)
-      this.values = [this.injectable.value];
+    this.init();
+  }
+
+  init(): void {
+    this.multipleChoice = (!!this._injectable?.choices && this._injectable.multi) || false;
+    if (!this._injectable?.multi)
+      this.values = [this._injectable?.value];
     else {
-      if (typeof(this.injectable.value) === 'string')
-        this.values = this.injectable.value.split(',')
+      if (typeof(this._injectable.value) === 'string')
+        this.values = this._injectable.value.split(',')
       else
-        this.values = this.injectable.value || [];
+        this.values = this._injectable.value || [];
     }
-    if (this.injectable.choices) {
+    if (this._injectable?.choices) {
       if (Array.isArray(this.injectable.choices)) {
         this.choiceValues = this.injectable.choices;
       }
       else {
-        this.choiceValues = Object.keys(this.injectable.choices);
-        this.choiceLabels = Object.values(this.injectable.choices);
+        this.choiceValues = Object.keys(this._injectable.choices);
+        this.choiceLabels = Object.values(this._injectable.choices);
       }
     }
   }

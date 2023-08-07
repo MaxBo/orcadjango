@@ -8,6 +8,7 @@
 #new-grid-card {
   width: 200px;
   height: 180px;
+  min-height: 180px;
   cursor: pointer;
   margin: 50px 25px;
   .mat-mdc-card-header {
@@ -28,7 +29,7 @@
 .grid-preview-card {
   user-select: none;
   width: 250px;
-  height: 300px;
+  min-height: 300px;
   display:flex;
   flex-direction: column;
   border-bottom: 3px solid white;

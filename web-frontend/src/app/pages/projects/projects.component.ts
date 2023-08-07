@@ -26,6 +26,10 @@ export class ProjectsComponent extends PageComponent implements OnInit{
     const viewType = this.cookies.get('project-view-type');
     if (viewType === 'list-view') this.viewType = 'list-view';
     this.settings.module$.subscribe(module => {
+      if (!module) {
+        this.projects = [];
+        return;
+      }
       this.setLoading(true);
       this.rest.getProjects({ module: module?.path || '' }).subscribe(projects => {
         this.projects = projects;
