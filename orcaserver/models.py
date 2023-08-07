@@ -119,6 +119,9 @@ class Injectable(NameModel):
     @property
     def meta(self):
         '''buffered meta data for serialization'''
+        dummy = {'group': '', 'order': '',}
+        if not self.scenario:
+            return dummy
         if self.__meta:
             return self.__meta
         try:
@@ -128,7 +131,7 @@ class Injectable(NameModel):
         # injectable will follow but there is a short period where this might
         # cause an exception
         except ObjectDoesNotExist:
-            meta = {'group': '', 'order': '',}
+            return dummy
         self.__meta = meta
         return meta
 

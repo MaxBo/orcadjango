@@ -104,8 +104,8 @@ class ProjectSerializer(serializers.ModelSerializer):
                 name=inj_name,
                 value=json.dumps(value) if value else '',
                 meta=meta,
-                datatype=meta.get('datatype'),
-                data_class=meta.get('data_class')
+                datatype=meta.get('datatype', ''),
+                data_class=meta.get('data_class', '')
             )
             injectables.append(injectable)
         results = InjectableSerializer(injectables, many=True)
