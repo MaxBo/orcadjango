@@ -43,12 +43,13 @@ export class ProjectsComponent extends PageComponent implements OnInit{
         name: '',
         description: '',
         user: user?.id,
+        injectables: [],
         init: []
       }
     }
     const dialogref = this.dialog.open(ProjectEditDialogComponent, {
       panelClass: 'absolute',
-      width: '700px',
+      width: '1000px',
       disableClose: true,
       data: data
     });
@@ -94,12 +95,12 @@ export class ProjectsComponent extends PageComponent implements OnInit{
     }
     const dialogRef = this.dialog.open(ProjectEditDialogComponent, {
       panelClass: 'absolute',
-      width: '700px',
+      width: '1000px',
       disableClose: true,
       data: data
     });
     dialogRef.componentInstance.projectConfirmed.subscribe((edited) => {
-      this.rest.patchProject(project, { name: edited.name, description: edited.description, user: edited.user, code: edited.code }).subscribe(patched => {
+      this.rest.patchProject(project, { name: edited.name, description: edited.description, user: edited.user, code: edited.code, injectables: edited.injectables }).subscribe(patched => {
         dialogRef.close();
         Object.assign(project, patched);
       });

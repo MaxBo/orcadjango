@@ -23,6 +23,7 @@ export interface Project {
   name: string,
   description: string,
   init: string[],
+  injectables: Inj[],
   user?: number,
   code?: string,
   module?: string,

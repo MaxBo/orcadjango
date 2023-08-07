@@ -119,11 +119,11 @@ class Injectable(NameModel):
     @property
     def meta(self):
         '''buffered meta data for serialization'''
+        if self.__meta:
+            return self.__meta
         dummy = {'group': '', 'order': '',}
         if not self.scenario:
             return dummy
-        if self.__meta:
-            return self.__meta
         try:
             meta = OrcaManager(
                 self.scenario.project.module).get_injectable_meta(self.name)

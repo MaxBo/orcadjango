@@ -71,9 +71,53 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
 
+class ProjectInjectablesSerializerField(serializers.Field):
+
+    def __init__(self, method_name=None, **kwargs):
+        self.method_name = method_name
+        kwargs['source'] = '*'
+        kwargs['read_only'] = False
+        super().__init__(**kwargs)
+
+    def to_representation(self, obj):
+        orca_manager = OrcaManager(obj.module)
+        module = settings.ORCA_MODULES['available'].get(obj.module_name)
+        if not module:
+            return []
+        init_names = module.get('init')
+        init_values = json.loads(obj.init)
+        injectables = []
+        for inj_name in init_names:
+            value = init_values.get(inj_name, '')
+            meta = orca_manager.get_injectable_meta(inj_name)
+            injectable = Injectable(
+                name=inj_name,
+                value=value,
+                meta=meta,
+                datatype=meta.get('datatype', ''),
+                data_class=meta.get('data_class', '')
+            )
+            injectables.append(injectable)
+        results = InjectableSerializer(injectables, many=True)
+        return results.data
+
+    def to_internal_value(self, data):
+        serializer = InjectableSerializer(many=True)
+        # this does not make a lot of sense, only renaming 'value' to
+        # 'serialized_value' but i leave it in for now
+        injectables = serializer.to_internal_value(data)
+        init = {}
+        for inj in injectables:
+            init[inj['name']] = inj['serialized_value']
+        return {'init': json.dumps(init)}
+
+    #def run_validation(self, datay=empty):
+        #return True
+
+
 class ProjectSerializer(serializers.ModelSerializer):
     created = serializers.DateTimeField(format="%Y-%m-%d", read_only=True)
-    injectables = serializers.SerializerMethodField()
+    injectables = ProjectInjectablesSerializerField()
 
     class Meta:
         model = Project
@@ -89,27 +133,19 @@ class ProjectSerializer(serializers.ModelSerializer):
             instance.save()
         return instance
 
-    def get_injectables(self, obj):
-        orca_manager = OrcaManager(obj.module)
-        module = settings.ORCA_MODULES['available'].get(obj.module_name)
-        if not module:
-            return []
-        init_names = module.get('init')
-        init_proj_values = json.loads(obj.init)
-        injectables = []
-        for inj_name in init_names:
-            value = init_proj_values.get(inj_name, None)
-            meta = orca_manager.get_injectable_meta(inj_name)
-            injectable = Injectable(
-                name=inj_name,
-                value=json.dumps(value) if value else '',
-                meta=meta,
-                datatype=meta.get('datatype', ''),
-                data_class=meta.get('data_class', '')
-            )
-            injectables.append(injectable)
-        results = InjectableSerializer(injectables, many=True)
-        return results.data
+    #def update(self, obj, validated_data):
+        #super().update(obj, validated_data)
+
+    #def update(self, obj, validated_data):
+        #injectables = validated_data.pop('injectables')
+        #init_values = self._inj_to_init(obj, injectables, update=True)
+
+    #def _inj_to_init(self, obj, inj_data, update=True):
+        #module = settings.ORCA_MODULES['available'].get(obj.module_name)
+        #init_proj_values = json.loads(obj.init)
+        #for i, name in enumerate(init_names):
+            #val = obj.init
+            #inj = inj_data
 
 
 class ScenarioSerializer(serializers.ModelSerializer):

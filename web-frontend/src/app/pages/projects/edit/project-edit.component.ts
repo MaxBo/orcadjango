@@ -20,7 +20,8 @@ export interface ProjectEditDialogData {
 export class ProjectEditDialogComponent {
   protected projectForm: FormGroup;
   protected errors: Record<string, string> = {};
-  private project?: Project;
+  protected project?: Project;
+  private injValues: any[];
   isLoading$ = new BehaviorSubject<boolean>(false);
   @Output() projectConfirmed = new EventEmitter<Project>();
 
@@ -28,7 +29,9 @@ export class ProjectEditDialogComponent {
               private formBuilder: FormBuilder) {
     data.confirmButtonText = data.confirmButtonText || 'Save';
     data.cancelButtonText = data.cancelButtonText || 'Cancel';
+
     this.project = this.data.project;
+    this.injValues = this.project!.injectables.map(inj => inj.value);
     this.projectForm = this.formBuilder.group({
       name: this.project?.name || '',
       description: this.project?.description || '',
@@ -48,14 +51,24 @@ export class ProjectEditDialogComponent {
   onConfirmClick() {
     this.projectForm.markAllAsTouched();
     if (this.projectForm.invalid) return;
+    const injectables: Inj[] = this.project? this.project.injectables.map((inj, idx) => {
+      const clone = Object.assign({}, inj);
+      clone.value = this.injValues[idx];
+      return clone;
+    }): [];
     const project = {
       id: this.project?.id,
       name: this.projectForm.value.name,
       description: this.projectForm.value.description,
       user: (this.projectForm.value.user !== -1)? this.projectForm.value.user: null,
       code: this.projectForm.value.code,
-      init: []
+      init: [],
+      injectables: injectables
     }
     this.projectConfirmed.emit(project);
+  }
+
+  injectableChanged(idx: number, value: any): void {
+    this.injValues[idx] = value;
   }
 }

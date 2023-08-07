@@ -47,7 +47,7 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
   ngAfterViewInit() {
     this.wktSrid = this.srid;
     const format = new WKT();
-    this.geom = format.readGeometry(this.wkt);
+    this.geom = this.wkt? format.readGeometry(this.wkt): new MultiPolygon([]);
     this.initMap();
     if (!this.edit)
       this.initPreview();
@@ -99,7 +99,13 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
 
   zoomToExtent() {
     if (!this.map) return;
-    this.map.getView().fit(this.featureLayer?.getSource().getExtent());
+    const extent = this.featureLayer?.getSource().getExtent();
+    try {
+      this.map.getView().fit(extent);
+    }
+    catch {
+      return;
+    }
     this.map.getView().setZoom(this.map.getView().getZoom()! - 0.5);
   }
 
