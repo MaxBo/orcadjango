@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
+import * as moment from "moment/moment";
 
 interface Profile {
   color: string;
@@ -137,7 +138,10 @@ export class RestService {
   }
 
   getProject(id: number): Observable<Project> {
-    return this.http.get<Project>(`${this.URLS.projects}${id}/`);
+    return this.http.get<Project>(`${this.URLS.projects}${id}/`).pipe(map(project => {
+      project.previewInjectable = project.injectables.find(inj => inj.name === 'project_area');
+      return project;
+    }))
   }
 
   createProject(project: Project): Observable<Project>{
@@ -187,6 +191,11 @@ export class RestService {
       // ToDo: determine which injectables serve as previews via API somehow
       projects.forEach(project => {
         project.previewInjectable = project.injectables.find(inj => inj.name === 'project_area');
+        if (project.created) {
+          const date = new Date(project.created);
+          // ToDo: put date format in environment settings
+          project.created = moment(date).format('DD.MM.YYYY');
+        }
       })
       return projects;
     }));

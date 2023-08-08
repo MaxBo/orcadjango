@@ -12,6 +12,7 @@ import * as moment from 'moment';
 export class DateComponent extends BaseInjectableComponent implements OnInit {
   @Input() value!: string;
   @Input() inputFormat: string = 'YYYY-MM-DD';
+  // ToDo: put date format in environment settings
   @Input() outputFormat: string = 'DD.MM.YYYY';
   protected date = new Date();
 

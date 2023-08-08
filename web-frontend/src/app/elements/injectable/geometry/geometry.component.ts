@@ -70,6 +70,7 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
         zoom: 7,
         projection: `EPSG:${this.mapSrid}`
       }),
+      controls: this.edit? undefined: []
     });
   }
 
