@@ -1,4 +1,3 @@
-<button mat-button (click)="onCreateProject.emit(true)">NEW PROJECT</button>
 <table *ngIf="projects.length > 0" class="striped">
   <thead>
     <tr>
@@ -29,3 +28,4 @@
     </tr>
   </tbody>
 </table>
+<button mat-button (click)="onCreateProject.emit(true)">+ NEW PROJECT</button>

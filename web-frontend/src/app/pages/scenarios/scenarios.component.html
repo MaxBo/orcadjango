@@ -2,19 +2,19 @@
   <mat-spinner [diameter]="50"></mat-spinner>
 </div>
 <div style="width: calc(100% - 100px)">
-  <div style="display: flex; margin-bottom: 20px;">
-    <mat-icon title="Grid View"
-              class="view-switch material-symbols-outlined"
-              [class.active]="viewType==='grid-view'"
-              (click)="changeView('grid-view')">
-      grid_view
-    </mat-icon>
-    <mat-icon title="List View"
-              class="view-switch material-symbols-outlined"
-              [class.active]="viewType==='list-view'"
-              (click)="changeView('list-view')">
-      list
-    </mat-icon>
+  <div style="margin: 10px 0;">
+    <mat-button-toggle-group style="height: 40px; align-items: center; align-self: center"
+                             [value]="viewType"
+                             (change)="changeView($event.value)">
+      <mat-button-toggle value="grid-view">
+        Grid
+        <mat-icon style="margin-left: 10px;">grid_view</mat-icon>
+      </mat-button-toggle>
+      <mat-button-toggle value="list-view">
+        List
+        <mat-icon style="margin-left: 10px;">list</mat-icon>
+      </mat-button-toggle>
+    </mat-button-toggle-group>
   </div>
   <ng-container [ngSwitch]="viewType">
     <app-scenario-grid-view *ngSwitchCase="'grid-view'"

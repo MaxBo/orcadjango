@@ -1,4 +1,3 @@
-<button mat-button (click)="onCreateScenario.emit(true)">NEW SCENARIO</button>
 <table *ngIf="scenarios.length > 0" class="striped">
   <thead>
     <tr>
@@ -20,3 +19,4 @@
     </tr>
   </tbody>
 </table>
+<button mat-button (click)="onCreateScenario.emit(true)">+ NEW SCENARIO</button>
