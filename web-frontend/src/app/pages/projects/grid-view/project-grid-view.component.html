@@ -37,8 +37,7 @@
           {{project.description}}
         </p>-->
         <injectable *ngIf="project.previewInjectable"
-                    [injectable]="project.previewInjectable"
-                    (click)="$event.stopPropagation()"></injectable>
+                    [injectable]="project.previewInjectable"></injectable>
       </mat-card-content>
       <mat-card-actions>
         <button mat-button (click)="onEditProject.emit(project)">EDIT</button>

@@ -6,6 +6,7 @@ import { UserSettingsService } from "../../user-settings.service";
 import { ConfirmDialogComponent } from "../../elements/confirm-dialog/confirm-dialog.component";
 import { CookieService } from "ngx-cookie-service";
 import { PageComponent } from "../../app.component";
+import { sortBy } from "../injectables/injectables.component";
 
 @Component({
   selector: 'app-projects',
@@ -14,7 +15,9 @@ import { PageComponent } from "../../app.component";
 })
 export class ProjectsComponent extends PageComponent implements OnInit{
   projects: Project[] = [];
-  viewType: 'list-view' | 'grid-view' = 'grid-view';
+  protected viewType: 'list-view' | 'grid-view' = 'grid-view';
+  protected sortAscending = true;
+  protected sortAttr = 'name'; //'name' | 'code' | 'date';
   @ViewChild('deleteProjectTemplate') deleteProjectTemplate?: TemplateRef<any>;
 
   constructor(private rest: RestService, private dialog: MatDialog, protected settings: UserSettingsService,
@@ -126,5 +129,11 @@ export class ProjectsComponent extends PageComponent implements OnInit{
   changeView(viewType: 'list-view' | 'grid-view'): void {
     this.viewType = viewType;
     this.cookies.set('project-view-type', viewType);
+  }
+
+  sortProjects() {
+    console.log(this.sortAttr);
+    console.log(this.sortAscending);
+    this.projects = sortBy(this.projects, this.sortAttr, {reverse: !this.sortAscending})
   }
 }

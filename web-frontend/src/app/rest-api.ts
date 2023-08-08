@@ -30,7 +30,8 @@ export interface Project {
   code?: string,
   module?: string,
   archived?: boolean,
-  created?: string
+  created?: string,
+  date?: Date
 }
 
 interface ScenarioRun {
@@ -192,9 +193,9 @@ export class RestService {
       projects.forEach(project => {
         project.previewInjectable = project.injectables.find(inj => inj.name === 'project_area');
         if (project.created) {
-          const date = new Date(project.created);
+          project.date = new Date(project.created);
           // ToDo: put date format in environment settings
-          project.created = moment(date).format('DD.MM.YYYY');
+          project.created = moment(project.date).format('DD.MM.YYYY');
         }
       })
       return projects;
