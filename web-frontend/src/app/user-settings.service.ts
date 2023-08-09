@@ -111,4 +111,16 @@ export class UserSettingsService {
   getUser(id: number | undefined): User | undefined {
     return this.users.find(user => user.id === id);
   }
+
+  getUserName(userId: number | undefined): string {
+    const user = this.getUser(userId);
+    if (!user)
+      return '-';
+    let realName = '';
+    if (user.first_name)
+      realName += user.first_name + ' ';
+    if (user.last_name)
+      realName += user.last_name + ' ';
+    return realName? `${realName}(${user.username})`: user.username;
+  }
 }

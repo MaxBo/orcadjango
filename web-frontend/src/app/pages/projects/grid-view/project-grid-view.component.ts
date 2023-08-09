@@ -8,12 +8,12 @@ import { UserSettingsService } from "../../../user-settings.service";
   styleUrls: ['./project-grid-view.component.scss']
 })
 export class ProjectGridViewComponent {
-  @Input() projects: Project[] = [];
   @Output() onProjectSelected = new EventEmitter<Project>();
   @Output() onEditProject = new EventEmitter<Project>();
   @Output() onDeleteProject = new EventEmitter<Project>();
   @Output() onArchiveProject = new EventEmitter<{ project: Project, archive: boolean }>();
   @Output() onCreateProject = new EventEmitter<boolean>();
+  @Input() projects: Project[] = [];
 
   constructor(protected settings: UserSettingsService) {}
 

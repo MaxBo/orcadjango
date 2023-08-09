@@ -7,6 +7,7 @@ import { ConfirmDialogComponent } from "../../elements/confirm-dialog/confirm-di
 import { CookieService } from "ngx-cookie-service";
 import { PageComponent } from "../../app.component";
 import { sortBy } from "../injectables/injectables.component";
+import { Moment } from "moment";
 
 @Component({
   selector: 'app-projects',
@@ -14,10 +15,19 @@ import { sortBy } from "../injectables/injectables.component";
   styleUrls: ['./projects.component.scss']
 })
 export class ProjectsComponent extends PageComponent implements OnInit{
-  projects: Project[] = [];
+  protected projects: Project[] = [];
+  protected filteredProjects: Project[] = [];
+  protected showFilters = false;
   protected viewType: 'list-view' | 'grid-view' = 'grid-view';
   protected sortAscending = true;
   protected sortAttr = 'name'; //'name' | 'code' | 'date';
+  protected filterByUsers = false;
+  protected filterByCodes = false;
+  protected filterByDate = false;
+  protected filterUsers: number[] = [];
+  protected filterCodes: string[] = [];
+  protected filterDate?: Moment;
+  protected filterDateOperator: '<' | '>' | '=' = '>'
   @ViewChild('deleteProjectTemplate') deleteProjectTemplate?: TemplateRef<any>;
 
   constructor(private rest: RestService, private dialog: MatDialog, protected settings: UserSettingsService,
@@ -31,12 +41,14 @@ export class ProjectsComponent extends PageComponent implements OnInit{
     this.settings.module$.subscribe(module => {
       if (!module) {
         this.projects = [];
+        this.filteredProjects = [];
         return;
       }
       this.setLoading(true);
       this.rest.getProjects({ module: module?.path || '' }).subscribe(projects => {
         this.projects = projects;
         this.setLoading(false);
+        this.filter();
       });
     })
   }
@@ -131,9 +143,31 @@ export class ProjectsComponent extends PageComponent implements OnInit{
     this.cookies.set('project-view-type', viewType);
   }
 
-  sortProjects() {
-    console.log(this.sortAttr);
-    console.log(this.sortAscending);
+  sortProjects(): void {
     this.projects = sortBy(this.projects, this.sortAttr, {reverse: !this.sortAscending})
+  }
+
+  filter(): void {
+    this.filteredProjects = this.projects;
+    if (this.filterByUsers && this.filterUsers.length) {
+      this.filteredProjects = this.filteredProjects.filter(p => (p.user !== undefined) && this.filterUsers.includes(p.user)) || [];
+    }
+    if (this.filterByCodes && this.filterCodes.length) {
+      this.filteredProjects = this.filteredProjects.filter(p => p.code && this.filterCodes.includes(p.code)) || [];
+    }
+    if (this.filterByDate && this.filterDate) {
+      const date = this.filterDate.toDate();
+      date.setHours(0,0,0,0);
+      this.filteredProjects = this.filteredProjects.filter(p =>
+        p.date && (
+        (this.filterDateOperator === '>')? p.date.valueOf() > date.valueOf():
+          (this.filterDateOperator === '<')? p.date.valueOf() < date.valueOf():
+            p.date.valueOf() === date.valueOf())
+      );
+    }
+  }
+
+  getUniqueValues(objects: any[], attribute: string): any[] {
+    return Array.from(new Set(objects.map(o => o[attribute])));
   }
 }

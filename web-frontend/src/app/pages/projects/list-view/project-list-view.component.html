@@ -16,7 +16,7 @@
       <td> {{ project.name }} </td>
       <td> {{ project.code }} </td>
       <td> {{ project.created }} </td>
-      <td> {{ getUserName(project.user) }} </td>
+      <td> {{ settings.getUserName(project.user) }} </td>
       <td> {{ project.description }} </td>
       <td>
         <button mat-button (click)="onEditProject.emit(project); $event.stopPropagation()">EDIT</button>

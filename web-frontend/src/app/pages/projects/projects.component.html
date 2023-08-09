@@ -16,6 +16,16 @@
       </mat-button-toggle>
     </mat-button-toggle-group>
     <div style="display: flex; margin-left: auto; align-items: center;">
+      <mat-button-toggle style="margin-right: 10px;"
+                         (click)="showFilters = !showFilters">
+        Filter Options
+        <ng-container *ngIf="(filterByCodes || filterByUsers || filterByDate) else noFilter" >
+          <mat-icon color="accent">filter_alt</mat-icon>
+        </ng-container>
+        <ng-template #noFilter>
+          <mat-icon style="color: grey;">filter_alt</mat-icon>
+        </ng-template>
+      </mat-button-toggle>
       <mat-form-field style="margin-bottom: -20px;">
         <mat-label>Sort by</mat-label>
         <mat-select [value]="sortAttr" (selectionChange)="this.sortAttr = $event.value || 'name'; sortProjects();">
@@ -26,7 +36,7 @@
       </mat-form-field>
       <button mat-mini-fab
               color="accent"
-              class="flat"
+              class="flat micro"
               [title]="'sort order: ' + (sortAscending? 'ascending': 'descending')"
               (click)="sortAscending = !sortAscending; sortProjects();"
               style="margin-left: 5px;">
@@ -34,9 +44,56 @@
       </button>
     </div>
   </div>
+  <div id="filter-view" [ngClass]="{'expanded': showFilters}">
+    <div>
+      <mat-checkbox [checked]="filterByUsers" (change)="filterByUsers = !filterByUsers; filter();"></mat-checkbox>
+      <mat-form-field>
+        <mat-label>Filter by Users</mat-label>
+        <mat-select multiple [disabled]="!filterByUsers"
+                    (selectionChange)="filterUsers = $event.value; filter();">
+          <mat-option *ngFor="let user of settings.users"
+                      [value]="user.id">
+            {{settings.getUserName(user.id)}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-checkbox [checked]="filterByCodes" (change)="filterByCodes = !filterByCodes; filter();"></mat-checkbox>
+      <mat-form-field>
+        <mat-label>Filter by codes</mat-label>
+        <mat-select multiple [disabled]="!filterByCodes"
+                    (selectionChange)="filterCodes = $event.value; filter();">
+          <mat-option *ngFor="let code of getUniqueValues(projects, 'code')"
+                      [value]="code">
+            {{code}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-checkbox [checked]="filterByDate"
+                    (change)="filterByDate = !filterByDate; filter();"></mat-checkbox>
+      <button mat-mini-fab
+              color="accent"
+              class="flat micro"
+              [value]="filterDateOperator"
+              [disabled]="!filterByDate"
+              [title]="(filterDateOperator === '=')? 'at': (filterDateOperator === '>')? 'newer than': 'older than'"
+              (click)="filterDateOperator = (filterDateOperator === '=')? '>' : (filterDateOperator === '>')? '<': '='; filter();"
+              style="margin-right: 5px; font-size: 20px; font-weight: bold;">
+        {{filterDateOperator}}
+      </button>
+      <mat-form-field>
+        <mat-label>Filter by date</mat-label>
+        <input matInput [disabled]="!filterByDate"
+               [matDatepicker]="picker"
+               [(ngModel)]="filterDate"
+               (ngModelChange)="filter()">
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </div>
+  </div>
   <ng-container [ngSwitch]="viewType">
     <app-project-grid-view *ngSwitchCase="'grid-view'"
-                           [projects]="projects"
+                           [projects]="filteredProjects"
                            (onCreateProject)="onCreateProject()"
                            (onDeleteProject)="deleteProject($event)"
                            (onEditProject)="editProject($event)"
@@ -44,7 +101,7 @@
                            (onProjectSelected)="selectProject($event)">
     </app-project-grid-view>
     <app-project-list-view *ngSwitchCase="'list-view'"
-                           [projects]="projects"
+                           [projects]="filteredProjects"
                            (onCreateProject)="onCreateProject()"
                            (onDeleteProject)="deleteProject($event)"
                            (onEditProject)="editProject($event)"

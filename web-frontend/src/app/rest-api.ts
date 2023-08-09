@@ -194,6 +194,7 @@ export class RestService {
         project.previewInjectable = project.injectables.find(inj => inj.name === 'project_area');
         if (project.created) {
           project.date = new Date(project.created);
+          project.date.setHours(0,0,0,0);
           // ToDo: put date format in environment settings
           project.created = moment(project.date).format('DD.MM.YYYY');
         }
