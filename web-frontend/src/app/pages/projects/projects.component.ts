@@ -1,5 +1,5 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { Inj, Project, RestService, User } from "../../rest-api";
+import { formatProject, Inj, Project, RestService, User } from "../../rest-api";
 import { ProjectEditDialogComponent, ProjectEditDialogData } from "./edit/project-edit.component";
 import { MatDialog } from "@angular/material/dialog";
 import { UserSettingsService } from "../../user-settings.service";
@@ -8,6 +8,7 @@ import { CookieService } from "ngx-cookie-service";
 import { PageComponent } from "../../app.component";
 import { sortBy } from "../injectables/injectables.component";
 import { Moment } from "moment";
+import * as moment from "moment";
 
 @Component({
   selector: 'app-projects',
@@ -24,10 +25,11 @@ export class ProjectsComponent extends PageComponent implements OnInit{
   protected filterByUsers = false;
   protected filterByCodes = false;
   protected filterByDate = false;
+  protected filterArchive = false;
   protected filterUsers: number[] = [];
   protected filterCodes: string[] = [];
   protected filterDate?: Moment;
-  protected filterDateOperator: '<' | '>' | '=' = '>'
+  protected filterDateOperator: '<' | '>' | '=' = '>';
   @ViewChild('deleteProjectTemplate') deleteProjectTemplate?: TemplateRef<any>;
 
   constructor(private rest: RestService, private dialog: MatDialog, protected settings: UserSettingsService,
@@ -78,7 +80,9 @@ export class ProjectsComponent extends PageComponent implements OnInit{
       project.module = this.settings.module$.value?.path || '';
       this.rest.createProject(project).subscribe(created => {
         dialogref.close();
+        formatProject(created);
         this.projects.push(created);
+        this.filter();
       })
     })
   }
@@ -104,6 +108,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
         }
         if (project.id === this.settings.activeProject$?.value?.id)
           this.settings.setActiveProject(undefined);
+        this.filter();
       })
     })
   }
@@ -124,13 +129,16 @@ export class ProjectsComponent extends PageComponent implements OnInit{
       this.rest.patchProject(project, { name: edited.name, description: edited.description, user: edited.user, code: edited.code, injectables: edited.injectables }).subscribe(patched => {
         dialogRef.close();
         Object.assign(project, patched);
+        formatProject(project);
+        this.filter();
       });
     })
   }
 
   archiveProject(project: Project, archive: boolean): void {
     this.rest.patchProject(project, { archived: archive }).subscribe(patched => {
-      Object.assign(project, patched);
+      project.archived = true;
+      this.filter();
     });
   }
 
@@ -144,11 +152,11 @@ export class ProjectsComponent extends PageComponent implements OnInit{
   }
 
   sortProjects(): void {
-    this.projects = sortBy(this.projects, this.sortAttr, {reverse: !this.sortAscending})
+    this.filteredProjects = sortBy(this.filteredProjects, this.sortAttr, {reverse: !this.sortAscending});
   }
 
   filter(): void {
-    this.filteredProjects = this.projects;
+    this.filteredProjects = this.projects.filter(p => p.archived === this.filterArchive);
     if (this.filterByUsers && this.filterUsers.length) {
       this.filteredProjects = this.filteredProjects.filter(p => (p.user !== undefined) && this.filterUsers.includes(p.user)) || [];
     }
@@ -165,6 +173,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
             p.date.valueOf() === date.valueOf())
       );
     }
+    this.sortProjects();
   }
 
   getUniqueValues(objects: any[], attribute: string): any[] {

@@ -19,7 +19,7 @@
       <mat-button-toggle style="margin-right: 10px;"
                          (click)="showFilters = !showFilters">
         Filter Options
-        <ng-container *ngIf="(filterByCodes || filterByUsers || filterByDate) else noFilter" >
+        <ng-container *ngIf="(filterByCodes || filterByUsers || filterByDate || filterArchive) else noFilter" >
           <mat-icon color="accent">filter_alt</mat-icon>
         </ng-container>
         <ng-template #noFilter>
@@ -89,6 +89,10 @@
         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
+      <mat-checkbox [checked]="filterArchive"
+                    (change)="filterArchive = !filterArchive; filter();">
+        Archive
+      </mat-checkbox>
     </div>
   </div>
   <ng-container [ngSwitch]="viewType">

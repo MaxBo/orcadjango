@@ -108,6 +108,15 @@ export interface ScenarioLogEntry {
   scenario?: { success?: boolean, finished?: boolean }
 }
 
+export function formatProject(project: Project) {
+  project.previewInjectable = project.injectables.find(inj => inj.name === 'project_area');
+  if (project.created) {
+    project.date = new Date(project.created);
+    project.date.setHours(0,0,0,0);
+    project.created = moment(project.date).format('DD.MM.YYYY');;
+  }
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -140,7 +149,7 @@ export class RestService {
 
   getProject(id: number): Observable<Project> {
     return this.http.get<Project>(`${this.URLS.projects}${id}/`).pipe(map(project => {
-      project.previewInjectable = project.injectables.find(inj => inj.name === 'project_area');
+      formatProject(project);
       return project;
     }))
   }
@@ -190,15 +199,7 @@ export class RestService {
     const params: any = options? { module: options.module }: {};
     return this.http.get<Project[]>(this.URLS.projects, { params: params }).pipe(map(projects => {
       // ToDo: determine which injectables serve as previews via API somehow
-      projects.forEach(project => {
-        project.previewInjectable = project.injectables.find(inj => inj.name === 'project_area');
-        if (project.created) {
-          project.date = new Date(project.created);
-          project.date.setHours(0,0,0,0);
-          // ToDo: put date format in environment settings
-          project.created = moment(project.date).format('DD.MM.YYYY');
-        }
-      })
+      projects.forEach(project => formatProject(project));
       return projects;
     }));
   }
