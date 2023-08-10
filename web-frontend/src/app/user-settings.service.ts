@@ -4,6 +4,7 @@ import { Inj, Module, Project, RestService, Scenario, ScenarioLogEntry, User } f
 import { BehaviorSubject } from "rxjs";
 import { AuthService } from "./auth.service";
 import { environment } from "../environments/environment";
+import { Router } from "@angular/router";
 
 @Injectable({ providedIn: 'root' })
 export class UserSettingsService {
@@ -20,7 +21,7 @@ export class UserSettingsService {
   private readonly wsURL: string;
   private retries = 0;
 
-  constructor(private cookies: CookieService, private rest: RestService, private auth: AuthService) {
+  constructor(private cookies: CookieService, private rest: RestService, private auth: AuthService, private router: Router) {
     this.activeScenario$.subscribe(scenario => {
       this.disconnect();
       this.connect();
@@ -79,6 +80,7 @@ export class UserSettingsService {
     this.cookies.set('module', moduleName);
     const module = this.modules.find(mod => mod.name === moduleName);
     this.module$.next(module);
+    this.router.navigateByUrl('/projects');
     if (this.activeProject$.value && this.activeProject$.value.module !== module?.path)
       this.activeProject$.next(undefined);
       this.activeScenario$.next(undefined);

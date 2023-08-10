@@ -116,11 +116,13 @@ class ProjectInjectablesSerializerField(serializers.Field):
 class ProjectSerializer(serializers.ModelSerializer):
     created = serializers.DateTimeField(format="%Y-%m-%d", read_only=True)
     injectables = ProjectInjectablesSerializerField(required=False)
+    scenario_count = serializers.IntegerField(source='scenario_set.count',
+                                              read_only=True)
 
     class Meta:
         model = Project
         fields =  ('id', 'name', 'description', 'module', 'code', 'user',
-                   'archived', 'created', 'injectables')
+                   'archived', 'created', 'injectables', 'scenario_count')
         optional_fields = ('module', 'code', 'user', 'archived')
 
     def create(self, validated_data):

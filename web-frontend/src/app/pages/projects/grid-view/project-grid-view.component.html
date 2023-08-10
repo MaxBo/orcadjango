@@ -28,9 +28,17 @@
           <mat-card-subtitle [title]="project.code">{{project.code}}</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content style="cursor: pointer" (click)="onProjectSelected.emit(project)">
-          <p *ngIf="project.created">
-            created: {{project.created}}
-          </p>
+          <table>
+            <tr *ngIf="project.created">
+              <td>created:</td>
+              <td>{{project.created}}</td>
+            </tr>
+            <tr>
+              <td>scenarios:</td>
+              <td>{{project.scenario_count}}</td>
+            </tr>
+
+          </table>
   <!--        <p>
             {{project.description}}
           </p>-->

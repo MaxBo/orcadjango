@@ -67,7 +67,8 @@ export class ProjectsComponent extends PageComponent implements OnInit{
         description: '',
         user: user?.id,
         injectables: injectables,
-        init: []
+        init: [],
+        scenario_count: 0
       }
     }
     const dialogref = this.dialog.open(ProjectEditDialogComponent, {

@@ -7,9 +7,10 @@
 }
 
 #new-grid-card {
-  width: 200px;
-  height: 180px;
-  min-height: 180px;
+  min-width: 180px;
+  max-width: 180px;
+  min-height: 160px;
+  max-height: 160px;
   cursor: pointer;
   margin: 50px 25px;
   .mat-mdc-card-header {

@@ -63,7 +63,8 @@ export class ProjectEditDialogComponent {
       user: (this.projectForm.value.user !== -1)? this.projectForm.value.user: null,
       code: this.projectForm.value.code,
       init: [],
-      injectables: injectables
+      injectables: injectables,
+      scenario_count: this.project?.scenario_count || 0
     }
     this.projectConfirmed.emit(project);
   }

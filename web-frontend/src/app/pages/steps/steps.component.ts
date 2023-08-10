@@ -37,12 +37,7 @@ export class StepsComponent extends InjectablesComponent {
               this.stepGroups.push(group);
               this.availableSteps[group] = [];
             }
-            try {
-              this.availableSteps[group].push(step);
-            }
-            catch {
-              console.log(group)
-            }
+            this.availableSteps[group].push(step);
           })
           Object.keys(this.availableSteps).forEach(group => {
               // this.availableSteps[group] = sortBy(this.availableSteps[group], 'name');

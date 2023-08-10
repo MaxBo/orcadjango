@@ -31,7 +31,8 @@ export interface Project {
   module?: string,
   archived?: boolean,
   created?: string,
-  date?: Date
+  date?: Date,
+  scenario_count: number
 }
 
 interface ScenarioRun {
