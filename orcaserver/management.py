@@ -223,21 +223,20 @@ class OrcaWrapper():
         self.orca = self.__create_instance()
 
     def __create_instance(self) -> 'module':
-        with lock:
-            spec = importlib.util.find_spec('orca.orca')
-            orca = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(orca)
-            # append a logger
-            orca.logger = logging.getLogger(str(id(orca)))
-            orca.logger.setLevel(logging.DEBUG)
-            sys.modules['orca'] = orca
-            from orcadjango import decorators
-            importlib.reload(decorators)
-            load_module(self.module, orca=orca)
-            del(spec)
-            if 'orca' in sys.modules:
-                del(sys.modules['orca'])
-            return orca
+        spec = importlib.util.find_spec('orca.orca')
+        orca = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(orca)
+        # append a logger
+        orca.logger = logging.getLogger(str(id(orca)))
+        orca.logger.setLevel(logging.DEBUG)
+        sys.modules['orca'] = orca
+        from orcadjango import decorators
+        importlib.reload(decorators)
+        load_module(self.module, orca=orca)
+        del(spec)
+        if 'orca' in sys.modules:
+            del(sys.modules['orca'])
+        return orca
 
     def add_log_handler(self, handler: logging.StreamHandler):
         self.orca.logger.addHandler(handler)
