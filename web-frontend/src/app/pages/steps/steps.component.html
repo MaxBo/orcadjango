@@ -3,22 +3,23 @@
 </div>
 <div style="display: flex; user-select: none;">
   <mat-accordion id="available-steps">
-    <mat-expansion-panel *ngFor="let group of availableSteps | keyvalue;" class="example-container">
+    <mat-expansion-panel *ngFor="let group of stepGroups"
+                         class="steps-container">
       <mat-expansion-panel-header>
         <mat-panel-title>
-          <b>{{group.key}}</b>
+          <b>{{group}}</b>
         </mat-panel-title>
       </mat-expansion-panel-header>
       <mat-accordion multi cdkDropList
                      cdkDropListSortingDisabled
-                     [cdkDropListData]="group.value"
+                     [cdkDropListData]="availableSteps[group]"
                      [cdkDropListConnectedTo]="[scenarioStepList]"
-                     class="example-list">
+                     class="step-list">
         <mat-expansion-panel class="available-step-item"
-                             *ngFor="let item of group.value"
+                             *ngFor="let item of availableSteps[group]"
                              [cdkDragData]="item" cdkDrag
                              [cdkDragDisabled]="_scenStepNames.indexOf(item.name) >= 0">
-          <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+          <div class="drag-placeholder" *cdkDragPlaceholder></div>
           <mat-expansion-panel-header>
             <mat-panel-title>
               {{item.title || item.name}}
@@ -34,11 +35,11 @@
     <mat-accordion cdkDropList
                    #scenarioStepList="cdkDropList"
                    [cdkDropListData]="scenarioSteps"
-                   class="example-list"
+                   class="step-list"
                    (cdkDropListDropped)="drop($event)">
       <mat-expansion-panel *ngFor="let step of scenarioSteps"
                            [cdkDragData]="step" cdkDrag>
-        <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+        <div class="drag-placeholder" *cdkDragPlaceholder></div>
         <mat-expansion-panel-header>
           <mat-panel-title>
             {{step.title || step.name}}

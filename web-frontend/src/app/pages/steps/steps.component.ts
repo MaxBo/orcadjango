@@ -3,7 +3,6 @@ import { ScenarioInjectable, ScenarioStep, Step } from "../../rest-api";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { InjectablesComponent, sortBy } from "../injectables/injectables.component";
 import { BehaviorSubject, forkJoin, Observable } from "rxjs";
-import { PageComponent } from "../../app.component";
 
 @Component({
   selector: 'app-steps',
@@ -11,9 +10,11 @@ import { PageComponent } from "../../app.component";
   styleUrls: ['./steps.component.scss']
 })
 export class StepsComponent extends InjectablesComponent {
-  availableSteps: Record<string, Step[]> = {};
-  scenarioSteps: ScenarioStep[] = [];
-  _scenStepNames: string[] = [];
+  protected availableSteps: Record<string, Step[]> = {};
+  // aux array to remember order of groups of available steps
+  protected stepGroups: string[] = [];
+  protected scenarioSteps: ScenarioStep[] = [];
+  protected _scenStepNames: string[] = [];
   stepsLoading$ = new BehaviorSubject<boolean>(false);
 
   // constructor(private rest: RestService, private settings: UserSettingsService)
@@ -28,11 +29,20 @@ export class StepsComponent extends InjectablesComponent {
         if (!this.settings.module$.value) return;
         this.rest.getAvailableSteps(this.settings.module$.value.name).subscribe(steps => {
           this.availableSteps = {};
+          steps = sortBy(steps, 'group');
           steps.forEach(step => {
-            const group = step.group || '';
-            if (!this.availableSteps[group])
+            // remove number in brackets from group name, that is just used to order the groups
+            const group = (step.group || '').replace(/ *\([0-9\w]*\) */g, "");
+            if (!this.stepGroups.includes(group)) {
+              this.stepGroups.push(group);
               this.availableSteps[group] = [];
-            this.availableSteps[group].push(step);
+            }
+            try {
+              this.availableSteps[group].push(step);
+            }
+            catch {
+              console.log(group)
+            }
           })
           Object.keys(this.availableSteps).forEach(group => {
               // this.availableSteps[group] = sortBy(this.availableSteps[group], 'name');

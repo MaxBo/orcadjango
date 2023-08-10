@@ -31,7 +31,10 @@
     }
   }
   .cdk-drag-disabled {
-    background-color: lightgrey;
+    background-color: #e7e7e7;
+    .mat-expansion-panel-header {
+      cursor: not-allowed;
+    }
   }
 }
 
@@ -48,33 +51,19 @@
   }
 }
 
-.example-container {
+.steps-container {
   width: 100%;
   display: inline-block;
   vertical-align: top;
 }
 
-.example-list {
+.step-list {
   border: solid 1px #ccc;
   min-height: 60px;
   background: white;
   border-radius: 4px;
   overflow: hidden;
   display: block;
-}
-
-.example-box {
-  padding: 20px 10px;
-  border-bottom: solid 1px #ccc;
-  color: rgba(0, 0, 0, 0.87);
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  box-sizing: border-box;
-  cursor: move;
-  background: white;
-  font-size: 14px;
 }
 
 .cdk-drag-preview {
@@ -86,7 +75,7 @@
 }
 
 
-.example-custom-placeholder {
+.drag-placeholder {
   background: #ccc;
   border: dotted 3px #999;
   min-height: 60px;
@@ -101,10 +90,3 @@
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-.example-box:last-child {
-  border: none;
-}
-
-.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-}
