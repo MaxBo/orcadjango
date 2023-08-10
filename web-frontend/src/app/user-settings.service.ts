@@ -68,7 +68,7 @@ export class UserSettingsService {
   setActiveProject(project: Project | undefined){
     this.cookies.set('project', String(project?.id || ''));
     this.activeProject$.next(project);
-    this.activeScenario$.next(undefined);
+    this.setActiveSenario(undefined);
   }
 
   setActiveSenario(scenario: Scenario | undefined){
@@ -79,11 +79,9 @@ export class UserSettingsService {
   setModule(moduleName: string){
     this.cookies.set('module', moduleName);
     const module = this.modules.find(mod => mod.name === moduleName);
+    this.setActiveProject(undefined);
     this.module$.next(module);
     this.router.navigateByUrl('/projects');
-    if (this.activeProject$.value && this.activeProject$.value.module !== module?.path)
-      this.activeProject$.next(undefined);
-      this.activeScenario$.next(undefined);
   }
 
   disconnect(): void {
