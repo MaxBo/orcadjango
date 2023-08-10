@@ -341,6 +341,8 @@ class OrcaWrapper():
                 self.orca.write_tables(
                     data_out, out_base_tables, 'base', compress=compress,
                     local=out_base_local)
+            logger.info("Run started",
+                        extra={'run': {'started': True}})
 
             # run the steps
             for i, var in enumerate(iter_vars, start=1):
@@ -355,7 +357,8 @@ class OrcaWrapper():
                     step_name = step.name
                     self.orca.add_injectable(
                         'iter_step', self.orca.iter_step(j, step_name))
-                    logger.info(f"Running step '{step_name}'")
+                    logger.info(f"Running step '{step_name}'",
+                                extra={step_name: {'started': True}})
                     step_func = self.orca.get_step(step_name)
                     step.started = timezone.now()
                     step.save()
@@ -371,8 +374,7 @@ class OrcaWrapper():
                             f'{e.__class__.__name__} - {str(e)}')
                         logger.error(f'{step_name} failed',
                                      extra={'status': {
-                                         'step': {
-                                             'name': step_name,
+                                         step_name: {
                                              'finished': True,
                                              'success': False
                                          }}})
@@ -383,8 +385,7 @@ class OrcaWrapper():
                     step.active = False
                     logger.info(f'{step_name} finished',
                                 extra={'status': {
-                                    'step': {
-                                        'name': step_name,
+                                    step_name: {
                                         'finished': True,
                                         'success': True
                                     }}})
@@ -400,11 +401,13 @@ class OrcaWrapper():
                             compress=compress, local=out_run_local)
 
                 self.orca.clear_cache(scope=_CS_ITER)
-            logger.info('orca run finished')
+            logger.info('orca run finished', extra={
+                'run': {'finished': True, 'success': True}})
             if self.thread.on_success:
                 self.thread.on_success()
         except Abort:
-            logger.error('orca run aborted')
+            logger.error('orca run aborted', extra={
+                'run': {'finished': True, 'success': False,}})
             if self.thread.on_error:
                 self.thread.on_error()
         finally:

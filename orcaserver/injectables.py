@@ -1,19 +1,13 @@
-from django import forms
-from django.contrib.gis.geos import MultiPolygon, fromstr
 import json
 import ast
 import pandas
 from osgeo import ogr
 import datetime
-from django.core.validators import RegexValidator
 import importlib
 import ast
 from django.utils.deconstruct import deconstructible
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-
-from orcaserver.widgets import (EditableDictWidget, CommaSeparatedCharField,
-                                OgrGeometryField, OsmMultiPolyWidget, DictField)
 
 
 @deconstructible
@@ -49,7 +43,6 @@ class UniqueInjValidator:
 
 class OrcaTypeMap:
     data_type = None
-    form_field = None
     description = ''
 
     @staticmethod
@@ -81,7 +74,6 @@ class OrcaTypeMap:
 
 
 class DefaultConverter(OrcaTypeMap):
-    form_field = forms.CharField
 
     def to_value(self, text):
         return ast.literal_eval(text)
@@ -89,7 +81,6 @@ class DefaultConverter(OrcaTypeMap):
 
 class IntegerConverter(OrcaTypeMap):
     data_type = int
-    form_field = forms.IntegerField
     description = 'integer'
 
     def to_value(self, text):
@@ -98,7 +89,6 @@ class IntegerConverter(OrcaTypeMap):
 
 class FloatConverter(OrcaTypeMap):
     data_type = float
-    form_field = forms.FloatField
     description = 'float'
 
     def to_value(self, text):
@@ -107,7 +97,6 @@ class FloatConverter(OrcaTypeMap):
 
 class BooleanConverter(OrcaTypeMap):
     data_type = bool
-    form_field = forms.BooleanField
     description = 'boolean'
 
     def to_value(self, text):
@@ -116,7 +105,6 @@ class BooleanConverter(OrcaTypeMap):
 
 class ListConverter(OrcaTypeMap):
     data_type = list
-    form_field = CommaSeparatedCharField
     description = 'comma seperated values'
 
     def to_str(self, value):
@@ -128,15 +116,7 @@ class ListConverter(OrcaTypeMap):
 
 class DictConverter(OrcaTypeMap):
     data_type = dict
-    form_field = forms.CharField
     description = 'dictionary'
-
-    def get_form_field(self, value, label='', meta=None,
-                       **kwargs):
-        if meta and not meta.get('editable_keys'):
-            return DictField(value, label=label)
-        return forms.CharField(initial=value, label=label,
-                               widget=EditableDictWidget)
 
     def to_str(self, value):
         return json.dumps(value)
@@ -153,7 +133,6 @@ class DictConverter(OrcaTypeMap):
 
 class StringConverter(OrcaTypeMap):
     data_type = str
-    form_field = forms.CharField
     description = 'string'
 
     def to_value(self, text):
@@ -162,7 +141,6 @@ class StringConverter(OrcaTypeMap):
 
 class GeometryConverter(OrcaTypeMap):
     data_type = ogr.Geometry
-    form_field = OgrGeometryField
     srid = 4326
 
     def to_str(self, value):
@@ -189,7 +167,6 @@ class GeometryConverter(OrcaTypeMap):
 class DateConverter(OrcaTypeMap):
     data_type = datetime.date
     date_format = '%Y-%m-%d'
-    form_field = forms.DateField
 
     #def to_str(self, value):
         #if not value:
