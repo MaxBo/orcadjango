@@ -61,6 +61,7 @@ export class ScenarioLogComponent implements OnDestroy, AfterViewInit {
       // cut off milliseconds
       entry.timestamp = entry.timestamp.split(',')[0];
     this.entries.push(entry);
+    this.scrollToBottom();
   }
 
   scrollToBottom(forced= true): void {

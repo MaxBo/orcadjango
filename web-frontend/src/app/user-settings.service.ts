@@ -97,9 +97,7 @@ export class UserSettingsService {
     this.scenarioLogSocket = new WebSocket(`${this.wsURL}${this.activeScenario$.value.id}/`);
     this.scenarioLogSocket.onopen = e => this.retries = 0;
     this.scenarioLogSocket.onmessage = e => {
-      console.log(e)
       const logEntry = JSON.parse(e.data);
-      console.log(e.data)
       this.onScenarioLogMessage.emit(logEntry);
     }
     this.scenarioLogSocket.onclose = e => {

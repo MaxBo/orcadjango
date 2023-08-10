@@ -44,8 +44,8 @@ export class InjectableComponent extends BaseInjectableComponent implements OnIn
         this.values = this._injectable.value || [];
     }
     if (this._injectable?.choices) {
-      if (Array.isArray(this.injectable.choices)) {
-        this.choiceValues = this.injectable.choices;
+      if (Array.isArray(this._injectable.choices)) {
+        this.choiceValues = this._injectable.choices;
       }
       else {
         this.choiceValues = Object.keys(this._injectable.choices);
