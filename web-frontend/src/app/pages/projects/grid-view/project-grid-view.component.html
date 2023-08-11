@@ -18,7 +18,7 @@
     <div *ngFor="let project of projects">
       <mat-card class="grid-preview-card"
                 [ngClass]="{'selected': settings.activeProject$.value?.id === project.id}"
-                [style.border-bottom-color]="settings.user$.value?.profile?.color || 'grey'">
+                [style.border-bottom-color]="settings.getUser(project.user)?.profile?.color || 'grey'">
         <mat-card-header style="cursor: pointer"
                          (click)="onProjectSelected.emit(project)">
           <app-user-preview *ngIf="project.user"

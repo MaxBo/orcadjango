@@ -204,7 +204,7 @@ class InjectableSerializer(serializers.Serializer):
         return obj.meta.get('choices')
 
     def get_description(self, obj):
-        return obj.meta.get('docstring', '').strip().replace('\n', '<br>')
+        return obj.meta.get('docstring', '').strip().replace('\n', ' ')#, '<br>')
 
     def get_datatype(self, obj):
         if 'list' in obj.datatype.lower():
@@ -269,7 +269,7 @@ class StepSerializer(serializers.Serializer):
     injectables = serializers.ListSerializer(child=serializers.CharField())
 
     def get_description(self, obj):
-        return obj.get('docstring', '').strip().replace('\n', '<br>')
+        return obj.get('docstring', '').strip().replace('\n', ' ')#, '<br>')
 
 
 class ScenarioStepSerializer(serializers.ModelSerializer):

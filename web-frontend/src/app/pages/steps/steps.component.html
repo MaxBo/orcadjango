@@ -16,16 +16,17 @@
                      [cdkDropListConnectedTo]="[scenarioStepList]"
                      class="step-list">
         <mat-expansion-panel class="available-step-item"
-                             *ngFor="let item of availableSteps[group]"
-                             [cdkDragData]="item" cdkDrag
-                             [cdkDragDisabled]="settings.activeScenario$.value?.is_running || _scenStepNames.indexOf(item.name) >= 0">
+                             *ngFor="let step of availableSteps[group]"
+                             [cdkDragData]="step" cdkDrag
+                             [title]="(step.title || step.name) + ((_scenStepNames.indexOf(step.name) >= 0)? ' (step is already added to the run)': '')"
+                             [cdkDragDisabled]="settings.activeScenario$.value?.is_running || _scenStepNames.indexOf(step.name) >= 0">
           <div class="drag-placeholder" *cdkDragPlaceholder></div>
           <mat-expansion-panel-header>
             <mat-panel-title>
-              {{item.title || item.name}}
+              {{step.title || step.name}}
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <i [innerHTML]="item.description"></i>
+          <i [innerHTML]="step.description"></i>
         </mat-expansion-panel>
       </mat-accordion>
     </mat-expansion-panel>

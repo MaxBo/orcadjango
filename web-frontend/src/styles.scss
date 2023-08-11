@@ -122,3 +122,12 @@ button.micro {
   height: 30px;
   width: 30px;
 }
+
+.mat-mdc-card-header-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  mat-card-title {
+    display: contents;
+  }
+}

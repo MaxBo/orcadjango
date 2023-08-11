@@ -88,7 +88,7 @@
     <mat-card id="active-project"
               routerLink="/projects"
               routerLinkActive="active-link"
-              [style.border-bottom-color]="settings.user$.value?.profile?.color || 'grey'"
+              [style.border-bottom-color]="settings.getUser(settings.activeProject$.value?.user)?.profile?.color || 'grey'"
               [routerLinkActiveOptions]="{exact: false}">
       <ng-container *ngIf="settings.activeProject$ | async; else noProject">
         <mat-card-header>
