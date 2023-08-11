@@ -45,11 +45,14 @@
   }
 }
 
-.available-step-item:not(.cdk-drag-disabled) {
+.available-step-item:not(.cdk-drag-disabled), .scenario-step-item:not(.cdk-drag-disabled) {
   cursor: move;
 /*  .mat-expansion-panel-header {
     cursor: move;
   }*/
+  table {
+    cursor: auto;
+  }
 }
 
 .steps-container {

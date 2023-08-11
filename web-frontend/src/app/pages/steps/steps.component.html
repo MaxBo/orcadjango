@@ -38,6 +38,7 @@
                    class="step-list"
                    (cdkDropListDropped)="drop($event)">
       <mat-expansion-panel *ngFor="let step of scenarioSteps"
+                           class="scenario-step-item"
                            [cdkDragData]="step" cdkDrag
                            [cdkDragDisabled]="settings.activeScenario$.value?.is_running">
         <div class="drag-placeholder" *cdkDragPlaceholder></div>
@@ -76,7 +77,7 @@
         <p *ngIf="step.finished && !step.success" style="color: red;">Failed</p>
         <ng-container *ngIf="getInjectables(step).length > 0">
           <h4>Injectables</h4>
-          <table class="striped" style="width: 100%;">
+          <table class="striped" style="width: 100%;" (mousedown)="$event.preventDefault(); $event.stopPropagation();">
             <tr *ngFor="let injectable of getInjectables(step)">
               <td style="padding-right: 15px;">
                 <b>{{injectable.name}}</b>
