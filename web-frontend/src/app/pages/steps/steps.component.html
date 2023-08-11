@@ -71,10 +71,14 @@
           </mat-panel-description>
         </mat-expansion-panel-header>
         <i [innerHTML]="step.description"></i>
-        <p *ngIf="step.started">Started: {{step.started}}</p>
-        <p *ngIf="step.finished">Finished: {{step.finished}}</p>
-        <p *ngIf="step.finished && step.success" style="color: green">Success</p>
-        <p *ngIf="step.finished && !step.success" style="color: red;">Failed</p>
+        <p *ngIf="step.started">
+          Started: {{step.started}}
+        </p>
+        <p *ngIf="step.finished"
+           [style.color]="step.success? 'green': 'red'">
+          Finished: {{step.finished}}
+          <ng-container *ngIf="!step.success">&nbsp;(failed)</ng-container>
+        </p>
         <ng-container *ngIf="getInjectables(step).length > 0">
           <h4>Injectables</h4>
           <table class="striped" style="width: 100%;" (mousedown)="$event.preventDefault(); $event.stopPropagation();">
@@ -93,7 +97,19 @@
         </ng-container>
       </mat-expansion-panel>
     </mat-accordion>
-    <button mat-button (click)="run()" [disabled]="settings.activeScenario$.value?.is_running">RUN CALCULATIONS</button>
+    <div style="display: flex;">
+      <button mat-button
+              (click)="run()"
+              [disabled]="settings.activeScenario$.value?.is_running">
+        RUN CALCULATIONS
+      </button>
+      <button mat-button
+              *ngIf="settings.activeScenario$.value?.is_running"
+              (click)="abort()"
+              style="margin-left: auto;">
+        ABORT
+      </button>
+    </div>
   </div>
 
   <mat-card style="width: 800px; height: 600px;">

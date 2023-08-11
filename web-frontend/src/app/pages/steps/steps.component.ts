@@ -109,7 +109,7 @@ export class StepsComponent extends InjectablesComponent {
     return this.injectables.filter(inj => step.injectables?.includes(inj.name));
   }
 
-  toggleActive(active: boolean, step: ScenarioStep) {
+  toggleActive(active: boolean, step: ScenarioStep): void {
     this.stepsLoading$.next(true);
     this.rest.patchScenarioStep(step, { active: active }).subscribe(patched => {
         step.active = patched.active;
@@ -117,10 +117,16 @@ export class StepsComponent extends InjectablesComponent {
       })
   }
 
-  run() {
+  run(): void {
     const scenario = this.settings.activeScenario$.value;
     if (!scenario) return;
     this.rest.startRun(scenario).subscribe();
+  }
+
+  abort(): void {
+    const scenario = this.settings.activeScenario$.value;
+    if (!scenario) return;
+    this.rest.abortRun(scenario).subscribe();
   }
 
   connectWs(): void {

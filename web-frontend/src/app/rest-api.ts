@@ -295,4 +295,9 @@ export class RestService {
     const url = this.URLS.scenarios;
     return this.http.post(`${url}${scenario.id}/run/`,{});
   }
+
+  abortRun(scenario: Scenario) {
+    const url = this.URLS.scenarios;
+    return this.http.post(`${url}${scenario.id}/abort/`,{});
+  }
 }
