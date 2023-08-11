@@ -18,6 +18,8 @@ export class UserSettingsService {
   modules: Module[] = [];
   scenarioLogSocket?: WebSocket;
   onScenarioLogMessage = new EventEmitter<ScenarioLogEntry>;
+  onStepStatusChange = new EventEmitter<{
+    step: string, success: boolean, finished: boolean, started: boolean, timestamp: string}>;
   private readonly wsURL: string;
   private retries = 0;
 
@@ -98,6 +100,37 @@ export class UserSettingsService {
     this.scenarioLogSocket.onopen = e => this.retries = 0;
     this.scenarioLogSocket.onmessage = e => {
       const logEntry = JSON.parse(e.data);
+      if (logEntry.status){
+        const status = logEntry.status;
+        // step status update
+        if (logEntry.status.step) {
+          this.onStepStatusChange.emit({
+            step: status.step,
+            finished: status.finished,
+            success: status.success,
+            started: status.started,
+            timestamp: logEntry.timestamp
+          })
+        }
+        // scenario status update
+        else if (this.activeScenario$.value) {
+          const scenario = this.activeScenario$.value;
+          if (!scenario.last_run) {
+            scenario.last_run = {}
+          }
+          if (status.started) {
+            scenario.last_run.started = logEntry.timestamp;
+            scenario.is_running = true;
+          }
+          if (status.finished) {
+            scenario.last_run.finished = logEntry.timestamp;
+            scenario.is_running = false;
+          }
+          if (status.success !== undefined) {
+            scenario.last_run.success = status.success;
+          }
+        }
+      }
       this.onScenarioLogMessage.emit(logEntry);
     }
     this.scenarioLogSocket.onclose = e => {

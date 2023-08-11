@@ -214,6 +214,10 @@ class OrcaManager(ModuleSingleton):
                 self.instances[iid].remove()
                 del(self.instances[iid])
 
+    def is_running(self, instance_id: int = None):
+        orca_wrapper = self.instances.get(instance_id)
+        return orca_wrapper.is_running() if orca_wrapper else False
+
 
 class OrcaWrapper():
 
@@ -342,7 +346,7 @@ class OrcaWrapper():
                     data_out, out_base_tables, 'base', compress=compress,
                     local=out_base_local)
             logger.info("Run started",
-                        extra={'run': {'started': True}})
+                        extra={'status': {'started': True}})
 
             # run the steps
             for i, var in enumerate(iter_vars, start=1):
@@ -358,7 +362,10 @@ class OrcaWrapper():
                     self.orca.add_injectable(
                         'iter_step', self.orca.iter_step(j, step_name))
                     logger.info(f"Running step '{step_name}'",
-                                extra={step_name: {'started': True}})
+                                extra={'status': {
+                                    'step': step_name,
+                                    'started': True
+                                }})
                     step_func = self.orca.get_step(step_name)
                     step.started = timezone.now()
                     step.save()
@@ -374,10 +381,15 @@ class OrcaWrapper():
                             f'{e.__class__.__name__} - {str(e)}')
                         logger.error(f'{step_name} failed',
                                      extra={'status': {
-                                         step_name: {
-                                             'finished': True,
-                                             'success': False
-                                         }}})
+                                         'step': step_name,
+                                         'finished': True,
+                                         'success': False
+                                     }})
+                        logger.error('orca run aborted',
+                                     extra={'status': {
+                                        'finished': True,
+                                        'success': False
+                                    }})
                         if self.thread.on_error:
                             self.thread.on_error()
                         return
@@ -385,10 +397,10 @@ class OrcaWrapper():
                     step.active = False
                     logger.info(f'{step_name} finished',
                                 extra={'status': {
-                                    step_name: {
-                                        'finished': True,
-                                        'success': True
-                                    }}})
+                                    'step': step_name,
+                                    'finished': True,
+                                    'success': True
+                                }})
                     step.save()
 
                     self.orca.clear_cache(scope=_CS_STEP)
@@ -402,12 +414,12 @@ class OrcaWrapper():
 
                 self.orca.clear_cache(scope=_CS_ITER)
             logger.info('orca run finished', extra={
-                'run': {'finished': True, 'success': True}})
+                'status': {'finished': True, 'success': True}})
             if self.thread.on_success:
                 self.thread.on_success()
         except Abort:
             logger.error('orca run aborted', extra={
-                'run': {'finished': True, 'success': False,}})
+                'status': {'finished': True, 'success': False}})
             if self.thread.on_error:
                 self.thread.on_error()
         finally:

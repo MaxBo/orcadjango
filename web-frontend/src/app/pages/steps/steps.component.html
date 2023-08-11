@@ -18,7 +18,7 @@
         <mat-expansion-panel class="available-step-item"
                              *ngFor="let item of availableSteps[group]"
                              [cdkDragData]="item" cdkDrag
-                             [cdkDragDisabled]="_scenStepNames.indexOf(item.name) >= 0">
+                             [cdkDragDisabled]="settings.activeScenario$.value?.is_running || _scenStepNames.indexOf(item.name) >= 0">
           <div class="drag-placeholder" *cdkDragPlaceholder></div>
           <mat-expansion-panel-header>
             <mat-panel-title>
@@ -38,7 +38,8 @@
                    class="step-list"
                    (cdkDropListDropped)="drop($event)">
       <mat-expansion-panel *ngFor="let step of scenarioSteps"
-                           [cdkDragData]="step" cdkDrag>
+                           [cdkDragData]="step" cdkDrag
+                           [cdkDragDisabled]="settings.activeScenario$.value?.is_running">
         <div class="drag-placeholder" *cdkDragPlaceholder></div>
         <mat-expansion-panel-header>
           <mat-panel-title>
@@ -59,6 +60,7 @@
               <mat-slide-toggle [checked]="step.active"
                                 color="primary"
                                 (click)="$event.stopPropagation();"
+                                [disabled]="settings.activeScenario$.value?.is_running"
                                 (change)="toggleActive($event.checked, step)" >
               </mat-slide-toggle>
               <button mat-button (click)="removeStep(step); $event.stopPropagation();" title="Remove step">
@@ -90,7 +92,7 @@
         </ng-container>
       </mat-expansion-panel>
     </mat-accordion>
-    <button mat-button (click)="run()">RUN CALCULATIONS</button>
+    <button mat-button (click)="run()" [disabled]="settings.activeScenario$.value?.is_running">RUN CALCULATIONS</button>
   </div>
 
   <mat-card style="width: 800px; height: 600px;">

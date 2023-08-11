@@ -100,6 +100,8 @@ export class StepsComponent extends InjectablesComponent {
     this.rest.deleteScenarioStep(step).subscribe(() => {
       const idx = this.scenarioSteps.indexOf(step);
       this.scenarioSteps.splice(idx, 1);
+      const nameIdx = this._scenStepNames.indexOf(step.name);
+      this._scenStepNames.splice(nameIdx, 1);
     });
   }
 
@@ -122,6 +124,21 @@ export class StepsComponent extends InjectablesComponent {
   }
 
   connectWs(): void {
-    this.settings.onScenarioLogMessage
+    this.settings.onStepStatusChange.subscribe(status => {
+      const step = this.scenarioSteps.find(step => step.name === status.step);
+      if (!step) return;
+      if (status.started) {
+        step.started = status.timestamp;
+        step.finished = undefined;
+      }
+      if (status.finished) {
+        step.finished = status.timestamp;
+      }
+      if (status.success !== undefined) {
+        step.success = status.success;
+        if (step.success)
+          step.active = false;
+      }
+    })
   }
 }

@@ -36,14 +36,15 @@ export interface Project {
 }
 
 interface ScenarioRun {
-  success: boolean,
-  started: string,
-  finished: string
+  success?: boolean,
+  started?: string,
+  finished?: string
 }
 
 export interface Scenario {
   id?: number,
   name: string,
+  is_running?: boolean,
   project?: number,
   description: string,
   last_run?: ScenarioRun

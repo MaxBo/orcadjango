@@ -150,10 +150,12 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 class ScenarioSerializer(serializers.ModelSerializer):
     last_run = serializers.SerializerMethodField()
+    is_running = serializers.SerializerMethodField()
 
     class Meta:
         model = Scenario
-        fields =  ('id', 'name', 'project', 'description', 'last_run')
+        fields =  ('id', 'name', 'project', 'description', 'last_run',
+                   'is_running')
 
     def create(self, validated_data):
         instance = super().create(validated_data)
@@ -166,6 +168,9 @@ class ScenarioSerializer(serializers.ModelSerializer):
         if not runs:
             return
         return RunSerializer(runs.last()).data
+
+    def get_is_running(self, obj):
+        return OrcaManager(obj.project.module).is_running(obj.orca_id)
 
 
 class ScenarioLogSerializer(serializers.ModelSerializer):

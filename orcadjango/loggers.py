@@ -19,13 +19,14 @@ logger = logging.getLogger(__name__)
 channel_layer = channels.layers.get_channel_layer()
 
 def send(channel: str, message: str, log_type: str='log_message',
-         status={}, **kwargs):
+         status=None, **kwargs):
     rec = {
         'message': message,
         'type': log_type,
-        'timestamp': time.strftime('%d.%m.%Y %H:%M:%S'),
-        'status': status,
+        'timestamp': time.strftime('%d.%m.%Y %H:%M:%S')
     }
+    if status:
+        rec['status'] = status
     rec.update(kwargs)
 
     async_to_sync(channel_layer.group_send)(channel, rec)
@@ -52,7 +53,7 @@ class ScenarioHandler(WebSocketHandler):
 
     def emit(self, record):
         from orcaserver.models import LogEntry
-        message = f'{self.scenario.name} | {record.getMessage()}'
+        message = record.getMessage()
         LogEntry.objects.create(
             scenario_id=self.scenario.id,
             message=message,
