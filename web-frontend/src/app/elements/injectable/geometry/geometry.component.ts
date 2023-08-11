@@ -15,6 +15,11 @@ import { Draw, Select } from "ol/interaction";
 import { click, always } from 'ol/events/condition';
 import { FullScreen } from "ol/control";
 import { FeatureLike } from "ol/Feature";
+import { register } from 'ol/proj/proj4'
+import proj4 from 'proj4';
+
+proj4.defs("EPSG:25832", "+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs");
+register(proj4);
 
 @Component({
   selector: 'inj-geometry',
@@ -264,6 +269,7 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
     }
     this.emitChange();
   }
+
   private emitChange() {
     const format = new WKT();
     const wkt = this.geom? format.writeGeometry(this.geom): '';
