@@ -11,18 +11,16 @@
       </th>
       <th>Parameter</th>
       <th>Description</th>
-      <th>Datatype</th>
+<!--      <th>Datatype</th>
       <th>multi</th>
-      <th>has choices</th>
+      <th>has choices</th>-->
       <th>Value</th>
       <th></th>
     </thead>
     <tbody>
       <ng-container *ngFor="let group of groupedInjectables | keyvalue;">
         <ng-container *ngFor="let injectable of group.value; let first = first; let last = last;">
-          <tr [ngClass]="{'bb': last, 'locked': !injectable.editable}"
-              (click)="editInjectable(injectable)"
-              [title]="'Wert von ' + injectable.name + (injectable.editable? ' editieren': ' ansehen (abgeleitet)')">
+          <tr [ngClass]="{'bb': last, 'locked': !injectable.editable}">
             <td>
               <b *ngIf="first">{{group.key}}</b>
             </td>
@@ -32,7 +30,7 @@
             <td>
               <i [innerHTML]="injectable.description"></i>
             </td>
-            <td>
+<!--            <td>
               {{injectable.datatype}}
             </td>
             <td>
@@ -40,10 +38,13 @@
             </td>
             <td>
               {{!!injectable.choices}}
-            </td>
+            </td>-->
             <td style="min-width: 200px;">
               <injectable *ngIf="injectable.value !== undefined"
                           [injectable]="injectable"></injectable>
+            </td>
+            <td>
+              <button mat-button (click)="editInjectable(injectable)">{{injectable.editable ? 'EDIT': 'VIEW'}}</button>
             </td>
           </tr>
         </ng-container>

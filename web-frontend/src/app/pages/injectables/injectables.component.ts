@@ -61,12 +61,17 @@ export class InjectablesComponent extends PageComponent implements OnInit {
         data: { injectable: injectable }
       });
       dialogRef.componentInstance.valueConfirmed.subscribe((value) => {
+        dialogRef.componentInstance.setLoading(true);
         this.rest.patchScenarioInjectable(injectable, value).subscribe(patched => {
           dialogRef.close();
           // workaround to force update of injectable
           setTimeout(() => injectable.value = undefined);
           setTimeout(() => injectable.value = patched.value);
+          // update derived injectables
           this.updateChildren(injectable);
+        }, error => {
+          dialogRef.componentInstance.setErrors(error.error);
+          dialogRef.componentInstance.setLoading(false);
         });
       })
     }
