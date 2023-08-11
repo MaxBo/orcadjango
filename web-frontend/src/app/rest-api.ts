@@ -101,8 +101,7 @@ export interface ScenarioStep extends Step {
   finished?: string
 }
 
-export interface ScenarioLogEntry {
-  user?: number,
+export interface  ScenarioLogEntry {
   level: 'ERROR' | 'INFO' | 'DEBUG' | 'INTER',
   timestamp?: string,
   message: string,
@@ -114,7 +113,7 @@ export function formatProject(project: Project) {
   if (project.created) {
     project.date = new Date(project.created);
     project.date.setHours(0,0,0,0);
-    project.created = moment(project.date).format('DD.MM.YYYY');;
+    project.created = moment(project.date).format('DD.MM.YYYY');
   }
 }
 
@@ -131,6 +130,7 @@ export class RestService {
     scenarios: `${ environment.apiPath }/scenarios/`,
     scenarioInjectables: `${ environment.apiPath }/scenarios/{scenarioId}/injectables/`,
     scenarioSteps: `${ environment.apiPath }/scenarios/{scenarioId}/steps/`,
+    scenarioLogs: `${ environment.apiPath }/scenarios/{scenarioId}/logs/`,
     users: `${ environment.apiPath }/users/`,
     currentUser: `${ environment.apiPath }/users/current/`,
     login: `${ environment.apiPath }/login/`,
@@ -283,6 +283,11 @@ export class RestService {
   patchScenarioStep(step: ScenarioStep, options?:{ active?: boolean, order?: number }): Observable<ScenarioStep>{
     const url = this.URLS.scenarioSteps.replace('{scenarioId}', step.scenario.toString());
     return this.http.patch<ScenarioStep>(`${url}${step.id}/`, options);
+  }
+
+  getScenarioLogs(scenario: Scenario): Observable<ScenarioLogEntry[]> {
+    const url = this.URLS.scenarioLogs.replace('{scenarioId}', scenario.id!.toString());
+    return this.http.get<ScenarioLogEntry[]>(url);
   }
 
   startRun(scenario: Scenario) {

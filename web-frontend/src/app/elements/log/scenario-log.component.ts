@@ -21,7 +21,10 @@ export class ScenarioLogComponent implements OnDestroy, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.subs.push(this.settings.onScenarioLogMessage.subscribe(
-      entry => this.addLogEntry(entry)));
+      entry => {
+        this.addLogEntry(entry);
+        this.scrollToBottom();
+      }));
     this.subs.push(this.settings.activeScenario$.subscribe( scenario => {
       this.entries = [];
       if (this.fetchOldLogs)
@@ -32,8 +35,14 @@ export class ScenarioLogComponent implements OnDestroy, AfterViewInit {
   }
 
   fetchLogs() {
-    this.cdref.detectChanges();
-    this.scrollToBottom(true);
+    if (!this.settings.activeScenario$.value)
+      return;
+    this.rest.getScenarioLogs(this.settings.activeScenario$.value).subscribe(
+      logs => {
+        logs.forEach(log => this.addLogEntry(log));
+        this.cdref.detectChanges();
+        this.scrollToBottom(true);
+      });
   }
 
   addLogEntry(entry: ScenarioLogEntry, options?: { intermediateDots?: boolean }): void {
@@ -61,13 +70,12 @@ export class ScenarioLogComponent implements OnDestroy, AfterViewInit {
       // cut off milliseconds
       entry.timestamp = entry.timestamp.split(',')[0];
     this.entries.push(entry);
-    this.scrollToBottom();
   }
 
   scrollToBottom(forced= true): void {
     // if not forced: scroll automatically to bottom if already close to bottom, do not if manually scrolled up
     if (forced || Math.abs(this.logEl.nativeElement.scrollHeight - this.logEl.nativeElement.scrollTop) < 500)
-      this.logEl.nativeElement.scrollTop = this.logEl.nativeElement.scrollHeight;
+      this.logEl.nativeElement.scrollTo(0, this.logEl.nativeElement.scrollHeight);
   }
 
   ngOnDestroy() {

@@ -20,6 +20,8 @@ scen_router.register(r'injectables', views.ScenarioInjectableViewSet,
                      basename='scenario_injectables')
 scen_router.register(r'steps', views.ScenarioStepViewSet,
                      basename='scenario_steps')
+scen_router.register(r'logs', views.ScenarioLogViewSet,
+                     basename='scenario_logs')
 
 urlpatterns = [
     path(r'', include(router.urls)),

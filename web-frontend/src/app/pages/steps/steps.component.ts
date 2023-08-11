@@ -48,6 +48,7 @@ export class StepsComponent extends InjectablesComponent {
             this.scenarioSteps = sortBy(steps, 'order');
             this._scenStepNames = steps.map(s => s.name);
             this.scenarioSteps.forEach(s => this._assign_step_meta(s));
+            this.connectWs();
             this.setLoading(false);
           })
         });
@@ -118,5 +119,9 @@ export class StepsComponent extends InjectablesComponent {
     const scenario = this.settings.activeScenario$.value;
     if (!scenario) return;
     this.rest.startRun(scenario).subscribe();
+  }
+
+  connectWs(): void {
+    this.settings.onScenarioLogMessage
   }
 }

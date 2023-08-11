@@ -10,8 +10,9 @@ from django.conf import settings
 from .serializers import (ProjectSerializer, UserSerializer,
                           ScenarioSerializer, ModuleSerializer,
                           ScenarioInjectableSerializer, StepSerializer,
-                          ScenarioStepSerializer, InjectableSerializer)
-from .models import Project, Scenario, Injectable, Step, Run
+                          ScenarioStepSerializer, InjectableSerializer,
+                          ScenarioLogSerializer)
+from .models import Project, Scenario, Injectable, Step, Run, LogEntry
 from orcaserver.management import OrcaManager
 from orcadjango.loggers import ScenarioHandler
 from .injectables import OrcaTypeMap
@@ -240,3 +241,11 @@ class ScenarioStepViewSet(viewsets.ModelViewSet):
         scenario = self.kwargs['scenario_pk']
         request.data['scenario'] = scenario
         return super().create(request, *args, **kwargs)
+
+
+class ScenarioLogViewSet(viewsets.ModelViewSet):
+    queryset = LogEntry.objects.all()
+    serializer_class = ScenarioLogSerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(scenario=self.kwargs['scenario_pk'])

@@ -6,7 +6,7 @@ import json
 from django.conf import settings
 
 from orcaserver.management import OrcaManager
-from .models import Project, Profile, Scenario, Injectable, Step, Run
+from .models import Project, Profile, Scenario, Injectable, Step, Run, LogEntry
 from .injectables import OrcaTypeMap
 
 DATETIME_FORMAT = "%d.%m.%Y %H:%M:%S"
@@ -166,6 +166,12 @@ class ScenarioSerializer(serializers.ModelSerializer):
         if not runs:
             return
         return RunSerializer(runs.last()).data
+
+
+class ScenarioLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LogEntry
+        fields = ('scenario', 'message', 'timestamp', 'level')
 
 
 class RunSerializer(serializers.ModelSerializer):
