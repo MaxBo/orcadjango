@@ -43,17 +43,21 @@ export class ScenariosComponent extends PageComponent implements OnInit {
         description: ''
       }
     }
-    const dialogref = this.dialog.open(ScenarioEditDialogComponent, {
+    const dialogRef = this.dialog.open(ScenarioEditDialogComponent, {
       panelClass: 'absolute',
       width: '700px',
       disableClose: true,
       data: data
     });
-    dialogref.componentInstance.scenarioConfirmed.subscribe(scenario => {
+    dialogRef.componentInstance.scenarioConfirmed.subscribe(scenario => {
+      dialogRef.componentInstance.setLoading(true);
       scenario.project = this.settings.activeProject$?.value?.id;
       this.rest.createScenario(scenario).subscribe(created => {
-        dialogref.close();
+        dialogRef.close();
         this.scenarios.push(created);
+      }, error => {
+        dialogRef.componentInstance.setErrors(error.error);
+        dialogRef.componentInstance.setLoading(false);
       })
     })
 
@@ -72,6 +76,7 @@ export class ScenariosComponent extends PageComponent implements OnInit {
       }
     });
     dialogRef.componentInstance.confirmed.subscribe(() => {
+      dialogRef.componentInstance.setLoading(true);
       this.rest.deleteScenario(scenario).subscribe(() => {
         dialogRef.close();
         const idx = this.scenarios.indexOf(scenario);
@@ -80,6 +85,9 @@ export class ScenariosComponent extends PageComponent implements OnInit {
         }
         if (scenario.id === this.settings.activeScenario$?.value?.id)
           this.settings.setActiveSenario(undefined)
+      }, error => {
+        dialogRef.componentInstance.setErrors(error.error);
+        dialogRef.componentInstance.setLoading(false);
       })
     })
   }
@@ -97,9 +105,13 @@ export class ScenariosComponent extends PageComponent implements OnInit {
       data: data
     });
     dialogRef.componentInstance.scenarioConfirmed.subscribe((edited) => {
+      dialogRef.componentInstance.setLoading(true);
       this.rest.patchScenario(scenario, { name: edited.name, description: edited.description }).subscribe(patched => {
         dialogRef.close();
         Object.assign(scenario, patched);
+      }, error => {
+        dialogRef.componentInstance.setErrors(error.error);
+        dialogRef.componentInstance.setLoading(false);
       });
     })
   }

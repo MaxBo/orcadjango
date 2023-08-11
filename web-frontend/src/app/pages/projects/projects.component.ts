@@ -71,19 +71,23 @@ export class ProjectsComponent extends PageComponent implements OnInit{
         scenario_count: 0
       }
     }
-    const dialogref = this.dialog.open(ProjectEditDialogComponent, {
+    const dialogRef = this.dialog.open(ProjectEditDialogComponent, {
       panelClass: 'absolute',
       width: '1000px',
       disableClose: true,
       data: data
     });
-    dialogref.componentInstance.projectConfirmed.subscribe(project => {
+    dialogRef.componentInstance.projectConfirmed.subscribe(project => {
+      dialogRef.componentInstance.setLoading(true);
       project.module = this.settings.module$.value?.path || '';
       this.rest.createProject(project).subscribe(created => {
-        dialogref.close();
+        dialogRef.close();
         formatProject(created);
         this.projects.push(created);
         this.filter();
+      }, error => {
+        dialogRef.componentInstance.setErrors(error.error);
+        dialogRef.componentInstance.setLoading(false);
       })
     })
   }
@@ -101,6 +105,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
       }
     });
     dialogRef.componentInstance.confirmed.subscribe(() => {
+      dialogRef.componentInstance.setLoading(true);
       this.rest.deleteProject(project).subscribe(() => {
         dialogRef.close();
         const idx = this.projects.indexOf(project);
@@ -110,6 +115,9 @@ export class ProjectsComponent extends PageComponent implements OnInit{
         if (project.id === this.settings.activeProject$?.value?.id)
           this.settings.setActiveProject(undefined);
         this.filter();
+      }, error => {
+        dialogRef.componentInstance.setErrors(error.error);
+        dialogRef.componentInstance.setLoading(false);
       })
     })
   }
@@ -127,11 +135,15 @@ export class ProjectsComponent extends PageComponent implements OnInit{
       data: data
     });
     dialogRef.componentInstance.projectConfirmed.subscribe((edited) => {
+      dialogRef.componentInstance.setLoading(true);
       this.rest.patchProject(project, { name: edited.name, description: edited.description, user: edited.user, code: edited.code, injectables: edited.injectables }).subscribe(patched => {
         dialogRef.close();
         Object.assign(project, patched);
         formatProject(project);
         this.filter();
+      }, error => {
+        dialogRef.componentInstance.setErrors(error.error);
+        dialogRef.componentInstance.setLoading(false);
       });
     })
   }

@@ -76,7 +76,7 @@
         <p *ngIf="step.finished && !step.success" style="color: red;">Failed</p>
         <ng-container *ngIf="getInjectables(step).length > 0">
           <h4>Injectables</h4>
-          <table class="striped">
+          <table class="striped" style="width: 100%;">
             <tr *ngFor="let injectable of getInjectables(step)">
               <td style="padding-right: 15px;">
                 <b>{{injectable.name}}</b>
