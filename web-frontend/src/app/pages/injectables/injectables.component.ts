@@ -5,6 +5,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { InjectableEditDialogComponent } from "./edit/injectable-edit.component";
 import { DerivedInjectableDialogComponent } from "./derived/derived-injectable.component";
 import { PageComponent } from "../../app.component";
+import { ConfirmDialogComponent } from "../../elements/confirm-dialog/confirm-dialog.component";
 
 export function sortBy(array: any[], attr: string, options: { reverse: boolean } = { reverse: false }): any[]{
   let sorted = array.sort((a, b) =>
@@ -100,5 +101,45 @@ export class InjectablesComponent extends PageComponent implements OnInit {
         setTimeout(() => inj.value = updated.value);
       });
     })
+  }
+
+  reset(): void {
+    let dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      panelClass: 'absolute',
+      disableClose: false,
+      width: '400px',
+      data: {
+        title: 'Synchronize Injectables',
+        message: '<p>Do you want to reset ALL of the injectable values to the project defaults?</p>',
+        closeOnConfirm: true
+      }
+    });
+    dialogRef.componentInstance.confirmed.subscribe( () => {
+      this.isLoading$.next(true);
+      if (!this.settings.activeScenario$.value) return;
+      this.rest.resetInjectables(this.settings.activeScenario$.value).subscribe(() =>
+        window.location.reload());
+    });
+  }
+
+  synchronize(): void {
+    let dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      panelClass: 'absolute',
+      disableClose: false,
+      width: '400px',
+      data: {
+        title: 'Synchronize Injectables',
+        message: '<p>Do you want to synchronize the injectables with the current state of the module? All values you set are being kept.</p>' +
+                 '<p>This step might be required if your scenario is out of date due to changes made to the module.</p>',
+        closeOnConfirm: true
+      }
+    });
+    dialogRef.componentInstance.confirmed.subscribe( () => {
+      this.isLoading$.next(true);
+      if (!this.settings.activeScenario$.value) return;
+      this.rest.synchronizeInjectables(this.settings.activeScenario$.value).subscribe(() =>
+        window.location.reload());
+      }
+    );
   }
 }

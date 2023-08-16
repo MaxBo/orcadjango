@@ -2,6 +2,22 @@
   <mat-spinner [diameter]="50"></mat-spinner>
 </div>
 <div style="width: calc(100% - 100px)">
+  <div style="display: flex;">
+    <h2>Injectables</h2>
+    <div style="margin-left: auto; align-self: end;">
+      <button mat-button
+              (click)="synchronize()"
+              title="Synchronize injectable meta with the current state of the module. Current injectable values are kept.">
+        Synchronize
+      </button>
+      <button mat-button
+              color="warn"
+              (click)="reset()"
+              title="Reset ALL injectables to the project defaults">
+        Reset
+      </button>
+    </div>
+  </div>
   <table *ngIf="groupedInjectables"
          id="injectables-table"
          class="striped">

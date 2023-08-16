@@ -112,6 +112,19 @@ class ScenarioViewSet(viewsets.ModelViewSet):
             return Response({'message': str(e)}, status.HTTP_400_BAD_REQUEST)
         return Response({'message': 'Run started'}, status.HTTP_202_ACCEPTED)
 
+    @action(methods=['POST'], detail=True)
+    def reset(self, request, **kwargs):
+        scenario = self.queryset.get(**kwargs)
+        scenario.recreate_injectables(keep_values=False)
+        return Response({'message': 'Injectables reset'}, status.HTTP_200_OK)
+
+    @action(methods=['POST'], detail=True)
+    def synch(self, request, **kwargs):
+        scenario = self.queryset.get(**kwargs)
+        scenario.recreate_injectables(keep_values=True)
+        return Response({'message': 'Injectables synchronized'},
+                        status.HTTP_200_OK)
+
     @action(detail=True, methods=['post'])
     def abort(request, *args, **kwargs):
         scenario = Scenario.objects.get(id=kwargs.get('pk'))
@@ -173,14 +186,6 @@ class ScenarioInjectableViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return self.queryset.filter(scenario=self.kwargs['scenario_pk'])
-
-    @action(methods=['POST'], detail=False)
-    def reset(self, request, **kwargs):
-        try:
-            scenario = self.queryset.get(**kwargs)
-        except Scenario.DoesNotExist:
-            pass
-        scenario.recreate_injectables()
 
 
 class ModuleViewSet(viewsets.ViewSet):

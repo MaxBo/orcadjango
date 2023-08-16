@@ -197,6 +197,14 @@ export class RestService {
     return this.http.patch<Project>(`${this.URLS.scenarios}${scenario.id}/`, data);
   }
 
+  synchronizeInjectables(scenario: Scenario): Observable<ScenarioInjectable[]> {
+    return this.http.post<ScenarioInjectable[]>(`${this.URLS.scenarios}${scenario.id}/synch/`, {});
+  }
+
+  resetInjectables(scenario: Scenario): Observable<ScenarioInjectable[]> {
+    return this.http.post<ScenarioInjectable[]>(`${this.URLS.scenarios}${scenario.id}/reset/`, {});
+  }
+
   getProjects(options?: { module: string }): Observable<Project[]> {
     const params: any = options? { module: options.module }: {};
     return this.http.get<Project[]>(this.URLS.projects, { params: params }).pipe(map(projects => {
@@ -249,11 +257,6 @@ export class RestService {
 
   patchUser(id: number, data: FormData): Observable<User> {
     return this.http.patch<User>(`${this.URLS.users}${id}/`, data);
-  }
-
-  resetInjectables(scenario: Scenario): Observable<ScenarioInjectable[]> {
-    const injUrl = this.URLS.scenarioInjectables.replace('{scenarioId}', scenario.id!.toString());
-    return this.http.post<ScenarioInjectable[]>(`${injUrl}reset/`, {});
   }
 
   patchScenarioInjectable(injectable: ScenarioInjectable, value: any): Observable<ScenarioInjectable> {
