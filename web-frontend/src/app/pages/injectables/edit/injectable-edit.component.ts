@@ -13,11 +13,13 @@ export class InjectableEditDialogComponent {
   protected value: any;
   protected errors: Record<string, string> = {};
   protected injectable: ScenarioInjectable;
+  protected defaultValue: any;
   isLoading$ = new BehaviorSubject<boolean>(false);
   @Output() valueConfirmed = new EventEmitter<any>();
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: { injectable: ScenarioInjectable }, protected settings: UserSettingsService) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { injectable: ScenarioInjectable, defaultValue: any }, protected settings: UserSettingsService) {
     this.injectable = data.injectable;
+    this.defaultValue = data.defaultValue;
     this.value = data.injectable.value;
   }
 
@@ -31,5 +33,12 @@ export class InjectableEditDialogComponent {
 
   onConfirmClick() {
     this.valueConfirmed.emit(this.value);
+  }
+
+  resetToDefault(): void {
+    this.value = this.defaultValue;
+    const clone = Object.assign({}, this.injectable);
+    clone.value = this.defaultValue;
+    this.injectable = clone;
   }
 }

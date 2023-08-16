@@ -23,6 +23,12 @@
     Cancel
   </button>
   <button mat-button
+          *ngIf="defaultValue != undefined"
+          color="primary"
+          (click)="resetToDefault()">
+    Reset to default
+  </button>
+  <button mat-button
           color="primary"
           (click)="onConfirmClick()">
     Confirm
