@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ScenarioInjectable, ScenarioStep, Step } from "../../rest-api";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { InjectablesComponent, sortBy } from "../injectables/injectables.component";
@@ -16,6 +16,8 @@ export class StepsComponent extends InjectablesComponent {
   protected scenarioSteps: ScenarioStep[] = [];
   protected _scenStepNames: string[] = [];
   stepsLoading$ = new BehaviorSubject<boolean>(false);
+  @ViewChild('resizeHandle') resizeHandle!: ElementRef;
+  @ViewChild('logContainer') logContainer!: ElementRef;
 
   // constructor(private rest: RestService, private settings: UserSettingsService)
   override ngOnInit() {
@@ -147,4 +149,13 @@ export class StepsComponent extends InjectablesComponent {
       }
     })
   }
+
+  onResizeDrag(event: any): void {
+    const dragRect = this.resizeHandle.nativeElement.getBoundingClientRect();
+    const targetRect = this.logContainer.nativeElement.getBoundingClientRect();
+    const diffY = dragRect.top - targetRect.top + dragRect.height;
+    this.resizeHandle.nativeElement.style.transform  = `translate3d(0, ${150-diffY-targetRect.height}px, 0)`;
+    this.logContainer.nativeElement.style.height = `${150-diffY}px`;
+  }
+
 }
