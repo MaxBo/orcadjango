@@ -84,7 +84,7 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
-    <p style="color: white; margin-left: 10px;">Project</p>
+<!--    <p style="color: white; margin-left: 10px;">Project</p>-->
     <mat-card id="active-project"
               routerLink="/projects"
               routerLinkActive="active-link"
@@ -104,6 +104,7 @@
 <!--          <p>{{settings.activeProject$.value?.description}}</p>-->
           <injectable *ngIf="settings.activeProject$.value?.previewInjectable"
                       [injectable]="settings.activeProject$.value!.previewInjectable"
+                      height="120px"
                       (click)="$event.stopPropagation()"></injectable>
         </mat-card-content>
       </ng-container>
@@ -112,17 +113,35 @@
       </ng-template>
     </mat-card>
     <ng-container *ngIf="settings.activeProject$ | async">
-      <p style="color: white; margin-left: 10px;">Scenario</p>
+<!--      <p style="color: white; margin-left: 10px;">Scenario</p>-->
       <mat-card id="active-scenario"
                 routerLink="/scenarios"
                 routerLinkActive="active-link"
+                class="grid-preview-card"
                 [routerLinkActiveOptions]="{exact: false}">
         <ng-container *ngIf="settings.activeScenario$ | async; else noScenario">
           <mat-card-header>
-            <mat-card-title>{{settings.activeScenario$.value?.name}}</mat-card-title>
+            <mat-card-title>
+<!--              Scenario <br>-->
+              {{settings.activeScenario$.value?.name}}
+            </mat-card-title>
+            <mat-icon *ngIf="settings.activeScenario$.value?.last_run?.finished && settings.activeScenario$.value?.last_run?.success"
+                      title="failed"
+                      style="color: green" >
+              done
+            </mat-icon>
+            <mat-icon *ngIf="settings.activeScenario$.value?.last_run?.finished && !settings.activeScenario$.value?.last_run?.success"
+                      title="failed"
+                      style="color: red" class="material-symbols-outlined">
+              cancel
+            </mat-icon>
           </mat-card-header>
           <mat-card-content>
-            <i>{{settings.activeScenario$.value?.description}}</i>
+<!--            <i>{{settings.activeScenario$.value?.description}}</i>-->
+            <p *ngIf="settings.activeScenario$.value?.last_run?.finished">
+              Last Run: <br>
+              {{settings.activeScenario$.value?.last_run?.finished}}
+            </p>
           </mat-card-content>
         </ng-container>
         <ng-template #noScenario>

@@ -21,6 +21,7 @@ export class InjectableComponent extends BaseInjectableComponent implements OnIn
   protected values: any[] = [];
   protected Object = Object;
   protected _injectable?: Inj;
+  @Input() height?: string;
   @Input()
   set injectable(injectable: Inj) {
     setTimeout(() => this._injectable = undefined);
