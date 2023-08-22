@@ -16,6 +16,7 @@ export class StepsComponent extends InjectablesComponent {
   protected scenarioSteps: ScenarioStep[] = [];
   protected _scenStepNames: string[] = [];
   stepsLoading$ = new BehaviorSubject<boolean>(false);
+  protected logHeight = 130;
   @ViewChild('resizeHandle') resizeHandle!: ElementRef;
   @ViewChild('logContainer') logContainer!: ElementRef;
   @ViewChild('scenarioStepList') scenarioStepList!: CdkDropList;
@@ -169,8 +170,8 @@ export class StepsComponent extends InjectablesComponent {
     const dragRect = this.resizeHandle.nativeElement.getBoundingClientRect();
     const targetRect = this.logContainer.nativeElement.getBoundingClientRect();
     const diffY = dragRect.top - targetRect.top + dragRect.height;
-    this.resizeHandle.nativeElement.style.transform  = `translate3d(0, ${150-diffY-targetRect.height}px, 0)`;
-    this.logContainer.nativeElement.style.height = `${150-diffY}px`;
+    this.resizeHandle.nativeElement.style.transform  = `translate3d(0, ${this.logHeight-diffY-targetRect.height}px, 0)`;
+    this.logContainer.nativeElement.style.height = `${this.logHeight-diffY}px`;
   }
 
 }

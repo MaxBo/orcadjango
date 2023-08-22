@@ -114,8 +114,13 @@
     </div>
   </div>
   <div class="steps-footer">
-    <div id="resize-handle" #resizeHandle cdkDragLockAxis="y" cdkDrag (cdkDragMoved)="onResizeDrag($event)"></div>
-    <div #logContainer style="width: 100%; height: 150px;">
+    <div id="resize-handle" #resizeHandle cdkDragLockAxis="y" cdkDrag (cdkDragMoved)="onResizeDrag($event)">
+      <button mat-mini-fab
+              class="flat micro">
+        <mat-icon class="material-symbols-outlined">expand_all</mat-icon>
+      </button>
+    </div>
+    <div #logContainer style="width: 100%;" [style.height]="logHeight + 'px'">
       <app-scenario-log height="100%"></app-scenario-log>
     </div>
   </div>

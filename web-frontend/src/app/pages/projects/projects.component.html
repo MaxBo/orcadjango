@@ -2,9 +2,9 @@
   <mat-spinner [diameter]="50"></mat-spinner>
 </div>
 <div style="width: calc(100% - 132px); padding: 0 16px;">
-  <h2>Projects</h2>
   <div style="display: flex;">
-    <mat-button-toggle-group style="height: 40px; align-items: center; align-self: center"
+    <h2 style="margin-right: 15px;">Projects</h2>
+    <mat-button-toggle-group style="height: 40px; align-items: center; align-self: center;"
                              [value]="viewType"
                              (change)="changeView($event.value)">
       <mat-button-toggle value="grid-view">

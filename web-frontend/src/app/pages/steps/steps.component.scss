@@ -126,4 +126,18 @@
   top: 0;
   left: 0;
   cursor: row-resize;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  button {
+    background-color: #343434;
+    width: 24px;
+    height: 24px;
+    //cursor: row-resize;
+    mat-icon {
+      font-size: 20px;
+      line-height: 24px;
+    }
+  }
 }
