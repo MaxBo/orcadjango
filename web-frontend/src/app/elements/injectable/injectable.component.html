@@ -24,17 +24,24 @@
                 (valueChanged)="valueChanged.emit($event)"></inj-date>
     </ng-container>
     <ng-container *ngSwitchDefault>
-      <div *ngFor="let value of values; let idx = index;" style="display: flex;">
-        <inj-base-type [value]="value"
-                       [type]="_injectable.datatype"
-                       [edit]="edit"
-                       (valueChanged)="_injectable.multi? listValueChanged(idx, $event): valueChanged.emit($event)"></inj-base-type>
+      <div [style.display]="(_injectable.multi && edit)? 'block': 'flex'">
+        <ng-container *ngFor="let value of values; let idx = index; let last = last;">
+          <div style="display: flex; align-items: center;">
+            <inj-base-type [value]="value"
+                           [type]="_injectable.datatype"
+                           [edit]="edit"
+                           (valueChanged)="_injectable.multi? listValueChanged(idx, $event): valueChanged.emit($event)"></inj-base-type>
+            <div *ngIf="(_injectable.multi && edit) else listSeperator">
+              <button mat-button color="secondary" (click)="removeListValue(idx)">- Remove</button>
+            </div>
+            <ng-template #listSeperator>
+              <ng-container *ngIf="!last">,&nbsp;</ng-container>
+            </ng-template>
+          </div>
+        </ng-container>
         <div *ngIf="_injectable.multi && edit">
-          <button mat-button color="secondary" (click)="removeListValue(idx)">- Remove</button>
+          <button mat-button color="secondary" (click)="appendListValue()">+ Add</button>
         </div>
-      </div>
-      <div *ngIf="_injectable.multi && edit">
-        <button mat-button color="secondary" (click)="appendListValue()">+ Add</button>
       </div>
     </ng-container>
   </ng-container>
