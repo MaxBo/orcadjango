@@ -2,6 +2,7 @@ import { Component, Injectable } from '@angular/core';
 import { UserSettingsService } from "./user-settings.service";
 import { AuthService } from "./auth.service";
 import { BehaviorSubject } from "rxjs";
+import { Router } from "@angular/router";
 
 @Injectable()
 export abstract class PageComponent {
@@ -27,7 +28,7 @@ export abstract class PageComponent {
 export class AppComponent {
   title = 'web-frontend';
 
-  constructor(protected settings: UserSettingsService, protected auth: AuthService) {
+  constructor(protected settings: UserSettingsService, protected auth: AuthService, protected router: Router) {
     this.auth.getCurrentUser().subscribe();
   }
 }
