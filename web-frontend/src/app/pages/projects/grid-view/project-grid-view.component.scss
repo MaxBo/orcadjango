@@ -1,0 +1,55 @@
+@import '../../../../colors';
+
+.card-grid {
+  background-color: #ececec;
+  padding: 10px;
+  display: flex;
+}
+
+#new-grid-card {
+  min-width: 180px;
+  max-width: 180px;
+  min-height: 160px;
+  max-height: 160px;
+  cursor: pointer;
+  margin: 50px 25px;
+  .mat-mdc-card-header {
+    justify-content: center;
+  }
+  .mat-mdc-card-content {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    .mat-icon {
+      font-size: 80px;
+      height: 80px;
+      width: 80px;
+    }
+  }
+}
+
+.grid-preview-card {
+  user-select: none;
+  width: 250px;
+  min-height: 300px;
+  display:flex;
+  flex-direction: column;
+  border-bottom: 3px solid white;
+
+  .mat-mdc-card-header {
+    flex-shrink: 0;
+  }
+
+  .mat-mdc-card-content {
+    flex-grow: 1;
+    overflow: auto;
+  }
+}
+
+.grid-preview-card:hover {
+  background-color: #ffeeee;
+}
+
+.grid-preview-card.selected {
+  border: 3px solid salmon;
+}

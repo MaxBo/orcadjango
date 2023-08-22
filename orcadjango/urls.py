@@ -15,14 +15,34 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include, re_path
-from .loggers import LogConsumer
+from django.conf import settings
+from django.conf.urls.static import static
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenVerifyView
+)
+
+from .views import IndexView
+from orcadjango.loggers import ScenarioLogConsumer
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('orcaserver.urls')),
-    path('accounts/', include('django.contrib.auth.urls'))
+    re_path('api/', include('orcaserver.rest_urls')),
+    path('api/token/', TokenObtainPairView.as_view(),
+         name='token_obtain_pair'),
+    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    path('api/token/refresh/', TokenRefreshView.as_view(),
+         name='token_refresh'),
+    # match all routes to the home page (entry point to angular) to let angular
+    # handle the routing, /api and /static routes are still handled by django
+    # automatically, for some reason /media is not, so it is excluded here
+    re_path('^(?!media).*', IndexView.as_view(), name='home'),
 ]
 
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 websocket_urlpatterns = [
-    re_path(r'ws/log/(?P<room_name>\w+)/$', LogConsumer.as_asgi()),
+    re_path(r'ws/scenariolog/(?P<scenario_id>\w+)/$', ScenarioLogConsumer.as_asgi()),
 ]

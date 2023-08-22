@@ -1,0 +1,52 @@
+<ng-container *ngIf="edit; else preview">
+  <div style="display: flex;">
+    <div style="width: 60%;">
+      <div [id]="mapId" class="map"
+           [style.height]="height">
+        <mat-button-toggle-group class="map-controls" [(ngModel)]="editMode" (change)="onModeChanged()">
+          <mat-button-toggle value="select" title="Select features">
+            <mat-icon class="material-symbols-outlined">gesture_select</mat-icon>
+          </mat-button-toggle>
+          <mat-button-toggle value="draw" title="Draw Features by setting points">
+            <mat-icon class="material-symbols-outlined">polyline</mat-icon>
+          </mat-button-toggle>
+          <mat-button-toggle value="freehand" title="Draw Features freehand">
+            <mat-icon class="material-symbols-outlined">draw</mat-icon>
+          </mat-button-toggle>
+          <mat-button-toggle value="none" title="Edit Off">
+            <mat-icon>block</mat-icon>
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+      <button mat-button (click)="deleteAll()">
+        DELETE ALL FEATURES
+      </button>
+      <button mat-button (click)="deleteSelected()" [disabled]="!featuresSelected">
+        DELETE SELECTED
+      </button>
+    </div>
+    <div style="width: 40%;">
+      <mat-form-field id="wkt-input">
+        <mat-label>WKT</mat-label>
+        <textarea matInput [(ngModel)]="wktInput" style="width: 100%"
+                  cdkTextareaAutosize
+                  cdkAutosizeMinRows="10" cdkAutosizeMaxRows="20"></textarea>
+      </mat-form-field>
+      <button mat-button (click)="applyWkt()" style="margin-left: 5px;">
+        <mat-icon>arrow_circle_left</mat-icon>
+        APPLY WKT TO MAP
+      </button>
+      <mat-form-field style="float: right;">
+        <mat-label>EPSG Code</mat-label>
+        <mat-select (selectionChange)="changeSrid($event.value)" [value]="wktSrid">
+          <mat-option [value]="4326">4326</mat-option>
+          <mat-option [value]="3857">3857</mat-option>
+          <mat-option [value]="25832">25832</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+</ng-container>
+<ng-template #preview>
+  <div [id]="mapId" [style.height]="height"></div>
+</ng-template>

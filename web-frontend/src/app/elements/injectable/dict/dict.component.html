@@ -1,0 +1,26 @@
+<ng-container *ngIf="edit; else preview">
+  <div *ngFor="let key of keys; let i = index;">
+    <div style="padding-top: 22px;">
+      <mat-form-field>
+        <mat-label>Key (String)</mat-label>
+        <input #keyInput type="text" [value]="key" matInput
+               (change)="onValueChanged($event.target.value, valueInput.value, i)">
+      </mat-form-field>
+      :&nbsp;
+      <mat-form-field>
+        <mat-label>Value (String)</mat-label>
+        <input #valueInput type="text" [value]="values[i]" matInput
+               (change)="onValueChanged(keyInput.value, $event.target.value, i)">
+      </mat-form-field>
+    </div>
+    <mat-divider *ngIf="i < (keys.length - 1)"></mat-divider>
+  </div>
+</ng-container>
+<ng-template #preview>
+  <table class="dict-table">
+    <tr *ngFor="let key of keys; let i = index;">
+      <td style="padding-right: 3px;">{{key}}</td>
+      <td><i>{{values[i]}}</i></td>
+    </tr>
+  </table>
+</ng-template>

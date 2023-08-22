@@ -1,0 +1,22 @@
+.map {
+  width: 100%;
+  position: relative;
+ // padding: 5px;
+}
+.map-controls {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  transform: translateX(-50%) translateY(15px);
+  height: 32px;
+  align-items: center;
+  mat-button-toggle {
+    top: -2px;
+  }
+}
+
+#wkt-input {
+  width: 98%;
+  margin-left: 10px;
+  margin-bottom: -15px;
+}

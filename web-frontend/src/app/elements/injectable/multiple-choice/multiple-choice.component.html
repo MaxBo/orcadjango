@@ -1,0 +1,17 @@
+<ng-container *ngIf="edit; else preview;">
+  <div *ngIf="!choices.length; else selectHint">no choices available</div>
+  <ng-template #selectHint>Select one or more</ng-template>
+  <div *ngFor="let choice of choices; let i = index;">
+    <mat-checkbox color="primary" [checked]="checked[i]" (change)="onValueChanged($event.checked, i)">
+      {{choice}} <ng-container *ngIf="choiceLabels && choiceLabels[i]">({{choiceLabels[i]}})</ng-container>
+    </mat-checkbox>
+  </div>
+</ng-container>
+
+<ng-template #preview>
+  <ng-container *ngFor="let value of choices; let i = index;">
+    <div *ngIf="checked[i]">
+      {{value}}
+    </div>
+  </ng-container>
+</ng-template>

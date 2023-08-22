@@ -1,0 +1,122 @@
+@import '../colors';
+
+.main-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  //box-shadow: 0px 0px 5px 4px #a7a7a7;
+  font-size: 24px;
+  background-color: $primary;
+  height: 64px;
+  padding-left: 0;
+}
+
+#userButton {
+  align-self: center;
+  margin-left: auto;
+}
+
+.main-container {
+  position: absolute;
+  top: 64px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.app-container {
+  padding: 10px;
+}
+
+::ng-deep.sidenav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  background-color: #343434;
+
+  .mat-drawer-inner-container {
+    overflow-x: hidden;
+  }
+}
+
+.mat-drawer-content {
+  //padding: 10px 30px 0 10px;
+  padding: 0;
+  margin-left: 200px;
+  background-color: lightgrey;
+}
+
+.mat-toolbar {
+  padding-left: 10px;
+  .link, .navbar-brand {
+    text-decoration: none;
+    color: #00000099;
+  }
+
+  mat-icon {
+    align-self: center;
+  }
+
+  .navbar-brand {
+    width: 190px;
+  }
+
+  .link {
+    text-align: center;
+  }
+
+  .page-links {
+    display: flex;
+    //height: 100%;
+    color: #00000099;
+    transition: font-size 0.2s;
+  }
+
+  .page-links .link {
+    margin-left: 10px;
+    margin-right: 10px;
+    transition: font-size 0.2s, color 0.3s, border-bottom-color 0.4s;
+  }
+
+  .mat-menu-trigger mat-icon {
+    color: grey;
+  }
+
+  .page-links .link:not(.active-link):hover {
+    font-size: 28px;
+  }
+
+  .page-links .active-link {
+    font-size: 28px;
+    color: black;
+  }
+}
+
+/*.mat-sidenav {
+  width: 200px;
+  height: 100%;
+}*/
+
+#module-select {
+  margin-left: auto;
+  margin-bottom: -1.25em;
+}
+
+#active-project, #active-scenario {
+  user-select: none;
+  border-width: 3px;
+  border-style: solid;
+  cursor: pointer;
+  margin: 5px;
+  min-height: 100px;
+  .mat-mdc-card-content{
+    overflow: auto;
+  }
+}
+
+.active-link {
+  border-color: salmon;
+}

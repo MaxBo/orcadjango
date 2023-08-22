@@ -1,0 +1,42 @@
+<ng-container *ngIf="_injectable">
+  <ng-container *ngIf="multipleChoice">
+    <multiple-choice [choices]="choiceValues!"
+                     [choiceLabels]="choiceLabels!"
+                     [values]="_injectable.value"
+                     [edit]="edit"
+                     (valueChanged)="valueChanged.emit($event)"></multiple-choice>
+  </ng-container>
+  <ng-container *ngIf="!multipleChoice" [ngSwitch]="_injectable.datatype">
+    <ng-container *ngSwitchCase="'dict'">
+      <inj-dict [value]="_injectable.value"
+                [edit]="edit"
+                (valueChanged)="valueChanged.emit($event)"></inj-dict>
+    </ng-container>
+    <ng-container *ngSwitchCase="'geometry'">
+      <inj-geometry [wkt]="_injectable.value"
+                    [edit]="edit"
+                    [height]="height"
+                    (valueChanged)="valueChanged.emit($event)"></inj-geometry>
+    </ng-container>
+    <ng-container *ngSwitchCase="'date'">
+      <inj-date [value]="_injectable.value"
+                [edit]="edit"
+                (valueChanged)="valueChanged.emit($event)"></inj-date>
+    </ng-container>
+    <ng-container *ngSwitchDefault>
+      <div *ngFor="let value of values; let idx = index;" style="display: flex;">
+        <inj-base-type [value]="value"
+                       [type]="_injectable.datatype"
+                       [edit]="edit"
+                       (valueChanged)="_injectable.multi? listValueChanged(idx, $event): valueChanged.emit($event)"></inj-base-type>
+        <div *ngIf="_injectable.multi && edit" (click)="removeListValue(idx)">
+          <button mat-button color="secondary">- Remove</button>
+        </div>
+      </div>
+      <div *ngIf="_injectable.multi && edit" (click)="appendListValue()">
+        <button mat-button color="secondary">+ Add</button>
+      </div>
+    </ng-container>
+  </ng-container>
+</ng-container>
+

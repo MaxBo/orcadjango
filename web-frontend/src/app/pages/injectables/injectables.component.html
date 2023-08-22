@@ -1,0 +1,77 @@
+<div class="load-overlay" *ngIf="isLoading$ | async">
+  <mat-spinner [diameter]="50"></mat-spinner>
+</div>
+<div style="width: calc(100% - 132px); padding: 0 16px;">
+  <div style="display: flex;">
+    <h2>Injectables</h2>
+    <div style="margin-left: auto; align-self: end;">
+      <button mat-button
+              (click)="synchronize()"
+              title="Synchronize injectable meta with the current state of the module. Current injectable values are kept.">
+        Synchronize
+      </button>
+      <button mat-button
+              color="warn"
+              (click)="reset()"
+              title="Reset ALL injectables to the project defaults">
+        Reset
+      </button>
+    </div>
+  </div>
+  <table *ngIf="groupedInjectables"
+         id="injectables-table"
+         class="striped">
+    <thead>
+      <th>
+        Group
+      </th>
+      <th>Parameter</th>
+      <th>Description</th>
+<!--      <th>Datatype</th>
+      <th>multi</th>
+      <th>has choices</th>-->
+      <th>Value</th>
+      <th></th>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let group of groupedInjectables | keyvalue;">
+        <ng-container *ngFor="let injectable of group.value; let first = first; let last = last;">
+          <tr [ngClass]="{'bb': last, 'locked': !injectable.editable}">
+            <td>
+              <b *ngIf="first">{{group.key}}</b>
+            </td>
+            <td>
+              <b>{{injectable.name}}</b>
+            </td>
+            <td>
+              <i [innerHTML]="injectable.description"></i>
+            </td>
+<!--            <td>
+              {{injectable.datatype}}
+            </td>
+            <td>
+              {{injectable.multi}}
+            </td>
+            <td>
+              {{!!injectable.choices}}
+            </td>-->
+            <td style="min-width: 200px;">
+              <injectable *ngIf="injectable.value !== undefined"
+                          [injectable]="injectable"></injectable>
+            </td>
+            <td>
+              <button mat-button (click)="editInjectable(injectable)">{{injectable.editable ? 'EDIT': 'VIEW'}}</button>
+            </td>
+          </tr>
+        </ng-container>
+      </ng-container>
+    </tbody>
+  </table>
+</div>
+<button mat-button
+        class="next"
+        style="right: 30px;"
+        routerLink="/steps">
+  Next
+  <mat-icon iconPositionEnd>arrow_right</mat-icon>
+</button>

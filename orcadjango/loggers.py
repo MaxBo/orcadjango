@@ -1,58 +1,104 @@
 import logging
+import json
+import time
+import channels.layers
+try:
+    # redis 4.*
+    from redis.asyncio import RedisError
+except ModuleNotFoundError:
+    # redis 3.*
+    from redis import RedisError
+from redis.exceptions import ConnectionError as RedisConnectionError
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
-import json
-from aioredis import errors
-import channels.layers
+from django.utils import timezone
 
-def send(channel: str, message: str, log_type: str='log_message', **kwargs):
-    channel_layer = channels.layers.get_channel_layer()
+import logging
+logger = logging.getLogger(__name__)
+
+channel_layer = channels.layers.get_channel_layer()
+
+def send(channel: str, message: str, log_type: str='log_message',
+         status=None, **kwargs):
     rec = {
         'message': message,
-        'type': log_type
+        'type': log_type,
+        'timestamp': time.strftime('%d.%m.%Y %H:%M:%S')
     }
+    if status:
+        rec['status'] = status
     rec.update(kwargs)
+
     async_to_sync(channel_layer.group_send)(channel, rec)
 
 
-class OrcaChannelHandler(logging.StreamHandler):
+class WebSocketHandler(logging.StreamHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.group = 'log_orca'
-        self.setFormatter(logging.Formatter('%(asctime)s %(message)s'))
+        self.room = 'log'
 
     def emit(self, record):
-        #if record.levelname == 'DEBUG':
-            #return
         try:
-            send(self.group, self.format(record), log_type='log_message',
+            send(self.room, record.getMessage(), log_type='log_message',
                  level=record.levelname)
-        except errors.RedisError as e:
-            print(e)
+        except (RedisError, RedisConnectionError, OSError, RuntimeError) as e:
+            logger.debug(e)
 
 
-class LogConsumer(WebsocketConsumer):
-    def connect(self):
-        self.room_name = self.scope['url_route']['kwargs']['room_name']
-        self.room_group_name = f'log_{self.room_name}'
-        # Join room group
-        async_to_sync(self.channel_layer.group_add)(
-            self.room_group_name,
-            self.channel_name
+class ScenarioHandler(WebSocketHandler):
+    def __init__(self, scenario, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.scenario = scenario
+        self.room = f'scenario_{scenario.id}'
+
+    def emit(self, record):
+        from orcaserver.models import LogEntry
+        message = record.getMessage()
+        LogEntry.objects.create(
+            scenario_id=self.scenario.id,
+            message=message,
+            timestamp=timezone.now(),
+            level=record.levelname
         )
-        self.accept()
+        record.scenario = self.scenario.name
+        status = getattr(record, 'status', {})
+        try:
+            send(self.room, message, log_type='log_message',
+                 level=record.levelname, status=status)
+        except (RedisError, RedisConnectionError, OSError, RuntimeError) as e:
+            logger.debug(e)
+
+
+class ScenarioLogConsumer(WebsocketConsumer):
+    def connect(self):
+        '''join room'''
+        self.scenario_id = self.scope['url_route']['kwargs']['scenario_id']
+        self.room_name = f'scenario_{self.scenario_id}'
+        try:
+            async_to_sync(self.channel_layer.group_add)(
+                self.room_name,
+                self.channel_name
+            )
+            self.accept()
+        # redis is not up, what to do?
+        except (RedisError, RedisConnectionError, OSError) as e:
+            logger.debug(e)
 
     def disconnect(self, close_code):
-        # Leave room group
+        '''leave room'''
         async_to_sync(self.channel_layer.group_discard)(
-            self.room_group_name,
+            self.room_name,
             self.channel_name
         )
 
     def log_message(self, event):
-        # Send message to WebSocket
-        self.send(text_data=json.dumps({
-            'message': event['message'],
-            'level': event.get('level'),
-            'timestamp': event.get('timestamp')
-        }))
+        '''send "log_message"'''
+        try:
+            self.send(text_data=json.dumps({
+                'message': event['message'],
+                'level': event.get('level'),
+                'timestamp': event.get('timestamp'),
+                'status': event.get('status')
+            }))
+        except (RedisError, OSError, RedisConnectionError) as e:
+            logger.debug(e)

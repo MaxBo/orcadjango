@@ -1,0 +1,122 @@
+<div class="load-overlay" *ngIf="isLoading$ | async">
+  <mat-spinner [diameter]="50"></mat-spinner>
+</div>
+<div class="steps-container">
+  <div class="steps-content" style="display: flex; user-select: none;">
+    <mat-accordion id="available-steps">
+      <mat-expansion-panel *ngFor="let group of stepGroups">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <b>{{group}}</b>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-accordion multi cdkDropList
+                       cdkDropListSortingDisabled
+                       [cdkDropListData]="availableSteps[group]"
+                       [cdkDropListConnectedTo]="[scenarioStepList]"
+                       class="step-list">
+          <mat-expansion-panel class="available-step-item"
+                               *ngFor="let step of availableSteps[group]"
+                               [cdkDragData]="step" cdkDrag
+                               [title]="(step.title || step.name) + ((_scenStepNames.indexOf(step.name) >= 0)? ' (step is already added to the run)': '')"
+                               [cdkDragDisabled]="settings.activeScenario$.value?.is_running || _scenStepNames.indexOf(step.name) >= 0">
+            <div class="drag-placeholder" *cdkDragPlaceholder></div>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                {{step.title || step.name}}
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <i [innerHTML]="step.description"></i>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <div id="scenario-steps" [ngClass]="{'deactivated': (stepsLoading$ | async)}" style="min-width: 600px">
+      <mat-accordion cdkDropList
+                     #scenarioStepList="cdkDropList"
+                     [cdkDropListData]="scenarioSteps"
+                     class="step-list"
+                     (cdkDropListDropped)="drop($event)">
+        <mat-expansion-panel *ngFor="let step of scenarioSteps"
+                             class="scenario-step-item"
+                             [cdkDragData]="step" cdkDrag
+                             [cdkDragDisabled]="settings.activeScenario$.value?.is_running">
+          <div class="drag-placeholder" *cdkDragPlaceholder></div>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{step.title || step.name}}
+            </mat-panel-title>
+            <mat-panel-description>
+              <mat-icon *ngIf="step.finished && step.success"
+                        title="success"
+                        style="color: green" >
+                done
+              </mat-icon>
+              <mat-icon *ngIf="step.finished && !step.success"
+                        title="failed"
+                        style="color: red" class="material-symbols-outlined">
+                cancel
+              </mat-icon>
+              <div style="margin-left: auto; display: flex; align-items: center;">
+                <mat-slide-toggle [checked]="step.active"
+                                  color="primary"
+                                  (click)="$event.stopPropagation();"
+                                  [disabled]="settings.activeScenario$.value?.is_running"
+                                  (change)="toggleActive($event.checked, step)" >
+                </mat-slide-toggle>
+                <button mat-button (click)="removeStep(step); $event.stopPropagation();" title="Remove step">
+                  <mat-icon style="color: red;" class="material-icons-outlined">delete_forever</mat-icon>
+                </button>
+              </div>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <i [innerHTML]="step.description"></i>
+          <p *ngIf="step.started">
+            Started: {{step.started}}
+          </p>
+          <p *ngIf="step.finished"
+             [style.color]="step.success? 'green': 'red'">
+            Finished: {{step.finished}}
+            <ng-container *ngIf="!step.success">&nbsp;(failed)</ng-container>
+          </p>
+          <ng-container *ngIf="getInjectables(step).length > 0">
+            <h4>Injectables</h4>
+            <table class="striped" style="width: 100%;" (mousedown)="$event.preventDefault(); $event.stopPropagation();">
+              <tr *ngFor="let injectable of getInjectables(step)">
+                <td style="padding-right: 15px;">
+                  <b>{{injectable.name}}</b>
+                </td>
+                <td style="min-width: 200px;" *ngIf="injectable.value !== undefined">
+                  <injectable [injectable]="injectable"></injectable>
+                </td>
+                <td>
+                  <button mat-button (click)="editInjectable(injectable)">{{injectable.editable? "EDIT": "SHOW"}}</button>
+                </td>
+              </tr>
+            </table>
+          </ng-container>
+        </mat-expansion-panel>
+      </mat-accordion>
+      <div style="display: flex;">
+        <button mat-button
+                (click)="run()"
+                [disabled]="settings.activeScenario$.value?.is_running">
+          RUN CALCULATIONS
+        </button>
+        <button mat-button
+                *ngIf="settings.activeScenario$.value?.is_running"
+                (click)="abort()"
+                style="margin-left: auto;">
+          ABORT
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="steps-footer">
+    <div id="resize-handle" #resizeHandle cdkDragLockAxis="y" cdkDrag (cdkDragMoved)="onResizeDrag($event)"></div>
+    <div #logContainer style="width: 100%; height: 150px;">
+      <app-scenario-log height="100%"></app-scenario-log>
+    </div>
+  </div>
+</div>

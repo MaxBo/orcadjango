@@ -1,0 +1,32 @@
+table {
+  width: 100%;
+  margin-bottom: 10px;
+  color: black;
+  background-color: white;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 10px;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+  }
+
+  thead th {
+    text-align: left;
+    vertical-align: bottom;
+    border-bottom: 2px solid #dee2e6;
+  }
+
+  tbody {
+    tr {
+      cursor: pointer;
+    }
+    tr:hover {
+      background-color: #ffeeee !important;
+    }
+    tr.selected {
+      border: 3px solid salmon;
+    }
+  }
+}

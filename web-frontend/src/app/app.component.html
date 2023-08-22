@@ -1,0 +1,156 @@
+<mat-toolbar class="main-nav">
+  <a class="navbar-brand" href="/">OrcaDjango</a>
+  <span class="page-links" fxShow="true" fxHide.lt-md="true">
+    <a *ngIf="auth.user$ | async"
+       class="link"
+       title="projects"
+       routerLink="/projects"
+       routerLinkActive="active-link"
+       [routerLinkActiveOptions]="{exact: false}">
+      Projects
+    </a>
+    <ng-container *ngIf="settings.activeProject$ | async">
+      <mat-icon iconPositionEnd>arrow_right</mat-icon>
+      <a *ngIf="settings.activeProject$ | async"
+         class="link"
+         title="scenarios"
+         routerLink="/scenarios"
+         routerLinkActive="active-link"
+         [routerLinkActiveOptions]="{exact: false}">
+        Scenarios
+      </a>
+    </ng-container>
+    <ng-container *ngIf="settings.activeScenario$ | async">
+      <mat-icon iconPositionEnd>arrow_right</mat-icon>
+      <a *ngIf="settings.activeScenario$ | async"
+         class="link"
+         title="injectables"
+         routerLink="/injectables"
+         routerLinkActive="active-link"
+         [routerLinkActiveOptions]="{exact: false}">
+        Injectables
+      </a>
+    </ng-container>
+    <ng-container *ngIf="settings.activeScenario$ | async">
+      <mat-icon iconPositionEnd>arrow_right</mat-icon>
+      <a class="link"
+         title="steps and run"
+         routerLink="/steps"
+         routerLinkActive="active-link"
+         [routerLinkActiveOptions]="{exact: false}">
+        Steps & Run
+      </a>
+    </ng-container>
+  </span>
+  <button mat-button id="userButton" [matMenuTriggerFor]="userMenu">
+    <div style="display: flex; height: 45px;">
+      <span style="line-height: 44px; margin-right: 10px;">
+        {{(auth.user$ | async)?.username || 'not logged in'}}
+      </span>
+      <app-user-preview *ngIf="(auth.user$ | async)" [user]="auth.user$.value"></app-user-preview>
+    </div>
+  </button>
+  <mat-menu #userMenu>
+    <ng-container *ngIf="(auth.user$ | async) else login">
+      <a mat-menu-item
+         *ngIf="(settings.user$ | async)?.is_superuser"
+         [href]="settings.host + '/admin/'" target="_blank">
+        Django Admin
+      </a>
+      <a mat-menu-item
+         routerLink="/profile">
+        Profile
+      </a>
+      <a mat-menu-item
+         (click)="auth.logout()" href="">
+        Logout
+      </a>
+    </ng-container>
+    <ng-template #login>
+      <a mat-menu-item routerLink="/login">Login</a>
+    </ng-template>
+  </mat-menu>
+</mat-toolbar>
+
+<mat-sidenav-container class="main-container">
+  <mat-sidenav class="sidenav" mode="side" opened
+               *ngIf="auth.user$ | async">
+    <mat-form-field id="module-select">
+      <mat-label>Module</mat-label>
+      <mat-select (selectionChange)="settings.setModule($event.value)" [value]="settings.module$.value?.name">
+        <mat-option value="">none</mat-option>
+        <mat-option *ngFor="let module of settings.modules" [value]="module.name">
+          {{module.title}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+<!--    <p style="color: white; margin-left: 10px;">Project</p>-->
+    <mat-card id="active-project"
+              routerLink="/projects"
+              routerLinkActive="active-link"
+              [style.border-bottom-color]="settings.getUser(settings.activeProject$.value?.user)?.profile?.color || 'grey'"
+              [routerLinkActiveOptions]="{exact: false}">
+      <ng-container *ngIf="settings.activeProject$ | async; else noProject">
+        <mat-card-header>
+          <app-user-preview *ngIf="settings.activeProject$.value?.user"
+                            [user]="settings.getUser(settings.activeProject$.value!.user)"
+                            style="margin-left: auto;"></app-user-preview>
+          <mat-card-title [title]="settings.activeProject$.value?.name">
+            {{settings.activeProject$.value?.name}}
+          </mat-card-title>
+          <mat-card-subtitle [title]="settings.activeProject$.value?.code">{{settings.activeProject$.value?.code}}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+<!--          <p>{{settings.activeProject$.value?.description}}</p>-->
+          <injectable *ngIf="settings.activeProject$.value?.previewInjectable"
+                      [injectable]="settings.activeProject$.value!.previewInjectable"
+                      height="120px"
+                      (click)="$event.stopPropagation()"></injectable>
+        </mat-card-content>
+      </ng-container>
+      <ng-template #noProject>
+        <mat-card-content>no project selected</mat-card-content>
+      </ng-template>
+    </mat-card>
+    <ng-container *ngIf="settings.activeProject$ | async">
+<!--      <p style="color: white; margin-left: 10px;">Scenario</p>-->
+      <mat-card id="active-scenario"
+                routerLink="/scenarios"
+                routerLinkActive="active-link"
+                class="grid-preview-card"
+                [routerLinkActiveOptions]="{exact: false}">
+        <ng-container *ngIf="settings.activeScenario$ | async; else noScenario">
+          <mat-card-header>
+            <mat-card-title>
+<!--              Scenario <br>-->
+              {{settings.activeScenario$.value?.name}}
+            </mat-card-title>
+            <mat-icon *ngIf="settings.activeScenario$.value?.last_run?.finished && settings.activeScenario$.value?.last_run?.success"
+                      title="failed"
+                      style="color: green" >
+              done
+            </mat-icon>
+            <mat-icon *ngIf="settings.activeScenario$.value?.last_run?.finished && !settings.activeScenario$.value?.last_run?.success"
+                      title="failed"
+                      style="color: red" class="material-symbols-outlined">
+              cancel
+            </mat-icon>
+          </mat-card-header>
+          <mat-card-content>
+<!--            <i>{{settings.activeScenario$.value?.description}}</i>-->
+            <p *ngIf="settings.activeScenario$.value?.last_run?.finished">
+              Last Run: <br>
+              {{settings.activeScenario$.value?.last_run?.finished}}
+            </p>
+          </mat-card-content>
+        </ng-container>
+        <ng-template #noScenario>
+          <mat-card-content>no scenario selected</mat-card-content>
+        </ng-template>
+      </mat-card>
+    </ng-container>
+  </mat-sidenav>
+  <mat-sidenav-content class="app-container">
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

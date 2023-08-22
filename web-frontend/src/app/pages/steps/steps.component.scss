@@ -1,0 +1,129 @@
+#available-steps {
+  width: 300px;
+}
+#scenario-steps {
+  position: relative;
+  width: 600px;
+}
+
+#scenario-steps.deactivated {
+  pointer-events: none;
+}
+
+#available-steps, #scenario-steps {
+  margin: 0 25px 25px 0;
+  .mat-accordion {
+    background-color: #f0f0f0;
+  }
+}
+
+::ng-deep #available-steps {
+  .mat-expansion-panel-header-title {
+    font-size: 16px;
+  }
+  .mat-expansion-panel-body {
+    padding: 0;
+  }
+  .available-step-item .mat-expansion-panel-body {
+    padding: 0px 10px 20px 24px ;
+    .mat-expansion-panel-header-title {
+      font-size: 14px;
+    }
+  }
+  mat-expansion-panel {
+    width: 100%;
+    display: inline-block;
+    vertical-align: top;
+  }
+}
+
+.cdk-drag-disabled {
+  background-color: #e7e7e7;
+  .mat-expansion-panel-header {
+    cursor: not-allowed;
+  }
+}
+
+::ng-deep #scenario-steps {
+  .mat-expansion-panel-header, .mat-expansion-panel-header > .mat-content {
+    height: 80px;
+  }
+}
+
+.available-step-item:not(.cdk-drag-disabled), .scenario-step-item:not(.cdk-drag-disabled) {
+  cursor: move;
+/*  .mat-expansion-panel-header {
+    cursor: move;
+  }*/
+  table {
+    cursor: auto;
+  }
+}
+
+
+.step-list {
+  border: solid 1px #ccc;
+  min-height: 60px;
+  background: white;
+  border-radius: 4px;
+  overflow: hidden;
+  display: block;
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+  0 8px 10px 1px rgba(0, 0, 0, 0.14),
+  0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+
+.drag-placeholder {
+  background: #ccc;
+  border: dotted 3px #999;
+  min-height: 60px;
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+//.cdk-drag-placeholder {
+//  opacity: 0;
+//}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.steps-container{
+  width: 100%;
+  height: calc(100% - 15px);
+  display: flex;
+  flex-direction: column;
+}
+
+.steps-content{
+  flex-shrink: 1;
+  flex-grow: 1;
+  position: relative;
+  overflow-y: auto;
+  padding: 10px 16px;
+}
+
+.steps-footer{
+  flex-shrink: 0;
+  flex-grow: 0;
+  background: white;
+  margin-bottom: -15px;
+  padding: 15px;
+  position: relative;
+}
+
+#resize-handle {
+  width: 100%;
+  height: 3px;
+  background-color: #343434;
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: row-resize;
+}

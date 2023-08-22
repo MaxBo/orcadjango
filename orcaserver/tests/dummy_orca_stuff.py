@@ -127,6 +127,13 @@ def step1(inj_list, dataframe):
     logger.info('step1 finished')
 
 
+@meta(group='Hallo', order=2)
+@orca.step()
+def error_step():
+    """this step will fail"""
+    raise Exception('planned error')
+
+
 @meta(group='Huhu')
 @orca.step()
 def step_dict(inj_dict):

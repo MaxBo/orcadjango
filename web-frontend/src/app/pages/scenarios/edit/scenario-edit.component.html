@@ -1,0 +1,44 @@
+<h4 *ngIf="data.title" mat-dialog-title>{{ data.title }}</h4>
+<button color="primary"
+        mat-icon-button
+        mat-dialog-close
+        title="Close"
+        id="close-button">
+  <mat-icon>close</mat-icon>
+</button>
+<mat-dialog-content>
+  <div class="load-overlay" *ngIf="isLoading$ | async">
+    <mat-spinner [diameter]="50"></mat-spinner>
+  </div>
+  <div *ngIf="errors">
+    <mat-error *ngFor="let error of errors | keyvalue" class="alert">
+      {{ error.key }}: {{ error.value }}
+    </mat-error>
+  </div>
+
+  <form [formGroup]="scenarioForm">
+    <div fxLayout="column">
+      <mat-form-field appearance="fill">
+        <mat-label>Name of the Project</mat-label>
+        <input matInput formControlName="name" required>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description" rows="5"></textarea>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button class="mat-button-dv"
+          color="primary"
+          mat-dialog-close
+          style="margin-right: 20px;">
+    {{ data.cancelButtonText }}
+  </button>
+  <button mat-button class="mat-button-dv"
+          color="primary"
+          (click)="onConfirmClick()">
+    {{ data.confirmButtonText }}
+  </button>
+</mat-dialog-actions>

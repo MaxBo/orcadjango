@@ -1,0 +1,47 @@
+<div class="card-grid">
+  <mat-card id="new-grid-card"
+            class="grid-preview-card"
+            title="Create new Scenario"
+            (click)="onCreateScenario.emit(true)">
+    <mat-card-header>
+      <mat-card-title>New Scenario</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-icon class="material-symbols-outlined">
+        add
+      </mat-icon>
+    </mat-card-content>
+  </mat-card>
+  <div fxLayout="row wrap"
+       fxLayoutAlign="start start"
+       fxLayoutGap="20px 20px grid">
+    <div *ngFor="let scenario of scenarios">
+      <mat-card class="grid-preview-card"
+                [ngClass]="{'selected': settings.activeScenario$.value?.id === scenario.id}">
+        <mat-card-header style="cursor: pointer"
+                         (click)="onScenarioSelected.emit(scenario)">
+          <mat-card-title [title]="scenario.name">{{scenario.name}}</mat-card-title>
+          <mat-icon *ngIf="scenario.last_run?.finished && scenario.last_run?.success"
+                    title="success"
+                    style="color: green" >
+            done
+          </mat-icon>
+          <mat-icon *ngIf="scenario.last_run?.finished && !scenario.last_run?.success"
+                    title="failed"
+                    style="color: red" class="material-symbols-outlined">
+            cancel
+          </mat-icon>
+        </mat-card-header>
+        <mat-card-content style="cursor: pointer" (click)="onScenarioSelected.emit(scenario)">
+          <p>
+            {{scenario.description}}
+          </p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button (click)="onEditScenario.emit(scenario)">EDIT</button>
+          <button mat-button (click)="onDeleteScenario.emit(scenario)">DELETE</button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+</div>

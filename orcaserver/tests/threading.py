@@ -18,10 +18,11 @@ class MockStep:
 class TestOrcaInstancing(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manager = OrcaManager()
-        cls.manager.set_default_module('orcaserver.tests.dummy_orca_stuff')
-        cls.orca1 = cls.manager.get(1)
-        cls.orca2 = cls.manager.get(2)
+        module = 'orcaserver.tests.dummy_orca_stuff'
+        #OrcaManager.default_module = module
+        cls.manager = OrcaManager(module)
+        cls.orca1 = cls.manager.get_instance(1)
+        cls.orca2 = cls.manager.get_instance(2)
         assert(id(cls.orca1) != id(cls.orca2))
         assert(id(cls.orca1.logger) != id(cls.orca2.logger))
 

@@ -1,0 +1,46 @@
+#injectables-table {
+  padding: 10px;
+  background-color: #ececec;
+  border-spacing: 0;
+
+  th {
+    border-bottom: 2px solid #dee2e6;
+    font-size: 14px;
+    text-align: left;
+  }
+
+  td, th {
+    padding: 10px;
+  }
+
+  tbody {
+    background-color: white;
+    font-size: 12px;
+
+    td:first-child {
+      background-color: #ffeeee;
+    }
+
+/*    tr {
+      cursor: pointer;
+    }*/
+
+    tr.bb td {
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    tr:hover td:not(:first-child) {
+      background-color: #ffeeee;
+    }
+
+    tr.locked td:not(:first-child) {
+      background-image: repeating-linear-gradient(
+          -45deg, #f1f1f1, #f1f1f1 4px, #fafafa 4px, #fafafa 10px) !important;
+    }
+
+    tr.locked:hover td:not(:first-child) {
+      background-image: repeating-linear-gradient(
+          -45deg, #f1f1f1, #f1f1f1 4px, #ffeeee 4px, #ffeeee 10px) !important;
+    }
+  }
+}

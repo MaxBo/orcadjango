@@ -1,0 +1,16 @@
+#image-preview {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  background-size: cover;
+  border: 2px solid;
+}
+
+#color-preview {
+  cursor: pointer;
+  align-self: center;
+  margin-left: 10px;
+  border: 1px solid grey;
+  width: 20px;
+  height: 20px;
+}
