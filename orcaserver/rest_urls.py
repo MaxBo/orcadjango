@@ -7,6 +7,7 @@ router.register(r'users', views.UserViewSet, basename='users')
 router.register(r'projects', views.ProjectViewSet, basename='projects')
 router.register(r'scenarios', views.ScenarioViewSet, basename='scenarios')
 router.register(r'modules', views.ModuleViewSet, basename='modules')
+router.register(r'settings', views.SiteSettingViewSet, basename='settings')
 
 module_router = routers.NestedSimpleRouter(router, r'modules',
                                            lookup='module')

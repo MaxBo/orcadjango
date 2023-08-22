@@ -6,7 +6,8 @@ import json
 from django.conf import settings
 
 from orcaserver.management import OrcaManager
-from .models import Project, Profile, Scenario, Injectable, Step, Run, LogEntry
+from .models import (Project, Profile, Scenario, Injectable, Step, Run,
+                     LogEntry, SiteSetting)
 from .injectables import OrcaTypeMap
 
 DATETIME_FORMAT = "%d.%m.%Y %H:%M:%S"
@@ -283,3 +284,15 @@ class ScenarioStepSerializer(serializers.ModelSerializer):
                   'success', 'order', 'active')
         read_only_fields = ('started', 'finished', 'success')
         optional_fields = ('order', 'active')
+
+
+class SiteSettingSerializer(serializers.ModelSerializer):
+    ''''''
+
+    class Meta:
+        model = SiteSetting
+        fields = ('title', 'contact_mail', 'logo', 'favicon',
+                  'scenario_running_img', 'scenario_running_icon',
+                  'scenario_success_img', 'scenario_success_icon',
+                  'scenario_failed_img', 'scenario_failed_icon',
+                  'primary_color', 'secondary_color', 'welcome_text')

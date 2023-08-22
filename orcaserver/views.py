@@ -11,8 +11,9 @@ from .serializers import (ProjectSerializer, UserSerializer,
                           ScenarioSerializer, ModuleSerializer,
                           ScenarioInjectableSerializer, StepSerializer,
                           ScenarioStepSerializer, InjectableSerializer,
-                          ScenarioLogSerializer)
-from .models import Project, Scenario, Injectable, Step, Run, LogEntry
+                          ScenarioLogSerializer, SiteSettingSerializer)
+from .models import (Project, Scenario, Injectable, Step, Run, LogEntry,
+                     SiteSetting)
 from orcaserver.management import OrcaManager
 from orcadjango.loggers import ScenarioHandler
 from .injectables import OrcaTypeMap
@@ -254,3 +255,28 @@ class ScenarioLogViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return self.queryset.filter(scenario=self.kwargs['scenario_pk'])
+
+
+class SingletonViewSet(viewsets.ModelViewSet):
+    model_class = None
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.model_class.load()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.model_class.load()
+        partial = kwargs.pop('partial', False)
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+class SiteSettingViewSet(SingletonViewSet):
+    queryset = SiteSetting.objects.all()
+    model_class = SiteSetting
+    serializer_class = SiteSettingSerializer

@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable } from "@angular/core";
 import { CookieService } from "ngx-cookie-service";
-import { Inj, Module, Project, RestService, Scenario, ScenarioLogEntry, User } from "./rest-api";
+import { Inj, Module, Project, RestService, Scenario, ScenarioLogEntry, SiteSettings, User } from "./rest-api";
 import { BehaviorSubject } from "rxjs";
 import { AuthService } from "./auth.service";
 import { environment } from "../environments/environment";
@@ -18,6 +18,7 @@ export class UserSettingsService {
   modules: Module[] = [];
   scenarioLogSocket?: WebSocket;
   onScenarioLogMessage = new EventEmitter<ScenarioLogEntry>;
+  siteSettings?: SiteSettings;
   onStepStatusChange = new EventEmitter<{
     step: string, success: boolean, finished: boolean, started: boolean, timestamp: string}>;
   private readonly wsURL: string;
@@ -55,6 +56,7 @@ export class UserSettingsService {
         this.rest.getUsers().subscribe(users => {
           this.users = users;
         });
+        this.rest.getSiteSettings().subscribe(settings => this.siteSettings = settings);
       }
       this.user$.next(user);
     })

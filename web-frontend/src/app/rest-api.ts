@@ -19,6 +19,23 @@ export interface User {
   profile: Profile
 }
 
+export interface SiteSettings {
+  title: string;
+  contact_mail: string;
+  logo: string;
+  primary_color: string;
+  secondary_color: string;
+  favicon: string;
+  scenario_running_img: string;
+  scenario_running_icon: string;
+  scenario_success_img: string;
+  scenario_success_icon: string;
+  scenario_failed_img: string;
+  scenario_failed_icon: string;
+  welcome_background: string;
+  welcome_text: string;
+}
+
 export interface Project {
   id?: number,
   name: string,
@@ -132,6 +149,7 @@ export class RestService {
     scenarioInjectables: `${ environment.apiPath }/scenarios/{scenarioId}/injectables/`,
     scenarioSteps: `${ environment.apiPath }/scenarios/{scenarioId}/steps/`,
     scenarioLogs: `${ environment.apiPath }/scenarios/{scenarioId}/logs/`,
+    sitesettings: `${ environment.apiPath }/settings/`,
     users: `${ environment.apiPath }/users/`,
     currentUser: `${ environment.apiPath }/users/current/`,
     login: `${ environment.apiPath }/login/`,
@@ -238,6 +256,10 @@ export class RestService {
 
   getUsers(): Observable<User[]>{
     return this.http.get<User[]>(this.URLS.users);
+  }
+
+  getSiteSettings(): Observable<SiteSettings>{
+    return this.http.get<SiteSettings[]>(this.URLS.sitesettings).pipe(map(settings => settings[0]));
   }
 
   getScenarioInjectables(scenario: Scenario): Observable<ScenarioInjectable[]> {

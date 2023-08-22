@@ -60,7 +60,7 @@
                           [injectable]="injectable"></injectable>
             </td>
             <td>
-              <button mat-button (click)="editInjectable(injectable)">{{injectable.editable ? 'EDIT': 'VIEW'}}</button>
+              <button mat-button [disabled]="settings.activeScenario$.value?.is_running" (click)="editInjectable(injectable)">{{injectable.editable ? 'EDIT': 'VIEW'}}</button>
             </td>
           </tr>
         </ng-container>

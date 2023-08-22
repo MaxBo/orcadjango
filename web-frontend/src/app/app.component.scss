@@ -120,3 +120,16 @@
 .active-link {
   border-color: salmon;
 }
+
+#scenario-status {
+  bottom: 0;
+  position: absolute;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  img {
+    max-width: 100%;
+    max-height: 200px;
+  }
+}

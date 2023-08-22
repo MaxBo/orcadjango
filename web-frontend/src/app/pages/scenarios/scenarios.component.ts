@@ -27,10 +27,16 @@ export class ScenariosComponent extends PageComponent implements OnInit {
     if (viewType === 'list-view') this.viewType = 'list-view';
     this.settings.activeProject$.subscribe(project => {
       this.setLoading(true);
-      this.rest.getScenarios({ project: project }).subscribe(scenarios => {
-        this.scenarios = scenarios;
+      if (!project) {
+        this.scenarios = [];
         this.setLoading(false);
-      });
+      }
+      else {
+        this.rest.getScenarios({ project: project }).subscribe(scenarios => {
+          this.scenarios = scenarios;
+          this.setLoading(false);
+        });
+      }
     })
   }
 

@@ -247,3 +247,40 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_profile(sender, instance, **kwargs):
     instance.profile.save()
+
+
+class SingletonModel(models.Model):
+
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super(SingletonModel, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        pass
+
+    @classmethod
+    def load(cls) -> 'SingletonModel':
+        obj, created = cls.objects.get_or_create(pk=1)
+        return obj
+
+
+class SiteSetting(SingletonModel):
+    title = models.TextField(default='OrcaDjango')
+    contact_mail = models.EmailField(default='', null=True, blank=True)
+    logo = models.ImageField(null=True, blank=True)
+    primary_color = models.CharField(default='#009688', max_length=30)
+    secondary_color = models.CharField(default='#e91e63', max_length=30)
+    #theme_primary_color = models.CharField(default='salmon', max_length=30)
+    #theme_secondary_color = models.CharField(default='turquoise', max_length=30)
+    favicon = models.ImageField(null=True, blank=True)
+    scenario_running_img = models.ImageField(null=True, blank=True)
+    scenario_running_icon = models.ImageField(null=True, blank=True)
+    scenario_success_img = models.ImageField(null=True, blank=True)
+    scenario_success_icon = models.ImageField(null=True, blank=True)
+    scenario_failed_img = models.ImageField(null=True, blank=True)
+    scenario_failed_icon = models.ImageField(null=True, blank=True)
+    welcome_background = models.ImageField(null=True, blank=True)
+    welcome_text = models.TextField(default='Willkommen', null=True, blank=True)

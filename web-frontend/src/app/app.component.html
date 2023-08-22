@@ -125,22 +125,12 @@
 <!--              Scenario <br>-->
               {{settings.activeScenario$.value?.name}}
             </mat-card-title>
-            <mat-icon *ngIf="settings.activeScenario$.value?.last_run?.finished && settings.activeScenario$.value?.last_run?.success"
-                      title="failed"
-                      style="color: green" >
-              done
-            </mat-icon>
-            <mat-icon *ngIf="settings.activeScenario$.value?.last_run?.finished && !settings.activeScenario$.value?.last_run?.success"
-                      title="failed"
-                      style="color: red" class="material-symbols-outlined">
-              cancel
-            </mat-icon>
           </mat-card-header>
           <mat-card-content>
 <!--            <i>{{settings.activeScenario$.value?.description}}</i>-->
             <p *ngIf="settings.activeScenario$.value?.last_run?.finished">
               Last Run: <br>
-              {{settings.activeScenario$.value?.last_run?.finished}}
+              <i [style.color]="settings.activeScenario$.value?.last_run?.success? 'green': 'red'">{{settings.activeScenario$.value?.last_run?.finished}}</i>
             </p>
           </mat-card-content>
         </ng-container>
@@ -148,6 +138,23 @@
           <mat-card-content>no scenario selected</mat-card-content>
         </ng-template>
       </mat-card>
+<!--      -->
+      <a id="scenario-status"
+         *ngIf="settings.activeScenario$.value"
+         routerLink="/steps">
+        <ng-container *ngIf="settings.activeScenario$.value?.is_running else notRunning">
+          <img *ngIf="settings.siteSettings?.scenario_running_img else runSpinner" [src]="settings.siteSettings?.scenario_running_img">
+          <ng-template #runSpinner>
+            <mat-spinner [diameter]="150"></mat-spinner>
+          </ng-template>
+        </ng-container>
+        <ng-template #notRunning>
+          <img *ngIf="settings.activeScenario$.value?.last_run?.finished && settings.activeScenario$.value?.last_run?.success"
+               [src]="settings.siteSettings?.scenario_success_img">
+          <img *ngIf="settings.activeScenario$.value?.last_run?.finished && !settings.activeScenario$.value?.last_run?.success"
+               [src]="settings.siteSettings?.scenario_failed_img">
+        </ng-template>
+      </a>
     </ng-container>
   </mat-sidenav>
   <mat-sidenav-content class="app-container">
