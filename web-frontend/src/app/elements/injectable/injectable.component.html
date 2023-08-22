@@ -29,12 +29,12 @@
                        [type]="_injectable.datatype"
                        [edit]="edit"
                        (valueChanged)="_injectable.multi? listValueChanged(idx, $event): valueChanged.emit($event)"></inj-base-type>
-        <div *ngIf="_injectable.multi && edit" (click)="removeListValue(idx)">
-          <button mat-button color="secondary">- Remove</button>
+        <div *ngIf="_injectable.multi && edit">
+          <button mat-button color="secondary" (click)="removeListValue(idx)">- Remove</button>
         </div>
       </div>
-      <div *ngIf="_injectable.multi && edit" (click)="appendListValue()">
-        <button mat-button color="secondary">+ Add</button>
+      <div *ngIf="_injectable.multi && edit">
+        <button mat-button color="secondary" (click)="appendListValue()">+ Add</button>
       </div>
     </ng-container>
   </ng-container>
