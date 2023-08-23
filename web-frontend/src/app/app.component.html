@@ -1,5 +1,8 @@
 <mat-toolbar class="main-nav">
-  <a class="navbar-brand" href="/">OrcaDjango</a>
+  <a class="navbar-brand" href="/">
+    <img *ngIf="settings.siteSettings?.logo else noLogo" [src]="settings.siteSettings?.logo">
+    <ng-template #noLogo>{{settings.siteSettings?.title}}</ng-template>
+  </a>
   <span class="page-links" fxShow="true" fxHide.lt-md="true">
     <a *ngIf="auth.user$ | async"
        class="link"

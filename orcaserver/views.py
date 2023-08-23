@@ -280,3 +280,4 @@ class SiteSettingViewSet(SingletonViewSet):
     queryset = SiteSetting.objects.all()
     model_class = SiteSetting
     serializer_class = SiteSettingSerializer
+    permission_classes = []

@@ -29,6 +29,7 @@ export class UserSettingsService {
       this.disconnect();
       this.connect();
     });
+    this.rest.getSiteSettings().subscribe(settings => this.siteSettings = settings);
     this.host = environment.backend? environment.backend: window.location.origin;
     const strippedHost = environment.backend? environment.backend.replace('http://', ''): window.location.hostname;
     this.wsURL = `${(environment.production && strippedHost.indexOf('localhost') === -1)? 'wss:': 'ws:'}//${strippedHost}/ws/scenariolog/`;
@@ -56,7 +57,6 @@ export class UserSettingsService {
         this.rest.getUsers().subscribe(users => {
           this.users = users;
         });
-        this.rest.getSiteSettings().subscribe(settings => this.siteSettings = settings);
       }
       this.user$.next(user);
     })
