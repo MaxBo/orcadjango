@@ -295,4 +295,7 @@ class SiteSettingSerializer(serializers.ModelSerializer):
                   'scenario_running_img', 'scenario_running_icon',
                   'scenario_success_img', 'scenario_success_icon',
                   'scenario_failed_img', 'scenario_failed_icon',
-                  'primary_color', 'secondary_color', 'welcome_text')
+                  'primary_color', 'secondary_color',
+                  'welcome_text', 'welcome_background_img',
+                  'projects_background_img', 'scenarios_background_img',
+                  'injectables_background_img', 'steps_background_img')

@@ -32,7 +32,11 @@ export interface SiteSettings {
   scenario_success_icon: string;
   scenario_failed_img: string;
   scenario_failed_icon: string;
-  welcome_background: string;
+  welcome_background_img: string;
+  projects_background_img: string;
+  scenarios_background_img: string;
+  injectables_background_img: string;
+  steps_background_img: string;
   welcome_text: string;
 }
 

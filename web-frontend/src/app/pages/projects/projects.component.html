@@ -1,7 +1,7 @@
 <div class="load-overlay" *ngIf="isLoading$ | async">
   <mat-spinner [diameter]="50"></mat-spinner>
 </div>
-<!--<div class="background" style="background-image: url('http://localhost:8000/media/Map_of_Gaul.png');"></div>-->
+<div class="background" *ngIf="settings.siteSettings?.projects_background_img" style="background-image: url('{{settings.siteSettings?.projects_background_img}}');"></div>
 <div style="width: calc(100% - 132px); padding: 0 16px;">
   <div style="display: flex;">
     <h2 style="margin-right: 15px;">Projects</h2>
