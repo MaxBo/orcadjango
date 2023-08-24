@@ -150,7 +150,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
 
   archiveProject(project: Project, archive: boolean): void {
     this.rest.patchProject(project, { archived: archive }).subscribe(patched => {
-      project.archived = true;
+      project.archived = archive;
       this.filter();
     });
   }

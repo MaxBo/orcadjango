@@ -33,6 +33,18 @@
           </mat-icon>
         </mat-card-header>
         <mat-card-content style="cursor: pointer" (click)="onScenarioSelected.emit(scenario)">
+          <ng-container *ngIf="scenario.is_running else notRunningCard">
+            <p>
+              Started at: <br>
+              {{settings.activeScenario$.value?.last_run?.started}}
+            </p>
+          </ng-container>
+          <ng-template #notRunningCard>
+            <p *ngIf="scenario.last_run?.finished">
+              Last Run finished: <br>
+              <i [style.color]="scenario.last_run?.success? 'green': 'red'">{{scenario.last_run?.finished}}</i>
+            </p>
+          </ng-template>
           <p>
             {{scenario.description}}
           </p>

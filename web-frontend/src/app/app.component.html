@@ -132,10 +132,18 @@
           </mat-card-header>
           <mat-card-content>
 <!--            <i>{{settings.activeScenario$.value?.description}}</i>-->
-            <p *ngIf="settings.activeScenario$.value?.last_run?.finished">
-              Last Run: <br>
-              <i [style.color]="settings.activeScenario$.value?.last_run?.success? 'green': 'red'">{{settings.activeScenario$.value?.last_run?.finished}}</i>
-            </p>
+            <ng-container *ngIf="settings.activeScenario$.value?.is_running else notRunningCard">
+              <p>
+                Started at: <br>
+                {{settings.activeScenario$.value?.last_run?.started}}
+              </p>
+            </ng-container>
+            <ng-template #notRunningCard>
+              <p *ngIf="settings.activeScenario$.value?.last_run?.finished">
+                Last Run finished: <br>
+                <i [style.color]="settings.activeScenario$.value?.last_run?.success? 'green': 'red'">{{settings.activeScenario$.value?.last_run?.finished}}</i>
+              </p>
+            </ng-template>
           </mat-card-content>
         </ng-container>
         <ng-template #noScenario>
