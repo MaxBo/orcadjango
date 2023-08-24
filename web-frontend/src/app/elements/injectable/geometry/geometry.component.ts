@@ -17,8 +17,10 @@ import { FullScreen } from "ol/control";
 import { FeatureLike } from "ol/Feature";
 import { register } from 'ol/proj/proj4'
 import proj4 from 'proj4';
+import { createBox } from "ol/interaction/Draw";
 
 proj4.defs("EPSG:25832", "+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs");
+proj4.defs("EPSG:3044", "+proj=utm +zone=32 +ellps=GRS80 +towgs84=565.04,49.91,465.84,1.9848,-1.7439,9.0587,4.0772 +units=m +no_defs +type=crs");
 register(proj4);
 
 @Component({
@@ -40,7 +42,7 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
   protected mapId = `map-${uuid()}`;
   protected map?: Map;
   protected view?: View;
-  protected editMode: 'select' | 'draw' | 'freehand' | 'none' = 'select';
+  protected editMode: 'select' | 'draw' | 'freehand' | 'none' | 'square' | 'circle' = 'select';
   protected featuresSelected = false;
 
   ngOnInit() {
@@ -153,6 +155,22 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
     this.featureLayer.set('freehand', freehand);
     this.map.addInteraction(freehand);
 
+    // WKT does not support circle geoms, ToDo: transform circle into poly and update on map
+/*    const circle = new Draw({
+      source: source,
+      type: 'Circle'
+    });
+    this.featureLayer.set('circle', circle);
+    this.map.addInteraction(circle);*/
+
+    const square = new Draw({
+      source: source,
+      type: 'Circle',
+      geometryFunction: createBox()
+    });
+    this.featureLayer.set('square', square);
+    this.map.addInteraction(square);
+
     const selected = new Style({
       fill: new Fill({
         color: 'rgba(16, 74, 229, 0.3)',
@@ -198,6 +216,10 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
 
     const freehand = this.featureLayer?.get('freehand');
     freehand?.setActive(this.editMode === 'freehand');
+    const circle = this.featureLayer?.get('circle');
+    circle?.setActive(this.editMode === 'circle');
+    const square = this.featureLayer?.get('square');
+    square?.setActive(this.editMode === 'square');
 
     const select = this.featureLayer?.get('select');
     select?.setActive(this.editMode === 'select');
