@@ -172,6 +172,10 @@ export class StepsComponent extends InjectablesComponent {
     const diffY = dragRect.top - targetRect.top + dragRect.height;
     this.resizeHandle.nativeElement.style.transform  = `translate3d(0, ${this.logHeight-diffY-targetRect.height}px, 0)`;
     this.logContainer.nativeElement.style.height = `${this.logHeight-diffY}px`;
+    // cancel drag if drag handle is pulled to the bottom of the page (otherwise it would go up again)
+    if (targetRect.height < 15 && event.delta.y > 0) {
+      document.dispatchEvent(new Event('mouseup'));
+    }
   }
 
 }
