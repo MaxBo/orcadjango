@@ -94,8 +94,9 @@ export interface Module {
   title: string,
   path: string,
   description: string,
-  init: string[],
+  init_injs: string[],
   default: boolean,
+  preview_inj?: string,
   data?: {
     name?: string,
     url?: string,
@@ -130,8 +131,9 @@ export interface  ScenarioLogEntry {
   scenario?: { success?: boolean, finished?: boolean }
 }
 
-export function formatProject(project: Project) {
-  project.previewInjectable = project.injectables.find(inj => inj.name === 'project_area');
+export function formatProject(project: Project, options?: { previewInjName?: string}) {
+  if (options?.previewInjName)
+    project.previewInjectable = project.injectables.find(inj => inj.name === options.previewInjName);
   if (project.created) {
     project.date = new Date(project.created);
     project.date.setHours(0,0,0,0);
@@ -227,11 +229,11 @@ export class RestService {
     return this.http.post<ScenarioInjectable[]>(`${this.URLS.scenarios}${scenario.id}/reset/`, {});
   }
 
-  getProjects(options?: { module: string }): Observable<Project[]> {
-    const params: any = options? { module: options.module }: {};
+  getProjects(options?: { module: Module }): Observable<Project[]> {
+    const params: any = options? { module: options.module.path }: {};
     return this.http.get<Project[]>(this.URLS.projects, { params: params }).pipe(map(projects => {
       // ToDo: determine which injectables serve as previews via API somehow
-      projects.forEach(project => formatProject(project));
+      projects.forEach(project => formatProject(project, { previewInjName: options?.module.preview_inj }));
       return projects;
     }));
   }

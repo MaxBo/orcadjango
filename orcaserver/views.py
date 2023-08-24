@@ -205,7 +205,8 @@ class ModuleViewSet(viewsets.ViewSet):
                 'path': path,
                 'description': v.get('description', ''),
                 'default': path == default_mod,
-                'init': v.get('init'),
+                'init_injs': v.get('init'),
+                'preview_inj': v.get('preview_inj'),
             }
             data_url = v.get('data_url', {})
             mod['data'] = {

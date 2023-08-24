@@ -257,7 +257,8 @@ class ModuleSerializer(serializers.Serializer):
     description = serializers.CharField()
     default = serializers.BooleanField()
     data = ModuleDataSerializer()
-    init = serializers.ListSerializer(child=serializers.CharField())
+    init_injs = serializers.ListSerializer(child=serializers.CharField())
+    preview_inj = serializers.CharField()
 
 
 class StepSerializer(serializers.Serializer):
