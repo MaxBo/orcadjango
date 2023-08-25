@@ -121,7 +121,7 @@ class Injectable(NameModel):
         '''buffered meta data for serialization'''
         if self.__meta:
             return self.__meta
-        dummy = {'group': '', 'order': '',}
+        dummy = {'group': '', 'order': '', 'unique': '',}
         if not self.scenario:
             return dummy
         try:

@@ -4,6 +4,7 @@ from collections import OrderedDict
 import re
 import json
 from django.conf import settings
+from rest_framework.serializers import ValidationError
 
 from orcaserver.management import OrcaManager
 from .models import (Project, Profile, Scenario, Injectable, Step, Run,
@@ -71,6 +72,22 @@ class UserSerializer(serializers.ModelSerializer):
             instance.save()
         return instance
 
+def validate_unique_inj(inj_name: str, project_id: int, value):
+    '''validate if given value of injectable is not existing in other projects
+    than the passed one
+    raises ValidationError if it does and therefore is not unique'''
+    same_val_inj = Injectable.objects.filter(
+        name=inj_name, value=value).exclude(scenario__project=project_id)
+    if same_val_inj.count():
+        # has to be unique so it only can be exactly one other project
+        # but list all projects anyway to be safe
+        project_names = ', '.join(
+            f'"{pn}"' for pn in same_val_inj.values_list(
+                'scenario__project__name', flat=True).distinct())
+        raise ValidationError(f'Value has to be unique. "{value}" '
+                              'is already used in project '
+                              f'{project_names}.')
+
 
 class ProjectInjectablesSerializerField(serializers.Field):
 
@@ -110,9 +127,6 @@ class ProjectInjectablesSerializerField(serializers.Field):
             init[inj['name']] = inj['serialized_value']
         return {'init': json.dumps(init)}
 
-    #def run_validation(self, datay=empty):
-        #return True
-
 
 class ProjectSerializer(serializers.ModelSerializer):
     created = serializers.DateTimeField(format="%Y-%m-%d", read_only=True)
@@ -134,12 +148,19 @@ class ProjectSerializer(serializers.ModelSerializer):
             instance.save()
         return instance
 
-    #def update(self, obj, validated_data):
-        #super().update(obj, validated_data)
-
-    #def update(self, obj, validated_data):
-        #injectables = validated_data.pop('injectables')
-        #init_values = self._inj_to_init(obj, injectables, update=True)
+    def update(self, obj, validated_data):
+        init = validated_data.pop('init')
+        # it is kind of stupid to do this here, but there is no other
+        # place (e.g. serializer field) where we have all information needed to
+        # validate the uniqueness of injectables throught the projects,
+        # so we have to deserialize the data again and catch the injectable
+        # meta data in an unconvenient way
+        inj_data = json.loads(init)
+        orca_manager = OrcaManager(obj.module)
+        for inj_name, value in inj_data.items():
+            if orca_manager.get_injectable_meta(inj_name).get('unique'):
+                validate_unique_inj(inj_name, obj.id, value)
+        return super().update(obj, validated_data)
 
     #def _inj_to_init(self, obj, inj_data, update=True):
         #module = settings.ORCA_MODULES['available'].get(obj.module_name)
@@ -199,6 +220,7 @@ class InjectableSerializer(serializers.Serializer):
     choices = serializers.SerializerMethodField()
     group = serializers.CharField(source='meta.group')
     order = serializers.CharField(source='meta.order')
+    unique = serializers.CharField(source='meta.unique')
     value = serializers.JSONField(source='serialized_value')
 
     def get_choices(self, obj):
@@ -221,6 +243,12 @@ class InjectableSerializer(serializers.Serializer):
     def get_multi(self, obj):
         return 'list' in obj.datatype.lower()
 
+    def update(self, obj, validated_data):
+        value = validated_data.get('value')
+        if obj.meta.get('unique') and value is not None:
+            validate_unique_inj(obj.name, obj.scenario.project.id, value)
+        super().update(obj, validated_data)
+
 
 class ScenarioInjectableSerializer(InjectableSerializer,
                                    serializers.ModelSerializer):
@@ -229,9 +257,10 @@ class ScenarioInjectableSerializer(InjectableSerializer,
     class Meta:
         model = Injectable
         fields = ('id', 'name', 'group', 'order', 'scenario', 'value', 'multi',
-                  'datatype', 'parents', 'description', 'editable', 'choices')
+                  'datatype', 'parents', 'description', 'editable', 'choices',
+                  'unique')
         read_only_fields = ('scenario', 'parents', 'name', 'editable',
-                            'choices')
+                            'choices', 'unique')
 
     def update(self, instance, validated_data):
         if 'serialized_value' in validated_data:

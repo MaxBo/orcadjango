@@ -17,6 +17,7 @@ export class StepsComponent extends InjectablesComponent {
   protected _scenStepNames: string[] = [];
   stepsLoading$ = new BehaviorSubject<boolean>(false);
   protected logHeight = 130;
+
   @ViewChild('resizeHandle') resizeHandle!: ElementRef;
   @ViewChild('logContainer') logContainer!: ElementRef;
   @ViewChild('scenarioStepList') scenarioStepList!: CdkDropList;
