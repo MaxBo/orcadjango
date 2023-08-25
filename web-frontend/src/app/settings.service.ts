@@ -7,7 +7,7 @@ import { environment } from "../environments/environment";
 import { Router } from "@angular/router";
 
 @Injectable({ providedIn: 'root' })
-export class UserSettingsService {
+export class SettingsService {
   activeProject$ = new BehaviorSubject<Project | undefined>(undefined);
   activeScenario$ = new BehaviorSubject<Scenario | undefined>(undefined);
   user$ = new BehaviorSubject<User | undefined>(undefined);
@@ -16,7 +16,7 @@ export class UserSettingsService {
   users: User[] = [];
   host: string = '';
   modules: Module[] = [];
-  scenarioLogSocket?: WebSocket;
+  private scenarioLogSocket?: WebSocket;
   onScenarioLogMessage = new EventEmitter<ScenarioLogEntry>;
   siteSettings?: SiteSettings;
   onStepStatusChange = new EventEmitter<{
@@ -88,14 +88,14 @@ export class UserSettingsService {
     this.router.navigateByUrl('/projects');
   }
 
-  disconnect(): void {
+  private disconnect(): void {
     if (!this.scenarioLogSocket) return;
     this.scenarioLogSocket.onclose = e => {};
     this.scenarioLogSocket.close();
     this.retries = 0;
   }
 
-  connect(): void {
+  private connect(): void {
     if (this.activeScenario$.value === undefined) return;
     if (this.retries > 10) return;
     this.scenarioLogSocket = new WebSocket(`${this.wsURL}${this.activeScenario$.value.id}/`);

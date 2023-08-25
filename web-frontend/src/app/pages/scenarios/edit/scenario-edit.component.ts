@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup } from "@angular/forms";
 import { Scenario } from "../../../rest-api";
 import { BehaviorSubject } from "rxjs";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { UserSettingsService } from "../../../user-settings.service";
+import { SettingsService } from "../../../settings.service";
 
 export interface ScenarioEditDialogData {
   scenario?: Scenario,
@@ -24,7 +24,7 @@ export class ScenarioEditDialogComponent {
   isLoading$ = new BehaviorSubject<boolean>(false);
   @Output() scenarioConfirmed = new EventEmitter<Scenario>();
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: ScenarioEditDialogData, protected settings: UserSettingsService,
+  constructor(@Inject(MAT_DIALOG_DATA) public data: ScenarioEditDialogData, protected settings: SettingsService,
               private formBuilder: FormBuilder) {
     data.confirmButtonText = data.confirmButtonText || 'Save';
     data.cancelButtonText = data.cancelButtonText || 'Cancel';

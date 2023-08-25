@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
 import { RestService, ScenarioLogEntry } from "../../rest-api";
-import { UserSettingsService } from "../../user-settings.service";
+import { SettingsService } from "../../settings.service";
 import { environment } from "../../../environments/environment";
 import { Subscription } from "rxjs";
 
@@ -14,18 +14,18 @@ export class ScenarioLogComponent implements OnDestroy, AfterViewInit {
   @Input() fetchOldLogs: boolean = true;
   @ViewChild('log') logEl!: ElementRef;
   entries: ScenarioLogEntry[] = [];
-  private subs: Subscription[] = [];
+  private subscriptions: Subscription[] = [];
 
-  constructor(private rest: RestService, private settings: UserSettingsService, private cdref: ChangeDetectorRef) {
+  constructor(private rest: RestService, private settings: SettingsService, private cdref: ChangeDetectorRef) {
   }
 
   ngAfterViewInit(): void {
-    this.subs.push(this.settings.onScenarioLogMessage.subscribe(
+    this.subscriptions.push(this.settings.onScenarioLogMessage.subscribe(
       entry => {
         this.addLogEntry(entry);
         this.scrollToBottom();
       }));
-    this.subs.push(this.settings.activeScenario$.subscribe( scenario => {
+    this.subscriptions.push(this.settings.activeScenario$.subscribe( scenario => {
       this.entries = [];
       if (this.fetchOldLogs)
         this.fetchLogs();
@@ -79,6 +79,6 @@ export class ScenarioLogComponent implements OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy() {
-    this.subs.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }

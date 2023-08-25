@@ -2,7 +2,7 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ScenarioInjectable, ScenarioStep, Step } from "../../rest-api";
 import { CdkDragDrop, CdkDropList, moveItemInArray } from "@angular/cdk/drag-drop";
 import { InjectablesComponent, sortBy } from "../injectables/injectables.component";
-import { BehaviorSubject, forkJoin, Observable } from "rxjs";
+import { BehaviorSubject, forkJoin, Observable, Subscription } from "rxjs";
 
 @Component({
   selector: 'app-steps',
@@ -24,7 +24,7 @@ export class StepsComponent extends InjectablesComponent {
 
   // constructor(private rest: RestService, private settings: UserSettingsService)
   override ngOnInit() {
-    this.settings.activeScenario$.subscribe(scenario => {
+    this.subscriptions.push(this.settings.activeScenario$.subscribe(scenario => {
       this.availableSteps = {};
       this.scenarioSteps = [];
       if (!scenario) return;
@@ -58,7 +58,7 @@ export class StepsComponent extends InjectablesComponent {
           })
         });
       });
-    })
+    }));
   }
 
   drop(event: CdkDragDrop<any[]>) {

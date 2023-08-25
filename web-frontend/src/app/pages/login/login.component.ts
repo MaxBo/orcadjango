@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from "../../auth.service";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
-import { UserSettingsService } from "../../user-settings.service";
+import { SettingsService } from "../../settings.service";
 
 @Component({
   selector: 'app-login',
@@ -13,7 +13,7 @@ import { UserSettingsService } from "../../user-settings.service";
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   next: string = '';
-  constructor(private formBuilder: FormBuilder, protected auth: AuthService, protected settings: UserSettingsService,
+  constructor(private formBuilder: FormBuilder, protected auth: AuthService, protected settings: SettingsService,
               private router: Router,  private route: ActivatedRoute) {
     this.loginForm = this.formBuilder.group({
       username: '',

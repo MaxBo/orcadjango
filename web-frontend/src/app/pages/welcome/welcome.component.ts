@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { UserSettingsService } from "../../user-settings.service";
+import { SettingsService } from "../../settings.service";
 
 @Component({
   selector: 'app-welcome',
@@ -7,6 +7,6 @@ import { UserSettingsService } from "../../user-settings.service";
   styleUrls: ['./welcome.component.scss']
 })
 export class WelcomeComponent {
-  constructor(protected settings: UserSettingsService) {
+  constructor(protected settings: SettingsService) {
   }
 }

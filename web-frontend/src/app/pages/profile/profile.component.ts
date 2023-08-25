@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
-import { UserSettingsService } from "../../user-settings.service";
+import { SettingsService } from "../../settings.service";
 import { RestService, User } from "../../rest-api";
+import { PageComponent } from "../../app.component";
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss']
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent extends PageComponent implements OnInit {
   accountForm!: FormGroup;
   passwordForm!: FormGroup;
   imageSrc?: string;
@@ -18,13 +19,15 @@ export class ProfileComponent implements OnInit {
   showAccountPassword: boolean = false;
   showConfirmPassword: boolean = false;
 
-  constructor(private formBuilder: FormBuilder, private settings: UserSettingsService, private rest: RestService) {
+  constructor(private formBuilder: FormBuilder, private settings: SettingsService, private rest: RestService) {
+    super();
   }
+
   ngOnInit() {
-    this.settings.user$.subscribe(user => {
+    this.subscriptions.push(this.settings.user$.subscribe(user => {
       this.imageSrc = user?.profile.icon;
       this.fillForms(user)
-    });
+    }));
   }
 
   fillForms(user: User | undefined) {

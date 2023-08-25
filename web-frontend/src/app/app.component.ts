@@ -1,14 +1,15 @@
-import { Component, Injectable } from '@angular/core';
-import { UserSettingsService } from "./user-settings.service";
+import { Component, Injectable, OnDestroy } from '@angular/core';
+import { SettingsService } from "./settings.service";
 import { AuthService } from "./auth.service";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Subscription } from "rxjs";
 import { Router } from "@angular/router";
 
 @Injectable()
-export abstract class PageComponent {
+export abstract class PageComponent implements OnDestroy {
   isLoading$ = new BehaviorSubject<boolean>(false);
   private _isLoading = false;
   private loadCount = 0;
+  protected subscriptions: Subscription[] = [];
 
   setLoading(isLoading: boolean) {
     this.loadCount += isLoading? 1: -1;
@@ -17,6 +18,10 @@ export abstract class PageComponent {
       this._isLoading = iL;
       this.isLoading$.next(this._isLoading);
     }
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }
 
@@ -28,7 +33,7 @@ export abstract class PageComponent {
 export class AppComponent {
   title = 'web-frontend';
 
-  constructor(protected settings: UserSettingsService, protected auth: AuthService, protected router: Router) {
+  constructor(protected settings: SettingsService, protected auth: AuthService, protected router: Router) {
     this.auth.getCurrentUser().subscribe();
   }
 }

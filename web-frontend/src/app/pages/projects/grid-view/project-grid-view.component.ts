@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Project, User } from "../../../rest-api";
-import { UserSettingsService } from "../../../user-settings.service";
+import { SettingsService } from "../../../settings.service";
 
 @Component({
   selector: 'app-project-grid-view',
@@ -15,6 +15,6 @@ export class ProjectGridViewComponent {
   @Output() onCreateProject = new EventEmitter<boolean>();
   @Input() projects: Project[] = [];
 
-  constructor(protected settings: UserSettingsService) {}
+  constructor(protected settings: SettingsService) {}
 
 }

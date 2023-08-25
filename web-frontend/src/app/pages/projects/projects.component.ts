@@ -2,7 +2,7 @@ import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { formatProject, Inj, Project, RestService, User } from "../../rest-api";
 import { ProjectEditDialogComponent, ProjectEditDialogData } from "./edit/project-edit.component";
 import { MatDialog } from "@angular/material/dialog";
-import { UserSettingsService } from "../../user-settings.service";
+import { SettingsService } from "../../settings.service";
 import { ConfirmDialogComponent } from "../../elements/confirm-dialog/confirm-dialog.component";
 import { CookieService } from "ngx-cookie-service";
 import { PageComponent } from "../../app.component";
@@ -32,7 +32,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
   protected filterDateOperator: '<' | '>' | '=' = '>';
   @ViewChild('deleteProjectTemplate') deleteProjectTemplate?: TemplateRef<any>;
 
-  constructor(private rest: RestService, private dialog: MatDialog, protected settings: UserSettingsService,
+  constructor(private rest: RestService, private dialog: MatDialog, protected settings: SettingsService,
               private cookies: CookieService) {
     super();
   }
@@ -40,7 +40,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
   ngOnInit() {
     const viewType = this.cookies.get('project-view-type');
     if (viewType === 'list-view') this.viewType = 'list-view';
-    this.settings.module$.subscribe(module => {
+    this.subscriptions.push(this.settings.module$.subscribe(module => {
       if (!module) {
         this.projects = [];
         this.filteredProjects = [];
@@ -52,7 +52,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
         this.setLoading(false);
         this.filter();
       });
-    })
+    }));
   }
 
   onCreateProject(): void {
