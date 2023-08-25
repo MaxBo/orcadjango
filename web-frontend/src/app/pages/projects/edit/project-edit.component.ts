@@ -49,13 +49,17 @@ export class ProjectEditDialogComponent {
   }
 
   onConfirmClick() {
+    this.errors = {};
     this.projectForm.markAllAsTouched();
     if (this.projectForm.invalid) return;
     const injectables: Inj[] = this.project? this.project.injectables.map((inj, idx) => {
       const clone = Object.assign({}, inj);
       clone.value = this.injValues[idx];
+      if (!clone.value)
+        this.errors[clone.name] = 'value required';
       return clone;
     }): [];
+    if (Object.keys(this.errors).length) return;
     const project = {
       id: this.project?.id,
       name: this.projectForm.value.name,
