@@ -59,6 +59,7 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatNativeDateModule } from '@angular/material/core';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
+import { MaterialCssVarsModule } from 'angular-material-css-vars';
 
 const DATE_FORMAT = {
   parse: {
@@ -128,7 +129,10 @@ const DATE_FORMAT = {
         MatButtonToggleModule,
         ColorPickerModule,
         MatDatepickerModule,
-        MatNativeDateModule
+        MatNativeDateModule,
+        MaterialCssVarsModule.forRoot({
+          isAutoContrast: true
+        }),
     ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },

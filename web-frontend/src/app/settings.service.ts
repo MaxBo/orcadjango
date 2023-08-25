@@ -5,6 +5,7 @@ import { BehaviorSubject } from "rxjs";
 import { AuthService } from "./auth.service";
 import { environment } from "../environments/environment";
 import { Router } from "@angular/router";
+import { MaterialCssVarsService } from "angular-material-css-vars";
 
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
@@ -24,12 +25,16 @@ export class SettingsService {
   private readonly wsURL: string;
   private retries = 0;
 
-  constructor(private cookies: CookieService, private rest: RestService, private auth: AuthService, private router: Router) {
+  constructor(private cookies: CookieService, private rest: RestService, private auth: AuthService,
+              private router: Router, private materialCssVarsService: MaterialCssVarsService) {
     this.activeScenario$.subscribe(scenario => {
       this.disconnect();
       this.connect();
     });
-    this.rest.getSiteSettings().subscribe(settings => this.siteSettings = settings);
+    this.rest.getSiteSettings().subscribe(settings => {
+      this.siteSettings = settings;
+      this.setColor({ primary: settings.primary_color, secondary: settings.secondary_color })
+    });
     this.host = environment.backend? environment.backend: window.location.origin;
     const strippedHost = environment.backend? environment.backend.replace('http://', ''): window.location.hostname;
     this.wsURL = `${(environment.production && strippedHost.indexOf('localhost') === -1)? 'wss:': 'ws:'}//${strippedHost}/ws/scenariolog/`;
@@ -67,6 +72,12 @@ export class SettingsService {
       }
       this.rest.getInjectables(module.name).subscribe(injectables => this.moduleInjectables = injectables);
     })
+  }
+
+  setColor(colors: {primary?: string, secondary?: string, warn?: string}) {
+    if (colors.primary) this.materialCssVarsService.setPrimaryColor(colors.primary);
+    if (colors.secondary) this.materialCssVarsService.setAccentColor(colors.secondary);
+    if (colors.warn) this.materialCssVarsService.setWarnColor(colors.warn);
   }
 
   setActiveProject(project: Project | undefined){
