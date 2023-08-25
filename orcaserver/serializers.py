@@ -72,22 +72,6 @@ class UserSerializer(serializers.ModelSerializer):
             instance.save()
         return instance
 
-def validate_unique_inj(inj_name: str, project_id: int, value):
-    '''validate if given value of injectable is not existing in other projects
-    than the passed one
-    raises ValidationError if it does and therefore is not unique'''
-    same_val_inj = Injectable.objects.filter(
-        name=inj_name, value=value).exclude(scenario__project=project_id)
-    if same_val_inj.count():
-        # has to be unique so it only can be exactly one other project
-        # but list all projects anyway to be safe
-        project_names = ', '.join(
-            f'"{pn}"' for pn in same_val_inj.values_list(
-                'scenario__project__name', flat=True).distinct())
-        raise ValidationError(f'Value has to be unique. "{value}" '
-                              'is already used in project '
-                              f'{project_names}.')
-
 
 class ProjectInjectablesSerializerField(serializers.Field):
 
@@ -127,6 +111,24 @@ class ProjectInjectablesSerializerField(serializers.Field):
             init[inj['name']] = inj['serialized_value']
         return {'init': json.dumps(init)}
 
+def validate_unique_inj(inj_name: str, value, project_id: int = None):
+    '''validate if given value of injectable is not existing in other projects
+    than the passed one
+    raises ValidationError if it does and therefore is not unique'''
+    same_val_inj = Injectable.objects.filter(
+        name=inj_name, value=value)
+    if project_id is not None:
+        same_val_inj = same_val_inj.exclude(scenario__project=project_id)
+    if same_val_inj.count():
+        # has to be unique so it only can be exactly one other project
+        # but list all projects anyway to be safe
+        project_names = ', '.join(
+            f'"{pn}"' for pn in same_val_inj.values_list(
+                'scenario__project__name', flat=True).distinct())
+        raise ValidationError(f'Value has to be unique. "{value}" '
+                              'is already used in project '
+                              f'{project_names}.')
+
 
 class ProjectSerializer(serializers.ModelSerializer):
     created = serializers.DateTimeField(format="%Y-%m-%d", read_only=True)
@@ -141,33 +143,31 @@ class ProjectSerializer(serializers.ModelSerializer):
         optional_fields = ('module', 'code', 'user', 'archived')
 
     def create(self, validated_data):
-        instance = super().create(validated_data)
-        if not instance.module:
-            default_mod_path = settings.ORCA_MODULES['available']['path']
-            instance.module = default_mod_path
-            instance.save()
-        return instance
+        module = validated_data.get('module')
+        if not module:
+            default = settings.ORCA_MODULES.get('default')
+            default_mod_path = settings.ORCA_MODULES['available'].get(default).get('path')
+            module = validated_data['module'] = default_mod_path
+        self.__validate_inj(module, validated_data)
+        return super().create(validated_data)
 
     def update(self, obj, validated_data):
-        init = validated_data.pop('init')
+        self.__validate_inj(obj.module, validated_data, project=obj)
+        return super().update(obj, validated_data)
+
+    def __validate_inj(self, module, validated_data, project=None):
+        init = validated_data.get('init')
         # it is kind of stupid to do this here, but there is no other
         # place (e.g. serializer field) where we have all information needed to
         # validate the uniqueness of injectables throught the projects,
         # so we have to deserialize the data again and catch the injectable
         # meta data in an unconvenient way
         inj_data = json.loads(init)
-        orca_manager = OrcaManager(obj.module)
+        orca_manager = OrcaManager(module)
         for inj_name, value in inj_data.items():
             if orca_manager.get_injectable_meta(inj_name).get('unique'):
-                validate_unique_inj(inj_name, obj.id, value)
-        return super().update(obj, validated_data)
-
-    #def _inj_to_init(self, obj, inj_data, update=True):
-        #module = settings.ORCA_MODULES['available'].get(obj.module_name)
-        #init_proj_values = json.loads(obj.init)
-        #for i, name in enumerate(init_names):
-            #val = obj.init
-            #inj = inj_data
+                validate_unique_inj(inj_name, value,
+                                    project_id=project.id if project else None)
 
 
 class ScenarioSerializer(serializers.ModelSerializer):
@@ -246,8 +246,8 @@ class InjectableSerializer(serializers.Serializer):
     def update(self, obj, validated_data):
         value = validated_data.get('value')
         if obj.meta.get('unique') and value is not None:
-            validate_unique_inj(obj.name, obj.scenario.project.id, value)
-        super().update(obj, validated_data)
+            validate_unique_inj(obj.name, value, project_id=obj.scenario.project.id)
+        return super().update(obj, validated_data)
 
 
 class ScenarioInjectableSerializer(InjectableSerializer,
