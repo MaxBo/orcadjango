@@ -129,6 +129,7 @@
 <!--              Scenario <br>-->
               {{settings.activeScenario$.value?.name}}
             </mat-card-title>
+            <app-scenario-status-preview [scenario]="settings.activeScenario$.value" style="margin-left: auto;"></app-scenario-status-preview>
           </mat-card-header>
           <mat-card-content>
 <!--            <i>{{settings.activeScenario$.value?.description}}</i>-->

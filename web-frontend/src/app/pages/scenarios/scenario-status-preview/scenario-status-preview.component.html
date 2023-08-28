@@ -1,0 +1,28 @@
+<div class="scenario-status-icon">
+  <ng-container *ngIf="scenario.is_running && settings.siteSettings?.scenario_running_icon">
+    <img [src]="settings.siteSettings?.scenario_running_icon">
+  </ng-container>
+  <ng-container *ngIf="!scenario.is_running && scenario.last_run?.finished">
+    <ng-container *ngIf="scenario.last_run?.success else failed">
+      <img *ngIf="settings.siteSettings?.scenario_success_icon else matSuccessIcon"
+           [src]="settings.siteSettings?.scenario_success_icon">
+      <ng-template #matSuccessIcon>
+        <mat-icon title="success"
+                  style="color: green" >
+          done
+        </mat-icon>
+      </ng-template>
+    </ng-container>
+    <ng-template #failed>
+      <img *ngIf="settings.siteSettings?.scenario_failed_icon else matFailedIcon"
+           [src]="settings.siteSettings?.scenario_failed_icon">
+      <ng-template #matFailedIcon>
+        <mat-icon *ngIf="scenario.last_run?.finished && !scenario.last_run?.success"
+                  title="failed"
+                  style="color: red" class="material-symbols-outlined">
+          cancel
+        </mat-icon>
+      </ng-template>
+    </ng-template>
+  </ng-container>
+</div>
