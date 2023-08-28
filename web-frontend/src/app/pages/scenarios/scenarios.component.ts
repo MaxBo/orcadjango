@@ -6,6 +6,8 @@ import { ScenarioEditDialogComponent, ScenarioEditDialogData } from "./edit/scen
 import { ConfirmDialogComponent } from "../../elements/confirm-dialog/confirm-dialog.component";
 import { CookieService } from "ngx-cookie-service";
 import { PageComponent } from "../../app.component";
+import { Subscription, timer } from "rxjs";
+import { switchMap } from "rxjs/operators";
 
 @Component({
   selector: 'app-scenarios',
@@ -15,6 +17,7 @@ import { PageComponent } from "../../app.component";
 export class ScenariosComponent extends PageComponent implements OnInit {
   scenarios: Scenario[] = [];
   viewType: 'list-view' | 'grid-view' = 'grid-view';
+  scenUpdateSub?: Subscription;
   @ViewChild('deleteScenarioTemplate') deleteScenarioTemplate?: TemplateRef<any>;
 
   constructor(private rest: RestService, private dialog: MatDialog, protected settings: SettingsService,
@@ -26,18 +29,31 @@ export class ScenariosComponent extends PageComponent implements OnInit {
     const viewType = this.cookies.get('scenario-view-type');
     if (viewType === 'list-view') this.viewType = 'list-view';
     this.subscriptions.push(this.settings.activeProject$.subscribe(project => {
-      this.setLoading(true);
+      // this.setLoading(true);
+      this.scenUpdateSub?.unsubscribe();
       if (!project) {
         this.scenarios = [];
-        this.setLoading(false);
+        // this.setLoading(false);
       }
       else {
-        this.rest.getScenarios({ project: project }).subscribe(scenarios => {
-          this.scenarios = scenarios;
-          this.setLoading(false);
-        });
+        this.scenUpdateSub = timer(0, 5000).pipe(switchMap(() =>
+          this.rest.getScenarios({ project: project }))
+        ).subscribe(scenarios => this.scenarios = scenarios);
       }
     }));
+  }
+
+  updateScenarios(): void {
+    console.log('reload')
+    if (!this.settings.activeProject$.value) {
+      this.scenarios = [];
+      this.setLoading(false);
+      return;
+    }
+    this.rest.getScenarios({ project: this.settings.activeProject$.value }).subscribe(scenarios => {
+      this.scenarios = scenarios;
+      this.setLoading(false);
+    });
   }
 
   onCreateScenario(): void {
