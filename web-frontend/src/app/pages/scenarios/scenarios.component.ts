@@ -29,11 +29,9 @@ export class ScenariosComponent extends PageComponent implements OnInit {
     const viewType = this.cookies.get('scenario-view-type');
     if (viewType === 'list-view') this.viewType = 'list-view';
     this.subscriptions.push(this.settings.activeProject$.subscribe(project => {
-      // this.setLoading(true);
       this.scenUpdateSub?.unsubscribe();
       if (!project) {
         this.scenarios = [];
-        // this.setLoading(false);
       }
       else {
         this.scenUpdateSub = timer(0, 5000).pipe(switchMap(() =>
@@ -41,19 +39,6 @@ export class ScenariosComponent extends PageComponent implements OnInit {
         ).subscribe(scenarios => this.scenarios = scenarios);
       }
     }));
-  }
-
-  updateScenarios(): void {
-    console.log('reload')
-    if (!this.settings.activeProject$.value) {
-      this.scenarios = [];
-      this.setLoading(false);
-      return;
-    }
-    this.rest.getScenarios({ project: this.settings.activeProject$.value }).subscribe(scenarios => {
-      this.scenarios = scenarios;
-      this.setLoading(false);
-    });
   }
 
   onCreateScenario(): void {

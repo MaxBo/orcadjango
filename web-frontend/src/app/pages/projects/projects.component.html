@@ -1,10 +1,9 @@
 <div class="load-overlay" *ngIf="isLoading$ | async">
   <mat-spinner [diameter]="50"></mat-spinner>
 </div>
-<div class="background" *ngIf="settings.siteSettings?.projects_background_img" style="background-image: url('{{settings.siteSettings?.projects_background_img}}');"></div>
 <div style="width: calc(100% - 132px); padding: 0 16px;">
   <div style="display: flex;">
-    <h2 style="margin-right: 15px;">Projects</h2>
+    <h1 style="margin: 16px 15px 16px 0;">Projects</h1>
     <mat-button-toggle-group style="height: 40px; align-items: center; align-self: center;"
                              [value]="viewType"
                              (change)="changeView($event.value)">
@@ -122,6 +121,8 @@
   Next
   <mat-icon iconPositionEnd>arrow_right</mat-icon>
 </button>
+<div class="background" *ngIf="settings.siteSettings?.projects_background_img"
+     style="background-image: url('{{settings.siteSettings?.projects_background_img}}');"></div>
 
 <ng-template #deleteProjectTemplate>
   <p>Do you really want to delete the project?</p>

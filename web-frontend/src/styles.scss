@@ -3,15 +3,14 @@
 
 $custom-typography: mat.define-typography-config(
   $font-family: 'Calibri, Helvetica, sans-serif, Candara, Segoe',
+  $headline-5: mat.define-typography-level(36px, 36px, 700),
+  $headline-6: mat.define-typography-level(26px, 26px, 400),
   $body-1: mat.define-typography-level(16px, 24px, 400),//, $letter-spacing: 0.14px),
   $body-2: mat.define-typography-level(16px, 20px, 400, $letter-spacing: 0.2px),
   $button: mat.define-typography-level(16px, 16px, 500, $letter-spacing: 1.42px),
 );
 
-@include mat-css-vars.init-material-css-vars($typography-config: $custom-typography) using($mat-css-theme) {
-
-};
-
+@include mat-css-vars.init-material-css-vars($typography-config: $custom-typography) using($mat-css-theme) {};
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
@@ -113,17 +112,23 @@ button.micro {
   width: 30px;
 }
 
-.mat-mdc-card-header-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  mat-card-title {
-    display: contents;
+mat-card {
+
+  .mat-mdc-card-header-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    mat-card-title {
+      display: contents;
+    }
   }
 }
 
 .background {
   position: fixed;
+  //position: absolute;
+  //background-attachment: fixed;
   top: 0;
   width: 100%;
   height: 100%;
