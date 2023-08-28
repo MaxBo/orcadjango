@@ -31,6 +31,7 @@ export class ScenariosComponent extends PageComponent implements OnInit {
     this.subscriptions.push(this.settings.activeProject$.subscribe(project => {
       this.scenUpdateSub?.unsubscribe();
       if (!project) {
+        this.scenUpdateSub = undefined;
         this.scenarios = [];
       }
       else {
@@ -130,5 +131,10 @@ export class ScenariosComponent extends PageComponent implements OnInit {
   changeView(viewType: 'list-view' | 'grid-view'): void {
     this.viewType = viewType;
     this.cookies.set('scenario-view-type', viewType);
+  }
+
+  override ngOnDestroy(): void {
+    this.scenUpdateSub?.unsubscribe();
+    super.ngOnDestroy();
   }
 }
