@@ -27,7 +27,13 @@
                 {{step.title || step.name}}
               </mat-panel-title>
             </mat-expansion-panel-header>
-            <i [innerHTML]="step.description"></i>
+            <p><i [innerHTML]="step.description"></i></p>
+            <ng-container *ngIf="step.required && (step.required.length > 1 || step.required[0] != 'None')">
+              <u>required steps:</u>
+              <ul>
+                <li *ngFor="let req of step.required">{{req}}</li>
+              </ul>
+            </ng-container>
           </mat-expansion-panel>
         </mat-accordion>
       </mat-expansion-panel>
@@ -49,16 +55,20 @@
               {{step.title || step.name}}
             </mat-panel-title>
             <mat-panel-description>
-              <mat-icon *ngIf="step.finished && step.success"
-                        title="success"
-                        style="color: green" >
-                done
-              </mat-icon>
-              <mat-icon *ngIf="step.finished && !step.success"
-                        title="failed"
-                        style="color: red" class="material-symbols-outlined">
-                cancel
-              </mat-icon>
+              <div *ngIf="step.finished"
+                   [style.color]="step.success? 'green': 'red'"
+                   style="display: flex; align-items: center;">
+                {{step.finished}}&nbsp;
+                <mat-icon *ngIf="step.success"
+                          title="success">
+                  done
+                </mat-icon>
+                <mat-icon *ngIf="!step.success"
+                          class="material-symbols-outlined"
+                          title="failed">
+                  cancel
+                </mat-icon>
+              </div>
               <div style="margin-left: auto; display: flex; align-items: center;">
                 <mat-slide-toggle [checked]="step.active"
                                   color="primary"
@@ -66,13 +76,13 @@
                                   [disabled]="settings.activeScenario$.value?.is_running"
                                   (change)="toggleActive($event.checked, step)" >
                 </mat-slide-toggle>
-                <button mat-button (click)="removeStep(step); $event.stopPropagation();" title="Remove step">
+                <button mat-icon-button (click)="removeStep(step); $event.stopPropagation();" title="Remove step">
                   <mat-icon style="color: red;" class="material-icons-outlined">delete_forever</mat-icon>
                 </button>
               </div>
             </mat-panel-description>
           </mat-expansion-panel-header>
-          <i [innerHTML]="step.description"></i>
+          <p><i [innerHTML]="step.description"></i></p>
           <p *ngIf="step.started">
             Started: {{step.started}}
           </p>
@@ -81,8 +91,9 @@
             Finished: {{step.finished}}
             <ng-container *ngIf="!step.success">&nbsp;(failed)</ng-container>
           </p>
+          <br>
           <ng-container *ngIf="getInjectables(step).length > 0">
-            <h4>Injectables</h4>
+            <h3>Injectables</h3>
             <table class="striped" style="width: 100%;" (mousedown)="$event.preventDefault(); $event.stopPropagation();">
               <tr *ngFor="let injectable of getInjectables(step)">
                 <td style="padding-right: 15px;">

@@ -5,6 +5,7 @@ $custom-typography: mat.define-typography-config(
   $font-family: 'Calibri, Helvetica, sans-serif, Candara, Segoe',
   $headline-5: mat.define-typography-level(36px, 36px, 700),
   $headline-6: mat.define-typography-level(26px, 26px, 400),
+  $subtitle-1: mat.define-typography-level(22px, 26px, 500),
   $body-1: mat.define-typography-level(16px, 24px, 400),//, $letter-spacing: 0.14px),
   $body-2: mat.define-typography-level(16px, 20px, 400, $letter-spacing: 0.2px),
   $button: mat.define-typography-level(16px, 16px, 500, $letter-spacing: 1.42px),
