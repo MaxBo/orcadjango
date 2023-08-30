@@ -13,6 +13,12 @@
           <mat-button-toggle value="freehand" title="Draw Features freehand">
             <mat-icon class="material-symbols-outlined">draw</mat-icon>
           </mat-button-toggle>
+          <mat-button-toggle value="square" title="Draw a square">
+            <mat-icon class="material-symbols-outlined">square</mat-icon>
+          </mat-button-toggle>
+<!--          <mat-button-toggle value="circle" title="Draw a circle">
+            <mat-icon class="material-symbols-outlined">circle</mat-icon>
+          </mat-button-toggle>-->
           <mat-button-toggle value="none" title="Edit Off">
             <mat-icon>block</mat-icon>
           </mat-button-toggle>
@@ -39,8 +45,9 @@
       <mat-form-field style="float: right;">
         <mat-label>EPSG Code</mat-label>
         <mat-select (selectionChange)="changeSrid($event.value)" [value]="wktSrid">
-          <mat-option [value]="4326">4326</mat-option>
+          <mat-option [value]="3044">3044</mat-option>
           <mat-option [value]="3857">3857</mat-option>
+          <mat-option [value]="4326">4326</mat-option>
           <mat-option [value]="25832">25832</mat-option>
         </mat-select>
       </mat-form-field>

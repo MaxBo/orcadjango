@@ -1,13 +1,14 @@
 import { EventEmitter, Injectable } from "@angular/core";
 import { CookieService } from "ngx-cookie-service";
-import { Inj, Module, Project, RestService, Scenario, ScenarioLogEntry, User } from "./rest-api";
+import { Inj, Module, Project, RestService, Scenario, ScenarioLogEntry, SiteSettings, User } from "./rest-api";
 import { BehaviorSubject } from "rxjs";
 import { AuthService } from "./auth.service";
 import { environment } from "../environments/environment";
 import { Router } from "@angular/router";
+import { MaterialCssVarsService } from "angular-material-css-vars";
 
 @Injectable({ providedIn: 'root' })
-export class UserSettingsService {
+export class SettingsService {
   activeProject$ = new BehaviorSubject<Project | undefined>(undefined);
   activeScenario$ = new BehaviorSubject<Scenario | undefined>(undefined);
   user$ = new BehaviorSubject<User | undefined>(undefined);
@@ -16,17 +17,23 @@ export class UserSettingsService {
   users: User[] = [];
   host: string = '';
   modules: Module[] = [];
-  scenarioLogSocket?: WebSocket;
+  private scenarioLogSocket?: WebSocket;
   onScenarioLogMessage = new EventEmitter<ScenarioLogEntry>;
+  siteSettings?: SiteSettings;
   onStepStatusChange = new EventEmitter<{
     step: string, success: boolean, finished: boolean, started: boolean, timestamp: string}>;
   private readonly wsURL: string;
   private retries = 0;
 
-  constructor(private cookies: CookieService, private rest: RestService, private auth: AuthService, private router: Router) {
+  constructor(private cookies: CookieService, private rest: RestService, private auth: AuthService,
+              private router: Router, private materialCssVarsService: MaterialCssVarsService) {
     this.activeScenario$.subscribe(scenario => {
       this.disconnect();
       this.connect();
+    });
+    this.rest.getSiteSettings().subscribe(settings => {
+      this.siteSettings = settings;
+      this.setColor({ primary: settings.primary_color, secondary: settings.secondary_color })
     });
     this.host = environment.backend? environment.backend: window.location.origin;
     const strippedHost = environment.backend? environment.backend.replace('http://', ''): window.location.hostname;
@@ -67,6 +74,12 @@ export class UserSettingsService {
     })
   }
 
+  setColor(colors: {primary?: string, secondary?: string, warn?: string}) {
+    if (colors.primary) this.materialCssVarsService.setPrimaryColor(colors.primary);
+    if (colors.secondary) this.materialCssVarsService.setAccentColor(colors.secondary);
+    if (colors.warn) this.materialCssVarsService.setWarnColor(colors.warn);
+  }
+
   setActiveProject(project: Project | undefined){
     this.cookies.set('project', String(project?.id || ''));
     this.activeProject$.next(project);
@@ -86,14 +99,14 @@ export class UserSettingsService {
     this.router.navigateByUrl('/projects');
   }
 
-  disconnect(): void {
+  private disconnect(): void {
     if (!this.scenarioLogSocket) return;
     this.scenarioLogSocket.onclose = e => {};
     this.scenarioLogSocket.close();
     this.retries = 0;
   }
 
-  connect(): void {
+  private connect(): void {
     if (this.activeScenario$.value === undefined) return;
     if (this.retries > 10) return;
     this.scenarioLogSocket = new WebSocket(`${this.wsURL}${this.activeScenario$.value.id}/`);

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Scenario } from "../../../rest-api";
-import { UserSettingsService } from "../../../user-settings.service";
+import { SettingsService } from "../../../settings.service";
 
 @Component({
   selector: 'app-scenario-grid-view',
@@ -14,6 +14,6 @@ export class ScenarioGridViewComponent {
   @Output() onDeleteScenario = new EventEmitter<Scenario>();
   @Output() onCreateScenario = new EventEmitter<boolean>();
 
-  constructor(protected settings: UserSettingsService) {}
+  constructor(protected settings: SettingsService) {}
 
 }

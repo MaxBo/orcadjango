@@ -1,6 +1,3 @@
-<div class="load-overlay" *ngIf="isLoading$ | async">
-  <mat-spinner [diameter]="50"></mat-spinner>
-</div>
 <h4 mat-dialog-title>Injectable "{{injectable.name}}" </h4>
 <button color="primary"
         mat-icon-button
@@ -10,7 +7,15 @@
   <mat-icon>close</mat-icon>
 </button>
 <mat-dialog-content>
-  <p [innerHTML]="injectable.description"></p>
+  <div class="load-overlay" *ngIf="isLoading$ | async">
+    <mat-spinner [diameter]="50"></mat-spinner>
+  </div>
+  <div *ngIf="errors" style="max-width: 400px;">
+    <mat-error *ngFor="let error of errors | keyvalue" class="alert">
+      <ng-container *ngIf="error.key" >{{ error.key }}:</ng-container> {{ error.value }}
+    </mat-error>
+  </div>
+  <p id="description" [innerHTML]="injectable.description"></p>
   <injectable [injectable]="injectable"
               [edit]="true"
               (valueChanged)="this.value = $event"></injectable>

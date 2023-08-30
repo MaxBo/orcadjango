@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ScenarioInjectable, RestService } from "../../rest-api";
-import { UserSettingsService } from "../../user-settings.service";
+import { SettingsService } from "../../settings.service";
 import { MatDialog } from "@angular/material/dialog";
 import { InjectableEditDialogComponent } from "./edit/injectable-edit.component";
 import { DerivedInjectableDialogComponent } from "./derived/derived-injectable.component";
@@ -25,12 +25,12 @@ export class InjectablesComponent extends PageComponent implements OnInit {
   groupedInjectables?: Record<string, ScenarioInjectable[]>;
   protected injectables: ScenarioInjectable[] = [];
 
-  constructor(protected rest: RestService, protected settings: UserSettingsService, protected dialog: MatDialog){
+  constructor(protected rest: RestService, protected settings: SettingsService, protected dialog: MatDialog){
     super();
   }
 
   ngOnInit() {
-    this.settings.activeScenario$.subscribe(scenario => {
+    this.subscriptions.push(this.settings.activeScenario$.subscribe(scenario => {
       if (!scenario) return;
       this.setLoading(true);
       this.rest.getScenarioInjectables(scenario).subscribe(injectables => {
@@ -38,7 +38,7 @@ export class InjectablesComponent extends PageComponent implements OnInit {
         // this.groups = [...new Set(injectables.map(injectable => injectable.group))].sort();
         this.groupedInjectables = {};
         injectables.forEach(inj => {
-          const group = inj.group || 'general'
+          const group = inj.group || 'general';
           if (!this.groupedInjectables![group])
             this.groupedInjectables![group] = [];
           this.groupedInjectables![group].push(inj);
@@ -50,7 +50,7 @@ export class InjectablesComponent extends PageComponent implements OnInit {
         );
         this.setLoading(false);
       })
-    })
+    }));
   }
 
   editInjectable(injectable: ScenarioInjectable): void {

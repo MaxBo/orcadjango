@@ -145,7 +145,8 @@ class OrcaManager(ModuleSingleton):
         # defaults (required by serializer)
         desc = {
             'order': 10000000,
-            'group': ''
+            'group': '',
+            'unique': False,
         }
         _meta = orca_meta.get(injectable, {})
         if (injectable not in orca_injectables or injectable.startswith('iter_')

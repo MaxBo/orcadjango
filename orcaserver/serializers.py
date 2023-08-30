@@ -4,9 +4,11 @@ from collections import OrderedDict
 import re
 import json
 from django.conf import settings
+from rest_framework.serializers import ValidationError
 
 from orcaserver.management import OrcaManager
-from .models import Project, Profile, Scenario, Injectable, Step, Run, LogEntry
+from .models import (Project, Profile, Scenario, Injectable, Step, Run,
+                     LogEntry, SiteSetting)
 from .injectables import OrcaTypeMap
 
 DATETIME_FORMAT = "%d.%m.%Y %H:%M:%S"
@@ -109,8 +111,23 @@ class ProjectInjectablesSerializerField(serializers.Field):
             init[inj['name']] = inj['serialized_value']
         return {'init': json.dumps(init)}
 
-    #def run_validation(self, datay=empty):
-        #return True
+def validate_unique_inj(inj_name: str, value, project_id: int = None):
+    '''validate if given value of injectable is not existing in other projects
+    than the passed one
+    raises ValidationError if it does and therefore is not unique'''
+    same_val_inj = Injectable.objects.filter(
+        name=inj_name, value=value)
+    if project_id is not None:
+        same_val_inj = same_val_inj.exclude(scenario__project=project_id)
+    if same_val_inj.count():
+        # has to be unique so it only can be exactly one other project
+        # but list all projects anyway to be safe
+        project_names = ', '.join(
+            f'"{pn}"' for pn in same_val_inj.values_list(
+                'scenario__project__name', flat=True).distinct())
+        raise ValidationError(f'Value has to be unique. "{value}" '
+                              'is already used in project '
+                              f'{project_names}.')
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -126,26 +143,31 @@ class ProjectSerializer(serializers.ModelSerializer):
         optional_fields = ('module', 'code', 'user', 'archived')
 
     def create(self, validated_data):
-        instance = super().create(validated_data)
-        if not instance.module:
-            default_mod_path = settings.ORCA_MODULES['available']['path']
-            instance.module = default_mod_path
-            instance.save()
-        return instance
+        module = validated_data.get('module')
+        if not module:
+            default = settings.ORCA_MODULES.get('default')
+            default_mod_path = settings.ORCA_MODULES['available'].get(default).get('path')
+            module = validated_data['module'] = default_mod_path
+        self.__validate_inj(module, validated_data)
+        return super().create(validated_data)
 
-    #def update(self, obj, validated_data):
-        #super().update(obj, validated_data)
+    def update(self, obj, validated_data):
+        self.__validate_inj(obj.module, validated_data, project=obj)
+        return super().update(obj, validated_data)
 
-    #def update(self, obj, validated_data):
-        #injectables = validated_data.pop('injectables')
-        #init_values = self._inj_to_init(obj, injectables, update=True)
-
-    #def _inj_to_init(self, obj, inj_data, update=True):
-        #module = settings.ORCA_MODULES['available'].get(obj.module_name)
-        #init_proj_values = json.loads(obj.init)
-        #for i, name in enumerate(init_names):
-            #val = obj.init
-            #inj = inj_data
+    def __validate_inj(self, module, validated_data, project=None):
+        init = validated_data.get('init')
+        # it is kind of stupid to do this here, but there is no other
+        # place (e.g. serializer field) where we have all information needed to
+        # validate the uniqueness of injectables throught the projects,
+        # so we have to deserialize the data again and catch the injectable
+        # meta data in an unconvenient way
+        inj_data = json.loads(init)
+        orca_manager = OrcaManager(module)
+        for inj_name, value in inj_data.items():
+            if orca_manager.get_injectable_meta(inj_name).get('unique'):
+                validate_unique_inj(inj_name, value,
+                                    project_id=project.id if project else None)
 
 
 class ScenarioSerializer(serializers.ModelSerializer):
@@ -198,6 +220,7 @@ class InjectableSerializer(serializers.Serializer):
     choices = serializers.SerializerMethodField()
     group = serializers.CharField(source='meta.group')
     order = serializers.CharField(source='meta.order')
+    unique = serializers.CharField(source='meta.unique')
     value = serializers.JSONField(source='serialized_value')
 
     def get_choices(self, obj):
@@ -220,6 +243,12 @@ class InjectableSerializer(serializers.Serializer):
     def get_multi(self, obj):
         return 'list' in obj.datatype.lower()
 
+    def update(self, obj, validated_data):
+        value = validated_data.get('value')
+        if obj.meta.get('unique') and value is not None:
+            validate_unique_inj(obj.name, value, project_id=obj.scenario.project.id)
+        return super().update(obj, validated_data)
+
 
 class ScenarioInjectableSerializer(InjectableSerializer,
                                    serializers.ModelSerializer):
@@ -228,9 +257,10 @@ class ScenarioInjectableSerializer(InjectableSerializer,
     class Meta:
         model = Injectable
         fields = ('id', 'name', 'group', 'order', 'scenario', 'value', 'multi',
-                  'datatype', 'parents', 'description', 'editable', 'choices')
+                  'datatype', 'parents', 'description', 'editable', 'choices',
+                  'unique')
         read_only_fields = ('scenario', 'parents', 'name', 'editable',
-                            'choices')
+                            'choices', 'unique')
 
     def update(self, instance, validated_data):
         if 'serialized_value' in validated_data:
@@ -256,7 +286,8 @@ class ModuleSerializer(serializers.Serializer):
     description = serializers.CharField()
     default = serializers.BooleanField()
     data = ModuleDataSerializer()
-    init = serializers.ListSerializer(child=serializers.CharField())
+    init_injs = serializers.ListSerializer(child=serializers.CharField())
+    preview_inj = serializers.CharField()
 
 
 class StepSerializer(serializers.Serializer):
@@ -283,3 +314,18 @@ class ScenarioStepSerializer(serializers.ModelSerializer):
                   'success', 'order', 'active')
         read_only_fields = ('started', 'finished', 'success')
         optional_fields = ('order', 'active')
+
+
+class SiteSettingSerializer(serializers.ModelSerializer):
+    ''''''
+
+    class Meta:
+        model = SiteSetting
+        fields = ('title', 'contact_mail', 'logo', 'favicon',
+                  'scenario_running_img', 'scenario_running_icon',
+                  'scenario_success_img', 'scenario_success_icon',
+                  'scenario_failed_img', 'scenario_failed_icon',
+                  'primary_color', 'secondary_color',
+                  'welcome_text', 'welcome_background_img',
+                  'projects_background_img', 'scenarios_background_img',
+                  'injectables_background_img', 'steps_background_img')

@@ -3,7 +3,7 @@ import { Inj, Project, User } from "../../../rest-api";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BehaviorSubject } from "rxjs";
-import { UserSettingsService } from "../../../user-settings.service";
+import { SettingsService } from "../../../settings.service";
 
 export interface ProjectEditDialogData {
   project?: Project,
@@ -25,7 +25,7 @@ export class ProjectEditDialogComponent {
   isLoading$ = new BehaviorSubject<boolean>(false);
   @Output() projectConfirmed = new EventEmitter<Project>();
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: ProjectEditDialogData, protected settings: UserSettingsService,
+  constructor(@Inject(MAT_DIALOG_DATA) public data: ProjectEditDialogData, protected settings: SettingsService,
               private formBuilder: FormBuilder) {
     data.confirmButtonText = data.confirmButtonText || 'Save';
     data.cancelButtonText = data.cancelButtonText || 'Cancel';
@@ -49,13 +49,17 @@ export class ProjectEditDialogComponent {
   }
 
   onConfirmClick() {
+    this.errors = {};
     this.projectForm.markAllAsTouched();
     if (this.projectForm.invalid) return;
     const injectables: Inj[] = this.project? this.project.injectables.map((inj, idx) => {
       const clone = Object.assign({}, inj);
       clone.value = this.injValues[idx];
+      if (!clone.value)
+        this.errors[clone.name] = 'value required';
       return clone;
     }): [];
+    if (Object.keys(this.errors).length) return;
     const project = {
       id: this.project?.id,
       name: this.projectForm.value.name,

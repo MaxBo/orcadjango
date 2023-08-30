@@ -1,5 +1,8 @@
 <mat-toolbar class="main-nav">
-  <a class="navbar-brand" href="/">OrcaDjango</a>
+  <a class="navbar-brand" href="/">
+    <img *ngIf="settings.siteSettings?.logo else noLogo" [src]="settings.siteSettings?.logo">
+    <ng-template #noLogo>{{settings.siteSettings?.title}}</ng-template>
+  </a>
   <span class="page-links" fxShow="true" fxHide.lt-md="true">
     <a *ngIf="auth.user$ | async"
        class="link"
@@ -73,8 +76,9 @@
 </mat-toolbar>
 
 <mat-sidenav-container class="main-container">
+<!--  ToDo: replace hiding side nav based on router url by introducing a parent component for these routes that contains the side nav-->
   <mat-sidenav class="sidenav" mode="side" opened
-               *ngIf="auth.user$ | async">
+               *ngIf=" (auth.user$ | async) && (router.url === '/steps' || router.url === '/scenarios' || router.url === '/projects' || router.url === '/injectables')">
     <mat-form-field id="module-select">
       <mat-label>Module</mat-label>
       <mat-select (selectionChange)="settings.setModule($event.value)" [value]="settings.module$.value?.name">
@@ -125,29 +129,45 @@
 <!--              Scenario <br>-->
               {{settings.activeScenario$.value?.name}}
             </mat-card-title>
-            <mat-icon *ngIf="settings.activeScenario$.value?.last_run?.finished && settings.activeScenario$.value?.last_run?.success"
-                      title="failed"
-                      style="color: green" >
-              done
-            </mat-icon>
-            <mat-icon *ngIf="settings.activeScenario$.value?.last_run?.finished && !settings.activeScenario$.value?.last_run?.success"
-                      title="failed"
-                      style="color: red" class="material-symbols-outlined">
-              cancel
-            </mat-icon>
+            <app-scenario-status-preview [scenario]="settings.activeScenario$.value" style="margin-left: auto;"></app-scenario-status-preview>
           </mat-card-header>
           <mat-card-content>
 <!--            <i>{{settings.activeScenario$.value?.description}}</i>-->
-            <p *ngIf="settings.activeScenario$.value?.last_run?.finished">
-              Last Run: <br>
-              {{settings.activeScenario$.value?.last_run?.finished}}
-            </p>
+            <ng-container *ngIf="settings.activeScenario$.value?.is_running else notRunningCard">
+              <p>
+                Started at: <br>
+                {{settings.activeScenario$.value?.last_run?.started}}
+              </p>
+            </ng-container>
+            <ng-template #notRunningCard>
+              <p *ngIf="settings.activeScenario$.value?.last_run?.finished">
+                Last Run finished: <br>
+                <i [style.color]="settings.activeScenario$.value?.last_run?.success? 'green': 'red'">{{settings.activeScenario$.value?.last_run?.finished}}</i>
+              </p>
+            </ng-template>
           </mat-card-content>
         </ng-container>
         <ng-template #noScenario>
           <mat-card-content>no scenario selected</mat-card-content>
         </ng-template>
       </mat-card>
+<!--      -->
+      <a id="scenario-status"
+         *ngIf="settings.activeScenario$.value"
+         routerLink="/steps">
+        <ng-container *ngIf="settings.activeScenario$.value?.is_running else notRunning">
+          <img *ngIf="settings.siteSettings?.scenario_running_img else runSpinner" [src]="settings.siteSettings?.scenario_running_img">
+          <ng-template #runSpinner>
+            <mat-spinner [diameter]="150"></mat-spinner>
+          </ng-template>
+        </ng-container>
+        <ng-template #notRunning>
+          <img *ngIf="settings.activeScenario$.value?.last_run?.finished && settings.activeScenario$.value?.last_run?.success"
+               [src]="settings.siteSettings?.scenario_success_img">
+          <img *ngIf="settings.activeScenario$.value?.last_run?.finished && !settings.activeScenario$.value?.last_run?.success"
+               [src]="settings.siteSettings?.scenario_failed_img">
+        </ng-template>
+      </a>
     </ng-container>
   </mat-sidenav>
   <mat-sidenav-content class="app-container">

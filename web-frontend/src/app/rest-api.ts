@@ -19,6 +19,27 @@ export interface User {
   profile: Profile
 }
 
+export interface SiteSettings {
+  title: string;
+  contact_mail: string;
+  logo: string;
+  primary_color: string;
+  secondary_color: string;
+  favicon: string;
+  scenario_running_img: string;
+  scenario_running_icon: string;
+  scenario_success_img: string;
+  scenario_success_icon: string;
+  scenario_failed_img: string;
+  scenario_failed_icon: string;
+  welcome_background_img: string;
+  projects_background_img: string;
+  scenarios_background_img: string;
+  injectables_background_img: string;
+  steps_background_img: string;
+  welcome_text: string;
+}
+
 export interface Project {
   id?: number,
   name: string,
@@ -73,8 +94,9 @@ export interface Module {
   title: string,
   path: string,
   description: string,
-  init: string[],
+  init_injs: string[],
   default: boolean,
+  preview_inj?: string,
   data?: {
     name?: string,
     url?: string,
@@ -109,8 +131,9 @@ export interface  ScenarioLogEntry {
   scenario?: { success?: boolean, finished?: boolean }
 }
 
-export function formatProject(project: Project) {
-  project.previewInjectable = project.injectables.find(inj => inj.name === 'project_area');
+export function formatProject(project: Project, options?: { previewInjName?: string}) {
+  if (options?.previewInjName)
+    project.previewInjectable = project.injectables.find(inj => inj.name === options.previewInjName);
   if (project.created) {
     project.date = new Date(project.created);
     project.date.setHours(0,0,0,0);
@@ -132,6 +155,7 @@ export class RestService {
     scenarioInjectables: `${ environment.apiPath }/scenarios/{scenarioId}/injectables/`,
     scenarioSteps: `${ environment.apiPath }/scenarios/{scenarioId}/steps/`,
     scenarioLogs: `${ environment.apiPath }/scenarios/{scenarioId}/logs/`,
+    sitesettings: `${ environment.apiPath }/settings/`,
     users: `${ environment.apiPath }/users/`,
     currentUser: `${ environment.apiPath }/users/current/`,
     login: `${ environment.apiPath }/login/`,
@@ -205,11 +229,11 @@ export class RestService {
     return this.http.post<ScenarioInjectable[]>(`${this.URLS.scenarios}${scenario.id}/reset/`, {});
   }
 
-  getProjects(options?: { module: string }): Observable<Project[]> {
-    const params: any = options? { module: options.module }: {};
+  getProjects(options?: { module: Module }): Observable<Project[]> {
+    const params: any = options? { module: options.module.path }: {};
     return this.http.get<Project[]>(this.URLS.projects, { params: params }).pipe(map(projects => {
       // ToDo: determine which injectables serve as previews via API somehow
-      projects.forEach(project => formatProject(project));
+      projects.forEach(project => formatProject(project, { previewInjName: options?.module.preview_inj }));
       return projects;
     }));
   }
@@ -238,6 +262,10 @@ export class RestService {
 
   getUsers(): Observable<User[]>{
     return this.http.get<User[]>(this.URLS.users);
+  }
+
+  getSiteSettings(): Observable<SiteSettings>{
+    return this.http.get<SiteSettings[]>(this.URLS.sitesettings).pipe(map(settings => settings[0]));
   }
 
   getScenarioInjectables(scenario: Scenario): Observable<ScenarioInjectable[]> {

@@ -1,6 +1,7 @@
 import os
 import sys
 from datetime import timedelta
+import json
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -170,11 +171,21 @@ USE_L10N = True
 
 USE_TZ = True
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'orcadjango', 'static')
+FRONTEND_APP_DIR = os.path.join(BASE_DIR, 'web-frontend')
+FRONTEND_DIST = 'dist/web-frontend'
+
+STATICFILES_DIRS = [
+    os.path.join(FRONTEND_APP_DIR),
+    os.path.join(BASE_DIR, 'orcadjango', 'static'),
+]
+
+PUBLIC_DIR = os.path.join(BASE_DIR, 'public')
+
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(PUBLIC_DIR, 'static')
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'orcadjango', 'media')
+MEDIA_ROOT = os.path.join(PUBLIC_DIR, 'media')
 
 LOGGING = {
     'version': 1,
@@ -197,3 +208,17 @@ LOGGING = {
         },
     },
 }
+
+def load_stats_json():
+    fn = os.path.join(FRONTEND_APP_DIR,
+                      *FRONTEND_DIST.split('/'),
+                      'stats.json')
+    if not os.path.exists(fn):
+        return
+    with open(fn, 'r') as file:
+        chunks = json.loads(file.read())['assetsByChunkName'] or {}
+        chunk_paths = {k: (f'{FRONTEND_DIST}/{fn[0]}')
+                       for k, fn in chunks.items()}
+        return chunk_paths
+
+ANGULAR_RESOURCES = load_stats_json() or {}

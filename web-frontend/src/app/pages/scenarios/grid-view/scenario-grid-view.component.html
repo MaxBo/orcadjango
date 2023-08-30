@@ -21,18 +21,21 @@
         <mat-card-header style="cursor: pointer"
                          (click)="onScenarioSelected.emit(scenario)">
           <mat-card-title [title]="scenario.name">{{scenario.name}}</mat-card-title>
-          <mat-icon *ngIf="scenario.last_run?.finished && scenario.last_run?.success"
-                    title="success"
-                    style="color: green" >
-            done
-          </mat-icon>
-          <mat-icon *ngIf="scenario.last_run?.finished && !scenario.last_run?.success"
-                    title="failed"
-                    style="color: red" class="material-symbols-outlined">
-            cancel
-          </mat-icon>
+          <app-scenario-status-preview [scenario]="scenario" style="margin-left: auto;"></app-scenario-status-preview>
         </mat-card-header>
         <mat-card-content style="cursor: pointer" (click)="onScenarioSelected.emit(scenario)">
+          <ng-container *ngIf="scenario.is_running else notRunningCard">
+            <p>
+              Started at: <br>
+              {{settings.activeScenario$.value?.last_run?.started}}
+            </p>
+          </ng-container>
+          <ng-template #notRunningCard>
+            <p *ngIf="scenario.last_run?.finished">
+              Last Run finished: <br>
+              <i [style.color]="scenario.last_run?.success? 'green': 'red'">{{scenario.last_run?.finished}}</i>
+            </p>
+          </ng-template>
           <p>
             {{scenario.description}}
           </p>

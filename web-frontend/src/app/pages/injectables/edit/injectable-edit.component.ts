@@ -2,7 +2,7 @@ import { Component, EventEmitter, Inject, Output } from '@angular/core';
 import { ScenarioInjectable } from "../../../rest-api";
 import { BehaviorSubject } from "rxjs";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { UserSettingsService } from "../../../user-settings.service";
+import { SettingsService } from "../../../settings.service";
 
 @Component({
   selector: 'app-injectable-edit',
@@ -17,7 +17,7 @@ export class InjectableEditDialogComponent {
   isLoading$ = new BehaviorSubject<boolean>(false);
   @Output() valueConfirmed = new EventEmitter<any>();
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: { injectable: ScenarioInjectable, defaultValue: any }, protected settings: UserSettingsService) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { injectable: ScenarioInjectable, defaultValue: any }, protected settings: SettingsService) {
     this.injectable = data.injectable;
     this.defaultValue = data.defaultValue;
     this.value = data.injectable.value;

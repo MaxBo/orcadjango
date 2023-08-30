@@ -1,16 +1,19 @@
 <div class="load-overlay" *ngIf="isLoading$ | async">
   <mat-spinner [diameter]="50"></mat-spinner>
 </div>
+<div class="background" *ngIf="settings.siteSettings?.injectables_background_img" style="background-image: url('{{settings.siteSettings?.injectables_background_img}}');"></div>
 <div style="width: calc(100% - 132px); padding: 0 16px;">
   <div style="display: flex;">
-    <h2>Injectables</h2>
-    <div style="margin-left: auto; align-self: end;">
-      <button mat-button
+    <h1 style="margin: 16px 0;">Injectables</h1>
+    <div style="margin-left: auto; align-self: center;">
+      <button mat-flat-button
+              color="accent"
               (click)="synchronize()"
+              style="margin-right: 10px;"
               title="Synchronize injectable meta with the current state of the module. Current injectable values are kept.">
         Synchronize
       </button>
-      <button mat-button
+      <button mat-flat-button
               color="warn"
               (click)="reset()"
               title="Reset ALL injectables to the project defaults">
@@ -60,7 +63,7 @@
                           [injectable]="injectable"></injectable>
             </td>
             <td>
-              <button mat-button (click)="editInjectable(injectable)">{{injectable.editable ? 'EDIT': 'VIEW'}}</button>
+              <button mat-button [disabled]="settings.activeScenario$.value?.is_running" (click)="editInjectable(injectable)">{{injectable.editable ? 'EDIT': 'VIEW'}}</button>
             </td>
           </tr>
         </ng-container>

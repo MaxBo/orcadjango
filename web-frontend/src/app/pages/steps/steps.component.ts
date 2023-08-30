@@ -1,8 +1,8 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ScenarioInjectable, ScenarioStep, Step } from "../../rest-api";
-import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
+import { CdkDragDrop, CdkDropList, moveItemInArray } from "@angular/cdk/drag-drop";
 import { InjectablesComponent, sortBy } from "../injectables/injectables.component";
-import { BehaviorSubject, forkJoin, Observable } from "rxjs";
+import { BehaviorSubject, forkJoin, Observable, Subscription } from "rxjs";
 
 @Component({
   selector: 'app-steps',
@@ -15,13 +15,17 @@ export class StepsComponent extends InjectablesComponent {
   protected stepGroups: string[] = [];
   protected scenarioSteps: ScenarioStep[] = [];
   protected _scenStepNames: string[] = [];
+  protected activeStepsCount = 0;
   stepsLoading$ = new BehaviorSubject<boolean>(false);
+  protected logHeight = 130;
+
   @ViewChild('resizeHandle') resizeHandle!: ElementRef;
   @ViewChild('logContainer') logContainer!: ElementRef;
+  @ViewChild('scenarioStepList') scenarioStepList!: CdkDropList;
 
   // constructor(private rest: RestService, private settings: UserSettingsService)
   override ngOnInit() {
-    this.settings.activeScenario$.subscribe(scenario => {
+    this.subscriptions.push(this.settings.activeScenario$.subscribe(scenario => {
       this.availableSteps = {};
       this.scenarioSteps = [];
       if (!scenario) return;
@@ -49,26 +53,24 @@ export class StepsComponent extends InjectablesComponent {
           this.rest.getScenarioSteps(scenario).subscribe(steps => {
             this.scenarioSteps = sortBy(steps, 'order');
             this._scenStepNames = steps.map(s => s.name);
+            this.updateActiveStepsCount();
             this.scenarioSteps.forEach(s => this._assign_step_meta(s));
             this.connectWs();
             this.setLoading(false);
           })
         });
       });
-    })
+    }));
+  }
+
+  updateActiveStepsCount(): void {
+    this.activeStepsCount = this.scenarioSteps.filter(s => s.active).length;
   }
 
   drop(event: CdkDragDrop<any[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-      const observables: Observable<ScenarioStep>[] = [];
-      this.stepsLoading$.next(true);
-      event.container.data.forEach((step, i) => {
-        observables.push(this.rest.patchScenarioStep(step, { order: i }))
-      })
-      forkJoin(observables).subscribe(() => {
-        this.stepsLoading$.next(false);
-      })
+      this._updateStepsOrder();
     }
     else {
       this.addStep(event.item.data.name, {
@@ -77,6 +79,17 @@ export class StepsComponent extends InjectablesComponent {
         title: event.item.data.title
       })
     }
+  }
+
+  _updateStepsOrder(): void {
+    const observables: Observable<ScenarioStep>[] = [];
+    this.stepsLoading$.next(true);
+    this.scenarioStepList.data.forEach((step: ScenarioStep, i: number) => {
+      observables.push(this.rest.patchScenarioStep(step, { order: i }))
+    })
+    forkJoin(observables).subscribe(() => {
+      this.stepsLoading$.next(false);
+    })
   }
 
   private _assign_step_meta(scenarioStep: ScenarioStep): void {
@@ -95,6 +108,7 @@ export class StepsComponent extends InjectablesComponent {
     this.rest.addScenarioStep(stepName, options?.position || 1, this.settings.activeScenario$.value!).subscribe(created => {
       this._assign_step_meta(created);
       this.scenarioSteps.splice(options?.position || 0, 0, created);
+      this._updateStepsOrder();
     })
   }
 
@@ -114,15 +128,26 @@ export class StepsComponent extends InjectablesComponent {
   toggleActive(active: boolean, step: ScenarioStep): void {
     this.stepsLoading$.next(true);
     this.rest.patchScenarioStep(step, { active: active }).subscribe(patched => {
-        step.active = patched.active;
+      step.active = patched.active;
+      this.updateActiveStepsCount();
       this.stepsLoading$.next(false);
-      })
+    })
   }
 
   run(): void {
     const scenario = this.settings.activeScenario$.value;
     if (!scenario) return;
-    this.rest.startRun(scenario).subscribe();
+    this.rest.startRun(scenario).subscribe(() => {
+      // backend does some status updates on steps when starting a run => update local steps
+      this.rest.getScenarioSteps(scenario).subscribe(steps => {
+        steps.forEach(updatedStep => {
+          const step = this.scenarioSteps.find(s => s.name === updatedStep.name);
+          if (step)
+            Object.assign(step, updatedStep);
+        })
+        this.updateActiveStepsCount();
+      })
+    });
   }
 
   abort(): void {
@@ -154,8 +179,12 @@ export class StepsComponent extends InjectablesComponent {
     const dragRect = this.resizeHandle.nativeElement.getBoundingClientRect();
     const targetRect = this.logContainer.nativeElement.getBoundingClientRect();
     const diffY = dragRect.top - targetRect.top + dragRect.height;
-    this.resizeHandle.nativeElement.style.transform  = `translate3d(0, ${150-diffY-targetRect.height}px, 0)`;
-    this.logContainer.nativeElement.style.height = `${150-diffY}px`;
+    this.resizeHandle.nativeElement.style.transform  = `translate3d(0, ${this.logHeight-diffY-targetRect.height}px, 0)`;
+    this.logContainer.nativeElement.style.height = `${this.logHeight-diffY}px`;
+    // cancel drag if drag handle is pulled to the bottom of the page (otherwise it would go up again)
+    if (targetRect.height < 15 && event.delta.y > 0) {
+      document.dispatchEvent(new Event('mouseup'));
+    }
   }
 
 }

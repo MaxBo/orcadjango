@@ -9,17 +9,21 @@
 <mat-dialog-content style="min-width: 400px;">
   <p [innerHTML]="injectable.description"></p>
   <injectable [injectable]="injectable"></injectable>
-  <h3>is derived from</h3>
-  <table>
+  <mat-divider></mat-divider>
+  <h4>is derived from</h4>
+  <table style="width: 100%;">
     <tr *ngFor="let parent of parents">
       <td>
-        <button mat-button style="margin-right: 15px;"
-                (click)="injectableClicked.emit(parent)">
           {{parent.name}}
-        </button>
       </td>
       <td style="width: 200px;">
         <injectable [injectable]="parent"></injectable>
+      </td>
+      <td>
+        <button mat-button style="margin-right: 15px;"
+                (click)="injectableClicked.emit(parent)">
+          SHOW
+        </button>
       </td>
     </tr>
   </table>

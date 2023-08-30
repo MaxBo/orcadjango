@@ -1,11 +1,13 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { RestService, Scenario } from "../../rest-api";
 import { MatDialog } from "@angular/material/dialog";
-import { UserSettingsService } from "../../user-settings.service";
+import { SettingsService } from "../../settings.service";
 import { ScenarioEditDialogComponent, ScenarioEditDialogData } from "./edit/scenario-edit.component";
 import { ConfirmDialogComponent } from "../../elements/confirm-dialog/confirm-dialog.component";
 import { CookieService } from "ngx-cookie-service";
 import { PageComponent } from "../../app.component";
+import { Subscription, timer } from "rxjs";
+import { switchMap } from "rxjs/operators";
 
 @Component({
   selector: 'app-scenarios',
@@ -15,9 +17,10 @@ import { PageComponent } from "../../app.component";
 export class ScenariosComponent extends PageComponent implements OnInit {
   scenarios: Scenario[] = [];
   viewType: 'list-view' | 'grid-view' = 'grid-view';
+  scenUpdateSub?: Subscription;
   @ViewChild('deleteScenarioTemplate') deleteScenarioTemplate?: TemplateRef<any>;
 
-  constructor(private rest: RestService, private dialog: MatDialog, protected settings: UserSettingsService,
+  constructor(private rest: RestService, private dialog: MatDialog, protected settings: SettingsService,
               private cookies: CookieService) {
     super();
   }
@@ -25,13 +28,18 @@ export class ScenariosComponent extends PageComponent implements OnInit {
   ngOnInit() {
     const viewType = this.cookies.get('scenario-view-type');
     if (viewType === 'list-view') this.viewType = 'list-view';
-    this.settings.activeProject$.subscribe(project => {
-      this.setLoading(true);
-      this.rest.getScenarios({ project: project }).subscribe(scenarios => {
-        this.scenarios = scenarios;
-        this.setLoading(false);
-      });
-    })
+    this.subscriptions.push(this.settings.activeProject$.subscribe(project => {
+      this.scenUpdateSub?.unsubscribe();
+      if (!project) {
+        this.scenUpdateSub = undefined;
+        this.scenarios = [];
+      }
+      else {
+        this.scenUpdateSub = timer(0, 5000).pipe(switchMap(() =>
+          this.rest.getScenarios({ project: project }))
+        ).subscribe(scenarios => this.scenarios = scenarios);
+      }
+    }));
   }
 
   onCreateScenario(): void {
@@ -123,5 +131,10 @@ export class ScenariosComponent extends PageComponent implements OnInit {
   changeView(viewType: 'list-view' | 'grid-view'): void {
     this.viewType = viewType;
     this.cookies.set('scenario-view-type', viewType);
+  }
+
+  override ngOnDestroy(): void {
+    this.scenUpdateSub?.unsubscribe();
+    super.ngOnDestroy();
   }
 }
