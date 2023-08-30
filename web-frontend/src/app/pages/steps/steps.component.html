@@ -78,7 +78,10 @@
                                   [disabled]="settings.activeScenario$.value?.is_running"
                                   (change)="toggleActive($event.checked, step)" >
                 </mat-slide-toggle>
-                <button mat-icon-button (click)="removeStep(step); $event.stopPropagation();" title="Remove step">
+                <button mat-icon-button
+                        [disabled]="settings.activeScenario$.value?.is_running"
+                        (click)="removeStep(step); $event.stopPropagation();"
+                        title="Remove step">
                   <mat-icon style="color: red;" class="material-icons-outlined">delete_forever</mat-icon>
                 </button>
               </div>
@@ -123,7 +126,7 @@
         <button mat-flat-button
                 color="primary"
                 (click)="run()"
-                [disabled]="settings.activeScenario$.value?.is_running">
+                [disabled]="settings.activeScenario$.value?.is_running || !activeStepsCount">
           RUN CALCULATIONS
         </button>
         <button mat-flat-button

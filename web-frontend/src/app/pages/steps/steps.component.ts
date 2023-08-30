@@ -15,6 +15,7 @@ export class StepsComponent extends InjectablesComponent {
   protected stepGroups: string[] = [];
   protected scenarioSteps: ScenarioStep[] = [];
   protected _scenStepNames: string[] = [];
+  protected activeStepsCount = 0;
   stepsLoading$ = new BehaviorSubject<boolean>(false);
   protected logHeight = 130;
 
@@ -52,6 +53,7 @@ export class StepsComponent extends InjectablesComponent {
           this.rest.getScenarioSteps(scenario).subscribe(steps => {
             this.scenarioSteps = sortBy(steps, 'order');
             this._scenStepNames = steps.map(s => s.name);
+            this.updateActiveStepsCount();
             this.scenarioSteps.forEach(s => this._assign_step_meta(s));
             this.connectWs();
             this.setLoading(false);
@@ -59,6 +61,10 @@ export class StepsComponent extends InjectablesComponent {
         });
       });
     }));
+  }
+
+  updateActiveStepsCount(): void {
+    this.activeStepsCount = this.scenarioSteps.filter(s => s.active).length;
   }
 
   drop(event: CdkDragDrop<any[]>) {
@@ -122,9 +128,10 @@ export class StepsComponent extends InjectablesComponent {
   toggleActive(active: boolean, step: ScenarioStep): void {
     this.stepsLoading$.next(true);
     this.rest.patchScenarioStep(step, { active: active }).subscribe(patched => {
-        step.active = patched.active;
+      step.active = patched.active;
+      this.updateActiveStepsCount();
       this.stepsLoading$.next(false);
-      })
+    })
   }
 
   run(): void {
@@ -138,6 +145,7 @@ export class StepsComponent extends InjectablesComponent {
           if (step)
             Object.assign(step, updatedStep);
         })
+        this.updateActiveStepsCount();
       })
     });
   }
