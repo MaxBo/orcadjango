@@ -15,7 +15,7 @@
       <ng-container *ngIf="error.key" >{{ error.key }}:</ng-container> {{ error.value }}
     </mat-error>
   </div>
-  <p [innerHTML]="injectable.description"></p>
+  <p id="description" [innerHTML]="injectable.description"></p>
   <injectable [injectable]="injectable"
               [edit]="true"
               (valueChanged)="this.value = $event"></injectable>

@@ -24,9 +24,9 @@
                 (valueChanged)="valueChanged.emit($event)"></inj-date>
     </ng-container>
     <ng-container *ngSwitchDefault>
-      <div [style.display]="(_injectable.multi && edit)? 'block': 'flex'">
+      <div [style.display]="(_injectable.multi && !edit)? 'flex': 'block'">
         <ng-container *ngFor="let value of values; let idx = index; let last = last;">
-          <div style="display: flex; align-items: center;">
+          <div [style.display]="(_injectable.multi)? 'flex': 'block'" style="align-items: center;">
             <inj-base-type [value]="value"
                            [type]="_injectable.datatype"
                            [edit]="edit"

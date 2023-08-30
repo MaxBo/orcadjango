@@ -4,8 +4,9 @@
 $custom-typography: mat.define-typography-config(
   $font-family: 'Calibri, Helvetica, sans-serif, Candara, Segoe',
   $headline-5: mat.define-typography-level(36px, 36px, 700),
-  $headline-6: mat.define-typography-level(26px, 26px, 400),
-  $subtitle-1: mat.define-typography-level(22px, 26px, 500),
+  $headline-6: mat.define-typography-level(24px, 28px, 400),
+  $subtitle-1: mat.define-typography-level(20px, 24px, 600),
+  $subtitle-2: mat.define-typography-level(16px, 22px, 500),
   $body-1: mat.define-typography-level(16px, 24px, 400),//, $letter-spacing: 0.14px),
   $body-2: mat.define-typography-level(16px, 20px, 400, $letter-spacing: 0.2px),
   $button: mat.define-typography-level(16px, 16px, 500, $letter-spacing: 1.42px),
@@ -15,6 +16,11 @@ $custom-typography: mat.define-typography-config(
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-mdc-unelevated-button.mat-primary:not(:disabled), .mat-mdc-unelevated-button.mat-accent:not(:disabled), .mat-mdc-unelevated-button.mat-warn:not(:disabled),
+.mat-mdc-mini-fab.mat-primary:not(:disabled), .mat-mdc-mini-fab.mat-accent:not(:disabled), .mat-mdc-mini-fab.mat-warn:not(:disabled){
+  color: white;
+}
 
 .cdk-overlay-pane.absolute{
   position: absolute!important;
@@ -28,6 +34,9 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   }
   .mat-mdc-dialog-content {
     max-height: 80vh;
+  }
+  .mat-mdc-dialog-title {
+    margin: 0;
   }
 }
 
@@ -137,4 +146,8 @@ mat-card {
   opacity: 0.5;
   z-index: -1;
   filter: blur(0.6px);
+}
+
+.mat-divider.mat-divider-horizontal {
+  margin: 10px 0;
 }

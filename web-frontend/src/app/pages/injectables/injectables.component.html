@@ -5,13 +5,15 @@
 <div style="width: calc(100% - 132px); padding: 0 16px;">
   <div style="display: flex;">
     <h1 style="margin: 16px 0;">Injectables</h1>
-    <div style="margin-left: auto; align-self: end;">
-      <button mat-button
+    <div style="margin-left: auto; align-self: center;">
+      <button mat-flat-button
+              color="accent"
               (click)="synchronize()"
+              style="margin-right: 10px;"
               title="Synchronize injectable meta with the current state of the module. Current injectable values are kept.">
         Synchronize
       </button>
-      <button mat-button
+      <button mat-flat-button
               color="warn"
               (click)="reset()"
               title="Reset ALL injectables to the project defaults">

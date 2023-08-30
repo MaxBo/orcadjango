@@ -4,6 +4,10 @@
 #scenario-steps {
   position: relative;
   width: 600px;
+
+  tr:hover {
+    background-color: #ffeeee;
+  }
 }
 
 #scenario-steps.deactivated {
@@ -13,13 +17,14 @@
 #available-steps, #scenario-steps {
   margin: 0 25px 25px 0;
   .mat-accordion {
-    background-color: #f0f0f0;
+    background: #f0f0f09e;
   }
 }
 
 ::ng-deep #available-steps {
-  .mat-expansion-panel-header-title {
-    font-size: 16px;
+  .group-title {
+    font-size: 18px;
+    letter-spacing: 0.8px;
   }
   .mat-expansion-panel-body {
     padding: 0;
@@ -64,10 +69,13 @@
 .step-list {
   border: solid 1px #ccc;
   min-height: 60px;
-  background: white;
   border-radius: 4px;
   overflow: hidden;
   display: block;
+
+  .mat-expansion-panel:not(.cdk-drag-disabled) {
+    background: #ffffff8c;
+  }
 }
 
 .cdk-drag-preview {
