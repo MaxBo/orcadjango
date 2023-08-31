@@ -6,6 +6,14 @@ import json
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+SECRET_KEY = os.environ.get('SECRET_KEY')
+DB_NAME = os.environ['DB_NAME']
+DB_USER = os.environ['DB_USER']
+DB_PASS = os.environ['DB_PASS']
+DB_HOST = os.environ.get('DB_HOST', 'localhost')
+DB_PORT = os.environ.get('DB_PORT', '5432')
+HOST = os.environ.get('DJANGO_HOST')
+
 ORCA_MODULES = {
     'default': 'dummy_orca_stuff',
     'available': {
@@ -123,15 +131,6 @@ CHANNEL_LAYERS = {
         },
     },
 }
-
-use_websockets = True
-
-DB_NAME = os.environ['DB_NAME']
-DB_USER = os.environ['DB_USER']
-DB_PASS = os.environ['DB_PASS']
-DB_HOST = os.environ.get('DB_HOST', 'localhost')
-DB_PORT = os.environ.get('DB_PORT', '5432')
-HOST = os.environ.get('DJANGO_HOST')
 
 DATABASES = {
     'default': {
