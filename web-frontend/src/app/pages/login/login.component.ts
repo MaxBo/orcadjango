@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit {
         this.router.navigate([this.next || '/']);
       },
       error: error => {
-        const msg = (error.status === 0)? 'Server antwortet nicht': `Keine Übereinstimmung von Nutzer und Passwort`;
+        const msg = (error.status === 0)? 'Server does not answer': `User and password do not match`;
         this.loginForm.setErrors({ 'error': msg })
       }
     });
