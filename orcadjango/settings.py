@@ -22,10 +22,13 @@ REDIS_HOST = os.environ.get('REDIS_HOST', '127.0.0.1')
 REDIS_PORT = os.environ.get('REDIS_PORT', 6379)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'false').lower() == 'true'
-LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
+DEBUG = False
 
-ALLOWED_HOSTS = ['localhost']
+hosts = os.environ.get('ALLOWED_HOSTS')
+if hosts:
+    hosts = hosts.split(',')
+    CSRF_TRUSTED_ORIGINS = [f'https://{h}' for h in hosts]
+    ALLOWED_HOSTS = hosts
 
 # GDAL configuration
 if os.name == 'nt':
