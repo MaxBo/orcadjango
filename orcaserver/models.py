@@ -168,7 +168,10 @@ class Injectable(NameModel):
     @property
     def deserialized_value(self):
         conv = OrcaTypeMap.get(self.data_class)
-        value = conv.to_value(self.value)
+        try:
+            value = conv.to_value(self.value)
+        except:
+            return
         return value
 
     # can unfortunatelly not be put into custom (writable) serializer field
