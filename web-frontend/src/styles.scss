@@ -18,6 +18,7 @@ html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .mat-mdc-unelevated-button.mat-primary:not(:disabled), .mat-mdc-unelevated-button.mat-accent:not(:disabled), .mat-mdc-unelevated-button.mat-warn:not(:disabled),
+.mat-mdc-raised-button.mat-primary:not(:disabled), .mat-mdc-raised-button.mat-accent:not(:disabled), .mat-mdc-raised-button.mat-warn:not(:disabled),
 .mat-mdc-mini-fab.mat-primary:not(:disabled), .mat-mdc-mini-fab.mat-accent:not(:disabled), .mat-mdc-mini-fab.mat-warn:not(:disabled){
   color: white;
 }
