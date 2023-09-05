@@ -14,18 +14,6 @@ DB_HOST = os.environ.get('DB_HOST', 'localhost')
 DB_PORT = os.environ.get('DB_PORT', '5432')
 HOST = os.environ.get('DJANGO_HOST')
 
-ORCA_MODULES = {
-    'default': 'dummy_orca_stuff',
-    'available': {
-        'dummy_orca_stuff': {
-            'title': 'Test module',
-            'path': 'orcaserver.tests.dummy_orca_stuff',
-            'description': 'module used for testing',
-            'init': ['inj_list', 'inj_dict'],
-        }
-    }
-}
-
 REDIS_HOST = os.environ.get('REDIS_HOST', '127.0.0.1')
 REDIS_PORT = os.environ.get('REDIS_PORT', 6379)
 

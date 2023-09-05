@@ -26,10 +26,6 @@
   bottom: 0;
 }
 
-.app-container {
-  padding: 10px;
-}
-
 ::ng-deep.sidenav {
   display: flex;
   align-items: center;
@@ -42,12 +38,15 @@
   }
 }
 
+.app-container {
+  background-color: #f0f0f0;
+  padding: 10px;
+}
+
 .mat-drawer-content {
-  //padding: 10px 30px 0 10px;
   padding: 0;
   position: static;
   //margin-left: 200px;
-  //background-color: #f0f0f0;
 }
 
 .mat-toolbar {
@@ -113,9 +112,13 @@
   height: 100%;
 }*/
 
-#module-select {
-  margin-left: auto;
+::ng-deep #module-select {
+  width: 100%;
   margin-bottom: -1.25em;
+
+  .mat-mdc-text-field-wrapper {
+    border-radius: 0 !important;
+  }
 }
 
 #active-project, #active-scenario {
@@ -123,7 +126,7 @@
   border-width: 3px;
   border-style: solid;
   cursor: pointer;
-  margin: 5px;
+  margin: 10px 5px;
   min-height: 100px;
   .mat-mdc-card-content{
     overflow: auto;

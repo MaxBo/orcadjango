@@ -61,6 +61,7 @@ import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/materia
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { MaterialCssVarsModule } from 'angular-material-css-vars';
 import { ScenarioStatusPreviewComponent } from './pages/scenarios/scenario-status-preview/scenario-status-preview.component';
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 const DATE_FORMAT = {
   parse: {
@@ -133,8 +134,9 @@ const DATE_FORMAT = {
         MatDatepickerModule,
         MatNativeDateModule,
         MaterialCssVarsModule.forRoot({
-          isAutoContrast: true
+            isAutoContrast: true
         }),
+        MatTooltipModule,
     ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },

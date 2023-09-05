@@ -6,9 +6,9 @@ import json
 from django.conf import settings
 from rest_framework.serializers import ValidationError
 
-from orcaserver.management import OrcaManager
+from orcaserver.orca import OrcaManager
 from .models import (Project, Profile, Scenario, Injectable, Step, Run,
-                     LogEntry, SiteSetting)
+                     Module, LogEntry, SiteSetting)
 from .injectables import OrcaTypeMap
 
 DATETIME_FORMAT = "%d.%m.%Y %H:%M:%S"
@@ -81,10 +81,10 @@ class ProjectInjectablesSerializerField(serializers.Field):
 
     def to_representation(self, obj):
         orca_manager = OrcaManager(obj.module)
-        module = settings.ORCA_MODULES['available'].get(obj.module_name)
+        module = obj._module
         if not module:
             return []
-        init_names = module.get('init')
+        init_names = obj._module.init_injectables
         init_values = json.loads(obj.init)
         injectables = []
         for inj_name in init_names:
@@ -143,27 +143,27 @@ class ProjectSerializer(serializers.ModelSerializer):
         optional_fields = ('module', 'code', 'user', 'archived')
 
     def create(self, validated_data):
-        module = validated_data.get('module')
-        if not module:
-            default = settings.ORCA_MODULES.get('default')
-            default_mod_path = settings.ORCA_MODULES['available'].get(default).get('path')
-            module = validated_data['module'] = default_mod_path
-        self.__validate_inj(module, validated_data)
+        module_path = validated_data.get('module')
+        if not module_path:
+            raise ValidationError('module missing')
+        self.__validate_inj(module_path, validated_data)
         return super().create(validated_data)
 
     def update(self, obj, validated_data):
         self.__validate_inj(obj.module, validated_data, project=obj)
         return super().update(obj, validated_data)
 
-    def __validate_inj(self, module, validated_data, project=None):
+    def __validate_inj(self, module_path, validated_data, project=None):
         init = validated_data.get('init')
+        if not init:
+            return
         # it is kind of stupid to do this here, but there is no other
         # place (e.g. serializer field) where we have all information needed to
         # validate the uniqueness of injectables throught the projects,
         # so we have to deserialize the data again and catch the injectable
         # meta data in an unconvenient way
         inj_data = json.loads(init)
-        orca_manager = OrcaManager(module)
+        orca_manager = OrcaManager(module_path)
         for inj_name, value in inj_data.items():
             if orca_manager.get_injectable_meta(inj_name).get('unique'):
                 validate_unique_inj(inj_name, value,
@@ -272,22 +272,11 @@ class ScenarioInjectableSerializer(InjectableSerializer,
         return super().update(instance, validated_data)
 
 
-class ModuleDataSerializer(serializers.Serializer):
-    name = serializers.CharField()
-    url = serializers.CharField()
-    href = serializers.CharField()
-    text = serializers.ListSerializer(child=serializers.CharField())
-
-
-class ModuleSerializer(serializers.Serializer):
-    name = serializers.CharField()
-    title = serializers.CharField()
-    path = serializers.CharField()
-    description = serializers.CharField()
-    default = serializers.BooleanField()
-    data = ModuleDataSerializer()
-    init_injs = serializers.ListSerializer(child=serializers.CharField())
-    preview_inj = serializers.CharField()
+class ModuleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Module
+        fields = ('name', 'title', 'path', 'description', 'init_injectables',
+                  'preview_injectable', 'info_html', 'default')
 
 
 class StepSerializer(serializers.Serializer):

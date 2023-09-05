@@ -76,10 +76,9 @@ class AbortableThread(threading.Thread):
 
 class ModuleSingleton(object):
     _instance_dict = {}
-    default_module = None
 
     def __new__(cls, *args, **kwargs):
-        key = args[0] if args else kwargs.get('module', cls.default_module)
+        key = args[0]
         if not key in cls._instance_dict:
             with lock:
                 cls._instance_dict[key] = super().__new__(cls)
@@ -93,8 +92,8 @@ class OrcaManager(ModuleSingleton):
     meta = {}
     __generic_instance = None
 
-    def __init__(self, module_path=None):
-        self.module = module_path or self.default_module
+    def __init__(self, module_path: str):
+        self.module = module_path
         if not self.__generic_instance:
             self.__generic_instance = self.create_instance()
 

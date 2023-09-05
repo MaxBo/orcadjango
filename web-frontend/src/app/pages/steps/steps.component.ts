@@ -53,7 +53,7 @@ export class StepsComponent extends InjectablesComponent {
           this.rest.getScenarioSteps(scenario).subscribe(steps => {
             this.scenarioSteps = sortBy(steps, 'order');
             this._scenStepNames = steps.map(s => s.name);
-            this.updateActiveStepsCount();
+            this._updateActiveStepsCount();
             this.scenarioSteps.forEach(s => this._assign_step_meta(s));
             this.connectWs();
             this.setLoading(false);
@@ -63,7 +63,7 @@ export class StepsComponent extends InjectablesComponent {
     }));
   }
 
-  updateActiveStepsCount(): void {
+  private _updateActiveStepsCount(): void {
     this.activeStepsCount = this.scenarioSteps.filter(s => s.active).length;
   }
 
@@ -109,6 +109,7 @@ export class StepsComponent extends InjectablesComponent {
       this._assign_step_meta(created);
       this.scenarioSteps.splice(options?.position || 0, 0, created);
       this._updateStepsOrder();
+      this._updateActiveStepsCount();
     })
   }
 
@@ -118,6 +119,7 @@ export class StepsComponent extends InjectablesComponent {
       this.scenarioSteps.splice(idx, 1);
       const nameIdx = this._scenStepNames.indexOf(step.name);
       this._scenStepNames.splice(nameIdx, 1);
+      this._updateActiveStepsCount();
     });
   }
 
@@ -129,7 +131,7 @@ export class StepsComponent extends InjectablesComponent {
     this.stepsLoading$.next(true);
     this.rest.patchScenarioStep(step, { active: active }).subscribe(patched => {
       step.active = patched.active;
-      this.updateActiveStepsCount();
+      this._updateActiveStepsCount();
       this.stepsLoading$.next(false);
     })
   }
@@ -145,7 +147,7 @@ export class StepsComponent extends InjectablesComponent {
           if (step)
             Object.assign(step, updatedStep);
         })
-        this.updateActiveStepsCount();
+        this._updateActiveStepsCount();
       })
     });
   }

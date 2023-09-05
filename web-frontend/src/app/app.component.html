@@ -83,11 +83,28 @@
       <mat-label>Module</mat-label>
       <mat-select (selectionChange)="settings.setModule($event.value)" [value]="settings.module$.value?.name">
         <mat-option value="">none</mat-option>
-        <mat-option *ngFor="let module of settings.modules" [value]="module.name">
+        <mat-option *ngFor="let module of settings.modules"
+                    [value]="module.name"
+                    [matTooltip]="module.description"
+                    matTooltipPosition="right">
           {{module.title}}
         </mat-option>
       </mat-select>
     </mat-form-field>
+    <div *ngIf="settings.module$.value?.info_html" style="padding: 5px;">
+      <button mat-button
+              style="background-color: #fafafa; width: 100%;"
+              [matMenuTriggerFor]="moduleInfo">
+        <mat-icon>info</mat-icon>
+        Module Info
+      </button>
+      <mat-menu #moduleInfo>
+        <div style="padding: 10px;">
+          <p>{{settings.module$.value?.description}}</p>
+          <p [innerHTML]="settings.module$.value?.info_html"></p>
+        </div>
+      </mat-menu>
+    </div>
 <!--    <p style="color: white; margin-left: 10px;">Project</p>-->
     <mat-card id="active-project"
               routerLink="/projects"

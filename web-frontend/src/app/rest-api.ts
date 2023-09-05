@@ -94,15 +94,10 @@ export interface Module {
   title: string,
   path: string,
   description: string,
-  init_injs: string[],
+  init_injectables: string[],
   default: boolean,
-  preview_inj?: string,
-  data?: {
-    name?: string,
-    url?: string,
-    href?: string,
-    text?: string[]
-  }
+  preview_injectables?: string,
+  info_html: string
 }
 
 export interface Step {
@@ -233,7 +228,7 @@ export class RestService {
     const params: any = options? { module: options.module.path }: {};
     return this.http.get<Project[]>(this.URLS.projects, { params: params }).pipe(map(projects => {
       // ToDo: determine which injectables serve as previews via API somehow
-      projects.forEach(project => formatProject(project, { previewInjName: options?.module.preview_inj }));
+      projects.forEach(project => formatProject(project, { previewInjName: options?.module.preview_injectables }));
       return projects;
     }));
   }
