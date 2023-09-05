@@ -9,7 +9,8 @@ from django.core.validators import int_list_validator
 from django.core.exceptions import ObjectDoesNotExist
 
 from .injectables import OrcaTypeMap
-from .management import OrcaManager
+from .orca import OrcaManager
+from django.contrib.postgres.fields import ArrayField
 
 
 class NameModel(models.Model):
@@ -18,6 +19,17 @@ class NameModel(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Module(NameModel):
+    name = models.TextField(unique=True)
+    title = models.TextField(blank=True)
+    path = models.TextField(unique=True)
+    description = models.TextField(blank=True)
+    init_injectables = ArrayField(models.CharField(max_length=80))
+    preview_injectable = models.CharField(max_length=80, blank=True)
+    info_html = models.TextField(blank=True)
+    default = models.BooleanField(default=False)
 
 
 class Project(NameModel):
@@ -39,11 +51,12 @@ class Project(NameModel):
         return super().save(*args, **kwargs)
 
     @property
-    def module_name(self):
+    def _module(self):
         '''returns the name of the module, 'module' field stores the path only'''
-        for mod_name in settings.ORCA_MODULES['available'].keys():
-            if settings.ORCA_MODULES['available'][mod_name]['path'] == self.module:
-                return mod_name
+        try:
+            return Module.objects.get(path=self.module)
+        except Module.DoesNotExist:
+            pass
 
 
 class Scenario(NameModel):

@@ -13,8 +13,8 @@ from .serializers import (ProjectSerializer, UserSerializer,
                           ScenarioStepSerializer, InjectableSerializer,
                           ScenarioLogSerializer, SiteSettingSerializer)
 from .models import (Project, Scenario, Injectable, Step, Run, LogEntry,
-                     SiteSetting)
-from orcaserver.management import OrcaManager
+                     SiteSetting, Module)
+from orcaserver.orca import OrcaManager
 from orcadjango.loggers import ScenarioHandler
 from .injectables import OrcaTypeMap
 
@@ -155,10 +155,8 @@ class InjectableViewSet(viewsets.ViewSet):
     def list(self, request, **kwargs):
         injectables = []
         module_name = kwargs['module_pk']
-        module = settings.ORCA_MODULES['available'].get(module_name)
-        if not module:
-            return Response({})
-        orca_manager = OrcaManager(module['path'])
+        module = Module.objects.get(name=module_name)
+        orca_manager = OrcaManager(module.path)
         names = orca_manager.get_injectable_names()
         for inj in names:
             meta = orca_manager.get_injectable_meta(inj)
@@ -189,35 +187,9 @@ class ScenarioInjectableViewSet(viewsets.ModelViewSet):
         return self.queryset.filter(scenario=self.kwargs['scenario_pk'])
 
 
-class ModuleViewSet(viewsets.ViewSet):
+class ModuleViewSet(viewsets.ModelViewSet):
+    queryset = Module.objects.all()
     serializer_class = ModuleSerializer
-
-    def list(self, request):
-        available = settings.ORCA_MODULES.get('available', {})
-        # that's the path to the module
-        default_mod = OrcaManager.default_module
-        modules = []
-        for k, v in available.items():
-            path = v.get('path')
-            mod = {
-                'name': k,
-                'title': v.get('title', k),
-                'path': path,
-                'description': v.get('description', ''),
-                'default': path == default_mod,
-                'init_injs': v.get('init'),
-                'preview_inj': v.get('preview_inj'),
-            }
-            data_url = v.get('data_url', {})
-            mod['data'] = {
-                'name': data_url.get('name'),
-                'href': data_url.get('href'),
-                'url': data_url.get('url'),
-                'text': v.get('data_text'),
-            }
-            modules.append(mod)
-        results = ModuleSerializer(modules, many=True)
-        return Response(results.data)
 
 
 class StepViewSet(viewsets.ViewSet):
@@ -226,10 +198,11 @@ class StepViewSet(viewsets.ViewSet):
     def list(self, request, **kwargs):
         steps = []
         module_name = kwargs['module_pk']
-        module = settings.ORCA_MODULES['available'].get(module_name)
+        module = Module.objects.get(name=module_name)
+        orca_manager = OrcaManager(module.path)
         if not module:
             return Response({})
-        orca_manager = OrcaManager(module['path'])
+        orca_manager = OrcaManager(module.path)
         names = orca_manager.get_step_names()
         for step in names:
             steps.append(orca_manager.get_step_meta(step))

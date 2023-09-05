@@ -10,6 +10,7 @@ class IndexView(TemplateView):
         context = super().get_context_data(**kwargs)
         site_settings = SiteSetting.load()
         context['title'] = site_settings.title
-        context['favicon'] = site_settings.favicon.url
+        if site_settings.favicon:
+            context['favicon'] = site_settings.favicon.url
         context.update(settings.ANGULAR_RESOURCES)
         return context

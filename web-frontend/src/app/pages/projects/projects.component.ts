@@ -57,7 +57,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
 
   onCreateProject(): void {
     const user = this.settings.user$.value;
-    const initInjectableNames = this.settings.module$.value?.init_injs || [];
+    const initInjectableNames = this.settings.module$.value?.init_injectables || [];
     let injectables: Inj[] = initInjectableNames.map(name => this.settings.moduleInjectables.find(inj => inj.name === name)!).filter(i => i !== undefined);
     const data: ProjectEditDialogData = {
       title: 'Create new Project',
@@ -82,7 +82,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
       project.module = this.settings.module$.value?.path || '';
       this.rest.createProject(project).subscribe(created => {
         dialogRef.close();
-        formatProject(created, { previewInjName: this.settings.module$.value?.preview_inj });
+        formatProject(created, { previewInjName: this.settings.module$.value?.preview_injectables });
         this.projects.push(created);
         this.filter();
       }, error => {
@@ -139,7 +139,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
       this.rest.patchProject(project, { name: edited.name, description: edited.description, user: edited.user, code: edited.code, injectables: edited.injectables }).subscribe(patched => {
         dialogRef.close();
         Object.assign(project, patched);
-        formatProject(project, { previewInjName: this.settings.module$.value?.preview_inj });
+        formatProject(project, { previewInjName: this.settings.module$.value?.preview_injectables });
         this.filter();
       }, error => {
         dialogRef.componentInstance.setErrors(error.error);

@@ -4,7 +4,7 @@ import pandas as pd
 import logging
 import sys
 
-from orcaserver.management import OrcaManager
+from orcaserver.orca import OrcaManager
 
 
 class MockStep:
@@ -19,7 +19,6 @@ class TestOrcaInstancing(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         module = 'orcaserver.tests.dummy_orca_stuff'
-        #OrcaManager.default_module = module
         cls.manager = OrcaManager(module)
         cls.orca1 = cls.manager.get_instance(1)
         cls.orca2 = cls.manager.get_instance(2)
