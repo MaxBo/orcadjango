@@ -82,7 +82,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
       project.module = this.settings.module$.value?.path || '';
       this.rest.createProject(project).subscribe(created => {
         dialogRef.close();
-        formatProject(created, { previewInjName: this.settings.module$.value?.preview_injectables });
+        formatProject(created, { previewInjName: this.settings.module$.value?.preview_injectable });
         this.projects.push(created);
         this.filter();
       }, error => {
@@ -139,7 +139,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
       this.rest.patchProject(project, { name: edited.name, description: edited.description, user: edited.user, code: edited.code, injectables: edited.injectables }).subscribe(patched => {
         dialogRef.close();
         Object.assign(project, patched);
-        formatProject(project, { previewInjName: this.settings.module$.value?.preview_injectables });
+        formatProject(project, { previewInjName: this.settings.module$.value?.preview_injectable });
         this.filter();
       }, error => {
         dialogRef.componentInstance.setErrors(error.error);

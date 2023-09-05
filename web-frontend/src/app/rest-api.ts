@@ -96,7 +96,7 @@ export interface Module {
   description: string,
   init_injectables: string[],
   default: boolean,
-  preview_injectables?: string,
+  preview_injectable?: string,
   info_html: string
 }
 
@@ -168,9 +168,9 @@ export class RestService {
     return this.http.post<Type>(url, body);
   }
 
-  getProject(id: number): Observable<Project> {
+  getProject(id: number, options?: { module?: Module }): Observable<Project> {
     return this.http.get<Project>(`${this.URLS.projects}${id}/`).pipe(map(project => {
-      formatProject(project);
+      formatProject(project, { previewInjName: options?.module?.preview_injectable });
       return project;
     }))
   }
@@ -228,7 +228,7 @@ export class RestService {
     const params: any = options? { module: options.module.path }: {};
     return this.http.get<Project[]>(this.URLS.projects, { params: params }).pipe(map(projects => {
       // ToDo: determine which injectables serve as previews via API somehow
-      projects.forEach(project => formatProject(project, { previewInjName: options?.module.preview_injectables }));
+      projects.forEach(project => formatProject(project, { previewInjName: options?.module.preview_injectable }));
       return projects;
     }));
   }
