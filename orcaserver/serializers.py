@@ -45,6 +45,11 @@ class UserSerializer(serializers.ModelSerializer):
             value['profile'] = profile
         return value
 
+    def to_representation(self, obj):
+        if not hasattr(obj, 'profile') or not obj.profile:
+            Profile.objects.create(user=obj)
+        return super().to_representation(obj)
+
     def create(self, validated_data):
         profile_data = validated_data.pop('profile', {})
         instance = super().create(validated_data)
@@ -54,23 +59,23 @@ class UserSerializer(serializers.ModelSerializer):
         profile.save()
         return instance
 
-    def update(self, instance, validated_data):
+    def update(self, obj, validated_data):
         # ToDo: return permission error or move to view permissions
         user = self.context['request'].user
-        if not user or user.id != instance.id and not user.is_superuser:
-            return instance
+        if not user or user.id != obj.id and not user.is_superuser:
+            return obj
         profile_data = validated_data.pop('profile', {})
         password = validated_data.pop('password', None)
         if profile_data:
-            if not instance.profile:
-                profile = Profile.objects.create(user=instance)
-            profile = ProfileSerializer().update(instance.profile, profile_data)
+            if not hasattr(obj, 'profile') and not obj.profile:
+                profile = Profile.objects.create(user=obj)
+            profile = ProfileSerializer().update(obj.profile, profile_data)
         profile.save()
-        instance = super().update(instance, validated_data)
+        obj = super().update(obj, validated_data)
         if password:
-            instance.set_password(password)
-            instance.save()
-        return instance
+            obj.set_password(password)
+            obj.save()
+        return obj
 
 
 class ProjectInjectablesSerializerField(serializers.Field):
