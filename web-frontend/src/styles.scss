@@ -4,7 +4,7 @@
 $custom-typography: mat.define-typography-config(
   $font-family: 'Calibri, Helvetica, sans-serif, Candara, Segoe',
   $headline-5: mat.define-typography-level(36px, 36px, 700),
-  $headline-6: mat.define-typography-level(24px, 28px, 400),
+  $headline-6: mat.define-typography-level(22px, 26px, 400),
   $subtitle-1: mat.define-typography-level(20px, 24px, 600),
   $subtitle-2: mat.define-typography-level(16px, 22px, 500),
   $body-1: mat.define-typography-level(16px, 24px, 400),//, $letter-spacing: 0.14px),
@@ -21,6 +21,13 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .mat-mdc-raised-button.mat-primary:not(:disabled), .mat-mdc-raised-button.mat-accent:not(:disabled), .mat-mdc-raised-button.mat-warn:not(:disabled),
 .mat-mdc-mini-fab.mat-primary:not(:disabled), .mat-mdc-mini-fab.mat-accent:not(:disabled), .mat-mdc-mini-fab.mat-warn:not(:disabled){
   color: white;
+}
+
+.page-content {
+  width: calc(100% - 132px);
+  padding: 0 16px;
+  position: relative;
+  z-index: 1;
 }
 
 .cdk-overlay-pane.absolute{
@@ -145,7 +152,7 @@ mat-card {
   height: 100%;
   background-size: cover;
   opacity: 0.5;
-  z-index: -1;
+  z-index: 0;
   filter: blur(0.6px);
 }
 

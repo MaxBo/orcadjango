@@ -3,7 +3,7 @@
 </div>
 <div class="background" *ngIf="settings.siteSettings?.steps_background_img" style="background-image: url('{{settings.siteSettings?.steps_background_img}}');"></div>
 <div class="steps-container">
-  <div class="steps-content" style="display: flex; user-select: none;">
+  <div class="steps-content">
     <mat-accordion id="available-steps">
       <h2 style="margin-bottom: 5px;">Available Steps</h2>
       <mat-expansion-panel *ngFor="let group of stepGroups">

@@ -113,9 +113,9 @@
               [routerLinkActiveOptions]="{exact: false}">
       <ng-container *ngIf="settings.activeProject$ | async; else noProject">
         <mat-card-header>
-          <app-user-preview *ngIf="settings.activeProject$.value?.user"
+<!--          <app-user-preview *ngIf="settings.activeProject$.value?.user"
                             [user]="settings.getUser(settings.activeProject$.value!.user)"
-                            style="margin-left: auto;"></app-user-preview>
+                            style="margin-left: auto;"></app-user-preview>-->
           <mat-card-title [title]="settings.activeProject$.value?.name">
             {{settings.activeProject$.value?.name}}
           </mat-card-title>
