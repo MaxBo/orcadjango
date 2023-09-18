@@ -12,11 +12,15 @@ export class UserPreviewComponent {
     this._user = user;
     this.iconUrl = user?.profile?.icon;
     this.color = user?.profile?.color;
+    this.tooltip = user?.username || '';
     if (user?.first_name) {
       this.initials = user?.first_name[0];
+      this.tooltip += ` (${user?.first_name}`;
       if (user?.last_name) {
         this.initials += user?.last_name[0];
+        this.tooltip += ` ${user?.last_name}`;
       }
+      this.tooltip += ')';
     }
     else {
       this.initials = user?.username[0];
@@ -24,9 +28,11 @@ export class UserPreviewComponent {
   }
 
   protected _user?: User;
+  protected tooltip = '';
   protected initials?: string;
   protected iconUrl?: string;
   protected color: string = 'black';
+  @Input() size = 40;
 
   constructor() {}
 }

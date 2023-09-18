@@ -18,6 +18,8 @@
     <div *ngFor="let project of projects">
       <mat-card class="grid-preview-card"
                 [ngClass]="{'selected': settings.activeProject$.value?.id === project.id}"
+                [matTooltip]="project.description"
+                matTooltipPosition="right"
                 [style.border-bottom-color]="settings.getUser(project.user)?.profile?.color || 'grey'">
         <mat-card-header style="cursor: pointer"
                          (click)="onProjectSelected.emit(project)">
@@ -42,8 +44,9 @@
   <!--        <p>
             {{project.description}}
           </p>-->
-          <injectable *ngIf="project.previewInjectable"
+          <injectable *ngIf="project.previewInjectable else projectDesc"
                       [injectable]="project.previewInjectable"></injectable>
+          <ng-template #projectDesc>{{project.description}}</ng-template>
         </mat-card-content>
         <mat-card-actions>
           <button mat-button (click)="onEditProject.emit(project)">EDIT</button>
