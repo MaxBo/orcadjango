@@ -8,17 +8,24 @@ from rest_framework.serializers import ValidationError
 
 from orcaserver.orca import OrcaManager
 from .models import (Project, Profile, Scenario, Injectable, Step, Run,
-                     Module, LogEntry, SiteSetting)
+                     Module, LogEntry, SiteSetting, Avatar)
 from .injectables import OrcaTypeMap
 
 DATETIME_FORMAT = "%d.%m.%Y %H:%M:%S"
 
 
-class ProfileSerializer(serializers.HyperlinkedModelSerializer):
+class AvatarSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Avatar
+        fields = ('id', 'icon','name')
+
+
+class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('icon', 'color')
+        fields = ('color', 'avatar')
 
 
 class UserSerializer(serializers.ModelSerializer):
