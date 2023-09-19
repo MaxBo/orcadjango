@@ -108,7 +108,7 @@
                   <injectable [injectable]="injectable"></injectable>
                 </td>
                 <td>
-                  <button mat-button (click)="editInjectable(injectable)">{{injectable.editable? "EDIT": "SHOW"}}</button>
+                  <button mat-button [disabled]="settings.activeScenario$.value?.is_running" (click)="editInjectable(injectable)">{{injectable.editable? "EDIT": "SHOW"}}</button>
                 </td>
               </tr>
             </table>

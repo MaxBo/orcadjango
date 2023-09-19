@@ -19,8 +19,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .mat-mdc-unelevated-button.mat-primary:not(:disabled), .mat-mdc-unelevated-button.mat-accent:not(:disabled), .mat-mdc-unelevated-button.mat-warn:not(:disabled),
 .mat-mdc-raised-button.mat-primary:not(:disabled), .mat-mdc-raised-button.mat-accent:not(:disabled), .mat-mdc-raised-button.mat-warn:not(:disabled),
-.mat-mdc-mini-fab.mat-primary:not(:disabled), .mat-mdc-mini-fab.mat-accent:not(:disabled), .mat-mdc-mini-fab.mat-warn:not(:disabled){
-  color: white;
+.mat-mdc-mini-fab.mat-primary:not(:disabled), .mat-mdc-mini-fab.mat-accent:not(:disabled), .mat-mdc-mini-fab.mat-warn:not(:disabled), .mdc-checkbox__checkmark {
+  color: white !important;
 }
 
 .page-content {
@@ -152,7 +152,7 @@ mat-card {
   height: 100%;
   background-size: cover;
   opacity: 0.5;
-  z-index: 0;
+  z-index: -1;
   filter: blur(0.6px);
 }
 

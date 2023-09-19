@@ -1,10 +1,17 @@
-<div *ngIf="!(_user?.profile?.icon)"
-     class="user-prev"
-     style="color: {{color}}; border-color: {{color}}">
-  <ng-container *ngIf="!_user else initialsOnly">-</ng-container>
-  <ng-template #initialsOnly>{{initials}}</ng-template>
+<div [matTooltip]="tooltip" style="user-select: none;"
+     [style.font-size]="(size / 2) + 'px'"
+     [style.width]="size + 'px'"
+     [style.height]="size + 'px'">
+  <div *ngIf="!avatar else avatarImage;"
+       class="user-prev"
+       [style.border-color]="color"
+       [style.color]="color">
+    <ng-container *ngIf="!_user else initialsOnly">-</ng-container>
+    <ng-template #initialsOnly>{{initials}}</ng-template>
+  </div>
+  <ng-template #avatarImage>
+    <img class="user-prev"
+         [style.background-image]="'url(' + avatar?.image + ')'"
+         [style.border-color]="color">
+  </ng-template>
 </div>
-<img *ngIf="_user?.profile?.icon"
-     class="user-prev"
-     [style.background-image]="'url(' + _user?.profile?.icon + ')'"
-     style="border-color: {{color}}">

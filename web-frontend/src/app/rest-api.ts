@@ -5,9 +5,16 @@ import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import * as moment from "moment/moment";
 
+export interface Avatar {
+  id: number,
+  name: string,
+  image: string,
+  users: number[]
+}
+
 interface Profile {
-  color: string;
-  icon: string;
+  color: string,
+  avatar: number
 }
 
 export interface User {
@@ -20,24 +27,24 @@ export interface User {
 }
 
 export interface SiteSettings {
-  title: string;
-  contact_mail: string;
-  logo: string;
-  primary_color: string;
-  secondary_color: string;
-  favicon: string;
-  scenario_running_img: string;
-  scenario_running_icon: string;
-  scenario_success_img: string;
-  scenario_success_icon: string;
-  scenario_failed_img: string;
-  scenario_failed_icon: string;
-  welcome_background_img: string;
-  projects_background_img: string;
-  scenarios_background_img: string;
-  injectables_background_img: string;
-  steps_background_img: string;
-  welcome_text: string;
+  title: string,
+  contact_mail: string,
+  logo: string,
+  primary_color: string,
+  secondary_color: string,
+  favicon: string,
+  scenario_running_img: string,
+  scenario_running_icon: string,
+  scenario_success_img: string,
+  scenario_success_icon: string,
+  scenario_failed_img: string,
+  scenario_failed_icon: string,
+  welcome_background_img: string,
+  projects_background_img: string,
+  scenarios_background_img: string,
+  injectables_background_img: string,
+  steps_background_img: string,
+  welcome_text: string
 }
 
 export interface Project {
@@ -152,6 +159,7 @@ export class RestService {
     scenarioLogs: `${ environment.apiPath }/scenarios/{scenarioId}/logs/`,
     sitesettings: `${ environment.apiPath }/settings/`,
     users: `${ environment.apiPath }/users/`,
+    avatars: `${ environment.apiPath }/avatars/`,
     currentUser: `${ environment.apiPath }/users/current/`,
     login: `${ environment.apiPath }/login/`,
     logout: `${ environment.apiPath }/logout/`,
@@ -259,6 +267,10 @@ export class RestService {
     return this.http.get<User[]>(this.URLS.users);
   }
 
+  getAvatars(): Observable<Avatar[]>{
+    return this.http.get<Avatar[]>(this.URLS.avatars);
+  }
+
   getSiteSettings(): Observable<SiteSettings>{
     return this.http.get<SiteSettings[]>(this.URLS.sitesettings).pipe(map(settings => settings[0]));
   }
@@ -278,7 +290,7 @@ export class RestService {
     return this.http.get<ScenarioInjectable>(`${injUrl}${id}/`);
   }
 
-  patchUser(id: number, data: FormData): Observable<User> {
+  patchUser(id: number, data: any): Observable<User> {
     return this.http.patch<User>(`${this.URLS.users}${id}/`, data);
   }
 

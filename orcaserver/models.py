@@ -233,15 +233,19 @@ class Run(models.Model):
                                on_delete=models.SET_NULL, null=True)
 
 
+class Avatar(models.Model):
+    name = models.TextField()
+    image = models.ImageField()
+
+
 class Profile(models.Model):
     '''
     adds additional user information
     '''
     user = models.OneToOneField(User, on_delete=models.CASCADE,
                                 related_name='profile')
-    icon = models.ImageField(null=True, blank=True)
     color = models.CharField(max_length=9, default='black')
-    settings = models.JSONField(default=dict)
+    avatar = models.ForeignKey(Avatar, on_delete=models.SET_NULL, null=True)
 
     def __str__(self) -> str:
         return f'{self.__class__.__name__}: {self.user.username}'

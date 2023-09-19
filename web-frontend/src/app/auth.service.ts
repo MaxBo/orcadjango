@@ -50,9 +50,7 @@ export class AuthService {
         tap(token => {
           this.setLocalStorage(token);
           this.startTokenTimer();
-          this.fetchCurrentUser().subscribe(
-            user=> this.user$.next(user)
-          );
+          this.fetchCurrentUser().subscribe();
         })
       );
     return query;

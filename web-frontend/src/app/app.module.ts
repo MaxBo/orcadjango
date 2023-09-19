@@ -62,6 +62,7 @@ import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { MaterialCssVarsModule } from 'angular-material-css-vars';
 import { ScenarioStatusPreviewComponent } from './pages/scenarios/scenario-status-preview/scenario-status-preview.component';
 import { MatTooltipModule } from "@angular/material/tooltip";
+import { MatRadioModule } from "@angular/material/radio";
 
 const DATE_FORMAT = {
   parse: {
@@ -137,6 +138,7 @@ const DATE_FORMAT = {
             isAutoContrast: true
         }),
         MatTooltipModule,
+        MatRadioModule,
     ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },

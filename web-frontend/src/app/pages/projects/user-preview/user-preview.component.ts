@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { User } from "../../../rest-api";
+import { Avatar, User } from "../../../rest-api";
+import { SettingsService } from "../../../settings.service";
 
 @Component({
   selector: 'app-user-preview',
@@ -10,13 +11,18 @@ export class UserPreviewComponent {
   @Input()
   set user(user: User) {
     this._user = user;
-    this.iconUrl = user?.profile?.icon;
+    this.iconUrl = this.settings.avatars.find(a => a.id === user?.profile.avatar)?.image;
     this.color = user?.profile?.color;
+    this.tooltip = user?.username || '';
+    this.avatar = this.settings.avatars.find(a => a.id === user?.profile.avatar);
     if (user?.first_name) {
       this.initials = user?.first_name[0];
+      this.tooltip += ` (${user?.first_name}`;
       if (user?.last_name) {
         this.initials += user?.last_name[0];
+        this.tooltip += ` ${user?.last_name}`;
       }
+      this.tooltip += ')';
     }
     else {
       this.initials = user?.username[0];
@@ -24,9 +30,12 @@ export class UserPreviewComponent {
   }
 
   protected _user?: User;
+  protected avatar?: Avatar;
+  protected tooltip = '';
   protected initials?: string;
   protected iconUrl?: string;
   protected color: string = 'black';
+  @Input() size = 40;
 
-  constructor() {}
+  constructor(private settings: SettingsService) {}
 }

@@ -5,15 +5,15 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework import status
-from django.conf import settings
 
 from .serializers import (ProjectSerializer, UserSerializer,
                           ScenarioSerializer, ModuleSerializer,
                           ScenarioInjectableSerializer, StepSerializer,
                           ScenarioStepSerializer, InjectableSerializer,
-                          ScenarioLogSerializer, SiteSettingSerializer)
+                          ScenarioLogSerializer, SiteSettingSerializer,
+                          AvatarSerializer)
 from .models import (Project, Scenario, Injectable, Step, Run, LogEntry,
-                     SiteSetting, Module)
+                     SiteSetting, Module, Avatar)
 from orcaserver.orca import OrcaManager
 from orcadjango.loggers import ScenarioHandler
 from .injectables import OrcaTypeMap
@@ -136,6 +136,11 @@ class ScenarioViewSet(viewsets.ModelViewSet):
             return Response({'message': msg}, status.HTTP_400_BAD_REQUEST)
         orca.abort()
         return Response({'message': 'Run aborted'}, status.HTTP_200_OK)
+
+
+class AvatarViewSet(viewsets.ModelViewSet):
+    queryset = Avatar.objects.all()
+    serializer_class = AvatarSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
