@@ -4,7 +4,7 @@
     <ng-template #noLogo>{{settings.siteSettings?.title}}</ng-template>
   </a>
   <span class="page-links" fxShow="true" fxHide.lt-md="true">
-    <a *ngIf="auth.user$ | async"
+    <a *ngIf="settings.user$ | async"
        class="link"
        title="projects"
        routerLink="/projects"
@@ -48,13 +48,13 @@
   <button mat-button id="userButton" [matMenuTriggerFor]="userMenu">
     <div style="display: flex; height: 45px;">
       <span style="line-height: 44px; margin-right: 10px;">
-        {{(auth.user$ | async)?.username || 'not logged in'}}
+        {{(settings.user$ | async)?.username || 'not logged in'}}
       </span>
-      <app-user-preview *ngIf="(auth.user$ | async)" [user]="auth.user$.value"></app-user-preview>
+      <app-user-preview *ngIf="settings.user$ | async" [user]="settings.user$ | async"></app-user-preview>
     </div>
   </button>
   <mat-menu #userMenu>
-    <ng-container *ngIf="(auth.user$ | async) else login">
+    <ng-container *ngIf="(settings.user$ | async) else login">
       <a mat-menu-item
          *ngIf="(settings.user$ | async)?.is_superuser"
          [href]="settings.host + '/admin/'" target="_blank">
@@ -78,7 +78,7 @@
 <mat-sidenav-container class="main-container">
 <!--  ToDo: replace hiding side nav based on router url by introducing a parent component for these routes that contains the side nav-->
   <mat-sidenav class="sidenav" mode="side" opened
-               *ngIf=" (auth.user$ | async) && (router.url === '/steps' || router.url === '/scenarios' || router.url === '/projects' || router.url === '/injectables')">
+               *ngIf=" (settings.user$ | async) && (router.url === '/steps' || router.url === '/scenarios' || router.url === '/projects' || router.url === '/injectables')">
     <mat-form-field id="module-select">
       <mat-label>Module</mat-label>
       <mat-select (selectionChange)="settings.setModule($event.value)" [value]="settings.module$.value?.name">

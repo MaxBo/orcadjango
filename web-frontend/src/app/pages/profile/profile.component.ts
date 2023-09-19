@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
 import { SettingsService } from "../../settings.service";
-import { RestService, User } from "../../rest-api";
+import { Avatar, RestService, User } from "../../rest-api";
 import { PageComponent } from "../../app.component";
 
 @Component({
@@ -12,20 +12,18 @@ import { PageComponent } from "../../app.component";
 export class ProfileComponent extends PageComponent implements OnInit {
   accountForm!: FormGroup;
   passwordForm!: FormGroup;
-  imageSrc?: string;
-  imageFile?: File;
   colorSelection: string = 'black';
+  avatarSelection: number = -1;
   changePassword: boolean = false;
   showAccountPassword: boolean = false;
   showConfirmPassword: boolean = false;
 
-  constructor(private formBuilder: FormBuilder, private settings: SettingsService, private rest: RestService) {
+  constructor(private formBuilder: FormBuilder, protected settings: SettingsService, private rest: RestService) {
     super();
   }
 
   ngOnInit() {
     this.subscriptions.push(this.settings.user$.subscribe(user => {
-      this.imageSrc = user?.profile.icon;
       this.fillForms(user)
     }));
   }
@@ -41,6 +39,7 @@ export class ProfileComponent extends PageComponent implements OnInit {
       confirmPass: new FormControl({ value: '', disabled: !this.changePassword })
     });
     this.colorSelection = user?.profile.color || 'black';
+    this.avatarSelection = user?.profile.avatar || -1;
   }
 
   onTogglePassChange(checked: boolean) {
@@ -55,28 +54,17 @@ export class ProfileComponent extends PageComponent implements OnInit {
     }
   }
 
-  onImageChange(files: FileList) {
-    if (!files.length) return;
-    this.imageFile = files[0];
-    const reader = new FileReader();
-    reader.readAsDataURL(this.imageFile);
-    reader.onload = () => {
-      this.imageSrc = reader.result as string;
-      // this.myForm.patchValue({
-      //   fileSource: reader.result
-      // });
-    }
-  }
-
   confirm() {
     const userId = this.settings.user$.value?.id;
     if (userId == undefined) return;
-    const formData = new FormData();
     this.accountForm.markAllAsTouched();
     if (this.accountForm.invalid) return;
-    formData.append('username', this.accountForm.value.username);
-    formData.append('first_name', this.accountForm.value.firstName);
-    formData.append('last_name', this.accountForm.value.lastName);
+    let data: any = {
+      username: this.accountForm.value.username,
+      first_name: this.accountForm.value.firstName,
+      last_name: this.accountForm.value.lastName,
+      profile: { color: this.colorSelection }
+    }
     if (this.changePassword) {
       this.passwordForm.markAllAsTouched();
       if (this.passwordForm.invalid) return;
@@ -85,14 +73,22 @@ export class ProfileComponent extends PageComponent implements OnInit {
         alert('The passwords do not match!');
         return;
       }
-      formData.append('password', pass);
+      data.password = pass;
     }
-    formData.append('profile[color]', this.colorSelection);
-    if (this.imageFile)
-      formData.append('profile[icon]', this.imageFile);
-    this.rest.patchUser(userId, formData).subscribe(user => {
-      // this.settings.user$.next(user);
+    if (this.avatarSelection > -1)
+      data.profile.avatar = this.avatarSelection
+    this.rest.patchUser(userId, data).subscribe(user => {
       window.location.reload();
     })
+  }
+
+  getAvatarTooltip(avatar: Avatar) {
+    let tooltip = avatar.name;
+    if (avatar.users.length > 0) {
+      tooltip += ` (used by: ${avatar.users.map(id => this.settings.getUser(id)?.username).join(', ')})`;
+    }
+    else
+      tooltip += ' (not in use)'
+    return tooltip;
   }
 }

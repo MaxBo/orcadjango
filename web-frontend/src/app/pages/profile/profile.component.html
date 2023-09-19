@@ -22,19 +22,23 @@
       </form>
       <mat-divider style="margin: 10px 0 20px 0;"></mat-divider>
       <mat-label>Profile picture</mat-label>
-      <div fxLayout="row" style="align-items: center; margin: 5px 0 15px 0;">
-        <img id="image-preview" [style.background-image]="'url(' + imageSrc + ')'" [style.border-color]="colorSelection">
-    <!--    <button type="button" mat-raised-button (click)="imageInput.click()">Choose File</button>-->
-        <input style="margin-left: 10px;"
-               type="file" accept="image/*"
-               (change)="onImageChange($event.target.files)">
+      <mat-radio-group id="avatar-group"
+                       [(ngModel)]="avatarSelection">
+        <mat-radio-button *ngFor="let avatar of settings.avatars"
+                          [matTooltip]="getAvatarTooltip(avatar)"
+                          [value]="avatar.id">
+          <img class="avatar-preview"
+               [style.background-image]="'url(' + avatar.image + ')'">
+        </mat-radio-button>
+      </mat-radio-group>
+      <div >
       </div>
-      <mat-label>Color</mat-label>
+      <mat-label>Profile color</mat-label>
       <div fxLayout="row">
         <div style="display: flex; align-items: baseline;">
           <div id="color-preview"
                [(colorPicker)]="colorSelection"
-               [style.backgroundColor]="colorSelection">
+               [style.background-color]="colorSelection">
           </div>
           <button mat-button color="primary"
                   [(colorPicker)]="colorSelection">

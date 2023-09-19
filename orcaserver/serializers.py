@@ -15,10 +15,15 @@ DATETIME_FORMAT = "%d.%m.%Y %H:%M:%S"
 
 
 class AvatarSerializer(serializers.ModelSerializer):
+    #users = serializers.ListField(source='profile_set__user_id')
+    users = serializers.SerializerMethodField()
 
     class Meta:
         model = Avatar
-        fields = ('id', 'icon','name')
+        fields = ('id', 'image', 'name', 'users')
+
+    def get_users(self, obj):
+        return obj.profile_set.values_list('user_id', flat=True)
 
 
 class ProfileSerializer(serializers.ModelSerializer):

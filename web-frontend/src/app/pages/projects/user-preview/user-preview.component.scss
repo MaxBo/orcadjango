@@ -10,6 +10,8 @@
   align-items: center;
   justify-content: center;
   background-color: white;
-  background-size: cover;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
   font-family: Calibri;
 }

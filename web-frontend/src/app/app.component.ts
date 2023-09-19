@@ -1,8 +1,9 @@
-import { Component, Injectable, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, Injectable, OnDestroy } from '@angular/core';
 import { SettingsService } from "./settings.service";
 import { AuthService } from "./auth.service";
 import { BehaviorSubject, Subscription } from "rxjs";
 import { Router } from "@angular/router";
+import { User } from "./rest-api";
 
 @Injectable()
 export abstract class PageComponent implements OnDestroy {
@@ -32,8 +33,9 @@ export abstract class PageComponent implements OnDestroy {
 })
 export class AppComponent {
   title = 'web-frontend';
+  protected user?: User;
 
-  constructor(protected settings: SettingsService, protected auth: AuthService, protected router: Router) {
+  constructor(protected settings: SettingsService, protected auth: AuthService, protected router: Router, private cdRef: ChangeDetectorRef) {
     this.auth.getCurrentUser().subscribe();
   }
 }

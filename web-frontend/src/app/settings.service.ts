@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable } from "@angular/core";
 import { CookieService } from "ngx-cookie-service";
-import { Inj, Module, Project, RestService, Scenario, ScenarioLogEntry, SiteSettings, User } from "./rest-api";
+import { Avatar, Inj, Module, Project, RestService, Scenario, ScenarioLogEntry, SiteSettings, User } from "./rest-api";
 import { BehaviorSubject } from "rxjs";
 import { AuthService } from "./auth.service";
 import { environment } from "../environments/environment";
@@ -15,6 +15,7 @@ export class SettingsService {
   module$ = new BehaviorSubject<Module | undefined>(undefined);
   moduleInjectables: Inj[] = [];
   users: User[] = [];
+  avatars: Avatar[] = [];
   host: string = '';
   modules: Module[] = [];
   private scenarioLogSocket?: WebSocket;
@@ -61,9 +62,14 @@ export class SettingsService {
         });
         this.rest.getUsers().subscribe(users => {
           this.users = users;
+          this.rest.getAvatars().subscribe(avatars => {
+            this.avatars = avatars;
+            this.user$.next(user);
+          });
         });
       }
-      this.user$.next(user);
+      else
+        this.user$.next(undefined);
     })
     this.module$.subscribe(module => {
       if (!module) {
