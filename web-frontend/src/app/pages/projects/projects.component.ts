@@ -165,7 +165,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
   }
 
   sortProjects(): void {
-    this.filteredProjects = sortBy(this.filteredProjects, this.sortAttr, {reverse: !this.sortAscending});
+    this.filteredProjects = sortBy(this.filteredProjects, this.sortAttr, { reverse: !this.sortAscending, lowerCase: this.sortAttr === 'name' });
   }
 
   filter(): void {

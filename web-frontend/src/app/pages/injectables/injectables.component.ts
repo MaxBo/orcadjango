@@ -7,10 +7,15 @@ import { DerivedInjectableDialogComponent } from "./derived/derived-injectable.c
 import { PageComponent } from "../../app.component";
 import { ConfirmDialogComponent } from "../../elements/confirm-dialog/confirm-dialog.component";
 
-export function sortBy(array: any[], attr: string, options: { reverse: boolean } = { reverse: false }): any[]{
-  let sorted = array.sort((a, b) =>
-    (a[attr] > b[attr])? 1: (a[attr] < b[attr])? -1: 0);
-  if (options.reverse)
+export function sortBy(array: any[], attr: string, options?: { reverse?: boolean, lowerCase?: boolean }): any[]{
+  let sorted = array.sort((a, b) => {
+    let left = a[attr]; let right = b[attr];
+    if (options?.lowerCase) {
+      left = left.toLowerCase(); right = right.toLowerCase();
+    }
+    return (left > right) ? 1 : (left < right) ? -1 : 0;
+  });
+  if (options?.reverse)
     sorted = sorted.reverse();
   return sorted;
 }
