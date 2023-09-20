@@ -17,6 +17,9 @@
        fxLayoutGap="20px 20px grid">
     <div *ngFor="let scenario of scenarios">
       <mat-card class="grid-preview-card"
+                [matTooltip]="scenario.name + '\n\n' + scenario.description"
+                matTooltipClass="multiLineTooltip"
+                matTooltipPosition="right"
                 [ngClass]="{'selected': settings.activeScenario$.value?.id === scenario.id}">
         <mat-card-header style="cursor: pointer"
                          (click)="onScenarioSelected.emit(scenario)">
