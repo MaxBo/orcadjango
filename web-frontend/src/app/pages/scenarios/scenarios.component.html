@@ -35,7 +35,9 @@
     </app-scenario-list-view>
   </ng-container>
 </div>
-<button mat-button *ngIf="settings.activeScenario$ | async"
+<button *ngIf="settings.activeScenario$ | async"
+        mat-flat-button
+        color="primary"
         class="next"
         routerLink="/injectables">
   Next

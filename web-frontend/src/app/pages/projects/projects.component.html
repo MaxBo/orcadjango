@@ -115,7 +115,9 @@
     </app-project-list-view>
   </ng-container>
 </div>
-<button mat-button *ngIf="settings.activeProject$ | async"
+<button *ngIf="settings.activeProject$ | async"
+        mat-flat-button
+        color="primary"
         class="next"
         routerLink="/scenarios">
   Next
