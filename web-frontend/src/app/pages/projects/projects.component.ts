@@ -43,6 +43,19 @@ export class ProjectsComponent extends PageComponent implements OnInit{
       this.viewType = 'list-view';
     this.sortAttr = this.cookies.get('project-sortAttr') || 'name';
     this.sortDescending = this.cookies.get('project-sortDescending') === 'true';
+    this.showFilters = this.cookies.get('project-showFilters') === 'true';
+    this.filterByUsers = this.cookies.get('project-filterByUsers') === 'true';
+    this.filterByDate = this.cookies.get('project-filterByDate') === 'true';
+    this.filterByCodes = this.cookies.get('project-filterByCodes') === 'true';
+    this.filterArchive = this.cookies.get('project-filterArchive') === 'true';
+    // @ts-ignore
+    this.filterDateOperator = this.cookies.get('project-filterDateOperator') || '>';
+    const cookieUsers = this.cookies.get('project-filterUsers');
+    this.filterUsers = cookieUsers? cookieUsers.split(',').map(u => Number(u)): [];
+    const cookieCodes = this.cookies.get('project-filterCodes');
+    this.filterCodes = cookieCodes? cookieCodes.split(','): [];
+    const cookiesDate = this.cookies.get('project-filterDate');
+    if (cookiesDate) this.filterDate = moment(cookiesDate, 'YYYY-MM-DD');
     this.subscriptions.push(this.settings.module$.subscribe(module => {
       if (!module) {
         this.projects = [];
@@ -191,11 +204,67 @@ export class ProjectsComponent extends PageComponent implements OnInit{
     this.sortProjects();
   }
 
+  setShowFilters(showFilters: boolean): void {
+    this.showFilters = showFilters;
+    this.cookies.set('project-showFilters', showFilters.toString());
+  }
+
+  setFilterByUsers(filterByUsers: boolean): void {
+    this.filterByUsers = filterByUsers;
+    this.cookies.set('project-filterByUsers', filterByUsers.toString());
+    this.filter();
+  }
+
+  setFilterByDate(filterByDate: boolean): void {
+    this.filterByDate = filterByDate;
+    this.cookies.set('project-filterByDate', filterByDate.toString());
+    this.filter();
+  }
+
+  setFilterByCodes(filterByCodes: boolean): void {
+    this.filterByCodes = filterByCodes;
+    this.cookies.set('project-filterByCodes', filterByCodes.toString());
+    this.filter();
+  }
+
+  setFilterArchive(filterArchive: boolean): void {
+    this.filterArchive = filterArchive;
+    this.cookies.set('project-filterArchive', filterArchive.toString());
+    this.filter();
+  }
+
+  setNextFilterOperator(): void {
+    this.filterDateOperator = (this.filterDateOperator === '=')? '>' : (this.filterDateOperator === '>')? '<': '=';
+    this.cookies.set('project-filterDateOperator', this.filterDateOperator.toString());
+    this.filter();
+  }
+
+  setFilterUsers(users: number[]): void {
+    this.filterUsers = users;
+    this.cookies.set('project-filterUsers', users.join(','));
+    this.filter();
+  }
+
+  setFilterCodes(codes: string[]): void {
+    this.filterCodes = codes;
+    this.cookies.set('project-filterCodes', codes.join(','));
+    this.filter();
+  }
+
+  setFilterDate(): void {
+    const dateString = this.filterDate?.format('YYYY-MM-DD');
+    this.cookies.set('project-filterDate', dateString || '');
+    this.filter();
+  }
+
   sortProjects(): void {
+    this.isLoading$.next(true);
     this.filteredProjects = sortBy(this.filteredProjects, this.sortAttr, { reverse: this.sortDescending, lowerCase: this.sortAttr === 'name' });
+    this.isLoading$.next(false);
   }
 
   filter(): void {
+    this.isLoading$.next(true);
     this.filteredProjects = this.projects.filter(p => p.archived === this.filterArchive);
     if (this.filterByUsers && this.filterUsers.length) {
       this.filteredProjects = this.filteredProjects.filter(p => (p.user !== undefined) && this.filterUsers.includes(p.user)) || [];
@@ -207,11 +276,13 @@ export class ProjectsComponent extends PageComponent implements OnInit{
       const date = this.filterDate.toDate();
       date.setHours(0,0,0,0);
       this.filteredProjects = this.filteredProjects.filter(p =>
-        p.date && (
-        (this.filterDateOperator === '>')? p.date.valueOf() > date.valueOf():
-          (this.filterDateOperator === '<')? p.date.valueOf() < date.valueOf():
-            p.date.valueOf() === date.valueOf())
-      );
+        (p.date === undefined && this.filterDateOperator === '<') || ( // assume undefined dates to be older as any date
+          p.date && (
+          (this.filterDateOperator === '<')? (p.date.valueOf() < date.valueOf()):
+            (this.filterDateOperator === '>')? p.date.valueOf() > date.valueOf():
+            p.date.valueOf() === date.valueOf()
+          )
+      ));
     }
     this.sortProjects();
   }
