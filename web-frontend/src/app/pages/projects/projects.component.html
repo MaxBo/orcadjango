@@ -1,7 +1,7 @@
 <div class="load-overlay" *ngIf="isLoading$ | async">
   <mat-spinner [diameter]="50"></mat-spinner>
 </div>
-<div class="page-content">
+<div class="page-content" *ngIf="settings.module$ | async">
   <div style="display: flex;">
     <h1 style="margin: 16px 15px 16px 0;">Projects</h1>
     <mat-button-toggle-group style="height: 40px; align-items: center; align-self: center;"
@@ -18,7 +18,7 @@
     </mat-button-toggle-group>
     <div style="display: flex; margin-left: auto; align-items: center;">
       <mat-button-toggle style="margin-right: 10px;"
-                         (click)="showFilters = !showFilters">
+                         (click)="setShowFilters(!showFilters)">
         Filter Options
         <ng-container *ngIf="(filterByCodes || filterByUsers || filterByDate || filterArchive) else noFilter" >
           <mat-icon color="accent">filter_alt</mat-icon>
@@ -29,7 +29,7 @@
       </mat-button-toggle>
       <mat-form-field style="margin-bottom: -20px;">
         <mat-label>Sort by</mat-label>
-        <mat-select [value]="sortAttr" (selectionChange)="this.sortAttr = $event.value || 'name'; sortProjects();">
+        <mat-select [value]="sortAttr" (selectionChange)="this.setSortAttr($event.value || 'name')">
           <mat-option value="name">Name</mat-option>
           <mat-option value="code">Code</mat-option>
           <mat-option value="date">Date</mat-option>
@@ -38,31 +38,33 @@
       <button mat-mini-fab
               color="accent"
               class="flat micro"
-              [title]="'sort order: ' + (sortAscending? 'ascending': 'descending')"
-              (click)="sortAscending = !sortAscending; sortProjects();"
+              [title]="'sort order: ' + (sortDescending? 'descending': 'ascending')"
+              (click)="setSortDescending(!sortDescending)"
               style="margin-left: 5px;">
-        <mat-icon>{{sortAscending ? 'arrow_upward' : 'arrow_downward'}}</mat-icon>
+        <mat-icon>{{sortDescending? 'arrow_downward': 'arrow_upward'}}</mat-icon>
       </button>
     </div>
   </div>
   <div id="filter-view" [ngClass]="{'expanded': showFilters}">
     <div>
-      <mat-checkbox [checked]="filterByUsers" (change)="filterByUsers = !filterByUsers; filter();"></mat-checkbox>
+      <mat-checkbox [checked]="filterByUsers" (change)="setFilterByUsers(!filterByUsers)"></mat-checkbox>
       <mat-form-field>
         <mat-label>Filter by Users</mat-label>
         <mat-select multiple [disabled]="!filterByUsers"
-                    (selectionChange)="filterUsers = $event.value; filter();">
+                    [value]="filterUsers"
+                    (selectionChange)="setFilterUsers($event.value)">
           <mat-option *ngFor="let user of settings.users"
                       [value]="user.id">
             {{settings.getUserName(user.id)}}
           </mat-option>
         </mat-select>
       </mat-form-field>
-      <mat-checkbox [checked]="filterByCodes" (change)="filterByCodes = !filterByCodes; filter();"></mat-checkbox>
+      <mat-checkbox [checked]="filterByCodes" (change)="setFilterByCodes(!filterByCodes)"></mat-checkbox>
       <mat-form-field>
         <mat-label>Filter by codes</mat-label>
         <mat-select multiple [disabled]="!filterByCodes"
-                    (selectionChange)="filterCodes = $event.value; filter();">
+                    [value]="filterCodes"
+                    (selectionChange)="setFilterCodes($event.value)">
           <mat-option *ngFor="let code of getUniqueValues(projects, 'code')"
                       [value]="code">
             {{code}}
@@ -70,14 +72,14 @@
         </mat-select>
       </mat-form-field>
       <mat-checkbox [checked]="filterByDate"
-                    (change)="filterByDate = !filterByDate; filter();"></mat-checkbox>
+                    (change)="setFilterByDate(!filterByDate)"></mat-checkbox>
       <button mat-mini-fab
               color="accent"
               class="flat micro"
               [value]="filterDateOperator"
               [disabled]="!filterByDate"
               [title]="(filterDateOperator === '=')? 'at': (filterDateOperator === '>')? 'newer than': 'older than'"
-              (click)="filterDateOperator = (filterDateOperator === '=')? '>' : (filterDateOperator === '>')? '<': '='; filter();"
+              (click)="setNextFilterOperator()"
               style="margin-right: 5px; font-size: 20px; font-weight: bold;">
         {{filterDateOperator}}
       </button>
@@ -86,12 +88,12 @@
         <input matInput [disabled]="!filterByDate"
                [matDatepicker]="picker"
                [(ngModel)]="filterDate"
-               (ngModelChange)="filter()">
+               (ngModelChange)="setFilterDate()">
         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
       <mat-checkbox [checked]="filterArchive"
-                    (change)="filterArchive = !filterArchive; filter();">
+                    (change)="setFilterArchive(!filterArchive)">
         Archive
       </mat-checkbox>
     </div>
