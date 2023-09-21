@@ -20,7 +20,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
   protected filteredProjects: Project[] = [];
   protected showFilters = false;
   protected viewType: 'list-view' | 'grid-view' = 'grid-view';
-  protected sortAscending = true;
+  protected sortDescending = false;
   protected sortAttr = 'name'; //'name' | 'code' | 'date';
   protected filterByUsers = false;
   protected filterByCodes = false;
@@ -39,7 +39,10 @@ export class ProjectsComponent extends PageComponent implements OnInit{
 
   ngOnInit() {
     const viewType = this.cookies.get('project-view-type');
-    if (viewType === 'list-view') this.viewType = 'list-view';
+    if (viewType === 'list-view')
+      this.viewType = 'list-view';
+    this.sortAttr = this.cookies.get('project-sortAttr') || 'name';
+    this.sortDescending = this.cookies.get('project-sortDescending') === 'true';
     this.subscriptions.push(this.settings.module$.subscribe(module => {
       if (!module) {
         this.projects = [];
@@ -176,8 +179,20 @@ export class ProjectsComponent extends PageComponent implements OnInit{
     this.cookies.set('project-view-type', viewType);
   }
 
+  setSortAttr(attr: string): void {
+    this.sortAttr = attr;
+    this.cookies.set('project-sortAttr', this.sortAttr);
+    this.sortProjects();
+  }
+
+  setSortDescending(descending: boolean): void {
+    this.sortDescending = descending;
+    this.cookies.set('project-sortDescending', descending.toString());
+    this.sortProjects();
+  }
+
   sortProjects(): void {
-    this.filteredProjects = sortBy(this.filteredProjects, this.sortAttr, { reverse: !this.sortAscending, lowerCase: this.sortAttr === 'name' });
+    this.filteredProjects = sortBy(this.filteredProjects, this.sortAttr, { reverse: this.sortDescending, lowerCase: this.sortAttr === 'name' });
   }
 
   filter(): void {

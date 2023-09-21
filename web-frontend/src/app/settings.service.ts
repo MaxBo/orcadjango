@@ -18,6 +18,7 @@ export class SettingsService {
   avatars: Avatar[] = [];
   host: string = '';
   modules: Module[] = [];
+  isLoading$ = new BehaviorSubject<boolean>(false);
   private scenarioLogSocket?: WebSocket;
   onScenarioLogMessage = new EventEmitter<ScenarioLogEntry>;
   siteSettings?: SiteSettings;
@@ -41,6 +42,7 @@ export class SettingsService {
     this.wsURL = `${(environment.production && strippedHost.indexOf('localhost') === -1)? 'wss:': 'ws:'}//${strippedHost}/ws/scenariolog/`;
     this.auth.user$.subscribe(user => {
       if (user) {
+        this.isLoading$.next(true);
         this.rest.getUsers().subscribe(users => {
           this.users = users;
           this.rest.getAvatars().subscribe(avatars => {
@@ -64,12 +66,14 @@ export class SettingsService {
                   this.activeScenario$.next(scenario);
                 })
               }
+              this.isLoading$.next(false);
             });
           });
         });
       }
-      else
+      else {
         this.user$.next(undefined);
+      }
     })
     this.module$.subscribe(module => {
       if (!module) {

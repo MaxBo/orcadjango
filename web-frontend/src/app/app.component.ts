@@ -7,8 +7,8 @@ import { User } from "./rest-api";
 
 @Injectable()
 export abstract class PageComponent implements OnDestroy {
-  isLoading$ = new BehaviorSubject<boolean>(false);
   private _isLoading = false;
+  isLoading$ = new BehaviorSubject<boolean>(false);
   private loadCount = 0;
   protected subscriptions: Subscription[] = [];
 

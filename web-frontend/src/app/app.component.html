@@ -1,3 +1,6 @@
+<div class="load-overlay" *ngIf="settings.isLoading$ | async">
+  <mat-spinner [diameter]="50"></mat-spinner>
+</div>
 <mat-toolbar class="main-nav">
   <a class="navbar-brand" href="/">
     <img *ngIf="settings.siteSettings?.logo else noLogo" [src]="settings.siteSettings?.logo">
@@ -82,7 +85,6 @@
     <mat-form-field id="module-select">
       <mat-label>Module</mat-label>
       <mat-select (selectionChange)="settings.setModule($event.value)" [value]="settings.module$.value?.name">
-        <mat-option value="">none</mat-option>
         <mat-option *ngFor="let module of settings.modules"
                     [value]="module.name"
                     [matTooltip]="module.description"
