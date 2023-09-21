@@ -84,6 +84,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
         dialogRef.close();
         formatProject(created, { previewInjName: this.settings.module$.value?.preview_injectable });
         this.projects.push(created);
+        this.settings.setActiveProject(created);
         this.filter();
       }, error => {
         dialogRef.componentInstance.setErrors(error.error);
@@ -126,7 +127,8 @@ export class ProjectsComponent extends PageComponent implements OnInit{
     const data: ProjectEditDialogData = {
       title: 'Edit Project',
       confirmButtonText: 'Save',
-      project: project
+      project: project,
+      showDate: true
     }
     const dialogRef = this.dialog.open(ProjectEditDialogComponent, {
       panelClass: 'absolute',
@@ -136,7 +138,17 @@ export class ProjectsComponent extends PageComponent implements OnInit{
     });
     dialogRef.componentInstance.projectConfirmed.subscribe((edited) => {
       dialogRef.componentInstance.setLoading(true);
-      this.rest.patchProject(project, { name: edited.name, description: edited.description, user: edited.user, code: edited.code, injectables: edited.injectables }).subscribe(patched => {
+      let data: any = {
+        name: edited.name,
+        description: edited.description,
+        user: edited.user,
+        code: edited.code,
+        injectables: edited.injectables,
+        created: edited.created
+      };
+      if (edited.date)
+        data.created = moment(edited.date).format('YYYY-MM-DD');
+      this.rest.patchProject(project, data).subscribe(patched => {
         dialogRef.close();
         Object.assign(project, patched);
         formatProject(project, { previewInjName: this.settings.module$.value?.preview_injectable });

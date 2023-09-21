@@ -41,6 +41,15 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
+    <mat-form-field *ngIf="data.showDate"
+                    style="transform: translateY(7px);">
+      <mat-label>Created</mat-label>
+      <input matInput
+             [matDatepicker]="picker"
+             formControlName="date">
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
   </form>
   <h2>Injectables</h2>
   <p><i>The injectables act as defaults for newly created scenarios inside the project. They can be overriden in each scenario after creation independently.</i></p>

@@ -1,7 +1,6 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.utils import timezone
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 import json
@@ -44,11 +43,6 @@ class Project(NameModel):
     # ToDo: saved as plain text, maybe custom field here so that you don't need
     # to dump/load outside
     init = models.TextField(default='{}')
-
-    def save(self, *args, **kwargs):
-        if self.pk is None:
-            self.created = timezone.now()
-        return super().save(*args, **kwargs)
 
     @property
     def _module(self):

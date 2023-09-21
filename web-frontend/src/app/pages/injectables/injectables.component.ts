@@ -13,7 +13,7 @@ export function sortBy(array: any[], attr: string, options?: { reverse?: boolean
     if (options?.lowerCase) {
       left = left.toLowerCase(); right = right.toLowerCase();
     }
-    return (left > right) ? 1 : (left < right) ? -1 : 0;
+    return (left > right || (left !== undefined && right === undefined)) ? 1 : (left < right || (left === undefined && right !== undefined)) ? -1 : 0;
   });
   if (options?.reverse)
     sorted = sorted.reverse();
