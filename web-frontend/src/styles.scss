@@ -157,9 +157,15 @@ mat-card {
 }
 
 .mat-divider.mat-divider-horizontal {
-  margin: 10px 0;
+  margin: 20px 0;
 }
 
 .multiLineTooltip {
   white-space: pre-line;
+}
+
+.text-panel {
+  padding: 10px;
+  background-color: #ffffffcc;
+  max-width: 1000px;
 }
