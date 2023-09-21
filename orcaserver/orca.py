@@ -145,6 +145,7 @@ class OrcaManager(ModuleSingleton):
         desc = {
             'order': 10000000,
             'group': '',
+            'title': '',
             'unique': False,
         }
         _meta = orca_meta.get(injectable, {})

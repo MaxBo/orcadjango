@@ -81,6 +81,7 @@ export interface Scenario {
 
 export interface Inj {
   name: string,
+  title: string,
   value: any,
   description?: string,
   group?: string,

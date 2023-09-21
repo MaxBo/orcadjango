@@ -242,6 +242,7 @@ class InjectableSerializer(serializers.Serializer):
     group = serializers.CharField(source='meta.group')
     order = serializers.CharField(source='meta.order')
     unique = serializers.CharField(source='meta.unique')
+    title = serializers.CharField(source='meta.title')
     value = serializers.JSONField(source='serialized_value')
 
     def get_choices(self, obj):
@@ -277,11 +278,11 @@ class ScenarioInjectableSerializer(InjectableSerializer,
 
     class Meta:
         model = Injectable
-        fields = ('id', 'name', 'group', 'order', 'scenario', 'value', 'multi',
+        fields = ('id', 'name', 'title', 'group', 'order', 'scenario', 'value', 'multi',
                   'datatype', 'parents', 'description', 'editable', 'choices',
                   'unique')
         read_only_fields = ('scenario', 'parents', 'name', 'editable',
-                            'choices', 'unique')
+                            'choices', 'unique', 'title')
 
     def update(self, instance, validated_data):
         if 'serialized_value' in validated_data:

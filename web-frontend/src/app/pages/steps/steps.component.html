@@ -102,7 +102,7 @@
             <table style="width: 100%;" (mousedown)="$event.preventDefault(); $event.stopPropagation();">
               <tr *ngFor="let injectable of getInjectables(step)">
                 <td style="padding-right: 15px;">
-                  <b>{{injectable.name}}</b>
+                  <b>{{injectable.title || injectable.name}}</b>
                 </td>
                 <td style="min-width: 200px;" *ngIf="injectable.value !== undefined">
                   <injectable [injectable]="injectable"></injectable>
