@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup } from "@angular/forms";
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BehaviorSubject } from "rxjs";
 import { SettingsService } from "../../../settings.service";
+import { Moment } from "moment/moment";
 
 export interface ProjectEditDialogData {
   project?: Project,
@@ -11,6 +12,7 @@ export interface ProjectEditDialogData {
   confirmButtonText?: string,
   cancelButtonText?: string,
   closeOnConfirm?: boolean,
+  showDate?: boolean
 }
 
 @Component({
@@ -21,6 +23,7 @@ export class ProjectEditDialogComponent {
   protected projectForm: FormGroup;
   protected errors: Record<string, string> = {};
   protected project?: Project;
+  protected createdDate?: Moment;
   private injValues: any[];
   isLoading$ = new BehaviorSubject<boolean>(false);
   @Output() projectConfirmed = new EventEmitter<Project>();
@@ -36,7 +39,8 @@ export class ProjectEditDialogComponent {
       name: this.project?.name || '',
       description: this.project?.description || '',
       user: this.project?.user || -1,
-      code: this.project?.code || ''
+      code: this.project?.code || '',
+      date:  this.project?.date
     })
   }
 
@@ -60,7 +64,7 @@ export class ProjectEditDialogComponent {
       return clone;
     }): [];
     if (Object.keys(this.errors).length) return;
-    const project = {
+    const project: any = {
       id: this.project?.id,
       name: this.projectForm.value.name,
       description: this.projectForm.value.description,
@@ -69,6 +73,9 @@ export class ProjectEditDialogComponent {
       init: [],
       injectables: injectables,
       scenario_count: this.project?.scenario_count || 0
+    }
+    if (this.data.showDate) {
+      project.date = this.projectForm.value.date;
     }
     this.projectConfirmed.emit(project);
   }

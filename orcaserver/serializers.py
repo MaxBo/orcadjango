@@ -3,8 +3,8 @@ from django.contrib.auth.models import User
 from collections import OrderedDict
 import re
 import json
-from django.conf import settings
 from rest_framework.serializers import ValidationError
+from django.utils import timezone
 
 from orcaserver.orca import OrcaManager
 from .models import (Project, Profile, Scenario, Injectable, Step, Run,
@@ -148,7 +148,7 @@ def validate_unique_inj(inj_name: str, value, project_id: int = None):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
-    created = serializers.DateTimeField(format="%Y-%m-%d", read_only=True)
+    created = serializers.DateTimeField(format="%Y-%m-%d")
     injectables = ProjectInjectablesSerializerField(required=False)
     scenario_count = serializers.IntegerField(source='scenario_set.count',
                                               read_only=True)
@@ -157,14 +157,18 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields =  ('id', 'name', 'description', 'module', 'code', 'user',
                    'archived', 'created', 'injectables', 'scenario_count')
-        optional_fields = ('module', 'code', 'user', 'archived')
+        optional_fields = ('module', 'code', 'user', 'archived', 'created')
 
     def create(self, validated_data):
         module_path = validated_data.get('module')
         if not module_path:
             raise ValidationError('module missing')
         self.__validate_inj(module_path, validated_data)
-        return super().create(validated_data)
+        instance = super().create(validated_data)
+        if not validated_data.get('created'):
+            instance.created = timezone.now()
+            instance.save()
+        return instance
 
     def update(self, obj, validated_data):
         self.__validate_inj(obj.module, validated_data, project=obj)
