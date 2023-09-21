@@ -84,6 +84,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
         dialogRef.close();
         formatProject(created, { previewInjName: this.settings.module$.value?.preview_injectable });
         this.projects.push(created);
+        this.settings.setActiveProject(created);
         this.filter();
       }, error => {
         dialogRef.componentInstance.setErrors(error.error);
