@@ -18,7 +18,8 @@
     <div *ngFor="let project of projects">
       <mat-card class="grid-preview-card"
                 [ngClass]="{'selected': settings.activeProject$.value?.id === project.id}"
-                [matTooltip]="project.description"
+                [matTooltip]="project.name + '\n\n' + project.description"
+                matTooltipClass="multiLineTooltip"
                 matTooltipPosition="right"
                 [style.border-bottom-color]="settings.getUser(project.user)?.profile?.color || 'grey'">
         <mat-card-header style="cursor: pointer"

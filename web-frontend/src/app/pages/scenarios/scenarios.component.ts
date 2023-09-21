@@ -62,7 +62,9 @@ export class ScenariosComponent extends PageComponent implements OnInit {
       scenario.project = this.settings.activeProject$?.value?.id;
       this.rest.createScenario(scenario).subscribe(created => {
         dialogRef.close();
-        this.scenarios.push(created);
+        // avoid adding the newly created scenario twice in case the auto update was just triggered
+        if (!this.scenarios.find(s => s.id === created.id))
+          this.scenarios.push(created);
       }, error => {
         dialogRef.componentInstance.setErrors(error.error);
         dialogRef.componentInstance.setLoading(false);

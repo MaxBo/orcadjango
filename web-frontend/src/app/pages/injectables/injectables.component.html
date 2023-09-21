@@ -21,6 +21,18 @@
       </button>
     </div>
   </div>
+  <div *ngIf="injectableMismatch" class="text-panel" style="margin-bottom: 10px;">
+    <p>
+      <mat-icon color="warn">warning</mat-icon>
+      The scenario is not in sync with the Module. Please <b>synchronize</b> the scenario!
+    </p>
+    <p *ngIf="injectableMismatch.missing">
+      Injectables missing: {{injectableMismatch.missing.join(', ')}}
+    </p>
+    <p *ngIf="injectableMismatch.ahead">
+      Injectables ahead: {{injectableMismatch.ahead.join(', ')}}
+    </p>
+  </div>
   <table *ngIf="groupedInjectables"
          id="injectables-table"
          class="striped">
@@ -71,7 +83,8 @@
     </tbody>
   </table>
 </div>
-<button mat-button
+<button mat-flat-button
+        color="primary"
         class="next"
         style="right: 30px;"
         routerLink="/steps">

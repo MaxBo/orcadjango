@@ -1,11 +1,12 @@
 <div class="background" *ngIf="settings.siteSettings?.welcome_background_img" style="background-image: url('{{settings.siteSettings?.welcome_background_img}}');"></div>
 <div class="center page-content" style="overflow-y: auto; height: 100%;">
   <div class="text-panel"
+       style="margin: 8% 3%; padding: 50px;"
        [innerHTML]="settings.siteSettings?.welcome_text">
   </div>
-  <button mat-button
-          routerLink="/projects"
-          style="background-color: #fafafa;">
+  <button mat-flat-button
+          color="primary"
+          routerLink="/projects">
     Next
     <mat-icon iconPositionEnd>arrow_right</mat-icon>
   </button>

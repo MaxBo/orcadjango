@@ -41,30 +41,30 @@ export class SettingsService {
     this.wsURL = `${(environment.production && strippedHost.indexOf('localhost') === -1)? 'wss:': 'ws:'}//${strippedHost}/ws/scenariolog/`;
     this.auth.user$.subscribe(user => {
       if (user) {
-        this.rest.getModules().subscribe(modules => {
-          this.modules = modules;
-          const modName = this.cookies.get('module');
-          const module = modules.find(mod => mod.name === modName) || modules.find(mod => mod.default);
-          if (module)
-            this.module$.next(module);
-          const projectId = this.cookies.get('project');
-          if (projectId) {
-            this.rest.getProject(Number(projectId), { module: module }).subscribe(project => {
-              this.activeProject$.next(project);
-            })
-          }
-          const scenarioId = this.cookies.get('scenario');
-          if (scenarioId) {
-            this.rest.getScenario(Number(scenarioId)).subscribe(scenario => {
-              this.activeScenario$.next(scenario);
-            })
-          }
-        });
         this.rest.getUsers().subscribe(users => {
           this.users = users;
           this.rest.getAvatars().subscribe(avatars => {
             this.avatars = avatars;
             this.user$.next(user);
+            this.rest.getModules().subscribe(modules => {
+              this.modules = modules;
+              const modName = this.cookies.get('module');
+              const module = modules.find(mod => mod.name === modName) || modules.find(mod => mod.default);
+              if (module)
+                this.module$.next(module);
+              const projectId = this.cookies.get('project');
+              if (projectId) {
+                this.rest.getProject(Number(projectId), { module: module }).subscribe(project => {
+                  this.activeProject$.next(project);
+                })
+              }
+              const scenarioId = this.cookies.get('scenario');
+              if (scenarioId) {
+                this.rest.getScenario(Number(scenarioId)).subscribe(scenario => {
+                  this.activeScenario$.next(scenario);
+                })
+              }
+            });
           });
         });
       }

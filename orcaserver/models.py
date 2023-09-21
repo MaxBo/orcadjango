@@ -138,8 +138,8 @@ class Injectable(NameModel):
         if not self.scenario:
             return dummy
         try:
-            meta = OrcaManager(
-                self.scenario.project.module).get_injectable_meta(self.name)
+            meta = OrcaManager(self.scenario.project.module)\
+                .get_injectable_meta(self.name) or dummy
         # there is a rare possibility that scenario is deleted right at this moment.
         # injectable will follow but there is a short period where this might
         # cause an exception
@@ -171,8 +171,11 @@ class Injectable(NameModel):
         values = [Injectable.objects.get(id=p_id).deserialized_value
                   for p_id in parents]
         conv = OrcaTypeMap.get(self.data_class)
-        value = OrcaManager(self.scenario.project.module).get_calculated_value(
-            self.name, *values)
+        try:
+            value = OrcaManager(self.scenario.project.module
+                                ).get_calculated_value(self.name, *values)
+        except KeyError:
+            return
         return conv.to_str(value)
 
     # can unfortunatelly not be put into serializer field

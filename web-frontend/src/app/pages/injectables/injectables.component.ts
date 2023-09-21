@@ -7,10 +7,15 @@ import { DerivedInjectableDialogComponent } from "./derived/derived-injectable.c
 import { PageComponent } from "../../app.component";
 import { ConfirmDialogComponent } from "../../elements/confirm-dialog/confirm-dialog.component";
 
-export function sortBy(array: any[], attr: string, options: { reverse: boolean } = { reverse: false }): any[]{
-  let sorted = array.sort((a, b) =>
-    (a[attr] > b[attr])? 1: (a[attr] < b[attr])? -1: 0);
-  if (options.reverse)
+export function sortBy(array: any[], attr: string, options?: { reverse?: boolean, lowerCase?: boolean }): any[]{
+  let sorted = array.sort((a, b) => {
+    let left = a[attr]; let right = b[attr];
+    if (options?.lowerCase) {
+      left = left.toLowerCase(); right = right.toLowerCase();
+    }
+    return (left > right) ? 1 : (left < right) ? -1 : 0;
+  });
+  if (options?.reverse)
     sorted = sorted.reverse();
   return sorted;
 }
@@ -24,6 +29,7 @@ export class InjectablesComponent extends PageComponent implements OnInit {
   // grouped injectables
   groupedInjectables?: Record<string, ScenarioInjectable[]>;
   protected injectables: ScenarioInjectable[] = [];
+  protected injectableMismatch?: { missing?: string[], ahead?: string[] };
 
   constructor(protected rest: RestService, protected settings: SettingsService, protected dialog: MatDialog){
     super();
@@ -35,6 +41,7 @@ export class InjectablesComponent extends PageComponent implements OnInit {
       this.setLoading(true);
       this.rest.getScenarioInjectables(scenario).subscribe(injectables => {
         this.injectables = injectables;
+        this.checkInjectableConsistency();
         // this.groups = [...new Set(injectables.map(injectable => injectable.group))].sort();
         this.groupedInjectables = {};
         injectables.forEach(inj => {
@@ -51,6 +58,20 @@ export class InjectablesComponent extends PageComponent implements OnInit {
         this.setLoading(false);
       })
     }));
+  }
+
+  checkInjectableConsistency(): void {
+    const modInjNames = this.settings.moduleInjectables.map(inj => inj.name);
+    const injNames = this.injectables.map(inj => inj.name);
+    const missingInModule = injNames.filter(n => !modInjNames.includes(n));
+    const missingInScenario = modInjNames.filter(n => !injNames.includes(n));
+    this.injectableMismatch = (missingInScenario.length || missingInModule.length)? {}: undefined;
+    if (missingInScenario.length) {
+      this.injectableMismatch!.missing = missingInScenario;
+    }
+    if (missingInModule.length) {
+      this.injectableMismatch!.ahead = missingInModule;
+    }
   }
 
   editInjectable(injectable: ScenarioInjectable): void {
