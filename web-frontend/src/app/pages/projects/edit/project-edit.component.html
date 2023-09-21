@@ -54,7 +54,7 @@
   <h2>Injectables</h2>
   <p><i>The injectables act as defaults for newly created scenarios inside the project. They can be overriden in each scenario after creation independently.</i></p>
   <ng-container *ngFor="let inj of project?.injectables; let idx = index;">
-    <b><u>{{inj.title || inj.name}}</u></b><ng-container *ngIf="inj.title"> ({{inj.name}})</ng-container>
+    <p [style.color]="Object.keys(errors).includes(inj.name)? 'red': 'black'"><b><u>{{inj.title || inj.name}}</u></b><ng-container *ngIf="inj.title"> ({{inj.name}})</ng-container></p>
     <p><i>{{inj.description}}</i></p>
     <injectable [injectable]="inj" [edit]="true" (valueChanged)="injectableChanged(idx, $event)"></injectable>
   </ng-container>
