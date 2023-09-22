@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ScenarioInjectable, RestService } from "../../rest-api";
+import { ScenarioInjectable, RestService, Step } from "../../rest-api";
 import { SettingsService } from "../../settings.service";
 import { MatDialog } from "@angular/material/dialog";
 import { InjectableEditDialogComponent } from "./edit/injectable-edit.component";
@@ -27,9 +27,10 @@ export function sortBy(array: any[], attr: string, options?: { reverse?: boolean
 })
 export class InjectablesComponent extends PageComponent implements OnInit {
   // grouped injectables
-  groupedInjectables?: Record<string, ScenarioInjectable[]>;
+  protected groupedInjectables?: Record<string, ScenarioInjectable[]>;
   protected injectables: ScenarioInjectable[] = [];
   protected injectableMismatch?: { missing?: string[], ahead?: string[] };
+  private steps: Step[] = [];
 
   constructor(protected rest: RestService, protected settings: SettingsService, protected dialog: MatDialog){
     super();
@@ -37,26 +38,30 @@ export class InjectablesComponent extends PageComponent implements OnInit {
 
   ngOnInit() {
     this.subscriptions.push(this.settings.activeScenario$.subscribe(scenario => {
-      if (!scenario) return;
+      if (!scenario || !this.settings.module$.value)
+        return;
       this.setLoading(true);
-      this.rest.getScenarioInjectables(scenario).subscribe(injectables => {
-        this.injectables = injectables;
-        this.checkInjectableConsistency();
-        // this.groups = [...new Set(injectables.map(injectable => injectable.group))].sort();
-        this.groupedInjectables = {};
-        injectables.forEach(inj => {
-          const group = inj.group || 'general';
-          if (!this.groupedInjectables![group])
-            this.groupedInjectables![group] = [];
-          this.groupedInjectables![group].push(inj);
+      this.rest.getAvailableSteps(this.settings.module$.value.name).subscribe(steps => {
+        this.steps = steps;
+        this.rest.getScenarioInjectables(scenario).subscribe(injectables => {
+          this.injectables = injectables;
+          this.checkInjectableConsistency();
+          // this.groups = [...new Set(injectables.map(injectable => injectable.group))].sort();
+          this.groupedInjectables = {};
+          injectables.forEach(inj => {
+            const group = inj.group || 'general';
+            if (!this.groupedInjectables![group])
+              this.groupedInjectables![group] = [];
+            this.groupedInjectables![group].push(inj);
+          })
+          Object.keys(this.groupedInjectables).forEach(group => {
+              // this.groupedInjectables[group] = sortBy(this.groupedInjectables[group], 'name');
+              this.groupedInjectables![group] = sortBy(this.groupedInjectables![group], 'order');
+            }
+          );
+          this.setLoading(false);
         })
-        Object.keys(this.groupedInjectables).forEach(group => {
-            // this.groupedInjectables[group] = sortBy(this.groupedInjectables[group], 'name');
-            this.groupedInjectables![group] = sortBy(this.groupedInjectables![group], 'order');
-          }
-        );
-        this.setLoading(false);
-      })
+      });
     }));
   }
 
@@ -72,6 +77,10 @@ export class InjectablesComponent extends PageComponent implements OnInit {
     if (missingInModule.length) {
       this.injectableMismatch!.ahead = missingInModule;
     }
+  }
+
+  getUsage(injectable: ScenarioInjectable): Step[] {
+    return this.steps.filter(step => step.injectables?.includes(injectable.name));
   }
 
   editInjectable(injectable: ScenarioInjectable): void {
