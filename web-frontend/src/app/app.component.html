@@ -120,6 +120,7 @@
           <app-user-preview *ngIf="settings.activeProject$.value?.user"
                             [user]="settings.getUser(settings.activeProject$.value!.user)"
                             [size]="20"
+                            borderWidth="1px"
                             style="margin-left: auto;"></app-user-preview>
           <mat-card-title [title]="settings.activeProject$.value?.name">
             {{settings.activeProject$.value?.name}}

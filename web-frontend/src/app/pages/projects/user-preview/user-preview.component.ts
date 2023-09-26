@@ -36,6 +36,7 @@ export class UserPreviewComponent {
   protected iconUrl?: string;
   protected color: string = 'black';
   @Input() size = 40;
+  @Input() borderWidth = '2px';
 
   constructor(private settings: SettingsService) {}
 }

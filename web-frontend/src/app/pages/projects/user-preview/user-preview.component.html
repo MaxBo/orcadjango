@@ -5,6 +5,7 @@
   <div *ngIf="!avatar else avatarImage;"
        class="user-prev"
        [style.border-color]="color"
+       [style.border-width]="borderWidth"
        [style.color]="color">
     <ng-container *ngIf="!_user else initialsOnly">-</ng-container>
     <ng-template #initialsOnly>{{initials}}</ng-template>
@@ -12,6 +13,7 @@
   <ng-template #avatarImage>
     <img class="user-prev"
          [style.background-image]="'url(' + avatar?.image + ')'"
+         [style.border-width]="borderWidth"
          [style.border-color]="color">
   </ng-template>
 </div>
