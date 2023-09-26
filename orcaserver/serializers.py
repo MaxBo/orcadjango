@@ -5,6 +5,7 @@ import re
 import json
 from django.core.validators import RegexValidator
 from rest_framework.serializers import ValidationError
+from django.core.exceptions import ValidationError as CoreValidationError
 from django.utils import timezone
 
 from orcaserver.orca import OrcaManager
@@ -196,7 +197,10 @@ class ProjectSerializer(serializers.ModelSerializer):
                 regex = meta.get('regex')
                 regex_validator = RegexValidator(
                     regex, meta.get('regex_help', regex))
-                regex_validator(regex)
+                try:
+                    regex_validator(value)
+                except CoreValidationError as e:
+                    raise ValidationError(dict([(inj_name, str(e))]))
 
 
 class ScenarioSerializer(serializers.ModelSerializer):
