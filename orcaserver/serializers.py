@@ -247,10 +247,13 @@ class InjectableSerializer(serializers.Serializer):
     datatype = serializers.SerializerMethodField()
     multi = serializers.SerializerMethodField()
     choices = serializers.SerializerMethodField()
-    group = serializers.CharField(source='meta.group')
-    order = serializers.CharField(source='meta.order')
-    unique = serializers.CharField(source='meta.unique')
-    title = serializers.CharField(source='meta.title')
+    group = serializers.CharField(source='meta.group', required=False,
+                                  allow_blank=True)
+    order = serializers.IntegerField(source='meta.order', required=False)
+    unique = serializers.CharField(source='meta.unique', required=False,
+                                   allow_blank=True)
+    title = serializers.CharField(source='meta.title', required=False,
+                                  allow_blank=True)
     value = serializers.JSONField(source='serialized_value')
 
     def get_choices(self, obj):
