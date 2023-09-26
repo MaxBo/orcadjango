@@ -20,6 +20,10 @@ export function sortBy(array: any[], attr: string, options?: { reverse?: boolean
   return sorted;
 }
 
+interface ScenarioInjectableExt extends ScenarioInjectable {
+  steps: Step[];
+}
+
 @Component({
   selector: 'app-injectables',
   templateUrl: './injectables.component.html',
@@ -27,31 +31,29 @@ export function sortBy(array: any[], attr: string, options?: { reverse?: boolean
 })
 export class InjectablesComponent extends PageComponent implements OnInit {
   // grouped injectables
-  protected groupedInjectables?: Record<string, ScenarioInjectable[]>;
+  protected groupedInjectables?: Record<string, ScenarioInjectableExt[]>;
   protected injectables: ScenarioInjectable[] = [];
   protected injectableMismatch?: { missing?: string[], ahead?: string[] };
-  private steps: Step[] = [];
+  private _steps: Step[] = [];
 
   constructor(protected rest: RestService, protected settings: SettingsService, protected dialog: MatDialog){
     super();
-  }
-
-  ngOnInit() {
     this.subscriptions.push(this.settings.activeScenario$.subscribe(scenario => {
       if (!scenario || !this.settings.module$.value)
         return;
       this.setLoading(true);
       this.rest.getAvailableSteps(this.settings.module$.value.name).subscribe(steps => {
-        this.steps = steps;
+        this._steps = steps;
         this.rest.getScenarioInjectables(scenario).subscribe(injectables => {
           this.injectables = injectables;
           this.checkInjectableConsistency();
           // this.groups = [...new Set(injectables.map(injectable => injectable.group))].sort();
           this.groupedInjectables = {};
-          injectables.forEach(inj => {
-            const group = inj.group || 'general';
+          injectables.forEach(_inj => {
+            const group = _inj.group || 'general';
             if (!this.groupedInjectables![group])
               this.groupedInjectables![group] = [];
+            const inj = Object.assign({ steps: this.getUsage(_inj)}, _inj);
             this.groupedInjectables![group].push(inj);
           })
           Object.keys(this.groupedInjectables).forEach(group => {
@@ -63,6 +65,9 @@ export class InjectablesComponent extends PageComponent implements OnInit {
         })
       });
     }));
+  }
+
+  ngOnInit() {
   }
 
   checkInjectableConsistency(): void {
@@ -80,7 +85,7 @@ export class InjectablesComponent extends PageComponent implements OnInit {
   }
 
   getUsage(injectable: ScenarioInjectable): Step[] {
-    return this.steps.filter(step => step.injectables?.includes(injectable.name));
+    return this._steps.filter(step => step.injectables?.includes(injectable.name));
   }
 
   editInjectable(injectable: ScenarioInjectable): void {

@@ -45,7 +45,7 @@
 <!--      <th>Datatype</th>
       <th>multi</th>
       <th>has choices</th>-->
-      <th>Used in steps</th>
+      <th>Used in</th>
       <th>Value</th>
       <th></th>
     </thead>
@@ -63,11 +63,19 @@
               <i [innerHTML]="injectable.description"></i>
             </td>
             <td>
-                <div *ngFor="let step of getUsage(injectable)"
+              <mat-expansion-panel class="borderless">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    {{injectable.steps.length}} Step(s)
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div *ngFor="let step of injectable.steps;"
                      style="cursor: help;"
-                     [matTooltip]="step.description">
-                  <u>{{step.name}}</u>
+                     [matTooltip]="step.description"
+                     matTooltipPosition="right">
+                  <u>{{step.title || step.name}}</u>
                 </div>
+              </mat-expansion-panel>
             </td>
 <!--            <td>
               {{injectable.datatype}}

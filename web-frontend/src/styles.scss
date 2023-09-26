@@ -170,3 +170,8 @@ mat-card {
   background-color: #ffffffcc;
   max-width: 1000px;
 }
+
+mat-expansion-panel.borderless {
+  box-shadow: none !important;
+  background: none;
+}
