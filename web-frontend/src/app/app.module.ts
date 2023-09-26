@@ -63,6 +63,7 @@ import { MaterialCssVarsModule } from 'angular-material-css-vars';
 import { ScenarioStatusPreviewComponent } from './pages/scenarios/scenario-status-preview/scenario-status-preview.component';
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatRadioModule } from "@angular/material/radio";
+import { VarDirective } from "./var.directive";
 
 const DATE_FORMAT = {
   parse: {
@@ -103,7 +104,8 @@ const DATE_FORMAT = {
     UserPreviewComponent,
     ProfileComponent,
     DateComponent,
-    ScenarioStatusPreviewComponent
+    ScenarioStatusPreviewComponent,
+    VarDirective
   ],
     imports: [
         BrowserModule,

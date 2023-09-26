@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from collections import OrderedDict
 import re
 import json
+from django.core.validators import RegexValidator
 from rest_framework.serializers import ValidationError
 from django.utils import timezone
 
@@ -10,6 +11,7 @@ from orcaserver.orca import OrcaManager
 from .models import (Project, Profile, Scenario, Injectable, Step, Run,
                      Module, LogEntry, SiteSetting, Avatar)
 from .injectables import OrcaTypeMap
+import re
 
 DATETIME_FORMAT = "%d.%m.%Y %H:%M:%S"
 
@@ -148,7 +150,7 @@ def validate_unique_inj(inj_name: str, value, project_id: int = None):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
-    created = serializers.DateTimeField(format="%Y-%m-%d")
+    created = serializers.DateTimeField(format="%Y-%m-%d", required=False)
     injectables = ProjectInjectablesSerializerField(required=False)
     scenario_count = serializers.IntegerField(source='scenario_set.count',
                                               read_only=True)
@@ -186,9 +188,15 @@ class ProjectSerializer(serializers.ModelSerializer):
         inj_data = json.loads(init)
         orca_manager = OrcaManager(module_path)
         for inj_name, value in inj_data.items():
-            if orca_manager.get_injectable_meta(inj_name).get('unique'):
+            meta = orca_manager.get_injectable_meta(inj_name)
+            if meta.get('unique'):
                 validate_unique_inj(inj_name, value,
                                     project_id=project.id if project else None)
+            if meta.get('regex'):
+                regex = meta.get('regex')
+                regex_validator = RegexValidator(
+                    regex, meta.get('regex_help', regex))
+                regex_validator(regex)
 
 
 class ScenarioSerializer(serializers.ModelSerializer):
@@ -239,9 +247,13 @@ class InjectableSerializer(serializers.Serializer):
     datatype = serializers.SerializerMethodField()
     multi = serializers.SerializerMethodField()
     choices = serializers.SerializerMethodField()
-    group = serializers.CharField(source='meta.group')
-    order = serializers.CharField(source='meta.order')
-    unique = serializers.CharField(source='meta.unique')
+    group = serializers.CharField(source='meta.group', required=False,
+                                  allow_blank=True)
+    order = serializers.IntegerField(source='meta.order', required=False)
+    unique = serializers.CharField(source='meta.unique', required=False,
+                                   allow_blank=True)
+    title = serializers.CharField(source='meta.title', required=False,
+                                  allow_blank=True)
     value = serializers.JSONField(source='serialized_value')
 
     def get_choices(self, obj):
@@ -277,11 +289,11 @@ class ScenarioInjectableSerializer(InjectableSerializer,
 
     class Meta:
         model = Injectable
-        fields = ('id', 'name', 'group', 'order', 'scenario', 'value', 'multi',
+        fields = ('id', 'name', 'title', 'group', 'order', 'scenario', 'value', 'multi',
                   'datatype', 'parents', 'description', 'editable', 'choices',
                   'unique')
         read_only_fields = ('scenario', 'parents', 'name', 'editable',
-                            'choices', 'unique')
+                            'choices', 'unique', 'title')
 
     def update(self, instance, validated_data):
         if 'serialized_value' in validated_data:

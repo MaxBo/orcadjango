@@ -162,10 +162,16 @@ mat-card {
 
 .multiLineTooltip {
   white-space: pre-line;
+  text-align: left;
 }
 
 .text-panel {
   padding: 10px;
   background-color: #ffffffcc;
   max-width: 1000px;
+}
+
+mat-expansion-panel.borderless {
+  box-shadow: none !important;
+  background: none;
 }

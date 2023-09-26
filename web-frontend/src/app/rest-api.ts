@@ -4,6 +4,7 @@ import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import * as moment from "moment/moment";
+import { Moment } from "moment";
 
 export interface Avatar {
   id: number,
@@ -59,7 +60,7 @@ export interface Project {
   module?: string,
   archived?: boolean,
   created?: string,
-  date?: Date,
+  date?: Moment,
   scenario_count: number
 }
 
@@ -80,6 +81,7 @@ export interface Scenario {
 
 export interface Inj {
   name: string,
+  title: string,
   value: any,
   description?: string,
   group?: string,
@@ -137,8 +139,7 @@ export function formatProject(project: Project, options?: { previewInjName?: str
   if (options?.previewInjName)
     project.previewInjectable = project.injectables.find(inj => inj.name === options.previewInjName);
   if (project.created) {
-    project.date = new Date(project.created);
-    project.date.setHours(0,0,0,0);
+    project.date = moment(project.created, 'YYYY-MM-DD');
     project.created = moment(project.date).format('DD.MM.YYYY');
   }
 }

@@ -27,6 +27,7 @@ export class ProjectEditDialogComponent {
   private injValues: any[];
   isLoading$ = new BehaviorSubject<boolean>(false);
   @Output() projectConfirmed = new EventEmitter<Project>();
+  Object = Object;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: ProjectEditDialogData, protected settings: SettingsService,
               private formBuilder: FormBuilder) {
