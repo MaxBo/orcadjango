@@ -28,7 +28,7 @@
             <div class="drag-placeholder" *cdkDragPlaceholder></div>
             <mat-expansion-panel-header>
               <mat-panel-title>
-                <b>{{step.title || step.name}}</b>
+                {{step.title || step.name}}
               </mat-panel-title>
             </mat-expansion-panel-header>
             <p><i [innerHTML]="step.description"></i></p>
@@ -63,7 +63,7 @@
           <div class="drag-placeholder" *cdkDragPlaceholder></div>
           <mat-expansion-panel-header>
             <mat-panel-title>
-              <b>{{step.title || step.name}}</b>
+              {{step.title || step.name}}
             </mat-panel-title>
             <mat-panel-description>
               <div *ngIf="step.finished"
@@ -120,7 +120,7 @@
           </ng-container>
           <mat-divider></mat-divider>
           <ng-container *ngIf="getInjectables(step).length > 0">
-            <h3>Injectables</h3>
+<!--            <h3>Injectables</h3>-->
             <table style="width: 100%;" (mousedown)="$event.preventDefault(); $event.stopPropagation();">
               <tr *ngFor="let injectable of getInjectables(step)">
                 <td style="padding-right: 15px;">

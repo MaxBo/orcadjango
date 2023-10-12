@@ -5,6 +5,7 @@ import ctypes
 import sys
 import typing
 from inspect import signature, _empty
+import traceback
 
 from django.utils import timezone
 
@@ -377,6 +378,7 @@ class OrcaWrapper():
                         step.success = False
                         step.finished = timezone.now()
                         step.save()
+                        logger.debug(traceback.format_exc())
                         logger.error(
                             f'{e.__class__.__module__}.'
                             f'{e.__class__.__name__} - {str(e)}')
