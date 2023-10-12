@@ -12,6 +12,14 @@
       },
       "root": "",
       "sourceRoot": "src",
+      "i18n": {
+        "sourceLocale": "en-US",
+        "locales": {
+          "de": {
+            "translation": "src/locale/messages.de.xlf"
+          }
+        }
+      },
       "prefix": "app",
       "architect": {
         "build": {
@@ -64,6 +72,9 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "de": {
+              "localize": ["de"]
             }
           },
           "defaultConfiguration": "production"
@@ -76,6 +87,9 @@
             },
             "development": {
               "browserTarget": "web-frontend:build:development"
+            },
+            "de": {
+              "browserTarget": "web-frontend:build:development,de"
             }
           },
           "defaultConfiguration": "development"

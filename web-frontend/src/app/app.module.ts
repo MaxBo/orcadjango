@@ -140,7 +140,7 @@ const DATE_FORMAT = {
             isAutoContrast: true
         }),
         MatTooltipModule,
-        MatRadioModule,
+        MatRadioModule
     ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },

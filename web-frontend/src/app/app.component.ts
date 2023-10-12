@@ -35,7 +35,8 @@ export class AppComponent {
   title = 'web-frontend';
   protected user?: User;
 
-  constructor(protected settings: SettingsService, protected auth: AuthService, protected router: Router, private cdRef: ChangeDetectorRef) {
+  constructor(protected settings: SettingsService, protected auth: AuthService, protected router: Router,
+              private cdRef: ChangeDetectorRef) {
     this.auth.getCurrentUser().subscribe();
   }
 }
