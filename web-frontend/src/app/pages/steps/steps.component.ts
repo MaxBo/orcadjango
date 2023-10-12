@@ -103,6 +103,12 @@ export class StepsComponent extends InjectablesComponent {
     }
   }
 
+  getRequiredSteps(step: Step): (Step | undefined)[] {
+    if (!step.required)
+      return [];
+    return step.required.map(name =>  Object.values(this.availableSteps).flat().find(step => step.name === name) )
+  }
+
   addStep(stepName: string, options?:{ position?: number, description?: string, title?: string }) {
     this._scenStepNames.push(stepName);
     this.rest.addScenarioStep(stepName, options?.position || 1, this.settings.activeScenario$.value!).subscribe(created => {
@@ -139,6 +145,7 @@ export class StepsComponent extends InjectablesComponent {
   run(): void {
     const scenario = this.settings.activeScenario$.value;
     if (!scenario) return;
+    this.isLoading$.next(true);
     this.rest.startRun(scenario).subscribe(() => {
       // backend does some status updates on steps when starting a run => update local steps
       this.rest.getScenarioSteps(scenario).subscribe(steps => {
@@ -148,7 +155,8 @@ export class StepsComponent extends InjectablesComponent {
             Object.assign(step, updatedStep);
         })
         this._updateActiveStepsCount();
-      })
+        this.isLoading$.next(false);
+      }, error => this.isLoading$.next(false))
     });
   }
 
