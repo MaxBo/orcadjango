@@ -1,27 +1,27 @@
 <div class="center" style="margin: 20px;">
   <mat-card style="width: 500px;">
     <mat-card-header>
-      <mat-card-title>Account settings</mat-card-title>
+      <mat-card-title i18n>Account settings</mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <form [formGroup]="accountForm">
         <div fxLayout="column">
           <mat-form-field appearance="fill">
-            <mat-label>username</mat-label>
+            <mat-label i18n>username</mat-label>
             <input matInput formControlName="username" required>
           </mat-form-field>
           <mat-form-field appearance="fill">
-            <mat-label>first name</mat-label>
+            <mat-label i18n>first name</mat-label>
             <input matInput formControlName="firstName"/>
           </mat-form-field>
           <mat-form-field appearance="fill">
-            <mat-label>last name</mat-label>
+            <mat-label i18n>last name</mat-label>
             <input matInput formControlName="lastName"/>
           </mat-form-field>
         </div>
       </form>
       <mat-divider style="margin: 10px 0 20px 0;"></mat-divider>
-      <mat-label>Profile picture</mat-label>
+      <mat-label i18n>Profile picture</mat-label>
       <mat-radio-group id="avatar-group"
                        [(ngModel)]="avatarSelection">
         <mat-radio-button *ngFor="let avatar of settings.avatars"
@@ -33,7 +33,7 @@
       </mat-radio-group>
       <div >
       </div>
-      <mat-label>Profile color</mat-label>
+      <mat-label i18n>Profile color</mat-label>
       <div fxLayout="row">
         <div style="display: flex; align-items: baseline;">
           <div id="color-preview"
@@ -41,8 +41,8 @@
                [style.background-color]="colorSelection">
           </div>
           <button mat-button color="primary"
-                  [(colorPicker)]="colorSelection">
-            Wählen
+                  [(colorPicker)]="colorSelection" i18n>
+            Choose
           </button>
         </div>
       </div>
@@ -50,13 +50,13 @@
       <mat-checkbox #passCheck
                     color="primary"
                     style="margin-bottom: 10px;"
-                    (change)="onTogglePassChange(passCheck.checked)">
+                    (change)="onTogglePassChange(passCheck.checked)" i18n>
         Change password
       </mat-checkbox>
       <form [formGroup]="passwordForm">
         <div fxLayout="column">
           <mat-form-field appearance="fill">
-            <mat-label>password</mat-label>
+            <mat-label i18n>password</mat-label>
             <input matInput formControlName="password"
                    [type]="showAccountPassword ? 'text' : 'password'"
                    placeholder="·········" required>
@@ -66,7 +66,7 @@
             </mat-icon>
           </mat-form-field>
           <mat-form-field appearance="fill">
-            <mat-label>confirm password</mat-label>
+            <mat-label i18n>confirm password</mat-label>
             <input matInput formControlName="confirmPass"
                    [type]="showConfirmPassword ? 'text' : 'password'"
                    placeholder="·········" required>
@@ -79,7 +79,7 @@
       </form>
     </mat-card-content>
     <mat-card-actions>
-      <button mat-button (click)="confirm()">SAVE</button>
+      <button mat-button (click)="confirm()" i18n>SAVE</button>
     </mat-card-actions>
   </mat-card>
 </div>

@@ -144,8 +144,8 @@ export class InjectablesComponent extends PageComponent implements OnInit {
       disableClose: false,
       width: '400px',
       data: {
-        title: 'Synchronize Injectables',
-        message: '<p>Do you want to reset ALL of the injectable values to the project defaults?</p>',
+        title: $localize `Reset Injectables`,
+        message: $localize `<p>Do you want to reset ALL of the injectable values to the project defaults?</p>`,
         closeOnConfirm: true
       }
     });
@@ -163,9 +163,9 @@ export class InjectablesComponent extends PageComponent implements OnInit {
       disableClose: false,
       width: '400px',
       data: {
-        title: 'Synchronize Injectables',
-        message: '<p>Do you want to synchronize the injectables with the current state of the module? All values you set are being kept.</p>' +
-                 '<p>This step might be required if your scenario is out of date due to changes made to the module.</p>',
+        title: $localize `Synchronize Injectables`,
+        message: $localize `<p>Do you want to synchronize the injectables with the current state of the module? All values you set are being kept.</p>
+                            <p>This step might be required if your scenario is out of date due to changes made to the module.</p>`,
         closeOnConfirm: true
       }
     });

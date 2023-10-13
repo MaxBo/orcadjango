@@ -1,11 +1,12 @@
+<button mat-button (click)="onCreateScenario.emit(true)">+ <ng-container i18n>NEW SCENARIO</ng-container></button>
 <table *ngIf="scenarios.length > 0" class="striped">
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Description</th>
-      <th>Started</th>
-      <th>Finished</th>
-      <th>Success</th>
+      <th i18n>Name</th>
+      <th i18n>Description</th>
+      <th i18n>Started</th>
+      <th i18n>Finished</th>
+      <th i18n>Success</th>
       <th></th>
     </tr>
   </thead>
@@ -18,11 +19,10 @@
       <td> {{ scenario.last_run?.started || '-' }} </td>
       <td> {{ scenario.last_run?.finished || '-' }} </td>
       <td> {{ (scenario.last_run?.success != undefined)? ((scenario.last_run?.success)? 'yes': 'no'): '-' }} </td>
-      <td>
-        <button mat-button (click)="onEditScenario.emit(scenario); $event.stopPropagation()">EDIT</button>
-        <button mat-button (click)="onDeleteScenario.emit(scenario); $event.stopPropagation()">DELETE</button>
+      <td style="white-space: nowrap;">
+        <button mat-button (click)="onEditScenario.emit(scenario); $event.stopPropagation()" i18n>EDIT</button>
+        <button mat-button (click)="onDeleteScenario.emit(scenario); $event.stopPropagation()" i18n>DELETE</button>
       </td>
     </tr>
   </tbody>
 </table>
-<button mat-button (click)="onCreateScenario.emit(true)">+ NEW SCENARIO</button>

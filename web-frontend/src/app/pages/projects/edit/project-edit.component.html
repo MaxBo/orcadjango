@@ -2,6 +2,7 @@
 <button color="primary"
         mat-icon-button
         mat-dialog-close
+        i18n-title
         title="Close"
         id="close-button">
   <mat-icon>close</mat-icon>
@@ -18,23 +19,23 @@
   <form [formGroup]="projectForm">
     <div fxLayout="column">
       <mat-form-field appearance="fill">
-        <mat-label>Name of the Project</mat-label>
+        <mat-label i18n>Name of the Project</mat-label>
         <input matInput formControlName="name" required>
       </mat-form-field>
       <mat-form-field appearance="fill">
-        <mat-label>Code</mat-label>
+        <mat-label i18n>Code</mat-label>
         <input matInput formControlName="code">
       </mat-form-field>
       <mat-form-field appearance="fill">
-        <mat-label>Description</mat-label>
+        <mat-label i18n>Description</mat-label>
         <textarea matInput formControlName="description" rows="5"></textarea>
       </mat-form-field>
     </div>
     <mat-form-field class="small" appearance="outline" style="margin-right: 20px;">
-      <mat-label>Owner</mat-label>
+      <mat-label i18n>Owner</mat-label>
       <mat-select formControlName="user"
                   required>
-        <mat-option [value]="-1">none</mat-option>
+        <mat-option [value]="-1" i18n>none</mat-option>
         <mat-option *ngFor="let user of settings.users"
                     [value]="user.id">
           {{user.username}}
@@ -43,7 +44,7 @@
     </mat-form-field>
     <mat-form-field *ngIf="data.showDate"
                     style="transform: translateY(7px);">
-      <mat-label>Created</mat-label>
+      <mat-label i18n>Created</mat-label>
       <input matInput
              [matDatepicker]="picker"
              formControlName="date">
@@ -51,8 +52,8 @@
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
   </form>
-  <h2>Injectables</h2>
-  <p><i>The injectables act as defaults for newly created scenarios inside the project. They can be overriden in each scenario after creation independently.</i></p>
+  <h2 i18n>Injectables</h2>
+  <p><i i18n>The injectables act as defaults for newly created scenarios inside the project. They can be overriden in each scenario after creation independently.</i></p>
   <ng-container *ngFor="let inj of project?.injectables; let idx = index;">
     <p [style.color]="Object.keys(errors).includes(inj.name)? 'red': 'black'"><b><u>{{inj.title || inj.name}}</u></b><ng-container *ngIf="inj.title"> ({{inj.name}})</ng-container></p>
     <p><i>{{inj.description}}</i></p>

@@ -6,7 +6,7 @@
 <div class="steps-container">
   <div class="steps-content">
     <mat-accordion id="available-steps">
-      <h2 style="margin-bottom: 5px;">Available Steps</h2>
+      <h2 style="margin-bottom: 5px;" i18n>Available Steps</h2>
       <mat-expansion-panel *ngFor="let group of stepGroups">
         <mat-expansion-panel-header>
           <mat-panel-title class="group-title">
@@ -22,7 +22,7 @@
                                *ngFor="let step of availableSteps[group]"
                                [cdkDragData]="step" cdkDrag
                                [title]="(step.title || step.name)"
-                               [matTooltip]="settings.activeScenario$.value?.is_running? 'Scenario is currently running!': (_scenStepNames.indexOf(step.name) >= 0)? 'Step is already part of the run!': ''"
+                               [matTooltip]="settings.activeScenario$.value?.is_running? curRunninMsg: (_scenStepNames.indexOf(step.name) >= 0)? alreadyInMsg: ''"
                                matTooltipPosition="right"
                                [cdkDragDisabled]="settings.activeScenario$.value?.is_running || _scenStepNames.indexOf(step.name) >= 0">
             <div class="drag-placeholder" *cdkDragPlaceholder></div>
@@ -33,7 +33,7 @@
             </mat-expansion-panel-header>
             <p><i [innerHTML]="step.description"></i></p>
             <ng-container *ngIf="step.required && (step.required.length > 1 || step.required[0] != 'None')">
-              Prerequisites:<br>
+              <ng-container i18n>Prerequisites</ng-container>:<br>
               <ng-container *ngFor="let required of getRequiredSteps(step); let last = last;">
                 <ng-container *ngIf="required">
                   <u [matTooltip]="required?.description"
@@ -50,7 +50,7 @@
     </mat-accordion>
 
     <div id="scenario-steps" [ngClass]="{'deactivated': (stepsLoading$ | async)}" style="min-width: 700px">
-      <h2 style="margin-bottom: 5px;">Scenario Steps</h2>
+      <h2 style="margin-bottom: 5px;" i18n>Scenario Steps</h2>
       <mat-accordion cdkDropList
                      #scenarioStepList="cdkDropList"
                      [cdkDropListData]="scenarioSteps"
@@ -90,7 +90,7 @@
                 <button mat-icon-button
                         [disabled]="settings.activeScenario$.value?.is_running"
                         (click)="removeStep(step); $event.stopPropagation();"
-                        title="Remove step">
+                        i18n-title title="Remove step">
                   <mat-icon style="color: red;" class="material-icons-outlined">delete_forever</mat-icon>
                 </button>
               </div>
@@ -98,16 +98,16 @@
           </mat-expansion-panel-header>
           <p><i [innerHTML]="step.description"></i></p>
           <p *ngIf="step.started">
-            Started: {{step.started}}
+            <ng-container i18n>Started</ng-container>: {{step.started}}
           </p>
           <p *ngIf="step.finished"
              [style.color]="step.success? 'green': 'red'">
-            Finished: {{step.finished}}
+            <ng-container i18n>Finished</ng-container>: {{step.finished}}
             <ng-container *ngIf="!step.success">&nbsp;(failed)</ng-container>
           </p>
           <ng-container *ngIf="step.required && (step.required.length > 1 || step.required[0] != 'None')">
             <mat-divider></mat-divider>
-            Prerequisites:
+            <ng-container i18n>Prerequisites</ng-container>:
             <ng-container *ngFor="let required of getRequiredSteps(step); let last = last;">
               <ng-container *ngIf="required">
                 <u [matTooltip]="required?.description"
@@ -144,14 +144,14 @@
         <button mat-flat-button
                 color="primary"
                 (click)="run()"
-                [disabled]="settings.activeScenario$.value?.is_running || !activeStepsCount">
+                [disabled]="settings.activeScenario$.value?.is_running || !activeStepsCount" i18n>
           RUN CALCULATIONS
         </button>
         <button mat-flat-button
                 color="warn"
                 *ngIf="settings.activeScenario$.value?.is_running"
                 (click)="abort()"
-                style="margin-left: auto;">
+                style="margin-left: auto;" i18n>
           ABORT
         </button>
       </div>

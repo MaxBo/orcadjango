@@ -70,7 +70,7 @@ export class ProfileComponent extends PageComponent implements OnInit {
       if (this.passwordForm.invalid) return;
       let pass = this.passwordForm.value.password;
       if (pass != this.passwordForm.value.confirmPass) {
-        alert('The passwords do not match!');
+        alert($localize `The passwords do not match!`);
         return;
       }
       data.password = pass;
@@ -85,10 +85,11 @@ export class ProfileComponent extends PageComponent implements OnInit {
   getAvatarTooltip(avatar: Avatar) {
     let tooltip = avatar.name;
     if (avatar.users.length > 0) {
-      tooltip += ` (used by: ${avatar.users.map(id => this.settings.getUser(id)?.username).join(', ')})`;
+
+      tooltip += ' (' + $localize `used by` + `: ${avatar.users.map(id => this.settings.getUser(id)?.username).join(', ')})`;
     }
     else
-      tooltip += ' (not in use)'
+      tooltip += ' (' + $localize `not in use` +  ')';
     return tooltip;
   }
 }

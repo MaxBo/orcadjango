@@ -19,6 +19,9 @@ export class StepsComponent extends InjectablesComponent {
   stepsLoading$ = new BehaviorSubject<boolean>(false);
   protected logHeight = 130;
 
+  protected curRunninMsg = $localize `Scenario is currently running!`;
+  protected alreadyInMsg = $localize `Step is already part of the run!`;
+
   @ViewChild('resizeHandle') resizeHandle!: ElementRef;
   @ViewChild('logContainer') logContainer!: ElementRef;
   @ViewChild('scenarioStepList') scenarioStepList!: CdkDropList;

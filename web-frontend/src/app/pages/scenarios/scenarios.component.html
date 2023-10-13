@@ -4,15 +4,15 @@
 <div class="background" *ngIf="settings.siteSettings?.scenarios_background_img" style="background-image: url('{{settings.siteSettings?.scenarios_background_img}}');"></div>
 <div class="page-content">
   <div style="display: flex;">
-    <h1 style="margin: 16px 15px 16px 0;">Scenarios</h1>
+    <h1 style="margin: 16px 15px 16px 0;" i18n>Scenarios</h1>
     <mat-button-toggle-group style="height: 40px; align-items: center; align-self: center"
                              [value]="viewType"
                              (change)="changeView($event.value)">
-      <mat-button-toggle value="grid-view">
+      <mat-button-toggle value="grid-view" i18n>
         Grid
         <mat-icon style="margin-left: 10px;">grid_view</mat-icon>
       </mat-button-toggle>
-      <mat-button-toggle value="list-view">
+      <mat-button-toggle value="list-view" i18n>
         List
         <mat-icon style="margin-left: 10px;">list</mat-icon>
       </mat-button-toggle>
@@ -39,12 +39,12 @@
         mat-flat-button
         color="primary"
         class="next"
-        routerLink="/injectables">
+        routerLink="/injectables" i18n>
   Next
   <mat-icon iconPositionEnd>arrow_right</mat-icon>
 </button>
 
 <ng-template #deleteScenarioTemplate>
-  <p>Do you really want to delete the scenario?</p>
-  <p>Warning: Only the scenario and its parameters will be deleted. All possibly generated data will remain. </p>
+  <p i18n>Do you really want to delete the scenario?</p>
+  <p i18n>Warning: Only the scenario and its parameters will be deleted. All possibly generated data will remain. </p>
 </ng-template>

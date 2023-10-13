@@ -4,7 +4,7 @@
             title="Create new Project"
             (click)="onCreateProject.emit(true)">
     <mat-card-header>
-      <mat-card-title>New Project</mat-card-title>
+      <mat-card-title i18n>New Project</mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <mat-icon class="material-symbols-outlined">
@@ -33,11 +33,11 @@
         <mat-card-content style="cursor: pointer" (click)="onProjectSelected.emit(project)">
           <table>
             <tr *ngIf="project.created">
-              <td>created:</td>
+              <td i18n>created:</td>
               <td>{{project.created}}</td>
             </tr>
             <tr>
-              <td>scenarios:</td>
+              <td i18n>scenarios:</td>
               <td>{{project.scenario_count}}</td>
             </tr>
 
@@ -50,10 +50,11 @@
           <ng-template #projectDesc>{{project.description}}</ng-template>
         </mat-card-content>
         <mat-card-actions>
-          <button mat-button (click)="onEditProject.emit(project)">EDIT</button>
-          <button mat-button (click)="onDeleteProject.emit(project)">DELETE</button>
+          <button mat-button (click)="onEditProject.emit(project)" i18n>EDIT</button>
+          <button mat-button (click)="onDeleteProject.emit(project)" i18n>DELETE</button>
           <button mat-button (click)="onArchiveProject.emit({ project: project, archive: !project.archived})">
-            {{!project.archived? 'ARCHIVE': 'UNARCHIVE'}}
+            <ng-container *ngIf="!project.archived else unarchive" i18n>ARCHIVE</ng-container>
+            <ng-template #unarchive i18n>UNARCHIVE</ng-template>
           </button>
         </mat-card-actions>
       </mat-card>
