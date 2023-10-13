@@ -204,6 +204,10 @@ export class ProjectsComponent extends PageComponent implements OnInit{
     this.sortProjects();
   }
 
+  sortTitle(descending: boolean): string {
+    return descending? $localize `descending`: $localize `ascending`;
+  }
+
   setShowFilters(showFilters: boolean): void {
     this.showFilters = showFilters;
     this.cookies.set('project-showFilters', showFilters.toString());

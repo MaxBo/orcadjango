@@ -49,13 +49,19 @@
                       [injectable]="project.previewInjectable"></injectable>
           <ng-template #projectDesc>{{project.description}}</ng-template>
         </mat-card-content>
-        <mat-card-actions>
-          <button mat-button (click)="onEditProject.emit(project)" i18n>EDIT</button>
-          <button mat-button (click)="onDeleteProject.emit(project)" i18n>DELETE</button>
-          <button mat-button (click)="onArchiveProject.emit({ project: project, archive: !project.archived})">
-            <ng-container *ngIf="!project.archived else unarchive" i18n>ARCHIVE</ng-container>
-            <ng-template #unarchive i18n>UNARCHIVE</ng-template>
-          </button>
+        <mat-card-actions style="display: block;">
+          <div fxLayout="row">
+            <button mat-button (click)="onEditProject.emit(project)" i18n>EDIT</button>
+            <button mat-button style="margin-left: auto;"
+                    (click)="onDeleteProject.emit(project)" i18n>DELETE</button>
+          </div>
+          <div fxLayout="row">
+            <button mat-button
+                    (click)="onArchiveProject.emit({ project: project, archive: !project.archived})">
+              <ng-container *ngIf="!project.archived else unarchive" i18n>ARCHIVE</ng-container>
+              <ng-template #unarchive i18n>UNARCHIVE</ng-template>
+            </button>
+          </div>
         </mat-card-actions>
       </mat-card>
     </div>
