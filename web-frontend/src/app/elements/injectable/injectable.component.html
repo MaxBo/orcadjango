@@ -32,7 +32,7 @@
                            [edit]="edit"
                            (valueChanged)="_injectable.multi? listValueChanged(idx, $event): valueChanged.emit($event)"></inj-base-type>
 
-            <p *ngIf="edit && _injectable.regex_help" style="max-width: 600px;">{{_injectable?.regex_help}}</p>
+            <p *ngIf="edit && _injectable.regex_help" style="max-width: 600px;">{{_injectable.regex_help}}</p>
             <div *ngIf="(_injectable.multi && edit) else listSeperator">
               <button mat-button color="secondary" (click)="removeListValue(idx)">- Remove</button>
             </div>
