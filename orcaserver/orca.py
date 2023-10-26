@@ -134,7 +134,7 @@ class OrcaManager(ModuleSingleton):
             'title': step_meta.get('title', ''),
             'group': step_meta.get('group', '-'),
             'order': step_meta.get('order', 1),
-            'docstring': wrapper._func.__doc__ or '',
+            'docstring': step_meta.get('description') or wrapper._func.__doc__ or '',
             'injectables': injectables,
             'required': required,
         }
@@ -147,7 +147,7 @@ class OrcaManager(ModuleSingleton):
             'order': 10000000,
             'group': '',
             'title': '',
-            'unique': False,
+            'unique': False
         }
         _meta = orca_meta.get(injectable, {})
         if (injectable not in orca_injectables or injectable.startswith('iter_')
@@ -164,7 +164,7 @@ class OrcaManager(ModuleSingleton):
         funcwrapper = self.__generic_instance.orca.get_raw_injectable(injectable)
         sig = signature(funcwrapper._func)
         if isinstance(funcwrapper, self.__generic_instance.orca._InjectableFuncWrapper):
-            desc['docstring'] = funcwrapper._func.__doc__ or ''
+            desc['docstring'] = _meta.get('description') or funcwrapper._func.__doc__ or ''
             # datatype from annotations
             returntype = sig.return_annotation
             has_returntype = True

@@ -84,6 +84,7 @@ export interface Inj {
   title: string,
   value: any,
   description?: string,
+  regex_help?: string,
   group?: string,
   datatype: 'str' | 'int' | 'list' | 'float' | 'bool' | 'dict' | 'geometry',
   multi?: boolean,

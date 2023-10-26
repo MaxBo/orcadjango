@@ -258,6 +258,7 @@ class InjectableSerializer(serializers.Serializer):
                                    allow_blank=True)
     title = serializers.CharField(source='meta.title', required=False,
                                   allow_blank=True)
+    regex_help = serializers.SerializerMethodField()
     value = serializers.JSONField(source='serialized_value')
 
     def get_choices(self, obj):
@@ -265,6 +266,9 @@ class InjectableSerializer(serializers.Serializer):
 
     def get_description(self, obj):
         return obj.meta.get('docstring', '').strip().replace('\n', ' ')#, '<br>')
+
+    def get_regex_help(self, obj):
+        return obj.meta.get('regex_help', '').strip().replace('\n', ' ')
 
     def get_datatype(self, obj):
         if 'list' in obj.datatype.lower():
@@ -295,9 +299,9 @@ class ScenarioInjectableSerializer(InjectableSerializer,
         model = Injectable
         fields = ('id', 'name', 'title', 'group', 'order', 'scenario', 'value', 'multi',
                   'datatype', 'parents', 'description', 'editable', 'choices',
-                  'unique')
+                  'unique', 'regex_help')
         read_only_fields = ('scenario', 'parents', 'name', 'editable',
-                            'choices', 'unique', 'title')
+                            'choices', 'unique', 'title', 'regex_help')
 
     def update(self, instance, validated_data):
         if 'serialized_value' in validated_data:
