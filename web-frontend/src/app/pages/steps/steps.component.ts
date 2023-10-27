@@ -3,6 +3,7 @@ import { ScenarioInjectable, ScenarioStep, Step } from "../../rest-api";
 import { CdkDragDrop, CdkDropList, moveItemInArray } from "@angular/cdk/drag-drop";
 import { InjectablesComponent, sortBy } from "../injectables/injectables.component";
 import { BehaviorSubject, forkJoin, Observable, Subscription } from "rxjs";
+import { showAPIError } from "../../elements/simple-dialog/simple-dialog.component";
 
 @Component({
   selector: 'app-steps',
@@ -161,7 +162,7 @@ export class StepsComponent extends InjectablesComponent {
         this.isLoading$.next(false);
       }, error => this.isLoading$.next(false))
     }, error => {
-      alert(error.error);
+      showAPIError(error, this.dialog);
       this.isLoading$.next(false);
     });
   }
