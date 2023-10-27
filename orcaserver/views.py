@@ -74,6 +74,9 @@ class ScenarioViewSet(viewsets.ModelViewSet):
                 return Response({'message': msg}, status.HTTP_400_BAD_REQUEST)
             meta = manager.get_step_meta(step.name)
             required = list(set(meta.get('injectables')) & set(injectables_available))
+            required = [r for r in required
+                        if not manager.get_injectable_meta(r).get(
+                            'hidden', False)]
             inj_db = Injectable.objects.filter(name__in=required,
                                                scenario=scenario)
             if len(required) > len(inj_db):
@@ -165,7 +168,7 @@ class InjectableViewSet(viewsets.ViewSet):
         names = orca_manager.get_injectable_names()
         for inj in names:
             meta = orca_manager.get_injectable_meta(inj)
-            if not meta:
+            if not meta or meta.get('hidden'):
                 continue
             # that's a little weird, but we create injectables to be able
             # to use the same functions as in scenario injectable serialization

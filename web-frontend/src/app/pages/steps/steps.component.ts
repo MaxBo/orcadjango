@@ -160,6 +160,9 @@ export class StepsComponent extends InjectablesComponent {
         this._updateActiveStepsCount();
         this.isLoading$.next(false);
       }, error => this.isLoading$.next(false))
+    }, error => {
+      alert(error.error);
+      this.isLoading$.next(false);
     });
   }
 

@@ -150,9 +150,10 @@ class OrcaManager(ModuleSingleton):
             'unique': False
         }
         _meta = orca_meta.get(injectable, {})
-        if (injectable not in orca_injectables or injectable.startswith('iter_')
-            or _meta.get('hidden')):
+        if injectable not in orca_injectables or injectable.startswith('iter_'):
             return {}
+        if _meta.get('hidden'):
+            return {'hidden': True}
         if _meta.get('refresh') == 'always':
             value = self.__generic_instance.orca.get_injectable(injectable)
         else:
