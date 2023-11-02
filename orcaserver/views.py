@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework import status
+import gettext as _
 
 from .serializers import (ProjectSerializer, UserSerializer,
                           ScenarioSerializer, ModuleSerializer,
@@ -68,7 +69,7 @@ class ScenarioViewSet(viewsets.ModelViewSet):
         steps_available = manager.get_step_names()
         for step in active_steps:
             if step.name not in steps_available:
-                msg = ('There are steps selected that can not be found in the '
+                msg = _('There are steps selected that can not be found in the '
                        'module. Your project seems not to be up to date '
                        'with the module. Please remove those steps.')
                 return Response({'message': msg}, status.HTTP_400_BAD_REQUEST)
@@ -80,7 +81,7 @@ class ScenarioViewSet(viewsets.ModelViewSet):
             inj_db = Injectable.objects.filter(name__in=required,
                                                scenario=scenario)
             if len(required) > len(inj_db):
-                msg = ('There are steps selected that contain injectables that '
+                msg = _('There are steps selected that contain injectables that '
                        'can not be found. Your project seems not to be up to date '
                        'with the module. Please synchronize the parameters.')
                 return Response({'message': msg}, status.HTTP_400_BAD_REQUEST)

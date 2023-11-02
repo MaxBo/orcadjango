@@ -68,6 +68,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -168,6 +169,10 @@ STATICFILES_DIRS = [
     os.path.join(FRONTEND_APP_DIR),
     os.path.join(BASE_DIR, 'orcadjango', 'static'),
 ]
+
+LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'),)
+LOCALE = 'de_DE.utf8'
+LANGUAGE_CODE = 'de'
 
 PUBLIC_DIR = os.path.join(BASE_DIR, 'public')
 
