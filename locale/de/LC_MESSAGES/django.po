@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-02 13:10+0100\n"
-"PO-Revision-Date: 2023-11-02 13:15+0100\n"
+"POT-Creation-Date: 2023-11-06 12:32+0100\n"
+"PO-Revision-Date: 2023-11-06 12:33+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -21,6 +21,67 @@ msgstr ""
 #: .\orcaserver\injectables.py:15
 msgid "Value is already in use in another project."
 msgstr "Der Wert wird bereits in einem anderen Projekt verwendet."
+
+#: .\orcaserver\orca.py:260
+msgid "Thread is already running"
+msgstr "Thread läuft bereits"
+
+#: .\orcaserver\orca.py:265
+msgid "Starting run..."
+msgstr "Starte den Lauf..."
+
+#: .\orcaserver\orca.py:271
+msgid "aborting..."
+msgstr "Abbruch..."
+
+#: .\orcaserver\orca.py:280
+msgid ""
+"The orca instances can not be reset at the moment. A thread is still running."
+msgstr ""
+"Die Orca-Instanzen können derzeit nicht zurückgesetzt werden. Es läuft immer "
+"noch ein Thread."
+
+#: .\orcaserver\orca.py:352 .\orcaserver\views.py:118
+msgid "Run started"
+msgstr "Lauf gestartet"
+
+#: .\orcaserver\orca.py:361
+#, python-brace-format
+msgid "running iteration {i} with iteration value {var}"
+msgstr "führe Wiederholung {i} aus mit dem Wert {var}"
+
+#: .\orcaserver\orca.py:367
+#, python-brace-format
+msgid "Running step \"{step_name}\""
+msgstr "Führe Schritt \"{step_name}\" aus"
+
+#: .\orcaserver\orca.py:386
+#, python-brace-format
+msgid "Step \"{step_name}\" failed"
+msgstr "Schritt \"{step_name}\" fehlgeschlagen"
+
+#: .\orcaserver\orca.py:392 .\orcaserver\orca.py:425
+msgid "orca run aborted"
+msgstr "Orca-Lauf abgebrochen"
+
+#: .\orcaserver\orca.py:402
+#, python-brace-format
+msgid "\"{step_name}\" finished"
+msgstr "Schritt \"{step_name}\" beendet"
+
+#: .\orcaserver\orca.py:420
+msgid "orca run finished successfully"
+msgstr "Orca-Lauf erfolgreich beendet"
+
+#: .\orcaserver\views.py:60
+msgid "No steps selected."
+msgstr "Keine Schritte ausgewählt."
+
+#: .\orcaserver\views.py:65
+msgid "Orca is already running. Please wait for it to finish or abort it."
+msgstr ""
+"Orca läuft bereits. Bitte warten Sie, bis der Lauf beendet ist oder brechen "
+"Sie ihn ab."
 
 #: .\orcaserver\views.py:72
 msgid ""
@@ -40,3 +101,19 @@ msgstr ""
 "Es sind Schritte ausgewählt, die Parameter enthalten, die nicht gefunden "
 "werden können. Das Projekt scheint nicht auf dem Stand des Moduls zu sein. "
 "Bitte synchronisieren Sie die Parameter."
+
+#: .\orcaserver\views.py:124
+msgid "Injectables reset"
+msgstr "Parameter zurückgesetzt"
+
+#: .\orcaserver\views.py:130
+msgid "Injectables synchronized"
+msgstr "Parameter synchronisiert"
+
+#: .\orcaserver\views.py:139
+msgid "Orca is not running"
+msgstr "Orca läuft derzeit nicht"
+
+#: .\orcaserver\views.py:142
+msgid "Run aborted"
+msgstr "Lauf abgebrochen"

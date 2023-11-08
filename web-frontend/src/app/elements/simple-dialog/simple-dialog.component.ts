@@ -62,10 +62,10 @@ export class SimpleDialogComponent implements AfterViewInit {
 }
 
 export function showAPIError(error: any, dialog: MatDialog) {
-  const title = `Fehler ${error.status || ''}`;
+  const title = $localize`Error` + `${error.status || ''}`;
   let message = '';
   if (error.status === 0)
-    message = 'Server antwortet nicht';
+    message = $localize`Server does not respond`;
   else if (error.error) {
     // usually the backend responds with a message (wrapped in error attribute)
     if (error.error.message)
