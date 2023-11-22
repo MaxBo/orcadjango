@@ -73,7 +73,7 @@
                 </mat-expansion-panel-header>
                 <div *ngFor="let step of injectable.steps;"
                      style="cursor: help;"
-                     [matTooltip]="step.description"
+                     [matTooltip]="removeHTMLTags(step.description)"
                      matTooltipPosition="right">
                   <u>{{step.title || step.name}}</u>
                 </div>

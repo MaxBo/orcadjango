@@ -62,8 +62,10 @@
                              [cdkDragDisabled]="settings.activeScenario$.value?.is_running">
           <div class="drag-placeholder" *cdkDragPlaceholder></div>
           <mat-expansion-panel-header>
-            <mat-panel-title>
-              {{step.title || step.name}}
+            <mat-panel-title [title]="step.title || step.name">
+              <div>
+                {{step.title || step.name}}
+              </div>
             </mat-panel-title>
             <mat-panel-description>
               <div *ngIf="step.finished"

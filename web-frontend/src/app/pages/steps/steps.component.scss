@@ -55,6 +55,12 @@
   }
   .mat-expansion-panel-header-title {
     font-size: 18px;
+    width: 200px;
+    div {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
 }
 

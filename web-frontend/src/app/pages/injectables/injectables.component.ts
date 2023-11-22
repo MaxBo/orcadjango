@@ -177,4 +177,9 @@ export class InjectablesComponent extends PageComponent implements OnInit {
       }
     );
   }
+
+  removeHTMLTags(html: string): string {
+    const parser = new DOMParser();
+    return parser.parseFromString(html, "text/html").body.textContent || '';
+  }
 }
