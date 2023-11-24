@@ -1,14 +1,35 @@
 <ng-container *ngIf="edit; else preview;">
-  <div *ngIf="!choices.length; else selectHint" i18n>no choices available</div>
-  <ng-template #selectHint><div i18n>Select one or more</div></ng-template>
-  <div style="display: flex; flex-wrap: wrap;">
-    <mat-checkbox *ngFor="let choice of choices; let i = index;"
-                  color="primary"
-                  style="min-width: 200px;"
-                  [checked]="checked[i]"
-                  (change)="onValueChanged($event.checked, i)">
-      {{choice}} <ng-container *ngIf="choiceLabels && choiceLabels[i]">({{choiceLabels[i]}})</ng-container>
-    </mat-checkbox>
+  <div style="display: flex;">
+    <div style="align-self: center;">
+      <ng-container *ngIf="!choices.length; else selectHint" i18n>no choices available</ng-container>
+      <ng-template #selectHint><div i18n>Select one or more</div></ng-template>
+    </div>
+    <div style="margin-left: auto; display: flex;">
+      <mat-form-field *ngIf="showStringFilter"
+                      style="margin-bottom: -22px; margin-right: 15px;">
+        <mat-label i18n>filter by entry contains</mat-label>
+        <input type="text" matInput
+               [(ngModel)]="filterString"
+               (keyup)="filterEntries()">
+      </mat-form-field>
+      <mat-checkbox [(ngModel)]="filterChecked"
+                    (change)="filterEntries()"
+                    style="align-self: center;" i18n>
+        Show checked only
+      </mat-checkbox>
+    </div>
+  </div>
+  <div style="overflow: auto; max-height: 350px; width: 900px; min-height: 50px;">
+    <div style="display: flex; flex-wrap: wrap;">
+      <mat-checkbox *ngFor="let choice of choices; let i = index;"
+                    color="primary"
+                    style="min-width: 200px;"
+                    [style.display]="active[i]? 'flex': 'none'"
+                    [checked]="checked[i]"
+                    (change)="onValueChanged($event.checked, i)">
+        {{choice}} <ng-container *ngIf="choiceLabels && choiceLabels[i]">({{choiceLabels[i]}})</ng-container>
+      </mat-checkbox>
+    </div>
   </div>
 </ng-container>
 

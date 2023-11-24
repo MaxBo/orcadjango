@@ -1,29 +1,29 @@
 <ng-container *ngIf="edit; else preview;" [ngSwitch]="type">
   <ng-container *ngSwitchCase="'int'">
     <mat-form-field>
-      <mat-label>Value (Integer)</mat-label>
+      <mat-label i18n>Value (Integer)</mat-label>
       <input type="number" [step]="step" [value]="$any(value)" matInput
              (change)="valueChanged.emit($event.target?.value)">
     </mat-form-field>
   </ng-container>
   <ng-container *ngSwitchCase="'float'">
     <mat-form-field>
-      <mat-label>Value (Float)</mat-label>
+      <mat-label i18n>Value (Float)</mat-label>
       <input type="number" [step]="step" [value]="$any(value)" matInput
              (change)="valueChanged.emit($event.target?.value)">
     </mat-form-field>
   </ng-container>
   <ng-container *ngSwitchCase="'bool'">
-    no
+    <ng-container i18n>no</ng-container>
     <mat-slide-toggle color="primary"
                       [checked]="$any(value)"
                       (change)="valueChanged.emit($event.checked)">
     </mat-slide-toggle>
-    yes
+    <ng-container i18n>yes</ng-container>
   </ng-container>
   <ng-container *ngSwitchCase="'choice'">
     <mat-form-field>
-      <mat-label>Select one</mat-label>
+      <mat-label i18n>Select one</mat-label>
       <mat-select [value]="value" (change)="valueChanged.emit($event.target?.value)">
         <mat-option *ngFor="let choice of choices; let i = index" [value]="choice">
           {{choice}} <ng-container *ngIf="choiceLabels && choiceLabels[i]">({{choiceLabels[i]}})</ng-container>
@@ -33,7 +33,7 @@
   </ng-container>
   <ng-container *ngSwitchDefault>
     <mat-form-field style="width: 100%;">
-      <mat-label>Value (String)</mat-label>
+      <mat-label i18n>Value (String)</mat-label>
       <input type="text" [value]="$any(value)" matInput
              (change)="valueChanged.emit($event.target?.value)">
     </mat-form-field>

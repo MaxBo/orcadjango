@@ -18,7 +18,6 @@ export class SingleChoiceComponent extends BaseInjectableComponent implements On
 
   ngOnInit() {
     this._value = this.value;
-    console.log(this._value);
   }
 
   onValueChanged(){
