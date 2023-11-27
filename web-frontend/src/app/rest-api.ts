@@ -1,6 +1,6 @@
 import { environment } from "../environments/environment";
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import * as moment from "moment/moment";
@@ -327,9 +327,16 @@ export class RestService {
     return this.http.patch<ScenarioStep>(`${url}${step.id}/`, options);
   }
 
-  getScenarioLogs(scenario: Scenario): Observable<ScenarioLogEntry[]> {
+  getScenarioLogs(scenario: Scenario, options?: { level?: string, nLast?: number }): Observable<ScenarioLogEntry[]> {
     const url = this.URLS.scenarioLogs.replace('{scenarioId}', scenario.id!.toString());
-    return this.http.get<ScenarioLogEntry[]>(url);
+    let params = new HttpParams();
+    if (options?.nLast) {
+      params = params.set('n_last', options.nLast);
+    }
+    if (options?.level) {
+      params = params.set('level', options.level);
+    }
+    return this.http.get<ScenarioLogEntry[]>(url, { params: params });
   }
 
   startRun(scenario: Scenario) {

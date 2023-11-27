@@ -237,7 +237,17 @@ class ScenarioLogViewSet(viewsets.ModelViewSet):
     serializer_class = ScenarioLogSerializer
 
     def get_queryset(self):
-        return self.queryset.filter(scenario=self.kwargs['scenario_pk'])
+        queryset = self.queryset.filter(scenario=self.kwargs['scenario_pk'])
+        level = self.request.query_params.get('level')
+        n_last = self.request.query_params.get('n_last')
+        # only possible options: DEBUG or INFO (DEBUG is everything anyway)
+        if level == 'INFO':
+            queryset = queryset.filter(level__in=['INFO', 'ERROR'])
+        if n_last is not None:
+            queryset = queryset.order_by('-timestamp')[:int(n_last)][::-1]
+        else:
+            queryset = queryset.order_by('timestamp')
+        return queryset
 
 
 class SingletonViewSet(viewsets.ModelViewSet):
