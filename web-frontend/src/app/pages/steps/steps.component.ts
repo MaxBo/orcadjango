@@ -214,7 +214,6 @@ export class StepsComponent extends InjectablesComponent {
   }
 
   onResizeDrag(event: any): void {
-    console.log('resize');
     const dragRect = this.resizeHandle.nativeElement.getBoundingClientRect();
     const targetRect = this.logContainer.nativeElement.getBoundingClientRect();
     const diffY = dragRect.top - targetRect.top + dragRect.height;

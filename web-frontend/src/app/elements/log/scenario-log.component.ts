@@ -30,8 +30,6 @@ export class ScenarioLogComponent implements OnDestroy, AfterViewInit {
       if (this.fetchOldLogs)
         this.fetchLogs();
     }));
-    if (this.fetchOldLogs)
-      this.fetchLogs();
   }
 
   fetchLogs() {
