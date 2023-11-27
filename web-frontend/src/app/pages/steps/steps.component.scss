@@ -1,5 +1,9 @@
 #available-steps {
   width: 300px;
+  margin-right: 60px;
+  > .mat-expansion-panel{
+    margin-bottom: 10px;
+  }
 }
 #scenario-steps {
   position: relative;
@@ -15,7 +19,6 @@
 }
 
 #available-steps, #scenario-steps {
-  margin: 0 25px 25px 0;
   .mat-accordion {
     background: #f0f0f09e;
   }
@@ -43,7 +46,8 @@
 }
 
 .cdk-drag-disabled {
-  background-color: #e7e7e7;
+  //background-color: #e7e7e7;
+  opacity: 0.5;
   .mat-expansion-panel-header {
     cursor: not-allowed;
   }
@@ -55,7 +59,7 @@
   }
   .mat-expansion-panel-header-title {
     font-size: 18px;
-    width: 200px;
+    min-width: 300px;
     div {
       overflow: hidden;
       text-overflow: ellipsis;

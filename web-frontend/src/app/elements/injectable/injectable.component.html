@@ -18,6 +18,7 @@
     <ng-container *ngSwitchCase="'dict'">
       <inj-dict [value]="_injectable.value"
                 [edit]="edit"
+                [keysEditable]="_injectable.editable_keys || false"
                 (valueChanged)="valueChanged.emit($event)"></inj-dict>
     </ng-container>
     <ng-container *ngSwitchCase="'geometry'">

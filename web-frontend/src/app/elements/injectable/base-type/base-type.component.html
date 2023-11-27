@@ -14,12 +14,14 @@
     </mat-form-field>
   </ng-container>
   <ng-container *ngSwitchCase="'bool'">
-    <ng-container i18n>no</ng-container>
-    <mat-slide-toggle color="primary"
-                      [checked]="$any(value)"
-                      (change)="valueChanged.emit($event.checked)">
-    </mat-slide-toggle>
-    <ng-container i18n>yes</ng-container>
+    <div style="display: flex;">
+      <div style="padding: 0 10px" i18n>no</div>
+      <mat-slide-toggle color="primary"
+                        [checked]="$any(value)"
+                        (change)="valueChanged.emit($event.checked)">
+      </mat-slide-toggle>
+      <div style="padding: 0 10px" i18n>yes</div>
+    </div>
   </ng-container>
   <ng-container *ngSwitchCase="'choice'">
     <mat-form-field>

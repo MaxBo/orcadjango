@@ -251,6 +251,7 @@ class InjectableSerializer(serializers.Serializer):
     datatype = serializers.SerializerMethodField()
     multi = serializers.SerializerMethodField()
     choices = serializers.SerializerMethodField()
+    editable_keys = serializers.SerializerMethodField()
     group = serializers.CharField(source='meta.group', required=False,
                                   allow_blank=True)
     order = serializers.IntegerField(source='meta.order', required=False)
@@ -284,6 +285,9 @@ class InjectableSerializer(serializers.Serializer):
     def get_multi(self, obj):
         return 'list' in obj.datatype.lower()
 
+    def get_editable_keys(self, obj):
+        return obj.meta.get('editable_keys', False)
+
     def update(self, obj, validated_data):
         value = validated_data.get('value')
         if obj.meta.get('unique') and value is not None:
@@ -298,7 +302,7 @@ class ScenarioInjectableSerializer(InjectableSerializer,
     class Meta:
         model = Injectable
         fields = ('id', 'name', 'title', 'group', 'order', 'scenario', 'value', 'multi',
-                  'datatype', 'parents', 'description', 'editable', 'choices',
+                  'datatype', 'editable_keys', 'parents', 'description', 'editable', 'choices',
                   'unique', 'regex_help')
         read_only_fields = ('scenario', 'parents', 'name', 'editable',
                             'choices', 'unique', 'title', 'regex_help')

@@ -88,6 +88,7 @@ export interface Inj {
   group?: string,
   datatype: 'str' | 'int' | 'list' | 'float' | 'bool' | 'dict' | 'geometry',
   multi?: boolean,
+  editable_keys?: boolean,
   choices?: any[] | Record<string, string>
 }
 

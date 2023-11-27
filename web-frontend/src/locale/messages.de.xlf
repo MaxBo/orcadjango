@@ -76,7 +76,7 @@
       </trans-unit>
       <trans-unit id="5589520527260731799" datatype="html">
         <source> Django Admin </source>
-        <target state="needs-translation"/>
+        <target state="translated">Django Admin</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">69,70</context>
@@ -116,7 +116,7 @@
       </trans-unit>
       <trans-unit id="314315645942131479" datatype="html">
         <source>Info</source>
-        <target state="needs-translation"/>
+        <target state="translated">Info</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">106</context>
@@ -216,7 +216,7 @@
       </trans-unit>
       <trans-unit id="5184373289520493569" datatype="html">
         <source> OK </source>
-        <target state="needs-translation"/>
+        <target state="translated">OK</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/injectables/derived/derived-injectable.component.html</context>
           <context context-type="linenumber">36,38</context>
@@ -324,7 +324,7 @@
       </trans-unit>
       <trans-unit id="1183601349925746054" datatype="html">
         <source>Parameter</source>
-        <target state="needs-translation"/>
+        <target state="translated">Parameter</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/injectables/injectables.component.html</context>
           <context context-type="linenumber">45</context>
@@ -630,7 +630,7 @@
       </trans-unit>
       <trans-unit id="8186013988289067040" datatype="html">
         <source>Code</source>
-        <target state="needs-translation"/>
+        <target state="translated">Code</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/edit/project-edit.component.html</context>
           <context context-type="linenumber">26</context>

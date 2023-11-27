@@ -30,8 +30,8 @@ export class ConfirmDialogComponent implements AfterViewInit  {
 
   constructor(public dialogRef: MatDialogRef<ConfirmDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: DialogData) {
-    data.confirmButtonText = data.confirmButtonText || 'Confirm';
-    data.cancelButtonText = data.cancelButtonText ||'Cancel';
+    data.confirmButtonText = data.confirmButtonText || $localize `Confirm`;
+    data.cancelButtonText = data.cancelButtonText || $localize `Cancel`;
     data.context = data.context || {};
     data.showCloseButton = (data.showCloseButton === undefined)? true: data.showCloseButton;
   }
