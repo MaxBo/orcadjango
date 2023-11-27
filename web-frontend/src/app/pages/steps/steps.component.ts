@@ -2,8 +2,17 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ScenarioInjectable, ScenarioStep, Step } from "../../rest-api";
 import { CdkDragDrop, CdkDropList, moveItemInArray } from "@angular/cdk/drag-drop";
 import { InjectablesComponent, sortBy } from "../injectables/injectables.component";
-import { BehaviorSubject, forkJoin, Observable, Subscription } from "rxjs";
+import { BehaviorSubject, forkJoin, Observable } from "rxjs";
 import { showAPIError } from "../../elements/simple-dialog/simple-dialog.component";
+
+interface StepExt extends Step {
+  requiredSteps: (Step | undefined)[];
+}
+
+interface ScenarioStepExt extends ScenarioStep {
+  requiredSteps: (Step | undefined)[];
+  injList: ScenarioInjectable[];
+}
 
 @Component({
   selector: 'app-steps',
@@ -11,10 +20,10 @@ import { showAPIError } from "../../elements/simple-dialog/simple-dialog.compone
   styleUrls: ['./steps.component.scss']
 })
 export class StepsComponent extends InjectablesComponent {
-  protected availableSteps: Record<string, Step[]> = {};
+  protected availableSteps: Record<string, StepExt[]> = {};
   // aux array to remember order of groups of available steps
   protected stepGroups: string[] = [];
-  protected scenarioSteps: ScenarioStep[] = [];
+  protected scenarioSteps: ScenarioStepExt[] = [];
   protected _scenStepNames: string[] = [];
   protected activeStepsCount = 0;
   stepsLoading$ = new BehaviorSubject<boolean>(false);
@@ -47,7 +56,9 @@ export class StepsComponent extends InjectablesComponent {
               this.stepGroups.push(group);
               this.availableSteps[group] = [];
             }
-            this.availableSteps[group].push(step);
+            let stepExt: StepExt = <StepExt> step;
+            stepExt.requiredSteps = this.getRequiredSteps(step);
+            this.availableSteps[group].push(stepExt);
           })
           Object.keys(this.availableSteps).forEach(group => {
               // this.availableSteps[group] = sortBy(this.availableSteps[group], 'name');
@@ -55,7 +66,14 @@ export class StepsComponent extends InjectablesComponent {
             }
           );
           this.rest.getScenarioSteps(scenario).subscribe(steps => {
-            this.scenarioSteps = sortBy(steps, 'order');
+            this.scenarioSteps = steps.map(s => {
+              this._assign_step_meta(s);
+              let stepExt: ScenarioStepExt = <ScenarioStepExt> s;
+              stepExt.requiredSteps = this.getRequiredSteps(s);
+              stepExt.injList = this.getInjectables(s);
+              return stepExt;
+            })
+            this.scenarioSteps = sortBy(this.scenarioSteps, 'order');
             this._scenStepNames = steps.map(s => s.name);
             this._updateActiveStepsCount();
             this.scenarioSteps.forEach(s => this._assign_step_meta(s));
@@ -115,15 +133,18 @@ export class StepsComponent extends InjectablesComponent {
 
   addStep(stepName: string, options?:{ position?: number, description?: string, title?: string }) {
     this._scenStepNames.push(stepName);
-    this.rest.addScenarioStep(stepName, options?.position || 1, this.settings.activeScenario$.value!).subscribe(created => {
-      this._assign_step_meta(created);
+    this.rest.addScenarioStep(stepName, options?.position || 1, this.settings.activeScenario$.value!).subscribe(s => {
+      this._assign_step_meta(s);
+      let created = <ScenarioStepExt> s;
+      created.requiredSteps = this.getRequiredSteps(s);
+      created.injList = this.getInjectables(s);
       this.scenarioSteps.splice(options?.position || 0, 0, created);
       this._updateStepsOrder();
       this._updateActiveStepsCount();
     })
   }
 
-  removeStep(step: ScenarioStep): void {
+  removeStep(step: ScenarioStepExt): void {
     this.rest.deleteScenarioStep(step).subscribe(() => {
       const idx = this.scenarioSteps.indexOf(step);
       this.scenarioSteps.splice(idx, 1);
@@ -193,6 +214,7 @@ export class StepsComponent extends InjectablesComponent {
   }
 
   onResizeDrag(event: any): void {
+    console.log('resize');
     const dragRect = this.resizeHandle.nativeElement.getBoundingClientRect();
     const targetRect = this.logContainer.nativeElement.getBoundingClientRect();
     const diffY = dragRect.top - targetRect.top + dragRect.height;

@@ -34,7 +34,7 @@
             <p><i [innerHTML]="step.description"></i></p>
             <ng-container *ngIf="step.required && (step.required.length > 1 || step.required[0] != 'None')">
               <ng-container i18n>Prerequisites</ng-container>:<br>
-              <ng-container *ngFor="let required of getRequiredSteps(step); let last = last;">
+              <ng-container *ngFor="let required of step.requiredSteps; let last = last;">
                 <ng-container *ngIf="required">
                   <u [matTooltip]="required?.description"
                      matTooltipPosition="right" style="cursor: help;">
@@ -110,7 +110,7 @@
           <ng-container *ngIf="step.required && (step.required.length > 1 || step.required[0] != 'None')">
             <mat-divider></mat-divider>
             <ng-container i18n>Prerequisites</ng-container>:
-            <ng-container *ngFor="let required of getRequiredSteps(step); let last = last;">
+            <ng-container *ngFor="let required of step.requiredSteps; let last = last;">
               <ng-container *ngIf="required">
                 <u [matTooltip]="required?.description"
                    matTooltipPosition="right" style="cursor: help;">
@@ -121,10 +121,9 @@
             </ng-container>
           </ng-container>
           <mat-divider></mat-divider>
-          <ng-container *ngIf="getInjectables(step).length > 0">
-<!--            <h3>Injectables</h3>-->
+          <ng-container *ngIf="step.injList.length > 0">
             <table style="width: 100%;" (mousedown)="$event.preventDefault(); $event.stopPropagation();">
-              <tr *ngFor="let injectable of getInjectables(step)">
+              <tr *ngFor="let injectable of step.injList">
                 <td style="padding-right: 15px;" [matTooltip]="injectable.description">
                   <b>{{injectable.title || injectable.name}}</b>
                 </td>
@@ -167,7 +166,7 @@
       </button>
     </div>
     <div #logContainer style="width: 100%;" [style.height]="logHeight + 'px'">
-      <app-scenario-log height="100%"></app-scenario-log>
+<!--      <app-scenario-log height="100%"></app-scenario-log>-->
     </div>
   </div>
 </div>
