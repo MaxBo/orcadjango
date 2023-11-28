@@ -71,23 +71,16 @@
                     {{injectable.steps.length}} <ng-container i18n>Step(s)</ng-container>
                   </mat-panel-title>
                 </mat-expansion-panel-header>
-                <div *ngFor="let step of injectable.steps;"
-                     style="cursor: help;"
-                     [matTooltip]="removeHTMLTags(step.description)"
-                     matTooltipPosition="right">
-                  <u>{{step.title || step.name}}</u>
-                </div>
+                <ul style="margin: 0 0 0 -25px;">
+                  <li *ngFor="let step of injectable.steps;"
+                      style="cursor: help;"
+                      [matTooltip]="removeHTMLTags(step.description)"
+                      matTooltipPosition="right">
+                    <u>{{step.title || step.name}}</u> <br>
+                  </li>
+                </ul>
               </mat-expansion-panel>
             </td>
-<!--            <td>
-              {{injectable.datatype}}
-            </td>
-            <td>
-              {{injectable.multi}}
-            </td>
-            <td>
-              {{!!injectable.choices}}
-            </td>-->
             <td style="min-width: 200px;">
               <injectable *ngIf="injectable.value !== undefined"
                           [injectable]="injectable"></injectable>
