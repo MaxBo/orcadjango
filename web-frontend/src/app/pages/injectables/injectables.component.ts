@@ -127,9 +127,9 @@ export class InjectablesComponent extends PageComponent implements OnInit {
   }
 
   updateChildren(injectable: ScenarioInjectable) {
-    const children = this.injectables.filter(inj => (inj.parents || []).indexOf(injectable.id) >= 0);
     const scenario = this.settings.activeScenario$.value;
-    if (!scenario) return;
+    if (!scenario || !this.groupedInjectables) return;
+    const children = Object.values(this.groupedInjectables).flat().filter(inj => (inj.parents || []).indexOf(injectable.id) >= 0);
     children.forEach(inj => {
       this.rest.getScenarioInjectable(inj.id, scenario).subscribe(updated => {
         setTimeout(() => inj.value = undefined);
