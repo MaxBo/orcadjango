@@ -76,7 +76,6 @@ export class StepsComponent extends InjectablesComponent {
             this.scenarioSteps = sortBy(this.scenarioSteps, 'order');
             this._scenStepNames = steps.map(s => s.name);
             this._updateActiveStepsCount();
-            this.scenarioSteps.forEach(s => this._assign_step_meta(s));
             this.connectWs();
             this.setLoading(false);
           })
@@ -224,5 +223,4 @@ export class StepsComponent extends InjectablesComponent {
       document.dispatchEvent(new Event('mouseup'));
     }
   }
-
 }

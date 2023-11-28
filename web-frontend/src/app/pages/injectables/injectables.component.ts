@@ -38,6 +38,9 @@ export class InjectablesComponent extends PageComponent implements OnInit {
 
   constructor(protected rest: RestService, protected settings: SettingsService, protected dialog: MatDialog){
     super();
+  }
+
+  ngOnInit() {
     this.subscriptions.push(this.settings.activeScenario$.subscribe(scenario => {
       if (!scenario || !this.settings.module$.value)
         return;
@@ -65,9 +68,6 @@ export class InjectablesComponent extends PageComponent implements OnInit {
         })
       });
     }));
-  }
-
-  ngOnInit() {
   }
 
   checkInjectableConsistency(): void {
