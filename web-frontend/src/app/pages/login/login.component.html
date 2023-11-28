@@ -6,17 +6,17 @@
     </div>
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <mat-form-field appearance="outline">
-        <mat-label>Nutzername</mat-label>
+        <mat-label i18n>Username</mat-label>
         <input matInput formControlName="username" required>
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-label>Passwort</mat-label>
+        <mat-label i18n>Password</mat-label>
         <input matInput type="password" formControlName="password" [type]="'password'" required>
       </mat-form-field>
       <mat-error *ngIf="loginForm.errors && loginForm.errors['error']" class="alert">
         {{loginForm.errors['error']}}
       </mat-error>
-      <button class="large" mat-raised-button color="primary" type="submit" style="width:100%">Einloggen</button>
+      <button class="large" mat-raised-button color="primary" type="submit" style="width:100%" i18n>Log in</button>
     </form>
   </mat-card>
 </div>

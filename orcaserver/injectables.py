@@ -48,6 +48,7 @@ class OrcaTypeMap:
     @staticmethod
     def get(mod_str):
         cls = None
+        module = None
         if isinstance(mod_str, str):
             try:
                 module_class = mod_str.split('.')
@@ -56,7 +57,7 @@ class OrcaTypeMap:
                 module = getattr(importlib.import_module(module_name),
                                  classname, str)
             except ModuleNotFoundError:
-                module = None
+                pass
         for sub in OrcaTypeMap.__subclasses__():
             comp = mod_str if isinstance(sub.data_type, str) else module
             if sub.data_type == comp:

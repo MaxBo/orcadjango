@@ -9,20 +9,22 @@
   <span class="page-links" fxShow="true" fxHide.lt-md="true">
     <a *ngIf="settings.user$ | async"
        class="link"
+       i18n-title
        title="projects"
        routerLink="/projects"
        routerLinkActive="active-link"
-       [routerLinkActiveOptions]="{exact: false}">
+       [routerLinkActiveOptions]="{exact: false}" i18n>
       Projects
     </a>
     <ng-container *ngIf="settings.activeProject$ | async">
       <mat-icon iconPositionEnd>arrow_right</mat-icon>
       <a *ngIf="settings.activeProject$ | async"
          class="link"
+         i18n-title
          title="scenarios"
          routerLink="/scenarios"
          routerLinkActive="active-link"
-         [routerLinkActiveOptions]="{exact: false}">
+         [routerLinkActiveOptions]="{exact: false}" i18n>
         Scenarios
       </a>
     </ng-container>
@@ -30,20 +32,22 @@
       <mat-icon iconPositionEnd>arrow_right</mat-icon>
       <a *ngIf="settings.activeScenario$ | async"
          class="link"
+         i18n-title
          title="injectables"
          routerLink="/injectables"
          routerLinkActive="active-link"
-         [routerLinkActiveOptions]="{exact: false}">
+         [routerLinkActiveOptions]="{exact: false}" i18n>
         Injectables
       </a>
     </ng-container>
     <ng-container *ngIf="settings.activeScenario$ | async">
       <mat-icon iconPositionEnd>arrow_right</mat-icon>
       <a class="link"
+         i18n-title
          title="steps and run"
          routerLink="/steps"
          routerLinkActive="active-link"
-         [routerLinkActiveOptions]="{exact: false}">
+         [routerLinkActiveOptions]="{exact: false}" i18n>
         Steps & Run
       </a>
     </ng-container>
@@ -51,7 +55,8 @@
   <button mat-button id="userButton" [matMenuTriggerFor]="userMenu">
     <div style="display: flex; height: 45px;">
       <span style="line-height: 44px; margin-right: 10px;">
-        {{(settings.user$ | async)?.username || 'not logged in'}}
+        <ng-container *ngIf="(settings.user$ | async) else notLoggedIn">{{settings.user$.value?.username}}</ng-container>
+        <ng-template #notLoggedIn i18n>not logged in</ng-template>
       </span>
       <app-user-preview *ngIf="settings.user$ | async" [user]="settings.user$ | async"></app-user-preview>
     </div>
@@ -60,20 +65,20 @@
     <ng-container *ngIf="(settings.user$ | async) else login">
       <a mat-menu-item
          *ngIf="(settings.user$ | async)?.is_superuser"
-         [href]="settings.host + '/admin/'" target="_blank">
+         [href]="settings.host + '/admin/'" target="_blank" i18n>
         Django Admin
       </a>
       <a mat-menu-item
-         routerLink="/profile">
+         routerLink="/profile" i18n>
         Profile
       </a>
       <a mat-menu-item
-         (click)="auth.logout()" href="">
+         (click)="auth.logout()" href="" i18n>
         Logout
       </a>
     </ng-container>
     <ng-template #login>
-      <a mat-menu-item routerLink="/login">Login</a>
+      <a mat-menu-item routerLink="/login" i18n>Login</a>
     </ng-template>
   </mat-menu>
 </mat-toolbar>
@@ -83,7 +88,7 @@
   <mat-sidenav class="sidenav" mode="side" opened
                *ngIf=" (settings.user$ | async) && (router.url === '/steps' || router.url === '/scenarios' || router.url === '/projects' || router.url === '/injectables')">
     <mat-form-field id="module-select">
-      <mat-label>Module</mat-label>
+      <mat-label i18n>Module</mat-label>
       <mat-select (selectionChange)="settings.setModule($event.value)" [value]="settings.module$.value?.name">
         <mat-option *ngFor="let module of settings.modules"
                     [value]="module.name"
@@ -98,7 +103,7 @@
               style="background-color: #fafafa; width: 100%;"
               [matMenuTriggerFor]="moduleInfo">
         <mat-icon>info</mat-icon>
-        Module Info
+        <ng-container i18n>Info</ng-container>
       </button>
       <mat-menu #moduleInfo>
         <div style="padding: 10px;">
@@ -136,7 +141,7 @@
         </mat-card-content>
       </ng-container>
       <ng-template #noProject>
-        <mat-card-content>no project selected</mat-card-content>
+        <mat-card-content i18n>no project selected</mat-card-content>
       </ng-template>
     </mat-card>
     <ng-container *ngIf="settings.activeProject$ | async">
@@ -160,20 +165,20 @@
 <!--            <i>{{settings.activeScenario$.value?.description}}</i>-->
             <ng-container *ngIf="settings.activeScenario$.value?.is_running else notRunningCard">
               <p>
-                Started at: <br>
+                <ng-container i18n>Started at</ng-container>: <br>
                 {{settings.activeScenario$.value?.last_run?.started}}
               </p>
             </ng-container>
             <ng-template #notRunningCard>
               <p *ngIf="settings.activeScenario$.value?.last_run?.finished">
-                Last Run finished: <br>
+                <ng-container i18n>Last Run finished</ng-container>: <br>
                 <i [style.color]="settings.activeScenario$.value?.last_run?.success? 'green': 'red'">{{settings.activeScenario$.value?.last_run?.finished}}</i>
               </p>
             </ng-template>
           </mat-card-content>
         </ng-container>
         <ng-template #noScenario>
-          <mat-card-content>no scenario selected</mat-card-content>
+          <mat-card-content i18n>no scenario selected</mat-card-content>
         </ng-template>
       </mat-card>
 <!--      -->

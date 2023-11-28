@@ -10,6 +10,7 @@ import { BaseInjectableComponent } from "../injectable.component";
 })
 export class DictComponent extends BaseInjectableComponent implements OnInit {
   @Input() value!: Record<string, any>;
+  @Input() keysEditable = false;
   keys: string[] = [];
   values: any[] = [];
   protected JSON = JSON;

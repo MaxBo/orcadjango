@@ -1,16 +1,19 @@
 <ng-container *ngIf="edit; else preview">
   <div *ngFor="let key of keys; let i = index;">
-    <div style="padding-top: 22px;">
-      <mat-form-field>
-        <mat-label>Key (String)</mat-label>
+    <div style="padding-top: 22px; display: flex; align-items: center;">
+      <mat-form-field *ngIf="keysEditable else keyAsStr">
+        <mat-label i18n>Key (String)</mat-label>
         <input #keyInput type="text" [value]="key" matInput
-               (change)="onValueChanged($event.target.value, valueInput.value, i)">
+               (change)="onValueChanged($event.target.value, keyInput.value, i)">
       </mat-form-field>
+      <ng-template #keyAsStr>
+        <div style="min-width: 200px;">{{key}}</div>
+      </ng-template>
       :&nbsp;
       <mat-form-field>
-        <mat-label>Value (String)</mat-label>
+        <mat-label i18n>Value (String)</mat-label>
         <input #valueInput type="text" [value]="values[i]" matInput
-               (change)="onValueChanged(keyInput.value, $event.target.value, i)">
+               (change)="onValueChanged(valueInput.value, $event.target.value, i)">
       </mat-form-field>
     </div>
     <mat-divider *ngIf="i < (keys.length - 1)"></mat-divider>

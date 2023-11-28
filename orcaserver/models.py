@@ -74,10 +74,12 @@ class Scenario(NameModel):
             descriptors[name] = orca_manager.get_injectable_meta(name)
         project = self.project
         init_values = json.loads(project.init)
+        valid_inj = []
         # create or reset injectables
         for name, desc in descriptors.items():
             if not desc or desc.get('hidden'):
                 continue
+            valid_inj.append(name)
             inj, created = Injectable.objects.get_or_create(name=name,
                                                             scenario=self)
             value = init_values.get(name)
@@ -105,6 +107,9 @@ class Scenario(NameModel):
                                      #f'not found in scenario {inj.scenario.name}')
             inj.parent_injectables = str(parent_injectables)
             inj.save()
+        # remove outdated injectables that are not defined by the module anymore
+        remove = Injectable.objects.filter(scenario=self).exclude(name__in=valid_inj)
+        remove.delete()
 
 
 class Injectable(NameModel):
@@ -128,7 +133,7 @@ class Injectable(NameModel):
         '''buffered meta data for serialization'''
         if self.__meta:
             return self.__meta
-        dummy = {'group': '', 'order': '', 'unique': '',}
+        dummy = {'group': '', 'order': '0', 'unique': False,}
         if not self.scenario:
             return dummy
         try:

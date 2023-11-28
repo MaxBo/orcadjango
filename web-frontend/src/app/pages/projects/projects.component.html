@@ -8,18 +8,18 @@
                              [value]="viewType"
                              (change)="changeView($event.value)">
       <mat-button-toggle value="grid-view">
-        Grid
+        <ng-container i18n>Grid</ng-container>
         <mat-icon style="margin-left: 10px;">grid_view</mat-icon>
       </mat-button-toggle>
       <mat-button-toggle value="list-view">
-        List
+        <ng-container i18n>List</ng-container>
         <mat-icon style="margin-left: 10px;">list</mat-icon>
       </mat-button-toggle>
     </mat-button-toggle-group>
     <div style="display: flex; margin-left: auto; align-items: center;">
       <mat-button-toggle style="margin-right: 10px;"
                          (click)="setShowFilters(!showFilters)">
-        Filter Options
+        <ng-container i18n>Filter Options</ng-container>
         <ng-container *ngIf="(filterByCodes || filterByUsers || filterByDate || filterArchive) else noFilter" >
           <mat-icon color="accent">filter_alt</mat-icon>
         </ng-container>
@@ -28,17 +28,17 @@
         </ng-template>
       </mat-button-toggle>
       <mat-form-field style="margin-bottom: -20px;">
-        <mat-label>Sort by</mat-label>
+        <mat-label i18n>Sort by</mat-label>
         <mat-select [value]="sortAttr" (selectionChange)="this.setSortAttr($event.value || 'name')">
-          <mat-option value="name">Name</mat-option>
-          <mat-option value="code">Code</mat-option>
-          <mat-option value="date">Date</mat-option>
+          <mat-option value="name" i18n>Name</mat-option>
+          <mat-option value="code" i18n>Code</mat-option>
+          <mat-option value="date" i18n>Date</mat-option>
         </mat-select>
       </mat-form-field>
       <button mat-mini-fab
               color="accent"
               class="flat micro"
-              [title]="'sort order: ' + (sortDescending? 'descending': 'ascending')"
+              [title]="sortTitle(sortDescending)"
               (click)="setSortDescending(!sortDescending)"
               style="margin-left: 5px;">
         <mat-icon>{{sortDescending? 'arrow_downward': 'arrow_upward'}}</mat-icon>
@@ -49,7 +49,7 @@
     <div>
       <mat-checkbox [checked]="filterByUsers" (change)="setFilterByUsers(!filterByUsers)"></mat-checkbox>
       <mat-form-field>
-        <mat-label>Filter by Users</mat-label>
+        <mat-label i18n>Filter by Users</mat-label>
         <mat-select multiple [disabled]="!filterByUsers"
                     [value]="filterUsers"
                     (selectionChange)="setFilterUsers($event.value)">
@@ -61,7 +61,7 @@
       </mat-form-field>
       <mat-checkbox [checked]="filterByCodes" (change)="setFilterByCodes(!filterByCodes)"></mat-checkbox>
       <mat-form-field>
-        <mat-label>Filter by codes</mat-label>
+        <mat-label i18n>Filter by codes</mat-label>
         <mat-select multiple [disabled]="!filterByCodes"
                     [value]="filterCodes"
                     (selectionChange)="setFilterCodes($event.value)">
@@ -78,13 +78,13 @@
               class="flat micro"
               [value]="filterDateOperator"
               [disabled]="!filterByDate"
-              [title]="(filterDateOperator === '=')? 'at': (filterDateOperator === '>')? 'newer than': 'older than'"
               (click)="setNextFilterOperator()"
               style="margin-right: 5px; font-size: 20px; font-weight: bold;">
+<!--        [title]="(filterDateOperator === '=')? 'at': (filterDateOperator === '>')? 'newer than': 'older than'"-->
         {{filterDateOperator}}
       </button>
       <mat-form-field>
-        <mat-label>Filter by date</mat-label>
+        <mat-label i18n>Filter by date</mat-label>
         <input matInput [disabled]="!filterByDate"
                [matDatepicker]="picker"
                [(ngModel)]="filterDate"
@@ -93,7 +93,7 @@
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
       <mat-checkbox [checked]="filterArchive"
-                    (change)="setFilterArchive(!filterArchive)">
+                    (change)="setFilterArchive(!filterArchive)" i18n>
         Archive
       </mat-checkbox>
     </div>
@@ -122,13 +122,13 @@
         color="primary"
         class="next"
         routerLink="/scenarios">
-  Next
+  <ng-container i18n>Next</ng-container>
   <mat-icon iconPositionEnd>arrow_right</mat-icon>
 </button>
 <div class="background" *ngIf="settings.siteSettings?.projects_background_img"
      style="background-image: url('{{settings.siteSettings?.projects_background_img}}');"></div>
 
 <ng-template #deleteProjectTemplate>
-  <p>Do you really want to delete the project?</p>
-  <p>Warning: Only the project, its scenarios and parameters will be deleted. All possibly generated data will remain. </p>
+  <p i18n>Do you really want to delete the project?</p>
+  <p i18n>Warning: Only the project, its scenarios and parameters will be deleted. All possibly generated data will remain. </p>
 </ng-template>

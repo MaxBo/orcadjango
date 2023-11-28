@@ -8,6 +8,7 @@ from inspect import signature, _empty
 import traceback
 
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 lock = threading.Lock()
 
@@ -134,7 +135,7 @@ class OrcaManager(ModuleSingleton):
             'title': step_meta.get('title', ''),
             'group': step_meta.get('group', '-'),
             'order': step_meta.get('order', 1),
-            'docstring': wrapper._func.__doc__ or '',
+            'docstring': step_meta.get('description') or wrapper._func.__doc__ or '',
             'injectables': injectables,
             'required': required,
         }
@@ -147,12 +148,13 @@ class OrcaManager(ModuleSingleton):
             'order': 10000000,
             'group': '',
             'title': '',
-            'unique': False,
+            'unique': False
         }
         _meta = orca_meta.get(injectable, {})
-        if (injectable not in orca_injectables or injectable.startswith('iter_')
-            or _meta.get('hidden')):
+        if injectable not in orca_injectables or injectable.startswith('iter_'):
             return {}
+        if _meta.get('hidden'):
+            return {'hidden': True}
         if _meta.get('refresh') == 'always':
             value = self.__generic_instance.orca.get_injectable(injectable)
         else:
@@ -164,7 +166,7 @@ class OrcaManager(ModuleSingleton):
         funcwrapper = self.__generic_instance.orca.get_raw_injectable(injectable)
         sig = signature(funcwrapper._func)
         if isinstance(funcwrapper, self.__generic_instance.orca._InjectableFuncWrapper):
-            desc['docstring'] = funcwrapper._func.__doc__ or ''
+            desc['docstring'] = _meta.get('description') or funcwrapper._func.__doc__ or ''
             # datatype from annotations
             returntype = sig.return_annotation
             has_returntype = True
@@ -255,18 +257,18 @@ class OrcaWrapper():
 
     def start(self, steps, on_success=None, on_error=None):
         if self.is_running():
-            raise InUseError('Thread is already running')
+            raise InUseError(_('Thread is already running'))
         self.thread = AbortableThread(
             target=self.__run, args=(steps, ))
         self.thread.on_success = on_success
         self.thread.on_error = on_error
-        message = f'Starting run...'
+        message = _('Starting run...')
         self.orca.logger.info(message)
         self.thread.start()
 
     def abort(self):
         if self.is_running():
-            self.orca.logger.error('aborting...')
+            self.orca.logger.error(_('aborting...'))
             self.thread.abort()
 
     def is_running(self):
@@ -275,8 +277,8 @@ class OrcaWrapper():
     def remove(self):
         if self.is_running():
             raise Exception(
-                'The orca instances can not be reset at the moment.'
-                ' A thread is still running.')
+                _('The orca instances can not be reset at the moment.'
+                ' A thread is still running.'))
         if self.thread:
             del(self.thread)
         self.clear_log_handlers()
@@ -347,7 +349,7 @@ class OrcaWrapper():
                 self.orca.write_tables(
                     data_out, out_base_tables, 'base', compress=compress,
                     local=out_base_local)
-            logger.info("Run started",
+            logger.info(_('Run started'),
                         extra={'status': {'started': True}})
 
             # run the steps
@@ -356,14 +358,13 @@ class OrcaWrapper():
 
                 if var is not None:
                     logger.debug(
-                        'running iteration {} with iteration value {!r}'.format(
-                            i, var))
+                        _(f'running iteration {i} with iteration value {var}'))
 
                 for j, step in enumerate(steps):
                     step_name = step.name
                     self.orca.add_injectable(
                         'iter_step', self.orca.iter_step(j, step_name))
-                    logger.info(f"Running step '{step_name}'",
+                    logger.info(_(f'Running step "{step_name}"'),
                                 extra={'status': {
                                     'step': step_name,
                                     'started': True
@@ -382,13 +383,13 @@ class OrcaWrapper():
                         logger.error(
                             f'{e.__class__.__module__}.'
                             f'{e.__class__.__name__} - {str(e)}')
-                        logger.error(f'{step_name} failed',
+                        logger.error(_(f'Step "{step_name}" failed'),
                                      extra={'status': {
                                          'step': step_name,
                                          'finished': True,
                                          'success': False
                                      }})
-                        logger.error('orca run aborted',
+                        logger.error(_('orca run aborted'),
                                      extra={'status': {
                                         'finished': True,
                                         'success': False
@@ -398,7 +399,7 @@ class OrcaWrapper():
                         return
                     step.finished = timezone.now()
                     step.active = False
-                    logger.info(f'{step_name} finished',
+                    logger.info(_(f'"{step_name}" finished'),
                                 extra={'status': {
                                     'step': step_name,
                                     'finished': True,
@@ -416,12 +417,12 @@ class OrcaWrapper():
                             compress=compress, local=out_run_local)
 
                 self.orca.clear_cache(scope=_CS_ITER)
-            logger.info('orca run finished', extra={
+            logger.info(_('orca run finished successfully'), extra={
                 'status': {'finished': True, 'success': True}})
             if self.thread.on_success:
                 self.thread.on_success()
         except Abort:
-            logger.error('orca run aborted', extra={
+            logger.error(_('orca run aborted'), extra={
                 'status': {'finished': True, 'success': False}})
             if self.thread.on_error:
                 self.thread.on_error()
