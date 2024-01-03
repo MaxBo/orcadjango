@@ -63,7 +63,7 @@
           <div class="drag-placeholder" *cdkDragPlaceholder></div>
           <mat-expansion-panel-header>
             <mat-panel-title [title]="step.title || step.name">
-              <div>
+              <div [style.font-weight]="step.active? '800': '500'">
                 {{step.title || step.name}}
               </div>
             </mat-panel-title>
