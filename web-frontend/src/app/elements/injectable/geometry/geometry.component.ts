@@ -11,7 +11,7 @@ import VectorLayer from "ol/layer/Vector";
 import { Fill, Stroke, Style } from "ol/style";
 import VectorSource from "ol/source/Vector";
 import { Vector } from "ol/layer";
-import { Draw, Select } from "ol/interaction";
+import { Draw, Select, Snap } from "ol/interaction";
 import { click, always } from 'ol/events/condition';
 import { FullScreen } from "ol/control";
 import { FeatureLike } from "ol/Feature";
@@ -154,6 +154,11 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
     });
     this.featureLayer.set('freehand', freehand);
     this.map.addInteraction(freehand);
+
+    const snap = new Snap({
+      source: source,
+    });
+    this.map.addInteraction(snap);
 
     // WKT does not support circle geoms, ToDo: transform circle into poly and update on map
 /*    const circle = new Draw({
