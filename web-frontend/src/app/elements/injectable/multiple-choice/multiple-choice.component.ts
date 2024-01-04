@@ -1,5 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/core';
 import { BaseInjectableComponent } from "../injectable.component";
+import { MatTableDataSource } from "@angular/material/table";
+import { MatSort } from "@angular/material/sort";
 
 interface Choice {
   name: string;
@@ -14,14 +16,14 @@ interface Choice {
   inputs: ['edit'],
   outputs: ['valueChanged']
 })
-export class MultipleChoiceComponent extends BaseInjectableComponent implements OnInit {
+export class MultipleChoiceComponent extends BaseInjectableComponent implements OnInit, AfterViewInit {
   @Input() choices!: any[];
   @Input() choiceLabels?: string[];
   @Input() values: any[] = [];
   @Input() showStringFilter = true;
-  protected data: Choice[] = [];
+  @ViewChild(MatSort) sort!: MatSort;
+  protected tableData!: MatTableDataSource<any>;
   protected columns: string[] = [];
-  protected checked: boolean[] = [];
   protected active: boolean[] = [];
   protected filterString = '';
   protected filterChecked = false;
@@ -29,27 +31,36 @@ export class MultipleChoiceComponent extends BaseInjectableComponent implements 
   protected readonly Object = Object;
 
   ngOnInit() {
-    this.checked = this.choices.map(c => this.values.indexOf(c) > -1);
     this.active = Array(this.choices.length).fill(true);
-    this.data = this.choices.map((choice, i) => {return { name: choice, description: this.choiceLabels? this.choiceLabels[i] || '-': undefined, checked: this.values.indexOf(choice) > -1 }});
+    let tableData: Choice[] = this.choices.map((choice, i) => {return { name: choice, description: this.choiceLabels? this.choiceLabels[i] || '-': undefined, checked: this.values.indexOf(choice) > -1 }})
+    this.tableData = new MatTableDataSource(tableData);
     this.columns = ['checked', 'name'];
     if (this.choiceLabels) this.columns.push('description');
+    this.tableData.filterPredicate = (record, filter) => {
+      if (this.filterChecked && !record.checked)
+        return false;
+      return (filter === '--override--') || String(record.name).includes(filter) || String(record.description).includes(filter);
+    }
   }
 
-  onValueChanged(value: boolean, index: number){
-    this.checked[index] = value;
+  ngAfterViewInit() {
+    this.tableData.sort = this.sort;
+  }
+
+  onValueChanged(value: boolean, choice: Choice){
+    choice.checked = value;
     let values: any[] = [];
-    this.checked.forEach((c, i) => {
-      if (c) values.push(this.choices[i]);
-    });
+    this.tableData.data.forEach(d => {
+      if (d.checked)
+        values.push(d.name);
+    })
     if (this.filterChecked)
       this.filterEntries();
     this.valueChanged.emit(values);
   }
 
   filterEntries(): void {
-    if (!this.filterString && !this.filterChecked)
-      this.active = Array(this.choices.length).fill(true);
-    this.active = this.choices.map((c, i) => (!this.filterChecked || this.checked[i]) && String(c).includes(this.filterString));
+    // assign value '--override--' to force call of filterPredicate even when filter string is empty
+    this.tableData.filter = this.filterString || '--override--';
   }
 }
