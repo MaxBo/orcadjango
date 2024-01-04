@@ -58,12 +58,13 @@
                      (cdkDropListDropped)="drop($event)">
         <mat-expansion-panel *ngFor="let step of scenarioSteps"
                              class="scenario-step-item"
+                             [ngClass]="{'active': step.active}"
                              [cdkDragData]="step" cdkDrag
                              [cdkDragDisabled]="settings.activeScenario$.value?.is_running">
           <div class="drag-placeholder" *cdkDragPlaceholder></div>
           <mat-expansion-panel-header>
             <mat-panel-title [title]="step.title || step.name">
-              <div [style.font-weight]="step.active? '800': '500'">
+              <div>
                 {{step.title || step.name}}
               </div>
             </mat-panel-title>
