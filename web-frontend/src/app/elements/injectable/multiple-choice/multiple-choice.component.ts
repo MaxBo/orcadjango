@@ -1,6 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { BaseInjectableComponent } from "../injectable.component";
 
+interface Choice {
+  name: string;
+  description?: string;
+  checked: boolean;
+}
+
 @Component({
   selector: 'multiple-choice',
   templateUrl: './multiple-choice.component.html',
@@ -13,6 +19,8 @@ export class MultipleChoiceComponent extends BaseInjectableComponent implements 
   @Input() choiceLabels?: string[];
   @Input() values: any[] = [];
   @Input() showStringFilter = true;
+  protected data: Choice[] = [];
+  protected columns: string[] = [];
   protected checked: boolean[] = [];
   protected active: boolean[] = [];
   protected filterString = '';
@@ -23,6 +31,9 @@ export class MultipleChoiceComponent extends BaseInjectableComponent implements 
   ngOnInit() {
     this.checked = this.choices.map(c => this.values.indexOf(c) > -1);
     this.active = Array(this.choices.length).fill(true);
+    this.data = this.choices.map((choice, i) => {return { name: choice, description: this.choiceLabels? this.choiceLabels[i] || '-': undefined, checked: this.values.indexOf(choice) > -1 }});
+    this.columns = ['checked', 'name'];
+    if (this.choiceLabels) this.columns.push('description');
   }
 
   onValueChanged(value: boolean, index: number){

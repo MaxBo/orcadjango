@@ -5,51 +5,53 @@
      style="background-image: url('{{settings.siteSettings?.steps_background_img}}');"></div>
 <div class="steps-container">
   <div class="steps-content">
-    <mat-accordion id="available-steps">
+    <div id="available-steps">
       <div class="steps-heading">
         <h2 i18n>Available Steps</h2>
       </div>
-      <mat-expansion-panel *ngFor="let group of stepGroups">
-        <mat-expansion-panel-header>
-          <mat-panel-title class="group-title">
-            {{group}}
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <mat-accordion multi cdkDropList
-                       cdkDropListSortingDisabled
-                       [cdkDropListData]="availableSteps[group]"
-                       [cdkDropListConnectedTo]="[scenarioStepList]"
-                       class="step-list">
-          <mat-expansion-panel class="available-step-item"
-                               *ngFor="let step of availableSteps[group]"
-                               [cdkDragData]="step" cdkDrag
-                               [title]="(step.title || step.name)"
-                               [matTooltip]="settings.activeScenario$.value?.is_running? curRunninMsg: (_scenStepNames.indexOf(step.name) >= 0)? alreadyInMsg: ''"
-                               matTooltipPosition="right"
-                               [cdkDragDisabled]="settings.activeScenario$.value?.is_running || _scenStepNames.indexOf(step.name) >= 0">
-            <div class="drag-placeholder" *cdkDragPlaceholder></div>
-            <mat-expansion-panel-header>
-              <mat-panel-title>
-                {{step.title || step.name}}
-              </mat-panel-title>
-            </mat-expansion-panel-header>
-            <p><i [innerHTML]="step.description"></i></p>
-            <ng-container *ngIf="step.required && (step.required.length > 1 || step.required[0] != 'None')">
-              <ng-container i18n>Prerequisites</ng-container>:<br>
-              <ng-container *ngFor="let required of step.requiredSteps; let last = last;">
-                <ng-container *ngIf="required">
-                  <u [matTooltip]="required?.description"
-                     matTooltipPosition="right" style="cursor: help;">
-                    {{required.title || required.name}}
-                  </u>
-                  <ng-container *ngIf="!last">,&nbsp;</ng-container>
+      <mat-accordion>
+        <mat-expansion-panel *ngFor="let group of stepGroups">
+          <mat-expansion-panel-header>
+            <mat-panel-title class="group-title">
+              {{group}}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-accordion multi cdkDropList
+                         cdkDropListSortingDisabled
+                         [cdkDropListData]="availableSteps[group]"
+                         [cdkDropListConnectedTo]="[scenarioStepList]"
+                         class="step-list">
+            <mat-expansion-panel class="available-step-item"
+                                 *ngFor="let step of availableSteps[group]"
+                                 [cdkDragData]="step" cdkDrag
+                                 [title]="(step.title || step.name)"
+                                 [matTooltip]="settings.activeScenario$.value?.is_running? curRunninMsg: (_scenStepNames.indexOf(step.name) >= 0)? alreadyInMsg: ''"
+                                 matTooltipPosition="right"
+                                 [cdkDragDisabled]="settings.activeScenario$.value?.is_running || _scenStepNames.indexOf(step.name) >= 0">
+              <div class="drag-placeholder" *cdkDragPlaceholder></div>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  {{step.title || step.name}}
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <p><i [innerHTML]="step.description"></i></p>
+              <ng-container *ngIf="step.required && (step.required.length > 1 || step.required[0] != 'None')">
+                <ng-container i18n>Prerequisites</ng-container>:<br>
+                <ng-container *ngFor="let required of step.requiredSteps; let last = last;">
+                  <ng-container *ngIf="required">
+                    <u [matTooltip]="required?.description"
+                       matTooltipPosition="right" style="cursor: help;">
+                      {{required.title || required.name}}
+                    </u>
+                    <ng-container *ngIf="!last">,&nbsp;</ng-container>
+                  </ng-container>
                 </ng-container>
               </ng-container>
-            </ng-container>
-          </mat-expansion-panel>
-        </mat-accordion>
-      </mat-expansion-panel>
-    </mat-accordion>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
 
     <div id="scenario-steps" [ngClass]="{'deactivated': (stepsLoading$ | async)}" style="min-width: 700px">
       <div class="steps-heading">

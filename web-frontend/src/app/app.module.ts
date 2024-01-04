@@ -66,6 +66,7 @@ import { MatRadioModule } from "@angular/material/radio";
 import { VarDirective } from "./var.directive";
 import { SimpleDialogComponent } from "./elements/simple-dialog/simple-dialog.component";
 import { SingleChoiceComponent } from './elements/injectable/single-choice/single-choice.component';
+import { MatTableModule } from "@angular/material/table";
 
 const DATE_FORMAT = {
   parse: {
@@ -144,7 +145,8 @@ const DATE_FORMAT = {
             isAutoContrast: true
         }),
         MatTooltipModule,
-        MatRadioModule
+        MatRadioModule,
+        MatTableModule
     ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
