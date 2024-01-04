@@ -6,7 +6,9 @@
 <div class="steps-container">
   <div class="steps-content">
     <mat-accordion id="available-steps">
-      <h2 style="margin-bottom: 5px;" i18n>Available Steps</h2>
+      <div class="steps-heading">
+        <h2 i18n>Available Steps</h2>
+      </div>
       <mat-expansion-panel *ngFor="let group of stepGroups">
         <mat-expansion-panel-header>
           <mat-panel-title class="group-title">
@@ -50,7 +52,25 @@
     </mat-accordion>
 
     <div id="scenario-steps" [ngClass]="{'deactivated': (stepsLoading$ | async)}" style="min-width: 700px">
-      <h2 style="margin-bottom: 5px;" i18n>Scenario Steps</h2>
+      <div class="steps-heading">
+        <h2 i18n>Scenario Steps</h2>
+        <div style="margin-left: auto;">
+          <button mat-flat-button
+                  color="primary"
+                  *ngIf="!settings.activeScenario$.value?.is_running"
+                  (click)="run()"
+                  [disabled]="settings.activeScenario$.value?.is_running || !activeStepsCount" i18n>
+            RUN CALCULATIONS
+          </button>
+          <button mat-flat-button
+                  color="warn"
+                  *ngIf="settings.activeScenario$.value?.is_running"
+                  (click)="abort()"
+                  style="margin-left: auto;" i18n>
+            ABORT
+          </button>
+      </div>
+      </div>
       <mat-accordion cdkDropList
                      #scenarioStepList="cdkDropList"
                      [cdkDropListData]="scenarioSteps"
@@ -142,21 +162,6 @@
           </ng-container>
         </mat-expansion-panel>
       </mat-accordion>
-      <div style="display: flex; margin-top: 10px;">
-        <button mat-flat-button
-                color="primary"
-                (click)="run()"
-                [disabled]="settings.activeScenario$.value?.is_running || !activeStepsCount" i18n>
-          RUN CALCULATIONS
-        </button>
-        <button mat-flat-button
-                color="warn"
-                *ngIf="settings.activeScenario$.value?.is_running"
-                (click)="abort()"
-                style="margin-left: auto;" i18n>
-          ABORT
-        </button>
-      </div>
     </div>
   </div>
   <div class="steps-footer">
