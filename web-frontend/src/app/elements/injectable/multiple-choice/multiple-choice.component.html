@@ -1,42 +1,45 @@
 <ng-container *ngIf="edit; else preview;">
-  <div style="display: flex;">
-    <div style="align-self: center;">
-      <ng-container *ngIf="!choices.length; else selectHint" i18n>no choices available</ng-container>
-      <ng-template #selectHint><div i18n>Select one or more</div></ng-template>
-    </div>
-    <div style="margin-left: auto; display: flex;">
-      <mat-form-field *ngIf="showStringFilter"
-                      style="margin-bottom: -22px; margin-right: 15px;">
-        <mat-label i18n>filter by entry contains</mat-label>
-        <input type="text" matInput
-               [(ngModel)]="filterString"
-               (keyup)="filterEntries()">
-      </mat-form-field>
-      <mat-checkbox [(ngModel)]="filterChecked"
-                    (change)="filterEntries()"
-                    style="align-self: center;" i18n>
-        Show checked only
-      </mat-checkbox>
-    </div>
+  <div style="margin-left: auto; display: flex;">
+    <mat-form-field *ngIf="showStringFilter"
+                    style="margin-bottom: -22px; margin-right: 15px; width: 300px;">
+      <mat-label i18n>filter name/description (e.g. "2019")</mat-label>
+      <input type="text" matInput
+             [(ngModel)]="filterString"
+             (keyup)="filterEntries()">
+    </mat-form-field>
+    <mat-checkbox [(ngModel)]="filterChecked"
+                  (change)="filterEntries()"
+                  style="align-self: center; margin-left: auto;" i18n>
+      Show checked only
+    </mat-checkbox>
   </div>
-  <div style="overflow: auto; max-height: 350px; width: 900px; min-height: 50px;">
-    <div style="display: flex; flex-wrap: wrap;">
-      <mat-checkbox *ngFor="let choice of choices; let i = index;"
-                    color="primary"
-                    style="min-width: 200px;"
-                    [style.display]="active[i]? 'flex': 'none'"
-                    [checked]="checked[i]"
-                    (change)="onValueChanged($event.checked, i)">
-        {{choice}} <ng-container *ngIf="choiceLabels && choiceLabels[i]">({{choiceLabels[i]}})</ng-container>
-      </mat-checkbox>
-    </div>
-  </div>
+  <table mat-table [dataSource]="tableData" matSort>
+    <ng-container matColumnDef="checked">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let element;">
+        <mat-checkbox color="primary"
+                      [checked]="element.checked"
+                      (change)="onValueChanged($event.checked, element)">
+        </mat-checkbox>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="name">
+      <th mat-header-cell mat-sort-header *matHeaderCellDef> Name </th>
+      <td mat-cell *matCellDef="let element"> {{ element.name }} </td>
+    </ng-container>
+    <ng-container matColumnDef="description">
+      <th mat-header-cell mat-sort-header *matHeaderCellDef> Description </th>
+      <td mat-cell *matCellDef="let element"> {{ element.description }} </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+  </table>
 </ng-container>
 
 <ng-template #preview>
-  <ng-container *ngFor="let value of choices; let i = index;">
-    <div *ngIf="checked[i]">
-      {{value}}
+  <ng-container *ngFor="let value of tableData.data; let i = index;">
+    <div *ngIf="value.checked">
+      {{value.name}}
     </div>
   </ng-container>
 </ng-template>

@@ -66,6 +66,8 @@ import { MatRadioModule } from "@angular/material/radio";
 import { VarDirective } from "./var.directive";
 import { SimpleDialogComponent } from "./elements/simple-dialog/simple-dialog.component";
 import { SingleChoiceComponent } from './elements/injectable/single-choice/single-choice.component';
+import { MatTableModule } from "@angular/material/table";
+import { MatSortModule } from "@angular/material/sort";
 
 const DATE_FORMAT = {
   parse: {
@@ -111,41 +113,43 @@ const DATE_FORMAT = {
     VarDirective,
     SingleChoiceComponent
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        MatSidenavModule,
-        MatToolbarModule,
-        RouterOutlet,
-        HttpClientModule,
-        MatFormFieldModule,
-        ReactiveFormsModule,
-        MatInputModule,
-        MatButtonModule,
-        MatIconModule,
-        MatCardModule,
-        FlexLayoutModule,
-        MatDialogModule,
-        MatProgressSpinnerModule,
-        MatSelectModule,
-        FormsModule,
-        MatMenuModule,
-        DragDropModule,
-        MatExpansionModule,
-        MatSlideToggleModule,
-        MatCheckboxModule,
-        MatDividerModule,
-        MatButtonToggleModule,
-        ColorPickerModule,
-        MatDatepickerModule,
-        MatNativeDateModule,
-        MaterialCssVarsModule.forRoot({
-            isAutoContrast: true
-        }),
-        MatTooltipModule,
-        MatRadioModule
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    RouterOutlet,
+    HttpClientModule,
+    MatFormFieldModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatCardModule,
+    FlexLayoutModule,
+    MatDialogModule,
+    MatProgressSpinnerModule,
+    MatSelectModule,
+    FormsModule,
+    MatMenuModule,
+    DragDropModule,
+    MatExpansionModule,
+    MatSlideToggleModule,
+    MatCheckboxModule,
+    MatDividerModule,
+    MatButtonToggleModule,
+    ColorPickerModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MaterialCssVarsModule.forRoot({
+      isAutoContrast: true
+    }),
+    MatTooltipModule,
+    MatRadioModule,
+    MatTableModule,
+    MatSortModule
+  ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
