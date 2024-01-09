@@ -1,15 +1,24 @@
 <ng-container *ngIf="_injectable">
-  <ng-container *ngIf="multipleChoice">
-    <multiple-choice [choices]="choiceValues!"
+  <ng-container *ngIf="_injectable.choices">
+    <multiple-choice *ngIf="_injectable.multi" [choices]="choiceValues!"
                      [choiceLabels]="choiceLabels!"
                      [values]="_injectable.value"
                      [edit]="edit"
-                     (valueChanged)="valueChanged.emit($event)"></multiple-choice>
+                     (valueChanged)="valueChanged.emit($event)">
+    </multiple-choice>
+    <single-choice *ngIf="!_injectable.multi"
+                   [choices]="choiceValues!"
+                   [choiceLabels]="choiceLabels!"
+                   [value]="_injectable.value"
+                   [edit]="edit"
+                   (valueChanged)="valueChanged.emit($event)">
+    </single-choice>
   </ng-container>
-  <ng-container *ngIf="!multipleChoice" [ngSwitch]="_injectable.datatype">
+  <ng-container *ngIf="!_injectable.choices" [ngSwitch]="_injectable.datatype">
     <ng-container *ngSwitchCase="'dict'">
       <inj-dict [value]="_injectable.value"
                 [edit]="edit"
+                [keysEditable]="_injectable.editable_keys || false"
                 (valueChanged)="valueChanged.emit($event)"></inj-dict>
     </ng-container>
     <ng-container *ngSwitchCase="'geometry'">
@@ -31,6 +40,8 @@
                            [type]="_injectable.datatype"
                            [edit]="edit"
                            (valueChanged)="_injectable.multi? listValueChanged(idx, $event): valueChanged.emit($event)"></inj-base-type>
+
+            <p *ngIf="edit && _injectable.regex_help" style="max-width: 600px;">{{_injectable.regex_help}}</p>
             <div *ngIf="(_injectable.multi && edit) else listSeperator">
               <button mat-button color="secondary" (click)="removeListValue(idx)">- Remove</button>
             </div>

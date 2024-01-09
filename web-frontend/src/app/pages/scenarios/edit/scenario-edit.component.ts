@@ -26,8 +26,8 @@ export class ScenarioEditDialogComponent {
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: ScenarioEditDialogData, protected settings: SettingsService,
               private formBuilder: FormBuilder) {
-    data.confirmButtonText = data.confirmButtonText || 'Save';
-    data.cancelButtonText = data.cancelButtonText || 'Cancel';
+    data.confirmButtonText = data.confirmButtonText || $localize `Save`;
+    data.cancelButtonText = data.cancelButtonText || $localize `Cancel`;
     this.scenario = this.data.scenario;
     this.scenarioForm = this.formBuilder.group({
       name: this.scenario?.name || '',

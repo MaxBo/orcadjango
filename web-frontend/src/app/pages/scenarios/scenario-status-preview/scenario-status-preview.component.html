@@ -7,7 +7,7 @@
       <img *ngIf="settings.siteSettings?.scenario_success_icon else matSuccessIcon"
            [src]="settings.siteSettings?.scenario_success_icon">
       <ng-template #matSuccessIcon>
-        <mat-icon title="success"
+        <mat-icon i18n-title title="success"
                   style="color: green" >
           done
         </mat-icon>
@@ -18,7 +18,7 @@
            [src]="settings.siteSettings?.scenario_failed_icon">
       <ng-template #matFailedIcon>
         <mat-icon *ngIf="scenario.last_run?.finished && !scenario.last_run?.success"
-                  title="failed"
+                  i18n-title title="failed"
                   style="color: red" class="material-symbols-outlined">
           cancel
         </mat-icon>

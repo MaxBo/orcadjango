@@ -44,8 +44,8 @@ export class ScenariosComponent extends PageComponent implements OnInit {
 
   onCreateScenario(): void {
     const data: ScenarioEditDialogData = {
-      title: 'Create new Scenario',
-      confirmButtonText: 'Create',
+      title: $localize `Create new Scenario`,
+      confirmButtonText: $localize `Create`,
       scenario: {
         name: '',
         description: ''
@@ -79,7 +79,7 @@ export class ScenariosComponent extends PageComponent implements OnInit {
       width: '300px',
       disableClose: true,
       data: {
-        title: 'Remove Project',
+        title: $localize `Remove Project`,
         subtitle: scenario.name,
         template: this.deleteScenarioTemplate,
         closeOnConfirm: false
@@ -104,8 +104,8 @@ export class ScenariosComponent extends PageComponent implements OnInit {
 
   editScenario(scenario: Scenario): void {
     const data: ScenarioEditDialogData = {
-      title: 'Edit Scenario',
-      confirmButtonText: 'Save',
+      title: $localize `Edit Scenario`,
+      confirmButtonText: $localize `Save`,
       scenario: scenario
     }
     const dialogRef = this.dialog.open(ScenarioEditDialogComponent, {

@@ -4,7 +4,7 @@
             title="Create new Scenario"
             (click)="onCreateScenario.emit(true)">
     <mat-card-header>
-      <mat-card-title>New Scenario</mat-card-title>
+      <mat-card-title i18n>New Scenario</mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <mat-icon class="material-symbols-outlined">
@@ -29,13 +29,13 @@
         <mat-card-content style="cursor: pointer" (click)="onScenarioSelected.emit(scenario)">
           <ng-container *ngIf="scenario.is_running else notRunningCard">
             <p>
-              Started at: <br>
+              <ng-container i18n>Started at</ng-container>: <br>
               {{settings.activeScenario$.value?.last_run?.started}}
             </p>
           </ng-container>
           <ng-template #notRunningCard>
             <p *ngIf="scenario.last_run?.finished">
-              Last Run finished: <br>
+              <ng-container i18n>Last Run finished</ng-container>: <br>
               <i [style.color]="scenario.last_run?.success? 'green': 'red'">{{scenario.last_run?.finished}}</i>
             </p>
           </ng-template>
@@ -44,8 +44,8 @@
           </p>
         </mat-card-content>
         <mat-card-actions>
-          <button mat-button (click)="onEditScenario.emit(scenario)">EDIT</button>
-          <button mat-button (click)="onDeleteScenario.emit(scenario)">DELETE</button>
+          <button mat-button (click)="onEditScenario.emit(scenario)" i18n>EDIT</button>
+          <button mat-button (click)="onDeleteScenario.emit(scenario)" i18n>DELETE</button>
         </mat-card-actions>
       </mat-card>
     </div>

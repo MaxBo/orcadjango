@@ -4,19 +4,21 @@
 <div class="background" *ngIf="settings.siteSettings?.injectables_background_img" style="background-image: url('{{settings.siteSettings?.injectables_background_img}}');"></div>
 <div class="page-content">
   <div style="display: flex;">
-    <h1 style="margin: 16px 0;">Injectables</h1>
+    <h1 style="margin: 16px 0;" i18n>Injectables</h1>
     <div style="margin-left: auto; align-self: center;">
       <button mat-flat-button
               color="accent"
               (click)="synchronize()"
               style="margin-right: 10px;"
-              title="Synchronize injectable meta with the current state of the module. Current injectable values are kept.">
+              i18n-title
+              title="Synchronize injectable meta with the current state of the module. Current injectable values are kept." i18n>
         Synchronize
       </button>
       <button mat-flat-button
               color="warn"
               (click)="reset()"
-              title="Reset ALL injectables to the project defaults">
+              i18n-title
+              title="Reset ALL injectables to the project defaults" i18n>
         Reset
       </button>
     </div>
@@ -24,29 +26,29 @@
   <div *ngIf="injectableMismatch" class="text-panel" style="margin-bottom: 10px;">
     <p>
       <mat-icon color="warn">warning</mat-icon>
-      The scenario is not in sync with the Module. Please <b>synchronize</b> the scenario!
+      <ng-container i18n>The scenario is not in sync with the Module. Please <b>synchronize</b> the scenario!</ng-container>
     </p>
     <p *ngIf="injectableMismatch.missing">
-      Injectables missing: {{injectableMismatch.missing.join(', ')}}
+      <ng-container i18n>Injectables missing</ng-container>: {{injectableMismatch.missing.join(', ')}}
     </p>
     <p *ngIf="injectableMismatch.ahead">
-      Injectables ahead: {{injectableMismatch.ahead.join(', ')}}
+      <ng-container i18n>Injectables ahead</ng-container>: {{injectableMismatch.ahead.join(', ')}}
     </p>
   </div>
   <table *ngIf="groupedInjectables"
          id="injectables-table"
          class="striped">
     <thead>
-      <th>
+      <th i18n>
         Group
       </th>
-      <th>Parameter</th>
-      <th>Description</th>
+      <th i18n>Parameter</th>
+      <th i18n>Description</th>
 <!--      <th>Datatype</th>
       <th>multi</th>
       <th>has choices</th>-->
-      <th>Used in</th>
-      <th>Value</th>
+      <th i18n>Used in</th>
+      <th i18n>Value</th>
       <th></th>
     </thead>
     <tbody>
@@ -66,32 +68,28 @@
               <mat-expansion-panel class="borderless">
                 <mat-expansion-panel-header>
                   <mat-panel-title>
-                    {{injectable.steps.length}} Step(s)
+                    {{injectable.steps.length}} <ng-container i18n>Step(s)</ng-container>
                   </mat-panel-title>
                 </mat-expansion-panel-header>
-                <div *ngFor="let step of injectable.steps;"
-                     style="cursor: help;"
-                     [matTooltip]="step.description"
-                     matTooltipPosition="right">
-                  <u>{{step.title || step.name}}</u>
-                </div>
+                <ul style="margin: 0 0 0 -25px;">
+                  <li *ngFor="let step of injectable.steps;"
+                      style="cursor: help;"
+                      [matTooltip]="removeHTMLTags(step.description)"
+                      matTooltipPosition="right">
+                    <u>{{step.title || step.name}}</u> <br>
+                  </li>
+                </ul>
               </mat-expansion-panel>
             </td>
-<!--            <td>
-              {{injectable.datatype}}
-            </td>
-            <td>
-              {{injectable.multi}}
-            </td>
-            <td>
-              {{!!injectable.choices}}
-            </td>-->
             <td style="min-width: 200px;">
               <injectable *ngIf="injectable.value !== undefined"
                           [injectable]="injectable"></injectable>
             </td>
             <td>
-              <button mat-button [disabled]="settings.activeScenario$.value?.is_running" (click)="editInjectable(injectable)">{{injectable.editable ? 'EDIT': 'VIEW'}}</button>
+              <button mat-button [disabled]="settings.activeScenario$.value?.is_running" (click)="editInjectable(injectable)">
+                <ng-container *ngIf="injectable.editable else notEditable" i18n>EDIT</ng-container>
+                <ng-template #notEditable i18n>VIEW</ng-template>
+              </button>
             </td>
           </tr>
         </ng-container>
@@ -102,8 +100,8 @@
 <button mat-flat-button
         color="primary"
         class="next"
-        style="right: 30px;"
+        style="right: 20px;"
         routerLink="/steps">
-  Next
+  <ng-container i18n>Next</ng-container>
   <mat-icon iconPositionEnd>arrow_right</mat-icon>
 </button>

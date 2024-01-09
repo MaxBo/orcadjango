@@ -30,14 +30,12 @@ export class ScenarioLogComponent implements OnDestroy, AfterViewInit {
       if (this.fetchOldLogs)
         this.fetchLogs();
     }));
-    if (this.fetchOldLogs)
-      this.fetchLogs();
   }
 
   fetchLogs() {
     if (!this.settings.activeScenario$.value)
       return;
-    this.rest.getScenarioLogs(this.settings.activeScenario$.value).subscribe(
+    this.rest.getScenarioLogs(this.settings.activeScenario$.value, { level: environment.loglevel, nLast: environment.maxLogs }).subscribe(
       logs => {
         logs.forEach(log => this.addLogEntry(log));
         this.cdref.detectChanges();

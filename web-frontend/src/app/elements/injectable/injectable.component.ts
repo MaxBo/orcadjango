@@ -17,7 +17,6 @@ export abstract class BaseInjectableComponent {
 export class InjectableComponent extends BaseInjectableComponent implements OnInit {
   choiceValues?: any[];
   choiceLabels?: string[];
-  multipleChoice: boolean = false;
   protected values: any[] = [];
   protected Object = Object;
   protected _injectable?: Inj;
@@ -35,7 +34,6 @@ export class InjectableComponent extends BaseInjectableComponent implements OnIn
   }
 
   init(): void {
-    this.multipleChoice = (!!this._injectable?.choices && this._injectable.multi) || false;
     if (!this._injectable?.multi)
       this.values = [this._injectable?.value];
     else {

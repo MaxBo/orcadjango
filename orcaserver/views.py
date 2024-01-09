@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework import status
+from django.utils.translation import gettext as _
 
 from .serializers import (ProjectSerializer, UserSerializer,
                           ScenarioSerializer, ModuleSerializer,
@@ -56,28 +57,31 @@ class ScenarioViewSet(viewsets.ModelViewSet):
         active_steps = Step.objects.filter(
             scenario=scenario, active=True).order_by('order')
         if len(active_steps) == 0:
-            msg = 'No steps selected.'
+            msg = _('No steps selected.')
             return Response({'message': msg}, status.HTTP_400_BAD_REQUEST)
         manager = OrcaManager(scenario.project.module)
         orca = manager.get_instance(scenario.orca_id)
         if orca.is_running():
-            msg = ('Orca is already running. Please wait for it to '
+            msg = _('Orca is already running. Please wait for it to '
                    'finish or abort it.')
             return Response({'message': msg}, status.HTTP_400_BAD_REQUEST)
         injectables_available = manager.get_injectable_names()
         steps_available = manager.get_step_names()
         for step in active_steps:
             if step.name not in steps_available:
-                msg = ('There are steps selected that can not be found in the '
+                msg = _('There are steps selected that can not be found in the '
                        'module. Your project seems not to be up to date '
                        'with the module. Please remove those steps.')
                 return Response({'message': msg}, status.HTTP_400_BAD_REQUEST)
             meta = manager.get_step_meta(step.name)
             required = list(set(meta.get('injectables')) & set(injectables_available))
+            required = [r for r in required
+                        if not manager.get_injectable_meta(r).get(
+                            'hidden', False)]
             inj_db = Injectable.objects.filter(name__in=required,
                                                scenario=scenario)
             if len(required) > len(inj_db):
-                msg = ('There are steps selected that contain injectables that '
+                msg = _('There are steps selected that contain injectables that '
                        'can not be found. Your project seems not to be up to date '
                        'with the module. Please synchronize the parameters.')
                 return Response({'message': msg}, status.HTTP_400_BAD_REQUEST)
@@ -111,19 +115,19 @@ class ScenarioViewSet(viewsets.ModelViewSet):
         # ToDo: specific exceptions
         except Exception as e:
             return Response({'message': str(e)}, status.HTTP_400_BAD_REQUEST)
-        return Response({'message': 'Run started'}, status.HTTP_202_ACCEPTED)
+        return Response({'message': _('Run started')}, status.HTTP_202_ACCEPTED)
 
     @action(methods=['POST'], detail=True)
     def reset(self, request, **kwargs):
         scenario = self.queryset.get(**kwargs)
         scenario.recreate_injectables(keep_values=False)
-        return Response({'message': 'Injectables reset'}, status.HTTP_200_OK)
+        return Response({'message': _('Injectables reset')}, status.HTTP_200_OK)
 
     @action(methods=['POST'], detail=True)
     def synch(self, request, **kwargs):
         scenario = self.queryset.get(**kwargs)
         scenario.recreate_injectables(keep_values=True)
-        return Response({'message': 'Injectables synchronized'},
+        return Response({'message': _('Injectables synchronized')},
                         status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'])
@@ -132,10 +136,10 @@ class ScenarioViewSet(viewsets.ModelViewSet):
         manager = OrcaManager(scenario.project.module)
         orca = manager.get_instance(scenario.orca_id)
         if not orca.is_running:
-            msg = 'Is not running'
+            msg = _('Orca is not running')
             return Response({'message': msg}, status.HTTP_400_BAD_REQUEST)
         orca.abort()
-        return Response({'message': 'Run aborted'}, status.HTTP_200_OK)
+        return Response({'message': _('Run aborted')}, status.HTTP_200_OK)
 
 
 class AvatarViewSet(viewsets.ModelViewSet):
@@ -165,7 +169,7 @@ class InjectableViewSet(viewsets.ViewSet):
         names = orca_manager.get_injectable_names()
         for inj in names:
             meta = orca_manager.get_injectable_meta(inj)
-            if not meta:
+            if not meta or meta.get('hidden'):
                 continue
             # that's a little weird, but we create injectables to be able
             # to use the same functions as in scenario injectable serialization
@@ -233,7 +237,17 @@ class ScenarioLogViewSet(viewsets.ModelViewSet):
     serializer_class = ScenarioLogSerializer
 
     def get_queryset(self):
-        return self.queryset.filter(scenario=self.kwargs['scenario_pk'])
+        queryset = self.queryset.filter(scenario=self.kwargs['scenario_pk'])
+        level = self.request.query_params.get('level')
+        n_last = self.request.query_params.get('n_last')
+        # only possible options: DEBUG or INFO (DEBUG is everything anyway)
+        if level == 'INFO':
+            queryset = queryset.filter(level__in=['INFO', 'ERROR'])
+        if n_last is not None:
+            queryset = queryset.order_by('-timestamp')[:int(n_last)][::-1]
+        else:
+            queryset = queryset.order_by('timestamp')
+        return queryset
 
 
 class SingletonViewSet(viewsets.ModelViewSet):

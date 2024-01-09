@@ -2,6 +2,7 @@
 <button color="primary"
         mat-icon-button
         mat-dialog-close
+        i18n-title
         title="Close"
         id="close-button">
   <mat-icon>close</mat-icon>
@@ -10,7 +11,7 @@
   <p [innerHTML]="injectable.description"></p>
   <injectable [injectable]="injectable"></injectable>
   <mat-divider></mat-divider>
-  <h4>is derived from</h4>
+  <h4 i18n>is derived from</h4>
   <table style="width: 100%;">
     <tr *ngFor="let parent of parents">
       <td>
@@ -21,7 +22,7 @@
       </td>
       <td>
         <button mat-button style="margin-right: 15px;"
-                (click)="injectableClicked.emit(parent)">
+                (click)="injectableClicked.emit(parent)" i18n>
           SHOW
         </button>
       </td>
@@ -32,7 +33,7 @@
   <button mat-button
           color="primary"
           mat-dialog-close
-          style="margin-right: 20px;">
+          style="margin-right: 20px;" i18n>
     OK
   </button>
 </mat-dialog-actions>

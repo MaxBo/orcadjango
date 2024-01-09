@@ -1,0 +1,15 @@
+<ng-container *ngIf="edit; else preview;">
+  <div *ngIf="!choices.length; else selectHint" i18n>no choices available</div>
+  <ng-template #selectHint><div i18n>Select one</div></ng-template>
+  <mat-radio-group [(ngModel)]="_value"
+                   (change)="onValueChanged()">
+    <mat-radio-button *ngFor="let choice of choices; let i = index"
+                      [value]="choice">
+      {{choice}} <ng-container *ngIf="choiceLabels && choiceLabels[i]">({{choiceLabels[i]}})</ng-container>
+    </mat-radio-button>
+  </mat-radio-group>
+</ng-container>
+
+<ng-template #preview>
+  {{value}}
+</ng-template>

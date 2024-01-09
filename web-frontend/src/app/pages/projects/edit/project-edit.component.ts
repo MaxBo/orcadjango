@@ -31,8 +31,8 @@ export class ProjectEditDialogComponent {
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: ProjectEditDialogData, protected settings: SettingsService,
               private formBuilder: FormBuilder) {
-    data.confirmButtonText = data.confirmButtonText || 'Save';
-    data.cancelButtonText = data.cancelButtonText || 'Cancel';
+    data.confirmButtonText = data.confirmButtonText || $localize `Save`;
+    data.cancelButtonText = data.cancelButtonText || $localize `Cancel`;
 
     this.project = this.data.project;
     this.injValues = this.project!.injectables.map(inj => inj.value);
@@ -61,7 +61,7 @@ export class ProjectEditDialogComponent {
       const clone = Object.assign({}, inj);
       clone.value = this.injValues[idx];
       if (!clone.value)
-        this.errors[clone.name] = 'value required';
+        this.errors[clone.name] = $localize `value required`;
       return clone;
     }): [];
     if (Object.keys(this.errors).length) return;
