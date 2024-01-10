@@ -145,9 +145,9 @@ def validate_unique_inj(inj_name: str, value, project_id: int = None):
         project_names = ', '.join(
             f'"{pn}"' for pn in same_val_inj.values_list(
                 'scenario__project__name', flat=True).distinct())
-        raise ValidationError(f'Value has to be unique. "{value}" '
+        raise ValidationError({inj_name: f'Value has to be unique. "{value}" '
                               'is already used in project '
-                              f'{project_names}.')
+                              f'{project_names}.'})
 
 
 class ProjectSerializer(serializers.ModelSerializer):

@@ -5,40 +5,8 @@ from osgeo import ogr
 import datetime
 import importlib
 import ast
-from django.utils.deconstruct import deconstructible
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-
-
-@deconstructible
-class UniqueInjValidator:
-    message = _('Value is already in use in another project.')
-    code = 'invalid'
-    project = None
-    injectable_name = None
-
-    def __init__(self, injectable_name: str, project: 'Project'=None):
-        self.injectable_name = injectable_name
-        self.project = project
-
-    def __call__(self, value):
-        """
-        Validate that the input contains (or does *not* contain, if
-        inverse_match is True) a match for the regular expression.
-        """
-        injectables = Injectable.objects.filter(name=self.injectable_name,
-                                                value=value)
-        if self.project:
-            injectables = injectables.exclude(scenario__project=self.project)
-        if len(injectables) > 0:
-            raise ValidationError(self.message, code=self.code)
-
-    def __eq__(self, other):
-        return (
-            isinstance(other, UniqueValidator) and
-            self.project == other.project and
-            self.injectable_name == other.injectable_name
-        )
 
 
 class OrcaTypeMap:
