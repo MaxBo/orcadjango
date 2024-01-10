@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Injectable, OnDestroy } from '@angular/core';
+import { Component, Injectable, OnDestroy } from '@angular/core';
 import { SettingsService } from "./settings.service";
 import { AuthService } from "./auth.service";
 import { BehaviorSubject, Subscription } from "rxjs";

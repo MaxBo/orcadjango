@@ -1,7 +1,7 @@
 <ng-container *ngIf="edit; else preview">
   <div style="display: flex;">
     <div style="width: 60%;">
-      <div [id]="mapId" class="map"
+      <div #mapContainer [id]="mapId" class="map"
            [style.height]="height">
         <mat-button-toggle-group class="map-controls" [(ngModel)]="editMode" (change)="onModeChanged()">
           <mat-button-toggle value="select" title="Select features">
