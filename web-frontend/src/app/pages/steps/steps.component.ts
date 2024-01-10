@@ -88,7 +88,15 @@ export class StepsComponent extends InjectablesComponent {
     this.activeStepsCount = this.scenarioSteps.filter(s => s.active).length;
   }
 
+  dropTrash(event: CdkDragDrop<any[]>) {
+    this.removeStep(event.item.data);
+  }
+
   drop(event: CdkDragDrop<any[]>) {
+/*    // dropped outside
+    if (!event.isPointerOverContainer && event.previousContainer.id === 'scenarioStepList') {
+      this.removeStep(event.item.data);
+    }*/
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
       this._updateStepsOrder();
@@ -146,6 +154,7 @@ export class StepsComponent extends InjectablesComponent {
   removeStep(step: ScenarioStepExt): void {
     this.rest.deleteScenarioStep(step).subscribe(() => {
       const idx = this.scenarioSteps.indexOf(step);
+      if (idx < 0) return;
       this.scenarioSteps.splice(idx, 1);
       const nameIdx = this._scenStepNames.indexOf(step.name);
       this._scenStepNames.splice(nameIdx, 1);

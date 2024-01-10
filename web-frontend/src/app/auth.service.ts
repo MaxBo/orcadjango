@@ -105,7 +105,8 @@ export class AuthService {
         return of(undefined);
       }),
       tap(user => {
-        this.user$.next(user);
+        if (user?.id !== this.user$.value?.id)
+          this.user$.next(user);
       })
     );
   }
