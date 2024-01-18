@@ -3,3 +3,13 @@ table.dict-table {
     background-color: rgba(0, 0, 0, 0);
   }
 }
+
+::ng-deep #keyForm {
+  .mdc-text-field--disabled {
+    cursor: not-allowed;
+    .mdc-floating-label, .mdc-text-field__input {
+      color: rgba(0, 0, 0, 0.87);
+      cursor: not-allowed;
+    }
+  }
+}
