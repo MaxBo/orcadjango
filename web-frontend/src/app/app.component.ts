@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Injectable, OnDestroy } from '@angular/core';
+import { Component, Injectable, OnDestroy } from '@angular/core';
 import { SettingsService } from "./settings.service";
 import { AuthService } from "./auth.service";
 import { BehaviorSubject, Subscription } from "rxjs";
@@ -35,8 +35,12 @@ export class AppComponent {
   title = 'web-frontend';
   protected user?: User;
 
-  constructor(protected settings: SettingsService, protected auth: AuthService, protected router: Router,
-              private cdRef: ChangeDetectorRef) {
-    this.auth.getCurrentUser().subscribe();
-  }
-}
+  constructor(protected settings: SettingsService, protected auth: AuthService, protected router: Router) {
+
+    if (this.auth.hasPreviousLogin()) {
+      this.auth.refreshToken().subscribe(() => {
+          this.auth.fetchCurrentUser().subscribe();
+        })
+    }
+    else this.auth.getCurrentUser().subscribe();
+  }}

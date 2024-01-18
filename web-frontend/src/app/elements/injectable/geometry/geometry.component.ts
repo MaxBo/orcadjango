@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { BaseInjectableComponent } from "../injectable.component";
 import { Feature, Map, View } from 'ol';
 import { GeoJSON, WKT } from "ol/format";
@@ -11,7 +11,7 @@ import VectorLayer from "ol/layer/Vector";
 import { Fill, Stroke, Style } from "ol/style";
 import VectorSource from "ol/source/Vector";
 import { Vector } from "ol/layer";
-import { Draw, Select, Snap } from "ol/interaction";
+import { Draw, Select, Snap, DragPan, defaults as interactionDefaults } from "ol/interaction";
 import { click, always } from 'ol/events/condition';
 import { FullScreen } from "ol/control";
 import { FeatureLike } from "ol/Feature";
@@ -61,6 +61,11 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
     else
       this.initEdit();
     this.onModeChanged();
+    // disable right click context menu on map (right mouse is used to move)
+    // ViewChild is not working here (no idea why)
+    document.getElementById(this.mapId)?.addEventListener('contextmenu', (e: any) => {
+      e.preventDefault();
+    });
   }
 
   initMap() {
@@ -77,7 +82,18 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
         zoom: 7,
         projection: `EPSG:${this.mapSrid}`
       }),
-      controls: this.edit? undefined: []
+      controls: this.edit? undefined: [],
+      interactions: interactionDefaults({dragPan: false}).extend([
+        new DragPan({
+          condition: function (mapBrowserEvent) {
+            // drag map on left, middle and right click
+            return (
+              mapBrowserEvent.originalEvent.isPrimary &&
+              mapBrowserEvent.originalEvent.button < 3
+            );
+          },
+        }),
+      ]),
     });
   }
 

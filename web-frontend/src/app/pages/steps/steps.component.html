@@ -74,7 +74,9 @@
       </div>
       </div>
       <mat-accordion cdkDropList
+                     id="scenarioStepList"
                      #scenarioStepList="cdkDropList"
+                     [cdkDropListConnectedTo]="trashbin"
                      [cdkDropListData]="scenarioSteps"
                      class="step-list"
                      (cdkDropListDropped)="drop($event)">
@@ -167,6 +169,16 @@
     </div>
   </div>
   <div class="steps-footer">
+    <div cdkDropList
+         id="trashbin"
+         #trashbin="cdkDropList"
+         style="position: absolute; right: 0px; transform: translateY(-120px);"
+         (cdkDropListDropped)="dropTrash($event)">
+      <mat-icon style="width: 100px; height: 100px; font-size: 100px;"
+                class="material-icons-outlined">
+        delete_forever
+      </mat-icon>
+    </div>
     <div id="resize-handle" #resizeHandle cdkDragLockAxis="y" cdkDrag (cdkDragMoved)="onResizeDrag($event)">
       <button mat-mini-fab
               class="flat micro">
