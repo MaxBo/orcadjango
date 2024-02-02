@@ -209,7 +209,7 @@ def load_stats_json():
                       *FRONTEND_DIST.split('/'))
     if LANGUAGE_CODE is not 'en-us':
         lp = os.path.join(fp, LANGUAGE_CODE)
-        if os.path.exists(lp, 'stats.json'):
+        if os.path.exists(os.path.join(lp, 'stats.json')):
             fp = lp
     fn = os.path.join(fp, 'stats.json')
     if not os.path.exists(fn):
