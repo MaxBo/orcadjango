@@ -23,6 +23,7 @@ export class StepsComponent extends InjectablesComponent {
   protected availableSteps: Record<string, StepExt[]> = {};
   // aux array to remember order of groups of available steps
   protected stepGroups: string[] = [];
+  protected showLog: boolean = true;
   protected scenarioSteps: ScenarioStepExt[] = [];
   protected _scenStepNames: string[] = [];
   protected activeStepsCount = 0;

@@ -180,6 +180,7 @@
   margin-bottom: -15px;
   padding: 15px;
   position: relative;
+  border-top: 1px solid #343434;
 }
 
 #resize-handle {
@@ -193,7 +194,26 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
 
+#minimize-log {
+  background-color: white;
+  position: absolute;
+  right: 20px;
+  top: -9px;
+  cursor: pointer;
+  display: flex;
+  span {
+    margin: 0 10px;
+    text-transform: uppercase;
+    background-color: rgba(255, 255, 255, 0.6);
+  }
+  button {
+    border-radius: 2px;
+  }
+}
+
+#resize-handle, #minimize-log {
   button {
     background-color: #343434;
     color: white;
@@ -211,8 +231,4 @@
   position: absolute;
   width: calc(100% - 20px);
   height: 100%;
-}
-
-#trashbin.cdk-drop-list-dragging mat-icon {
-  color: red;
 }
