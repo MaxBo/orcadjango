@@ -108,12 +108,14 @@
                    style="display: flex; align-items: center;">
                 {{step.finished}}&nbsp;
                 <mat-icon *ngIf="step.success"
-                          title="success">
+                          title="success"
+                          i18n-title>
                   done
                 </mat-icon>
                 <mat-icon *ngIf="!step.success"
                           class="material-symbols-outlined"
-                          title="failed">
+                          title="failed"
+                          i18n-title>
                   cancel
                 </mat-icon>
               </div>
@@ -168,7 +170,8 @@
                 <td>
                   <button mat-button [disabled]="settings.activeScenario$.value?.is_running"
                           (click)="editInjectable(injectable)">
-                    {{injectable.editable? "EDIT": "SHOW"}}
+                    <ng-container *ngIf="injectable.editable">EDIT</ng-container>
+                    <ng-container *ngIf="!injectable.editable">SHOW</ng-container>
                   </button>
                 </td>
               </tr>
@@ -181,14 +184,16 @@
   <div class="steps-footer">
     <div id="resize-handle" #resizeHandle cdkDragLockAxis="y"
          cdkDrag (cdkDragMoved)="onResizeDrag($event)"
-         [style.display]="showLog? 'flex': 'none'">
+         [style.display]="showLog? 'flex': 'none'"
+         title="drag to change log size" i18n-title>
       <button mat-mini-fab
               class="flat micro">
         <mat-icon class="material-symbols-outlined">expand_all</mat-icon>
       </button>
     </div>
-    <div id="minimize-log" (click)="showLog=!showLog" >
-      <span *ngIf="!showLog">Show Log</span>
+    <div id="minimize-log" (click)="showLog=!showLog"
+         title="minimize/maximize log" i18n-title>
+      <span *ngIf="!showLog" i18n>Show Log</span>
       <button mat-mini-fab class="flat micro">
         <mat-icon *ngIf="showLog" class="material-symbols-outlined">minimize</mat-icon>
         <mat-icon *ngIf="!showLog" class="material-symbols-outlined">maximize</mat-icon>

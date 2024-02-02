@@ -15,7 +15,7 @@
         <target state="translated"> Projekte </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">17,18</context>
+          <context context-type="linenumber">18,19</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2032593290187655936" datatype="html">
@@ -23,7 +23,7 @@
         <target state="translated">Szenarios</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">24</context>
+          <context context-type="linenumber">25</context>
         </context-group>
       </trans-unit>
       <trans-unit id="917277518976491570" datatype="html">
@@ -31,7 +31,7 @@
         <target state="translated"> Szenarios </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">28,29</context>
+          <context context-type="linenumber">30,31</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7764277914483206360" datatype="html">
@@ -39,7 +39,7 @@
         <target state="translated">Parameter</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">36</context>
+          <context context-type="linenumber">38</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5899857100378183008" datatype="html">
@@ -47,7 +47,7 @@
         <target state="translated"> Parameter </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">40,41</context>
+          <context context-type="linenumber">43,44</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7140694306667090231" datatype="html">
@@ -55,7 +55,7 @@
         <target state="translated">Schritte und Ausführung</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">47</context>
+          <context context-type="linenumber">50</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5526560797552636246" datatype="html">
@@ -63,7 +63,7 @@
         <target state="translated"> Schritte &amp; Ausführung </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">51,52</context>
+          <context context-type="linenumber">55,56</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6525268198269203965" datatype="html">
@@ -71,7 +71,7 @@
         <target state="translated">nicht eingeloggt</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">59</context>
+          <context context-type="linenumber">63</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5589520527260731799" datatype="html">
@@ -79,7 +79,7 @@
         <target state="translated"> Django Admin </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">69,70</context>
+          <context context-type="linenumber">73,74</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5799438277111148696" datatype="html">
@@ -87,7 +87,7 @@
         <target state="translated"> Profil </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">73,74</context>
+          <context context-type="linenumber">77,78</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7504940227782988572" datatype="html">
@@ -95,7 +95,7 @@
         <target state="translated"> Ausloggen </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">77,78</context>
+          <context context-type="linenumber">81,82</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2454050363478003966" datatype="html">
@@ -103,7 +103,7 @@
         <target state="translated">Einloggen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">81</context>
+          <context context-type="linenumber">85</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1867992058937397585" datatype="html">
@@ -111,7 +111,7 @@
         <target state="translated">Modul</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">91</context>
+          <context context-type="linenumber">95</context>
         </context-group>
       </trans-unit>
       <trans-unit id="314315645942131479" datatype="html">
@@ -119,7 +119,7 @@
         <target state="translated">Info</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">106</context>
+          <context context-type="linenumber">110</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5650626092176289918" datatype="html">
@@ -127,7 +127,7 @@
         <target state="translated">kein Projekt ausgewählt</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">144</context>
+          <context context-type="linenumber">148</context>
         </context-group>
       </trans-unit>
       <trans-unit id="37788114767831354" datatype="html">
@@ -135,11 +135,11 @@
         <target state="translated">Gestartet am</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">168</context>
+          <context context-type="linenumber">172</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scenarios/grid-view/scenario-grid-view.component.html</context>
-          <context context-type="linenumber">32</context>
+          <context context-type="linenumber">33</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4332187997090407401" datatype="html">
@@ -147,11 +147,11 @@
         <target state="translated">Letzter Lauf beendet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">174</context>
+          <context context-type="linenumber">178</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scenarios/grid-view/scenario-grid-view.component.html</context>
-          <context context-type="linenumber">38</context>
+          <context context-type="linenumber">39</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6080299117798524738" datatype="html">
@@ -159,7 +159,31 @@
         <target state="translated">kein Szenario ausgewählt</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">181</context>
+          <context context-type="linenumber">185</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7819314041543176992" datatype="html">
+        <source>Close</source>
+        <target state="translated">Schließen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/elements/confirm-dialog/confirm-dialog.component.html</context>
+          <context context-type="linenumber">7,6</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/injectables/derived/derived-injectable.component.html</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/injectables/edit/injectable-edit.component.html</context>
+          <context context-type="linenumber">7,6</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/projects/edit/project-edit.component.html</context>
+          <context context-type="linenumber">7,6</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/scenarios/edit/scenario-edit.component.html</context>
+          <context context-type="linenumber">7,6</context>
         </context-group>
       </trans-unit>
       <trans-unit id="9178182467454450952" datatype="html">
@@ -250,6 +274,46 @@
           <context context-type="linenumber">5</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="7743673265666662695" datatype="html">
+        <source>Select features</source>
+        <target state="translated">Features auswählen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/elements/injectable/geometry/geometry.component.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5109134882809212153" datatype="html">
+        <source>Draw Features by setting points</source>
+        <target state="translated">Features durch das Setzen von Punkten zeichnen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/elements/injectable/geometry/geometry.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1485430481195484029" datatype="html">
+        <source>Draw Features freehand</source>
+        <target state="translated">Features freihändig zeichnen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/elements/injectable/geometry/geometry.component.html</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8214834063844194434" datatype="html">
+        <source>Draw a square</source>
+        <target state="translated">Ein Rechteck zeichnen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/elements/injectable/geometry/geometry.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2585398942452709330" datatype="html">
+        <source>Edit Off</source>
+        <target state="translated">Editieren aus</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/elements/injectable/geometry/geometry.component.html</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="1646279971883124043" datatype="html">
         <source>filter name/description (e.g. "2019")</source>
         <target state="translated">Name/Beschreibung filtern (z.B. "2019")</target>
@@ -274,6 +338,14 @@
           <context context-type="linenumber">2</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="6398969587818603892" datatype="html">
+        <source>Close dialog</source>
+        <target state="translated">Dialog schließen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/elements/simple-dialog/simple-dialog.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="1519954996184640001" datatype="html">
         <source>Error</source>
         <target state="translated">Fehler</target>
@@ -288,26 +360,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/elements/simple-dialog/simple-dialog.component.ts</context>
           <context context-type="linenumber">68</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="7819314041543176992" datatype="html">
-        <source>Close</source>
-        <target state="translated">Schließen</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/injectables/derived/derived-injectable.component.html</context>
-          <context context-type="linenumber">6</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/injectables/edit/injectable-edit.component.html</context>
-          <context context-type="linenumber">7,6</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/projects/edit/project-edit.component.html</context>
-          <context context-type="linenumber">7,6</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/scenarios/edit/scenario-edit.component.html</context>
-          <context context-type="linenumber">7,6</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3842074325464643686" datatype="html">
@@ -507,7 +559,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/grid-view/project-grid-view.component.html</context>
-          <context context-type="linenumber">54</context>
+          <context context-type="linenumber">55</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/list-view/project-list-view.component.html</context>
@@ -515,7 +567,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scenarios/grid-view/scenario-grid-view.component.html</context>
-          <context context-type="linenumber">47</context>
+          <context context-type="linenumber">48</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scenarios/list-view/scenario-list-view.component.html</context>
@@ -804,6 +856,10 @@
           <context context-type="linenumber">34</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/projects/projects.component.ts</context>
+          <context context-type="linenumber">145</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scenarios/edit/scenario-edit.component.ts</context>
           <context context-type="linenumber">29</context>
         </context-group>
@@ -820,12 +876,24 @@
           <context context-type="linenumber">64</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="2284637180582426758" datatype="html">
+        <source>Create new Project</source>
+        <target state="translated">Neues Projekt erstellen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/projects/grid-view/project-grid-view.component.html</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/projects/projects.component.ts</context>
+          <context context-type="linenumber">79</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="5132597689526105" datatype="html">
         <source>New Project</source>
         <target state="translated">Neues Projekt</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/grid-view/project-grid-view.component.html</context>
-          <context context-type="linenumber">7</context>
+          <context context-type="linenumber">8</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5197463732369794052" datatype="html">
@@ -833,7 +901,7 @@
         <target state="translated">erstellt:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/grid-view/project-grid-view.component.html</context>
-          <context context-type="linenumber">36</context>
+          <context context-type="linenumber">37</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4674024942913127336" datatype="html">
@@ -841,7 +909,7 @@
         <target state="translated">Szenarien:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/grid-view/project-grid-view.component.html</context>
-          <context context-type="linenumber">40</context>
+          <context context-type="linenumber">41</context>
         </context-group>
       </trans-unit>
       <trans-unit id="841311519047609428" datatype="html">
@@ -849,7 +917,7 @@
         <target state="translated">LÖSCHEN</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/grid-view/project-grid-view.component.html</context>
-          <context context-type="linenumber">56</context>
+          <context context-type="linenumber">57</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/list-view/project-list-view.component.html</context>
@@ -857,7 +925,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scenarios/grid-view/scenario-grid-view.component.html</context>
-          <context context-type="linenumber">48</context>
+          <context context-type="linenumber">49</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scenarios/list-view/scenario-list-view.component.html</context>
@@ -869,7 +937,7 @@
         <target state="translated">ARCHIVIEREN</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/grid-view/project-grid-view.component.html</context>
-          <context context-type="linenumber">61</context>
+          <context context-type="linenumber">62</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/list-view/project-list-view.component.html</context>
@@ -881,7 +949,7 @@
         <target state="translated">DEARCHIVIEREN</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/grid-view/project-grid-view.component.html</context>
-          <context context-type="linenumber">62</context>
+          <context context-type="linenumber">63</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/list-view/project-list-view.component.html</context>
@@ -1016,6 +1084,38 @@
           <context context-type="linenumber">133</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="5674286808255988565" datatype="html">
+        <source>Create</source>
+        <target state="translated">Erstellen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/projects/projects.component.ts</context>
+          <context context-type="linenumber">80</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/scenarios/scenarios.component.ts</context>
+          <context context-type="linenumber">48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8511986425764239804" datatype="html">
+        <source>Remove Project</source>
+        <target state="translated">Projekt löschen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/projects/projects.component.ts</context>
+          <context context-type="linenumber">118</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/scenarios/scenarios.component.ts</context>
+          <context context-type="linenumber">82</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2810729516545359062" datatype="html">
+        <source>Edit Project</source>
+        <target state="translated">Projekt editieren</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/projects/projects.component.ts</context>
+          <context context-type="linenumber">144</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="8583825692753174768" datatype="html">
         <source>descending</source>
         <target state="translated">absteigend</target>
@@ -1040,12 +1140,24 @@
           <context context-type="linenumber">23</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="7243384041897013284" datatype="html">
+        <source>Create new Scenario</source>
+        <target state="translated">Neues Szenario erstellen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/scenarios/grid-view/scenario-grid-view.component.html</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/scenarios/scenarios.component.ts</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="1899122703041911524" datatype="html">
         <source>New Scenario</source>
         <target state="translated">Neues Szenario</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scenarios/grid-view/scenario-grid-view.component.html</context>
-          <context context-type="linenumber">7</context>
+          <context context-type="linenumber">8</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7299925505510679593" datatype="html">
@@ -1065,7 +1177,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
-          <context context-type="linenumber">128</context>
+          <context context-type="linenumber">140</context>
         </context-group>
       </trans-unit>
       <trans-unit id="340430316261570792" datatype="html">
@@ -1077,7 +1189,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
-          <context context-type="linenumber">132</context>
+          <context context-type="linenumber">144</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4648900870671159218" datatype="html">
@@ -1095,6 +1207,10 @@
           <context context-type="sourcefile">src/app/pages/scenarios/scenario-status-preview/scenario-status-preview.component.html</context>
           <context context-type="linenumber">10</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
+          <context context-type="linenumber">111</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="4083337005045748464" datatype="html">
         <source>failed</source>
@@ -1102,6 +1218,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scenarios/scenario-status-preview/scenario-status-preview.component.html</context>
           <context context-type="linenumber">21</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
+          <context context-type="linenumber">118,117</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1470503036790362672" datatype="html">
@@ -1128,30 +1248,6 @@
           <context context-type="linenumber">49</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="7243384041897013284" datatype="html">
-        <source>Create new Scenario</source>
-        <target state="translated">Neues Szenario erstellen</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/scenarios/scenarios.component.ts</context>
-          <context context-type="linenumber">47</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="5674286808255988565" datatype="html">
-        <source>Create</source>
-        <target state="translated">Erstellen</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/scenarios/scenarios.component.ts</context>
-          <context context-type="linenumber">48</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="8511986425764239804" datatype="html">
-        <source>Remove Project</source>
-        <target state="translated">Projekt löschen</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/scenarios/scenarios.component.ts</context>
-          <context context-type="linenumber">82</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="8690363635392782556" datatype="html">
         <source>Edit Scenario</source>
         <target state="translated">Szenario bearbeiten</target>
@@ -1165,7 +1261,7 @@
         <target state="translated">Verfügbare Schritte</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
-          <context context-type="linenumber">10</context>
+          <context context-type="linenumber">16</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4605864425009617908" datatype="html">
@@ -1173,11 +1269,11 @@
         <target state="translated">Voraussetzungen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
-          <context context-type="linenumber">39</context>
+          <context context-type="linenumber">45</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
-          <context context-type="linenumber">137</context>
+          <context context-type="linenumber">149</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7945679445123282949" datatype="html">
@@ -1185,7 +1281,7 @@
         <target state="translated">Schritte im Szenario</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
-          <context context-type="linenumber">58</context>
+          <context context-type="linenumber">64</context>
         </context-group>
       </trans-unit>
       <trans-unit id="130226598652315169" datatype="html">
@@ -1193,7 +1289,7 @@
         <target state="translated"> LAUF STARTEN </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
-          <context context-type="linenumber">65,66</context>
+          <context context-type="linenumber">71,72</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7505135807628753400" datatype="html">
@@ -1201,7 +1297,7 @@
         <target state="translated"> ABBRECHEN </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
-          <context context-type="linenumber">72,73</context>
+          <context context-type="linenumber">78,79</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8623743869781630699" datatype="html">
@@ -1209,7 +1305,31 @@
         <target state="translated">Schritt entfernen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
-          <context context-type="linenumber">120</context>
+          <context context-type="linenumber">132</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2983011121187737336" datatype="html">
+        <source>drag to change log size</source>
+        <target state="translated">ziehen, um die Größe des Logs zu ändern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
+          <context context-type="linenumber">188</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3705918312308938784" datatype="html">
+        <source>minimize/maximize log</source>
+        <target state="translated">Log minimieren/einblenden</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
+          <context context-type="linenumber">195</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="592961936173487580" datatype="html">
+        <source>Show Log</source>
+        <target state="translated">Log anzeigen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
+          <context context-type="linenumber">196</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8186358391139835352" datatype="html">
@@ -1217,7 +1337,7 @@
         <target state="translated">Das Szenario läuft gerade!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.ts</context>
-          <context context-type="linenumber">32</context>
+          <context context-type="linenumber">33</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2137482552165268089" datatype="html">
@@ -1225,7 +1345,7 @@
         <target state="translated">Der Schritt ist bereits Teil des Laufs!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.ts</context>
-          <context context-type="linenumber">33</context>
+          <context context-type="linenumber">34</context>
         </context-group>
       </trans-unit>
     </body>
