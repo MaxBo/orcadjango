@@ -205,9 +205,13 @@ LOGGING = {
 }
 
 def load_stats_json():
-    fn = os.path.join(FRONTEND_APP_DIR,
-                      *FRONTEND_DIST.split('/'),
-                      'stats.json')
+    fp = os.path.join(FRONTEND_APP_DIR,
+                      *FRONTEND_DIST.split('/'))
+    if LANGUAGE_CODE is not 'en-us':
+        lp = os.path.join(fp, LANGUAGE_CODE)
+        if os.path.exists(lp, 'stats.json'):
+            fp = lp
+    fn = os.path.join(fp, 'stats.json')
     if not os.path.exists(fn):
         return
     with open(fn, 'r') as file:
