@@ -5,6 +5,12 @@
      style="background-image: url('{{settings.siteSettings?.steps_background_img}}');"></div>
 <div class="steps-container">
   <div class="steps-content">
+    <div cdkDropList
+         id="trashbin"
+         #trashbin="cdkDropList"
+         style="min-width: 100px"
+         (cdkDropListDropped)="dropTrash($event)">
+    </div>
     <div id="available-steps">
       <div class="steps-heading">
         <h2 i18n>Available Steps</h2>
@@ -170,12 +176,6 @@
           </ng-container>
         </mat-expansion-panel>
       </mat-accordion>
-    </div>
-    <div cdkDropList
-         id="trashbin"
-         #trashbin="cdkDropList"
-         style="min-width: 100px"
-         (cdkDropListDropped)="dropTrash($event)">
     </div>
   </div>
   <div class="steps-footer">

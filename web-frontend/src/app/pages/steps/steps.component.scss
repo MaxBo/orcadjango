@@ -208,9 +208,10 @@
 }
 
 #trashbin {
-  .drag-placeholder {
-    background-color: red;
-  }
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  color: blue;
 }
 
 #trashbin.cdk-drop-list-dragging mat-icon {
