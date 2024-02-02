@@ -35,6 +35,7 @@ export class StepsComponent extends InjectablesComponent {
   @ViewChild('resizeHandle') resizeHandle!: ElementRef;
   @ViewChild('logContainer') logContainer!: ElementRef;
   @ViewChild('scenarioStepList') scenarioStepList!: CdkDropList;
+  @ViewChild('previewContainer') previewContainer!: ElementRef;
 
   // constructor(private rest: RestService, private settings: UserSettingsService)
   override ngOnInit() {
@@ -152,14 +153,13 @@ export class StepsComponent extends InjectablesComponent {
   }
 
   removeStep(step: ScenarioStepExt): void {
-    this.rest.deleteScenarioStep(step).subscribe(() => {
-      const idx = this.scenarioSteps.indexOf(step);
-      if (idx < 0) return;
-      this.scenarioSteps.splice(idx, 1);
-      const nameIdx = this._scenStepNames.indexOf(step.name);
-      this._scenStepNames.splice(nameIdx, 1);
-      this._updateActiveStepsCount();
-    });
+    this.rest.deleteScenarioStep(step).subscribe(() => {});
+    const idx = this.scenarioSteps.indexOf(step);
+    if (idx < 0) return;
+    this.scenarioSteps.splice(idx, 1);
+    const nameIdx = this._scenStepNames.indexOf(step.name);
+    this._scenStepNames.splice(nameIdx, 1);
+    this._updateActiveStepsCount();
   }
 
   getInjectables(step: ScenarioStep): ScenarioInjectable[] {
@@ -231,5 +231,12 @@ export class StepsComponent extends InjectablesComponent {
     if (targetRect.height < 15 && event.delta.y > 0) {
       document.dispatchEvent(new Event('mouseup'));
     }
+  }
+
+  onStepDragEnter(event: any): void {
+    if (event.container.id === "trashbin")
+      this.previewContainer.nativeElement.classList.add('remove');
+    else
+      this.previewContainer.nativeElement.classList.remove('remove');
   }
 }

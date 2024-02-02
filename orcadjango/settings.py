@@ -208,7 +208,7 @@ def load_stats_json():
     fp = os.path.join(FRONTEND_APP_DIR,
                       *FRONTEND_DIST.split('/'))
     dist_sub = FRONTEND_DIST
-    if LANGUAGE_CODE is not 'en-us':
+    if LANGUAGE_CODE != 'en-us':
         lp = os.path.join(fp, LANGUAGE_CODE)
         if os.path.exists(os.path.join(lp, 'stats.json')):
             fp = lp
