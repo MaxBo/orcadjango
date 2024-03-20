@@ -39,8 +39,9 @@ export class AppComponent {
 
     if (this.auth.hasPreviousLogin()) {
       this.auth.refreshToken().subscribe(() => {
-          this.auth.fetchCurrentUser().subscribe();
-        })
+          this.auth.fetchCurrentUser().subscribe(() => this.settings.load());
+        },() => this.settings.load())
     }
-    else this.auth.getCurrentUser().subscribe();
+    else
+      this.auth.getCurrentUser().subscribe(() => this.settings.load());
   }}
