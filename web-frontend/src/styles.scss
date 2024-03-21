@@ -1,5 +1,6 @@
 @use 'angular-material-css-vars' as mat-css-vars;
 @use '@angular/material' as mat;
+@import 'colors';
 
 $custom-typography: mat.define-typography-config(
   $font-family: 'Calibri, Helvetica, sans-serif, Candara, Segoe',
@@ -21,6 +22,25 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .mat-mdc-raised-button.mat-primary:not(:disabled), .mat-mdc-raised-button.mat-accent:not(:disabled), .mat-mdc-raised-button.mat-warn:not(:disabled),
 .mat-mdc-mini-fab.mat-primary:not(:disabled), .mat-mdc-mini-fab.mat-accent:not(:disabled), .mat-mdc-mini-fab.mat-warn:not(:disabled), .mdc-checkbox__checkmark {
   color: white !important;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $primary-light;
+  border-radius: 8px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: $primary;
 }
 
 .page-content {

@@ -1,4 +1,7 @@
-<button mat-flat-button (click)="onCreateProject.emit(true)">+ <ng-container i18n>NEW PROJECT</ng-container></button>
+<button color="primary" style="margin-bottom: 5px;"
+        mat-flat-button (click)="onCreateProject.emit(true)">
+  + <ng-container i18n>NEW PROJECT</ng-container>
+</button>
 <table *ngIf="projects.length > 0" class="striped">
   <thead>
     <tr>

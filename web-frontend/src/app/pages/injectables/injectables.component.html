@@ -1,7 +1,7 @@
 <div class="load-overlay" *ngIf="isLoading$ | async">
   <mat-spinner [diameter]="50"></mat-spinner>
 </div>
-<div class="background" *ngIf="settings.siteSettings?.injectables_background_img" style="background-image: url('{{settings.siteSettings?.injectables_background_img}}');"></div>
+<div class="background" *ngIf="settings.user$.value?.profile?.show_backgrounds && settings.siteSettings?.injectables_background_img" style="background-image: url('{{settings.siteSettings?.injectables_background_img}}');"></div>
 <div class="page-content">
   <div style="display: flex;">
     <h1 style="margin: 16px 0;" i18n>Injectables</h1>

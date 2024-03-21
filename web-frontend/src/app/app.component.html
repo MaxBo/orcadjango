@@ -166,7 +166,9 @@
             <app-scenario-status-preview [scenario]="settings.activeScenario$.value" style="margin-left: auto;"></app-scenario-status-preview>
           </mat-card-header>
           <mat-card-content>
-<!--            <i>{{settings.activeScenario$.value?.description}}</i>-->
+<!--            <p *ngIf="settings.activeScenario$.value?.description">
+              {{settings.activeScenario$.value?.description}}
+            </p>-->
             <ng-container *ngIf="settings.activeScenario$.value?.is_running else notRunningCard">
               <p>
                 <ng-container i18n>Started at</ng-container>: <br>

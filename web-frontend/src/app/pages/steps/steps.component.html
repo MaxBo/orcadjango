@@ -1,7 +1,7 @@
 <div class="load-overlay" *ngIf="isLoading$ | async">
   <mat-spinner [diameter]="50"></mat-spinner>
 </div>
-<div class="background" *ngIf="settings.siteSettings?.steps_background_img"
+<div class="background" *ngIf="settings.user$.value?.profile?.show_backgrounds && settings.siteSettings?.steps_background_img"
      style="background-image: url('{{settings.siteSettings?.steps_background_img}}');"></div>
 <div class="steps-container">
   <div class="steps-content">
@@ -15,54 +15,57 @@
       <div class="steps-heading">
         <h2 i18n>Available Steps</h2>
       </div>
-      <mat-accordion>
-        <mat-expansion-panel *ngFor="let group of stepGroups">
-          <mat-expansion-panel-header>
-            <mat-panel-title class="group-title">
-              {{group}}
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-          <mat-accordion multi cdkDropList
-                         cdkDropListSortingDisabled
-                         [cdkDropListData]="availableSteps[group]"
-                         [cdkDropListConnectedTo]="[scenarioStepList]"
-                         class="step-list">
-            <mat-expansion-panel class="available-step-item"
-                                 *ngFor="let step of availableSteps[group]"
-                                 [cdkDragData]="step" cdkDrag
-                                 [title]="(step.title || step.name)"
-                                 [matTooltip]="settings.activeScenario$.value?.is_running? curRunninMsg: (_scenStepNames.indexOf(step.name) >= 0)? alreadyInMsg: ''"
-                                 matTooltipPosition="right"
-                                 [cdkDragDisabled]="settings.activeScenario$.value?.is_running || _scenStepNames.indexOf(step.name) >= 0">
-              <div class="drag-placeholder" *cdkDragPlaceholder></div>
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                  {{step.title || step.name}}
-                </mat-panel-title>
-              </mat-expansion-panel-header>
-              <p><i [innerHTML]="step.description"></i></p>
-              <ng-container *ngIf="step.required && (step.required.length > 1 || step.required[0] != 'None')">
-                <ng-container i18n>Prerequisites</ng-container>:<br>
-                <ng-container *ngFor="let required of step.requiredSteps; let last = last;">
-                  <ng-container *ngIf="required">
-                    <u [matTooltip]="required?.description"
-                       matTooltipPosition="right" style="cursor: help;">
-                      {{required.title || required.name}}
-                    </u>
-                    <ng-container *ngIf="!last">,&nbsp;</ng-container>
+      <mat-divider class="accordion-border"></mat-divider>
+      <div class="accordion-wrapper">
+        <mat-accordion>
+          <mat-expansion-panel *ngFor="let group of stepGroups">
+            <mat-expansion-panel-header>
+              <mat-panel-title class="group-title">
+                {{group}}
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <mat-accordion multi cdkDropList
+                           cdkDropListSortingDisabled
+                           [cdkDropListData]="availableSteps[group]"
+                           [cdkDropListConnectedTo]="[scenarioStepList]"
+                           class="step-list">
+              <mat-expansion-panel class="available-step-item"
+                                   *ngFor="let step of availableSteps[group]"
+                                   [cdkDragData]="step" cdkDrag
+                                   [title]="(step.title || step.name)"
+                                   [matTooltip]="settings.activeScenario$.value?.is_running? curRunninMsg: (_scenStepNames.indexOf(step.name) >= 0)? alreadyInMsg: ''"
+                                   matTooltipPosition="right"
+                                   [cdkDragDisabled]="settings.activeScenario$.value?.is_running || _scenStepNames.indexOf(step.name) >= 0">
+                <div class="drag-placeholder" *cdkDragPlaceholder></div>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    {{step.title || step.name}}
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <p><i [innerHTML]="step.description"></i></p>
+                <ng-container *ngIf="step.required && (step.required.length > 1 || step.required[0] != 'None')">
+                  <ng-container i18n>Prerequisites</ng-container>:<br>
+                  <ng-container *ngFor="let required of step.requiredSteps; let last = last;">
+                    <ng-container *ngIf="required">
+                      <u [matTooltip]="required?.description"
+                         matTooltipPosition="right" style="cursor: help;">
+                        {{required.title || required.name}}
+                      </u>
+                      <ng-container *ngIf="!last">,&nbsp;</ng-container>
+                    </ng-container>
                   </ng-container>
                 </ng-container>
-              </ng-container>
-            </mat-expansion-panel>
-          </mat-accordion>
-        </mat-expansion-panel>
-      </mat-accordion>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
     </div>
 
     <div id="scenario-steps" [ngClass]="{'deactivated': (stepsLoading$ | async)}" style="min-width: 700px">
       <div class="steps-heading">
         <h2 i18n>Scenario Steps</h2>
-        <div style="margin-left: auto;">
+        <div style="margin-left: auto; margin-right: 10px;">
           <button mat-flat-button
                   color="primary"
                   *ngIf="!settings.activeScenario$.value?.is_running"
@@ -77,108 +80,111 @@
                   style="margin-left: auto;" i18n>
             ABORT
           </button>
-      </div>
+        </div>
       </div>
       <div #previewContainer></div>
-      <mat-accordion cdkDropList
-                     id="scenarioStepList"
-                     #scenarioStepList="cdkDropList"
-                     [cdkDropListConnectedTo]="trashbin"
-                     [cdkDropListData]="scenarioSteps"
-                     class="step-list"
-                     (cdkDropListDropped)="drop($event)">
-        <mat-expansion-panel *ngFor="let step of scenarioSteps"
-                             class="scenario-step-item"
-                             [ngClass]="{'active': step.active}"
-                             [cdkDragData]="step" cdkDrag
-                             [cdkDragPreviewContainer]="previewContainer"
-                             [cdkDragDisabled]="settings.activeScenario$.value?.is_running"
-                             (cdkDragEntered)="onStepDragEnter($event)">
-          <div class="drag-placeholder" *cdkDragPlaceholder></div>
-          <mat-expansion-panel-header>
-            <mat-panel-title [title]="step.title || step.name">
-              <div>
-                {{step.title || step.name}}
-              </div>
-              <mat-icon class="remove-indicator">highlight_off</mat-icon>
-            </mat-panel-title>
-            <mat-panel-description>
-              <div *ngIf="step.finished"
-                   [style.color]="step.success? 'green': 'red'"
-                   style="display: flex; align-items: center;">
-                {{step.finished}}&nbsp;
-                <mat-icon *ngIf="step.success"
-                          title="success"
-                          i18n-title>
-                  done
-                </mat-icon>
-                <mat-icon *ngIf="!step.success"
-                          class="material-symbols-outlined"
-                          title="failed"
-                          i18n-title>
-                  cancel
-                </mat-icon>
-              </div>
-              <div style="margin-left: auto; display: flex; align-items: center;">
-                <mat-slide-toggle [checked]="step.active"
-                                  color="primary"
-                                  (click)="$event.stopPropagation();"
-                                  [disabled]="settings.activeScenario$.value?.is_running"
-                                  (change)="toggleActive($event.checked, step)" >
-                </mat-slide-toggle>
-                <button mat-icon-button
-                        [disabled]="settings.activeScenario$.value?.is_running"
-                        (click)="removeStep(step); $event.stopPropagation();"
-                        i18n-title title="Remove step">
-                  <mat-icon style="color: red;" class="material-icons-outlined">delete_forever</mat-icon>
-                </button>
-              </div>
-            </mat-panel-description>
-          </mat-expansion-panel-header>
-          <p><i [innerHTML]="step.description"></i></p>
-          <p *ngIf="step.started">
-            <ng-container i18n>Started</ng-container>: {{step.started}}
-          </p>
-          <p *ngIf="step.finished"
-             [style.color]="step.success? 'green': 'red'">
-            <ng-container i18n>Finished</ng-container>: {{step.finished}}
-            <ng-container *ngIf="!step.success">&nbsp;(failed)</ng-container>
-          </p>
-          <ng-container *ngIf="step.required && (step.required.length > 1 || step.required[0] != 'None')">
-            <mat-divider></mat-divider>
-            <ng-container i18n>Prerequisites</ng-container>:
-            <ng-container *ngFor="let required of step.requiredSteps; let last = last;">
-              <ng-container *ngIf="required">
-                <u [matTooltip]="required?.description"
-                   matTooltipPosition="right" style="cursor: help;">
-                  {{required.title || required.name}}
-                </u>
-                <ng-container *ngIf="!last">,&nbsp;</ng-container>
+      <mat-divider class="accordion-border"></mat-divider>
+      <div class="accordion-wrapper">
+        <mat-accordion cdkDropList
+                       id="scenarioStepList"
+                       #scenarioStepList="cdkDropList"
+                       [cdkDropListConnectedTo]="trashbin"
+                       [cdkDropListData]="scenarioSteps"
+                       class="step-list"
+                       (cdkDropListDropped)="drop($event)">
+          <mat-expansion-panel *ngFor="let step of scenarioSteps"
+                               class="scenario-step-item"
+                               [ngClass]="{'active': step.active}"
+                               [cdkDragData]="step" cdkDrag
+                               [cdkDragPreviewContainer]="previewContainer"
+                               [cdkDragDisabled]="settings.activeScenario$.value?.is_running"
+                               (cdkDragEntered)="onStepDragEnter($event)">
+            <div class="drag-placeholder" *cdkDragPlaceholder></div>
+            <mat-expansion-panel-header>
+              <mat-panel-title [title]="step.title || step.name">
+                <div>
+                  {{step.title || step.name}}
+                </div>
+                <mat-icon class="remove-indicator">highlight_off</mat-icon>
+              </mat-panel-title>
+              <mat-panel-description>
+                <div *ngIf="step.finished"
+                     [style.color]="step.success? 'green': 'red'"
+                     style="display: flex; align-items: center;">
+                  {{step.finished}}&nbsp;
+                  <mat-icon *ngIf="step.success"
+                            title="success"
+                            i18n-title>
+                    done
+                  </mat-icon>
+                  <mat-icon *ngIf="!step.success"
+                            class="material-symbols-outlined"
+                            title="failed"
+                            i18n-title>
+                    cancel
+                  </mat-icon>
+                </div>
+                <div style="margin-left: auto; display: flex; align-items: center;">
+                  <mat-slide-toggle [checked]="step.active"
+                                    color="accent"
+                                    (click)="$event.stopPropagation();"
+                                    [disabled]="settings.activeScenario$.value?.is_running"
+                                    (change)="toggleActive($event.checked, step)" >
+                  </mat-slide-toggle>
+                  <button mat-icon-button
+                          [disabled]="settings.activeScenario$.value?.is_running"
+                          (click)="removeStep(step); $event.stopPropagation();"
+                          i18n-title title="Remove step">
+                    <mat-icon style="color: red;" class="material-icons-outlined">delete_forever</mat-icon>
+                  </button>
+                </div>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <p><i [innerHTML]="step.description"></i></p>
+            <p *ngIf="step.started">
+              <ng-container i18n>Started</ng-container>: {{step.started}}
+            </p>
+            <p *ngIf="step.finished"
+               [style.color]="step.success? 'green': 'red'">
+              <ng-container i18n>Finished</ng-container>: {{step.finished}}
+              <ng-container *ngIf="!step.success">&nbsp;(failed)</ng-container>
+            </p>
+            <ng-container *ngIf="step.required && (step.required.length > 1 || step.required[0] != 'None')">
+              <mat-divider></mat-divider>
+              <ng-container i18n>Prerequisites</ng-container>:
+              <ng-container *ngFor="let required of step.requiredSteps; let last = last;">
+                <ng-container *ngIf="required">
+                  <u [matTooltip]="required?.description"
+                     matTooltipPosition="right" style="cursor: help;">
+                    {{required.title || required.name}}
+                  </u>
+                  <ng-container *ngIf="!last">,&nbsp;</ng-container>
+                </ng-container>
               </ng-container>
             </ng-container>
-          </ng-container>
-          <mat-divider></mat-divider>
-          <ng-container *ngIf="step.injList.length > 0">
-            <table style="width: 100%;" (mousedown)="$event.preventDefault(); $event.stopPropagation();">
-              <tr *ngFor="let injectable of step.injList">
-                <td style="padding-right: 15px;" [matTooltip]="injectable.description">
-                  <b>{{injectable.title || injectable.name}}</b>
-                </td>
-                <td style="min-width: 200px;" *ngIf="injectable.value !== undefined">
-                  <injectable [injectable]="injectable"></injectable>
-                </td>
-                <td>
-                  <button mat-button [disabled]="settings.activeScenario$.value?.is_running"
-                          (click)="editInjectable(injectable)">
-                    <ng-container *ngIf="injectable.editable">EDIT</ng-container>
-                    <ng-container *ngIf="!injectable.editable">SHOW</ng-container>
-                  </button>
-                </td>
-              </tr>
-            </table>
-          </ng-container>
-        </mat-expansion-panel>
-      </mat-accordion>
+            <mat-divider></mat-divider>
+            <ng-container *ngIf="step.injList.length > 0">
+              <table style="width: 100%;" (mousedown)="$event.preventDefault(); $event.stopPropagation();">
+                <tr *ngFor="let injectable of step.injList">
+                  <td style="padding-right: 15px;" [matTooltip]="injectable.description">
+                    <b>{{injectable.title || injectable.name}}</b>
+                  </td>
+                  <td style="min-width: 200px;" *ngIf="injectable.value !== undefined">
+                    <injectable [injectable]="injectable"></injectable>
+                  </td>
+                  <td>
+                    <button mat-button [disabled]="settings.activeScenario$.value?.is_running"
+                            (click)="editInjectable(injectable)">
+                      <ng-container *ngIf="injectable.editable">EDIT</ng-container>
+                      <ng-container *ngIf="!injectable.editable">SHOW</ng-container>
+                    </button>
+                  </td>
+                </tr>
+              </table>
+            </ng-container>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
     </div>
   </div>
   <div class="steps-footer">

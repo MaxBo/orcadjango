@@ -46,9 +46,12 @@
           </button>
         </div>
       </div>
+      <form [formGroup]="profileForm">
+        <mat-checkbox formControlName="showBackgrounds">Show background images</mat-checkbox>
+      </form>
       <mat-divider style="margin: 15px 0;"></mat-divider>
       <mat-checkbox #passCheck
-                    color="primary"
+                    color="accent"
                     style="margin-bottom: 10px;"
                     (change)="onTogglePassChange(passCheck.checked)" i18n>
         Change password

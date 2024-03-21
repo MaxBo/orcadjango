@@ -292,6 +292,6 @@ export class ProjectsComponent extends PageComponent implements OnInit{
   }
 
   getUniqueValues(objects: any[], attribute: string): any[] {
-    return Array.from(new Set(objects.filter(o => !!o[attribute]).map(o => o[attribute])));
+    return Array.from(new Set(objects.filter(o => !!o[attribute]).map(o => o[attribute]))).sort();
   }
 }
