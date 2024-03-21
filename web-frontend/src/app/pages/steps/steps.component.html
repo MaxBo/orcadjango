@@ -5,6 +5,12 @@
      style="background-image: url('{{settings.siteSettings?.steps_background_img}}');"></div>
 <div class="steps-container">
   <div class="steps-content">
+    <div cdkDropList
+         id="trashbin"
+         #trashbin="cdkDropList"
+         style="min-width: 100px"
+         (cdkDropListDropped)="dropTrash($event)">
+    </div>
     <div id="available-steps">
       <div class="steps-heading">
         <h2 i18n>Available Steps</h2>
@@ -73,6 +79,7 @@
           </button>
       </div>
       </div>
+      <div #previewContainer></div>
       <mat-accordion cdkDropList
                      id="scenarioStepList"
                      #scenarioStepList="cdkDropList"
@@ -84,13 +91,16 @@
                              class="scenario-step-item"
                              [ngClass]="{'active': step.active}"
                              [cdkDragData]="step" cdkDrag
-                             [cdkDragDisabled]="settings.activeScenario$.value?.is_running">
+                             [cdkDragPreviewContainer]="previewContainer"
+                             [cdkDragDisabled]="settings.activeScenario$.value?.is_running"
+                             (cdkDragEntered)="onStepDragEnter($event)">
           <div class="drag-placeholder" *cdkDragPlaceholder></div>
           <mat-expansion-panel-header>
             <mat-panel-title [title]="step.title || step.name">
               <div>
                 {{step.title || step.name}}
               </div>
+              <mat-icon class="remove-indicator">highlight_off</mat-icon>
             </mat-panel-title>
             <mat-panel-description>
               <div *ngIf="step.finished"
@@ -98,12 +108,14 @@
                    style="display: flex; align-items: center;">
                 {{step.finished}}&nbsp;
                 <mat-icon *ngIf="step.success"
-                          title="success">
+                          title="success"
+                          i18n-title>
                   done
                 </mat-icon>
                 <mat-icon *ngIf="!step.success"
                           class="material-symbols-outlined"
-                          title="failed">
+                          title="failed"
+                          i18n-title>
                   cancel
                 </mat-icon>
               </div>
@@ -158,7 +170,8 @@
                 <td>
                   <button mat-button [disabled]="settings.activeScenario$.value?.is_running"
                           (click)="editInjectable(injectable)">
-                    {{injectable.editable? "EDIT": "SHOW"}}
+                    <ng-container *ngIf="injectable.editable">EDIT</ng-container>
+                    <ng-container *ngIf="!injectable.editable">SHOW</ng-container>
                   </button>
                 </td>
               </tr>
@@ -169,23 +182,25 @@
     </div>
   </div>
   <div class="steps-footer">
-    <div cdkDropList
-         id="trashbin"
-         #trashbin="cdkDropList"
-         style="position: absolute; right: 0px; transform: translateY(-120px);"
-         (cdkDropListDropped)="dropTrash($event)">
-      <mat-icon style="width: 100px; height: 100px; font-size: 100px;"
-                class="material-icons-outlined">
-        delete_forever
-      </mat-icon>
-    </div>
-    <div id="resize-handle" #resizeHandle cdkDragLockAxis="y" cdkDrag (cdkDragMoved)="onResizeDrag($event)">
+    <div id="resize-handle" #resizeHandle cdkDragLockAxis="y"
+         cdkDrag (cdkDragMoved)="onResizeDrag($event)"
+         [style.display]="showLog? 'flex': 'none'"
+         title="drag to change log size" i18n-title>
       <button mat-mini-fab
               class="flat micro">
         <mat-icon class="material-symbols-outlined">expand_all</mat-icon>
       </button>
     </div>
-    <div #logContainer style="width: 100%;" [style.height]="logHeight + 'px'">
+    <div id="minimize-log" (click)="showLog=!showLog"
+         title="minimize/maximize log" i18n-title>
+      <span *ngIf="!showLog" i18n>Show Log</span>
+      <button mat-mini-fab class="flat micro">
+        <mat-icon *ngIf="showLog" class="material-symbols-outlined">minimize</mat-icon>
+        <mat-icon *ngIf="!showLog" class="material-symbols-outlined">maximize</mat-icon>
+      </button>
+    </div>
+    <div #logContainer style="width: 100%;" [style.height]="logHeight + 'px'"
+         [style.display]="showLog? 'block': 'none'">
       <app-scenario-log height="100%"></app-scenario-log>
     </div>
   </div>

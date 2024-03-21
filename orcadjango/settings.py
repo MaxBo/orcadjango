@@ -205,14 +205,20 @@ LOGGING = {
 }
 
 def load_stats_json():
-    fn = os.path.join(FRONTEND_APP_DIR,
-                      *FRONTEND_DIST.split('/'),
-                      'stats.json')
+    fp = os.path.join(FRONTEND_APP_DIR,
+                      *FRONTEND_DIST.split('/'))
+    dist_sub = FRONTEND_DIST
+    if LANGUAGE_CODE != 'en-us':
+        lp = os.path.join(fp, LANGUAGE_CODE)
+        if os.path.exists(os.path.join(lp, 'stats.json')):
+            fp = lp
+            dist_sub = os.path.join(FRONTEND_DIST, LANGUAGE_CODE)
+    fn = os.path.join(fp, 'stats.json')
     if not os.path.exists(fn):
         return
     with open(fn, 'r') as file:
         chunks = json.loads(file.read())['assetsByChunkName'] or {}
-        chunk_paths = {k: (f'{FRONTEND_DIST}/{fn[0]}')
+        chunk_paths = {k: (f'{dist_sub}/{fn[0]}')
                        for k, fn in chunks.items()}
         return chunk_paths
 

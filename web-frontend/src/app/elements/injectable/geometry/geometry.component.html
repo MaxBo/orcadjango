@@ -4,22 +4,27 @@
       <div #mapContainer [id]="mapId" class="map"
            [style.height]="height">
         <mat-button-toggle-group class="map-controls" [(ngModel)]="editMode" (change)="onModeChanged()">
-          <mat-button-toggle value="select" title="Select features">
+          <mat-button-toggle value="select" title="Select features"
+                             i18n-title>
             <mat-icon class="material-symbols-outlined">gesture_select</mat-icon>
           </mat-button-toggle>
-          <mat-button-toggle value="draw" title="Draw Features by setting points">
+          <mat-button-toggle value="draw" title="Draw Features by setting points"
+                             i18n-title>
             <mat-icon class="material-symbols-outlined">polyline</mat-icon>
           </mat-button-toggle>
-          <mat-button-toggle value="freehand" title="Draw Features freehand">
+          <mat-button-toggle value="freehand" title="Draw Features freehand"
+                             i18n-title>
             <mat-icon class="material-symbols-outlined">draw</mat-icon>
           </mat-button-toggle>
-          <mat-button-toggle value="square" title="Draw a square">
+          <mat-button-toggle value="square" title="Draw a square"
+                             i18n-title>
             <mat-icon class="material-symbols-outlined">square</mat-icon>
           </mat-button-toggle>
 <!--          <mat-button-toggle value="circle" title="Draw a circle">
             <mat-icon class="material-symbols-outlined">circle</mat-icon>
           </mat-button-toggle>-->
-          <mat-button-toggle value="none" title="Edit Off">
+          <mat-button-toggle value="none" title="Edit Off"
+                             i18n-title>
             <mat-icon>block</mat-icon>
           </mat-button-toggle>
         </mat-button-toggle-group>

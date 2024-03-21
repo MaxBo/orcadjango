@@ -76,8 +76,8 @@ export class ProjectsComponent extends PageComponent implements OnInit{
     const initInjectableNames = this.settings.module$.value?.init_injectables || [];
     let injectables: Inj[] = initInjectableNames.map(name => this.settings.moduleInjectables.find(inj => inj.name === name)!).filter(i => i !== undefined);
     const data: ProjectEditDialogData = {
-      title: 'Create new Project',
-      confirmButtonText: 'Create',
+      title: $localize `Create new Project`,
+      confirmButtonText: $localize `Create`,
       project: {
         name: '',
         description: '',
@@ -115,7 +115,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
       width: '300px',
       disableClose: true,
       data: {
-        title: 'Remove Project',
+        title: $localize `Remove Project`,
         subtitle: project.name,
         template: this.deleteProjectTemplate,
         closeOnConfirm: false
@@ -141,8 +141,8 @@ export class ProjectsComponent extends PageComponent implements OnInit{
 
   editProject(project: Project): void {
     const data: ProjectEditDialogData = {
-      title: 'Edit Project',
-      confirmButtonText: 'Save',
+      title: $localize `Edit Project`,
+      confirmButtonText: $localize `Save`,
       project: project,
       showDate: true
     }

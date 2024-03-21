@@ -33,10 +33,6 @@ export class SettingsService {
       this.disconnect();
       this.connect();
     });
-    this.rest.getSiteSettings().subscribe(settings => {
-      this.siteSettings = settings;
-      this.setColor({ primary: settings.primary_color, secondary: settings.secondary_color })
-    });
     this.host = environment.backend? environment.backend: window.location.origin;
     const strippedHost = environment.backend? environment.backend.replace('http://', ''): window.location.hostname;
     this.wsURL = `${(environment.production && strippedHost.indexOf('localhost') === -1)? 'wss:': 'ws:'}//${strippedHost}/ws/scenariolog/`;
@@ -82,6 +78,13 @@ export class SettingsService {
       }
       this.rest.getInjectables(module.name).subscribe(injectables => this.moduleInjectables = injectables);
     })
+  }
+
+  load(): void {
+    this.rest.getSiteSettings().subscribe(settings => {
+      this.siteSettings = settings;
+      this.setColor({ primary: settings.primary_color, secondary: settings.secondary_color })
+    });
   }
 
   setColor(colors: {primary?: string, secondary?: string, warn?: string}) {
