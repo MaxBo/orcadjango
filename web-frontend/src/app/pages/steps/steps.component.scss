@@ -15,7 +15,6 @@
   }
 }
 #scenario-steps {
-  position: relative;
   width: 600px;
 
   tr:hover {
@@ -31,6 +30,9 @@
   .mat-accordion {
     background: #f0f0f09e;
   }
+  overflow-y: auto;
+  padding-right: 10px;
+  position: relative;
 }
 
 ::ng-deep #available-steps {
@@ -167,10 +169,10 @@
   flex-shrink: 1;
   flex-grow: 1;
   position: relative;
-  overflow-y: auto;
+  overflow-y: hidden;
   padding: 10px 16px;
   display: flex;
-  user-select: none
+  user-select: none;
 }
 
 .steps-footer{
