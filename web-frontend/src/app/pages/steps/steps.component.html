@@ -126,7 +126,7 @@
                 </div>
                 <div style="margin-left: auto; display: flex; align-items: center;">
                   <mat-slide-toggle [checked]="step.active"
-                                    color="primary"
+                                    color="accent"
                                     (click)="$event.stopPropagation();"
                                     [disabled]="settings.activeScenario$.value?.is_running"
                                     (change)="toggleActive($event.checked, step)" >
