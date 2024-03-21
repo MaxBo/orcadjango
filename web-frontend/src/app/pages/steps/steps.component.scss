@@ -16,7 +16,6 @@
 }
 #scenario-steps {
   width: 600px;
-
   tr:hover {
     background-color: #ffeeee;
   }
@@ -27,26 +26,37 @@
 }
 
 #available-steps, #scenario-steps {
+  .accordion-border {
+    width: calc(100% - 20px);
+    margin: 0;
+  }
   .mat-accordion {
     background: #f0f0f09e;
   }
-  overflow-y: auto;
-  padding-right: 10px;
-  position: relative;
+  .accordion-wrapper {
+    overflow-y: auto;
+    padding-right: 10px;
+    padding-bottom: 5px;
+    position: relative;
+    height: calc(100% - 55px); //minus header and padding-bottom
+  }
 }
 
 ::ng-deep #available-steps {
   .group-title {
-    font-size: 18px;
-    letter-spacing: 0.8px;
+    //font-size: 18px;
+    //letter-spacing: 0.8px;
+    font-size: 16px;
+    text-transform: uppercase;
   }
   .mat-expansion-panel-body {
     padding: 0;
   }
   .available-step-item .mat-expansion-panel-body {
-    padding: 0px 10px 20px 24px ;
+    padding: 0px 10px 20px 24px;
+    font-size: 14px;
     .mat-expansion-panel-header-title {
-      font-size: 14px;
+      font-size: 16px;
     }
   }
   mat-expansion-panel {
@@ -128,7 +138,6 @@
     cursor: auto;
   }
 }
-
 
 .step-list {
   border: solid 1px #ccc;
