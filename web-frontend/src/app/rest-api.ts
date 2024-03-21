@@ -15,7 +15,8 @@ export interface Avatar {
 
 interface Profile {
   color: string,
-  avatar: number
+  avatar: number,
+  show_backgrounds: boolean
 }
 
 export interface User {

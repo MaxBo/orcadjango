@@ -33,7 +33,8 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('color', 'avatar')
+        fields = ('color', 'avatar', 'show_backgrounds')
+        optional_fields = ('show_backgrounds', )
 
 
 class UserSerializer(serializers.ModelSerializer):

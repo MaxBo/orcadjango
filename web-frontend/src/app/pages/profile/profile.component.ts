@@ -12,6 +12,7 @@ import { PageComponent } from "../../app.component";
 export class ProfileComponent extends PageComponent implements OnInit {
   accountForm!: FormGroup;
   passwordForm!: FormGroup;
+  profileForm!: FormGroup;
   colorSelection: string = 'black';
   avatarSelection: number = -1;
   changePassword: boolean = false;
@@ -38,6 +39,9 @@ export class ProfileComponent extends PageComponent implements OnInit {
       password: new FormControl({ value: '', disabled: !this.changePassword }),
       confirmPass: new FormControl({ value: '', disabled: !this.changePassword })
     });
+    this.profileForm = this.formBuilder.group({
+      showBackgrounds: user?.profile.show_backgrounds
+    });
     this.colorSelection = user?.profile.color || 'black';
     this.avatarSelection = user?.profile.avatar || -1;
   }
@@ -63,7 +67,7 @@ export class ProfileComponent extends PageComponent implements OnInit {
       username: this.accountForm.value.username,
       first_name: this.accountForm.value.firstName,
       last_name: this.accountForm.value.lastName,
-      profile: { color: this.colorSelection }
+      profile: { color: this.colorSelection, show_backgrounds: this.profileForm.value.showBackgrounds }
     }
     if (this.changePassword) {
       this.passwordForm.markAllAsTouched();
@@ -85,7 +89,6 @@ export class ProfileComponent extends PageComponent implements OnInit {
   getAvatarTooltip(avatar: Avatar) {
     let tooltip = avatar.name;
     if (avatar.users.length > 0) {
-
       tooltip += ' (' + $localize `used by` + `: ${avatar.users.map(id => this.settings.getUser(id)?.username).join(', ')})`;
     }
     else

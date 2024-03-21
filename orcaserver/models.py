@@ -248,6 +248,7 @@ class Profile(models.Model):
                                 related_name='profile')
     color = models.CharField(max_length=9, default='black')
     avatar = models.ForeignKey(Avatar, on_delete=models.SET_NULL, null=True)
+    show_backgrounds = models.BooleanField(default=True)
 
     def __str__(self) -> str:
         return f'{self.__class__.__name__}: {self.user.username}'

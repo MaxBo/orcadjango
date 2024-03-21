@@ -1,7 +1,7 @@
 <div class="load-overlay" *ngIf="isLoading$ | async">
   <mat-spinner [diameter]="50"></mat-spinner>
 </div>
-<div class="background" *ngIf="settings.siteSettings?.steps_background_img"
+<div class="background" *ngIf="settings.user$.value?.profile?.show_backgrounds && settings.siteSettings?.steps_background_img"
      style="background-image: url('{{settings.siteSettings?.steps_background_img}}');"></div>
 <div class="steps-container">
   <div class="steps-content">
