@@ -199,7 +199,8 @@
         <mat-icon class="material-symbols-outlined">expand_all</mat-icon>
       </button>
     </div>
-    <div id="minimize-log" (click)="showLog=!showLog"
+    <div id="minimize-log"
+         (click)="setShowLog(!showLog)"
          title="minimize/maximize log" i18n-title>
       <span *ngIf="!showLog" i18n>Show Log</span>
       <button mat-mini-fab class="flat micro">
