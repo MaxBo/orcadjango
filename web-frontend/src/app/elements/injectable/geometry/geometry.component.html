@@ -29,10 +29,10 @@
           </mat-button-toggle>
         </mat-button-toggle-group>
       </div>
-      <button mat-button (click)="deleteAll()">
+      <button mat-button (click)="deleteAll()" i18n>
         DELETE ALL FEATURES
       </button>
-      <button mat-button (click)="deleteSelected()" [disabled]="!featuresSelected">
+      <button mat-button (click)="deleteSelected()" [disabled]="!featuresSelected" i18n>
         DELETE SELECTED
       </button>
     </div>

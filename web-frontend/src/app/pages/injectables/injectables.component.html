@@ -25,14 +25,14 @@
   </div>
   <div *ngIf="injectableMismatch" class="text-panel" style="margin-bottom: 10px;">
     <p>
-      <mat-icon color="warn">warning</mat-icon>
+      <mat-icon color="warn" style="margin: 0 5px -5px 0;">warning</mat-icon>
       <ng-container i18n>The scenario is not in sync with the Module. Please <b>synchronize</b> the scenario!</ng-container>
     </p>
     <p *ngIf="injectableMismatch.missing">
-      <ng-container i18n>Injectables missing</ng-container>: {{injectableMismatch.missing.join(', ')}}
+      <ng-container i18n>Injectables missing</ng-container>: <i>{{injectableMismatch.missing.join(', ')}}</i>
     </p>
     <p *ngIf="injectableMismatch.ahead">
-      <ng-container i18n>Injectables ahead</ng-container>: {{injectableMismatch.ahead.join(', ')}}
+      <ng-container i18n>Injectables ahead</ng-container>: <i>{{injectableMismatch.ahead.join(', ')}}</i>
     </p>
   </div>
   <table *ngIf="groupedInjectables"
@@ -85,10 +85,18 @@
               <injectable *ngIf="injectable.value !== undefined"
                           [injectable]="injectable"></injectable>
             </td>
-            <td>
-              <button mat-button [disabled]="settings.activeScenario$.value?.is_running" (click)="editInjectable(injectable)">
-                <ng-container *ngIf="injectable.editable else notEditable" i18n>EDIT</ng-container>
-                <ng-template #notEditable i18n>VIEW</ng-template>
+            <td style="color: #5c5c5c;">
+              <button mat-icon-button class="micro"
+                      *ngIf="injectable.editable"
+                      [disabled]="settings.activeScenario$.value?.is_running"
+                      (click)="editInjectable(injectable);" i18n-title title="edit injectable">
+                <mat-icon class="material-icons-outlined">edit</mat-icon>
+              </button>
+              <button mat-icon-button class="micro"
+                      *ngIf="!injectable.editable"
+                      [disabled]="settings.activeScenario$.value?.is_running"
+                      (click)="editInjectable(injectable);" i18n-title title="view injectable">
+                <mat-icon class="material-icons-outlined">remove_red_eye</mat-icon>
               </button>
             </td>
           </tr>
@@ -97,11 +105,9 @@
     </tbody>
   </table>
 </div>
-<button mat-flat-button
-        color="primary"
+<button mat-icon-button
         class="next"
-        style="right: 20px;"
-        routerLink="/steps">
-  <ng-container i18n>Next</ng-container>
-  <mat-icon iconPositionEnd>arrow_right</mat-icon>
+        routerLink="/steps"
+        i18n-title title="next page">
+  <mat-icon>navigate_next</mat-icon>
 </button>

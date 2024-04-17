@@ -166,7 +166,9 @@
             <ng-container *ngIf="step.injList.length > 0">
               <table style="width: 100%;" (mousedown)="$event.preventDefault(); $event.stopPropagation();">
                 <tr *ngFor="let injectable of step.injList">
-                  <td style="padding-right: 15px;" [matTooltip]="injectable.description">
+                  <td style="padding-right: 15px;"
+                      [matTooltip]="injectable.description"
+                      matTooltipPosition="left">
                     <b>{{injectable.title || injectable.name}}</b>
                   </td>
                   <td style="min-width: 200px;" *ngIf="injectable.value !== undefined">

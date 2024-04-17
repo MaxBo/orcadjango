@@ -36,12 +36,11 @@
   </ng-container>
 </div>
 <button *ngIf="settings.activeScenario$ | async"
-        mat-flat-button
-        color="primary"
+        mat-icon-button
         class="next"
-        routerLink="/injectables">
-  <ng-container i18n>Next</ng-container>
-  <mat-icon iconPositionEnd>arrow_right</mat-icon>
+        routerLink="/injectables"
+        i18n-title title="next page">
+  <mat-icon>navigate_next</mat-icon>
 </button>
 
 <ng-template #deleteScenarioTemplate>

@@ -51,16 +51,28 @@
           <ng-template #projectDesc>{{project.description}}</ng-template>
         </mat-card-content>
         <mat-card-actions style="display: block;">
-          <div fxLayout="row">
-            <button mat-button (click)="onEditProject.emit(project)" i18n>EDIT</button>
-            <button mat-button style="margin-left: auto;"
-                    (click)="onDeleteProject.emit(project)" i18n>DELETE</button>
-          </div>
-          <div fxLayout="row">
-            <button mat-button
-                    (click)="onArchiveProject.emit({ project: project, archive: !project.archived})">
-              <ng-container *ngIf="!project.archived else unarchive" i18n>ARCHIVE</ng-container>
-              <ng-template #unarchive i18n>UNARCHIVE</ng-template>
+          <div fxLayout="row" style="padding: 0 5px; color: #5c5c5c;">
+            <button mat-icon-button class="micro"
+                    (click)="onEditProject.emit(project)" i18n-title title="edit project">
+              <mat-icon class="material-icons-outlined">edit</mat-icon>
+            </button>
+            <button mat-icon-button class="micro"
+                    style="margin-left: auto;"
+                    *ngIf="!project.archived"
+                    (click)="onArchiveProject.emit({ project: project, archive: true})"
+                    i18n-title title="archive project">
+              <mat-icon class="material-icons-outlined">archive</mat-icon>
+            </button>
+            <button mat-icon-button class="micro"
+                    style="margin-left: auto;"
+                    *ngIf="project.archived"
+                    (click)="onArchiveProject.emit({ project: project, archive: false})"
+                    i18n-title title="move project out of archive">
+              <mat-icon class="material-icons-outlined">unarchive</mat-icon>
+            </button>
+            <button mat-icon-button class="micro"
+                    (click)="onDeleteProject.emit(project)" i18n-title title="remove project">
+              <mat-icon class="material-icons-outlined">delete_forever</mat-icon>
             </button>
           </div>
         </mat-card-actions>

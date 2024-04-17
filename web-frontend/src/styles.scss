@@ -44,7 +44,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 .page-content {
-  width: calc(100% - 132px);
+  width: calc(100% - 110px);
   padding: 0 16px;
   position: relative;
   z-index: 1;
@@ -107,6 +107,7 @@ button.next {
   right: 25px;
   z-index: 101;
   background-color: #fafafa;
+  border: 1px solid grey;
 }
 
 .load-overlay {
@@ -143,11 +144,12 @@ button.next {
 }
 
 button.flat {
-  box-shadow: none!important;
+  box-shadow: none !important;
 }
 button.micro {
-  height: 30px;
-  width: 30px;
+  height: 30px !important;
+  width: 30px !important;
+  padding: 3px !important;
 }
 
 mat-card {

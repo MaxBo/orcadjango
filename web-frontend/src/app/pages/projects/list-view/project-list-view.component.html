@@ -22,12 +22,28 @@
       <td> {{ project.created }} </td>
       <td> {{ settings.getUserName(project.user) }} </td>
       <td> {{ project.description }} </td>
-      <td style="white-space: nowrap;">
-        <button mat-button (click)="onEditProject.emit(project); $event.stopPropagation()" i18n>EDIT</button>
-        <button mat-button (click)="onDeleteProject.emit(project); $event.stopPropagation()" i18n>DELETE</button>
-        <button mat-button (click)="onArchiveProject.emit({ project: project, archive: !project.archived}); $event.stopPropagation()">
-          <ng-container *ngIf="!project.archived else unarchive" i18n>ARCHIVE</ng-container>
-          <ng-template #unarchive i18n>UNARCHIVE</ng-template>
+      <td style="white-space: nowrap; color: #5c5c5c;">
+        <button mat-icon-button class="micro"
+                (click)="onEditProject.emit(project); $event.stopPropagation()"
+                style="margin-right: 10px;"
+                i18n-title title="edit project">
+          <mat-icon class="material-icons-outlined">edit</mat-icon>
+        </button>
+        <button mat-icon-button class="micro"
+                *ngIf="!project.archived"
+                (click)="onArchiveProject.emit({ project: project, archive: true}); $event.stopPropagation()"
+                i18n-title title="archive project">
+          <mat-icon class="material-icons-outlined">archive</mat-icon>
+        </button>
+        <button mat-icon-button class="micro"
+                *ngIf="project.archived"
+                (click)="onArchiveProject.emit({ project: project, archive: false}); $event.stopPropagation()"
+                i18n-title title="move project out of archive">
+          <mat-icon class="material-icons-outlined">unarchive</mat-icon>
+        </button>
+        <button mat-icon-button class="micro"
+                (click)="onDeleteProject.emit(project); $event.stopPropagation()" i18n-title title="remove project">
+          <mat-icon class="material-icons-outlined">delete_forever</mat-icon>
         </button>
       </td>
     </tr>
