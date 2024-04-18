@@ -22,9 +22,16 @@
       <td> {{ scenario.last_run?.started || '-' }} </td>
       <td> {{ scenario.last_run?.finished || '-' }} </td>
       <td> {{ (scenario.last_run?.success != undefined)? ((scenario.last_run?.success)? 'yes': 'no'): '-' }} </td>
-      <td style="white-space: nowrap;">
-        <button mat-button (click)="onEditScenario.emit(scenario); $event.stopPropagation()" i18n>EDIT</button>
-        <button mat-button (click)="onDeleteScenario.emit(scenario); $event.stopPropagation()" i18n>DELETE</button>
+      <td style="white-space: nowrap; color: #5c5c5c;">
+        <button mat-icon-button class="micro"
+                (click)="onEditScenario.emit(scenario); $event.stopPropagation();" i18n-title title="edit scenario">
+          <mat-icon class="material-icons-outlined">edit</mat-icon>
+        </button>
+        <button mat-icon-button class="micro"
+                style="margin-right: 10px;"
+                (click)="onDeleteScenario.emit(scenario); $event.stopPropagation();" i18n-title title="remove scenario">
+          <mat-icon class="material-icons-outlined">delete_forever</mat-icon>
+        </button>
       </td>
     </tr>
   </tbody>

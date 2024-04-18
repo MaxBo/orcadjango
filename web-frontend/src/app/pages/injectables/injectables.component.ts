@@ -6,6 +6,7 @@ import { InjectableEditDialogComponent } from "./edit/injectable-edit.component"
 import { DerivedInjectableDialogComponent } from "./derived/derived-injectable.component";
 import { PageComponent } from "../../app.component";
 import { ConfirmDialogComponent } from "../../elements/confirm-dialog/confirm-dialog.component";
+import { CookieService } from "ngx-cookie-service";
 
 export function sortBy(array: any[], attr: string, options?: { reverse?: boolean, lowerCase?: boolean }): any[]{
   let sorted = array.sort((a, b) => {
@@ -36,7 +37,8 @@ export class InjectablesComponent extends PageComponent implements OnInit {
   protected injectableMismatch?: { missing?: string[], ahead?: string[] };
   private _steps: Step[] = [];
 
-  constructor(protected rest: RestService, protected settings: SettingsService, protected dialog: MatDialog){
+  constructor(protected rest: RestService, protected settings: SettingsService, protected dialog: MatDialog,
+              protected cookies: CookieService){
     super();
   }
 

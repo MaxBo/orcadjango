@@ -44,9 +44,18 @@
             </p>
           </ng-template>
         </mat-card-content>
-        <mat-card-actions>
-          <button mat-button (click)="onEditScenario.emit(scenario)" i18n>EDIT</button>
-          <button mat-button (click)="onDeleteScenario.emit(scenario)" i18n>DELETE</button>
+        <mat-card-actions style="display: block;">
+          <div fxLayout="row" style="padding: 0 5px; color: #5c5c5c;">
+            <button mat-icon-button class="micro"
+                    (click)="onEditScenario.emit(scenario)" i18n-title title="edit scenario">
+              <mat-icon class="material-icons-outlined">edit</mat-icon>
+            </button>
+            <button mat-icon-button class="micro"
+                    style="margin-left: auto;"
+                    (click)="onDeleteScenario.emit(scenario)" i18n-title title="remove scenario">
+              <mat-icon class="material-icons-outlined">delete_forever</mat-icon>
+            </button>
+          </div>
         </mat-card-actions>
       </mat-card>
     </div>

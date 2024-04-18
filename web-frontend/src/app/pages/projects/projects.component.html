@@ -101,31 +101,34 @@
     </div>
   </div>
   <ng-container [ngSwitch]="viewType">
-    <app-project-grid-view *ngSwitchCase="'grid-view'"
-                           [projects]="filteredProjects"
-                           (onCreateProject)="onCreateProject()"
-                           (onDeleteProject)="deleteProject($event)"
-                           (onEditProject)="editProject($event)"
-                           (onArchiveProject)="archiveProject($event.project, $event.archive)"
-                           (onProjectSelected)="selectProject($event)">
-    </app-project-grid-view>
-    <app-project-list-view *ngSwitchCase="'list-view'"
-                           [projects]="filteredProjects"
-                           (onCreateProject)="onCreateProject()"
-                           (onDeleteProject)="deleteProject($event)"
-                           (onEditProject)="editProject($event)"
-                           (onArchiveProject)="archiveProject($event.project, $event.archive)"
-                           (onProjectSelected)="selectProject($event)">
-    </app-project-list-view>
+    <div id="project-view-wrapper">
+      <div id="project-view">
+        <app-project-grid-view *ngSwitchCase="'grid-view'"
+                               [projects]="filteredProjects"
+                               (onCreateProject)="onCreateProject()"
+                               (onDeleteProject)="deleteProject($event)"
+                               (onEditProject)="editProject($event)"
+                               (onArchiveProject)="archiveProject($event.project, $event.archive)"
+                               (onProjectSelected)="selectProject($event)">
+        </app-project-grid-view>
+        <app-project-list-view *ngSwitchCase="'list-view'"
+                               [projects]="filteredProjects"
+                               (onCreateProject)="onCreateProject()"
+                               (onDeleteProject)="deleteProject($event)"
+                               (onEditProject)="editProject($event)"
+                               (onArchiveProject)="archiveProject($event.project, $event.archive)"
+                               (onProjectSelected)="selectProject($event)">
+        </app-project-list-view>
+      </div>
+    </div>
   </ng-container>
 </div>
 <button *ngIf="settings.activeProject$ | async"
-        mat-flat-button
-        color="primary"
+        mat-icon-button
         class="next"
-        routerLink="/scenarios">
-  <ng-container i18n>Next</ng-container>
-  <mat-icon iconPositionEnd>arrow_right</mat-icon>
+        routerLink="/scenarios"
+        i18n-title title="next page">
+  <mat-icon>navigate_next</mat-icon>
 </button>
 
 <ng-template #deleteProjectTemplate>

@@ -40,6 +40,8 @@ export class StepsComponent extends InjectablesComponent {
 
   // constructor(private rest: RestService, private settings: UserSettingsService)
   override ngOnInit() {
+    // show log by default else from cookies
+    this.showLog = this.cookies.get('show-log') != 'false';
     this.subscriptions.push(this.settings.activeScenario$.subscribe(scenario => {
       this.availableSteps = {};
       this.scenarioSteps = [];
@@ -239,5 +241,10 @@ export class StepsComponent extends InjectablesComponent {
       this.previewContainer.nativeElement.classList.add('remove');
     else
       this.previewContainer.nativeElement.classList.remove('remove');
+  }
+
+  setShowLog(show: boolean): void {
+    this.showLog = show;
+    this.cookies.set('show-log', String(show));
   }
 }
