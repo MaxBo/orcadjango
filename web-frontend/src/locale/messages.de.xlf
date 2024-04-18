@@ -12,10 +12,10 @@
       </trans-unit>
       <trans-unit id="7571931095853268764" datatype="html">
         <source> Projects </source>
-        <target state="translated"> Projekte </target>
+        <target state="needs-l10n"> Projekte </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">18,19</context>
+          <context context-type="linenumber">17,18</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2032593290187655936" datatype="html">
@@ -23,7 +23,7 @@
         <target state="translated">Szenarien</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">25</context>
+          <context context-type="linenumber">24</context>
         </context-group>
       </trans-unit>
       <trans-unit id="917277518976491570" datatype="html">
@@ -31,7 +31,7 @@
         <target state="translated"> Szenarien </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">30,31</context>
+          <context context-type="linenumber">28,29</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7764277914483206360" datatype="html">
@@ -39,15 +39,15 @@
         <target state="translated">Parameter</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">38</context>
+          <context context-type="linenumber">36</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5899857100378183008" datatype="html">
         <source> Injectables </source>
-        <target state="translated"> Parameter </target>
+        <target state="needs-l10n"> Parameter </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">43,44</context>
+          <context context-type="linenumber">40,41</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7140694306667090231" datatype="html">
@@ -55,15 +55,15 @@
         <target state="translated">Schritte und Ausführung</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">50</context>
+          <context context-type="linenumber">47</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5526560797552636246" datatype="html">
         <source> Steps &amp; Run </source>
-        <target state="translated"> Schritte &amp; Ausführung </target>
+        <target state="needs-l10n"> Schritte &amp; Ausführung </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">55,56</context>
+          <context context-type="linenumber">51,52</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6525268198269203965" datatype="html">
@@ -71,31 +71,31 @@
         <target state="translated">nicht eingeloggt</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">63</context>
+          <context context-type="linenumber">59</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5589520527260731799" datatype="html">
         <source> Django Admin </source>
-        <target state="translated"> Django Admin </target>
+        <target state="needs-l10n"> Django Admin </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">69,70</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5799438277111148696" datatype="html">
+        <source> Profile </source>
+        <target state="needs-l10n"> Profil </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">73,74</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="5799438277111148696" datatype="html">
-        <source> Profile </source>
-        <target state="translated"> Profil </target>
+      <trans-unit id="7504940227782988572" datatype="html">
+        <source> Logout </source>
+        <target state="needs-l10n"> Ausloggen </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">77,78</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="7504940227782988572" datatype="html">
-        <source> Logout </source>
-        <target state="translated"> Ausloggen </target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">81,82</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2454050363478003966" datatype="html">
@@ -103,7 +103,7 @@
         <target state="translated">Einloggen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">85</context>
+          <context context-type="linenumber">81</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1867992058937397585" datatype="html">
@@ -111,7 +111,7 @@
         <target state="translated">Modul</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">95</context>
+          <context context-type="linenumber">91</context>
         </context-group>
       </trans-unit>
       <trans-unit id="314315645942131479" datatype="html">
@@ -119,27 +119,27 @@
         <target state="translated">Info</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">110</context>
+          <context context-type="linenumber">106</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5650626092176289918" datatype="html">
         <source>no project selected</source>
-        <target state="translated">kein Projekt ausgewählt</target>
+        <target state="needs-l10n">kein Projekt ausgewählt</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">148</context>
+          <context context-type="linenumber">144</context>
         </context-group>
       </trans-unit>
       <trans-unit id="37788114767831354" datatype="html">
         <source>Started at</source>
-        <target state="translated">Gestartet am</target>
+        <target state="needs-l10n">Gestartet am</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">172</context>
+          <context context-type="linenumber">170</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scenarios/grid-view/scenario-grid-view.component.html</context>
-          <context context-type="linenumber">33</context>
+          <context context-type="linenumber">36</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4332187997090407401" datatype="html">
@@ -147,11 +147,11 @@
         <target state="translated">Letzter Lauf beendet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">178</context>
+          <context context-type="linenumber">176</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scenarios/grid-view/scenario-grid-view.component.html</context>
-          <context context-type="linenumber">39</context>
+          <context context-type="linenumber">42</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6080299117798524738" datatype="html">
@@ -159,7 +159,7 @@
         <target state="translated">kein Szenario ausgewählt</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">185</context>
+          <context context-type="linenumber">183</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7819314041543176992" datatype="html">
@@ -188,7 +188,7 @@
       </trans-unit>
       <trans-unit id="9178182467454450952" datatype="html">
         <source>Confirm</source>
-        <target state="translated">Bestätigen</target>
+        <target state="needs-l10n">Bestätigen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/elements/confirm-dialog/confirm-dialog.component.ts</context>
           <context context-type="linenumber">33</context>
@@ -314,6 +314,22 @@
           <context context-type="linenumber">26</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="7675439782300079336" datatype="html">
+        <source> DELETE ALL FEATURES </source>
+        <target state="translated"> ALLE FEATURES LÖSCHEN </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/elements/injectable/geometry/geometry.component.html</context>
+          <context context-type="linenumber">32,34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7651672590087541992" datatype="html">
+        <source> DELETE SELECTED </source>
+        <target state="translated"> AUSGEWÄHLTE LÖSCHEN </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/elements/injectable/geometry/geometry.component.html</context>
+          <context context-type="linenumber">35,37</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="1646279971883124043" datatype="html">
         <source>filter name/description (e.g. "2019")</source>
         <target state="translated">Name/Beschreibung filtern (z.B. "2019")</target>
@@ -324,7 +340,7 @@
       </trans-unit>
       <trans-unit id="6768426681799137038" datatype="html">
         <source> Show checked only </source>
-        <target state="translated"> Nur ausgewählte anzeigen </target>
+        <target state="needs-l10n"> Nur ausgewählte anzeigen </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/elements/injectable/multiple-choice/multiple-choice.component.html</context>
           <context context-type="linenumber">12,14</context>
@@ -372,7 +388,7 @@
       </trans-unit>
       <trans-unit id="8135603472864997007" datatype="html">
         <source> SHOW </source>
-        <target state="translated"> ANZEIGEN </target>
+        <target state="needs-l10n"> ANZEIGEN </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/injectables/derived/derived-injectable.component.html</context>
           <context context-type="linenumber">25,27</context>
@@ -380,7 +396,7 @@
       </trans-unit>
       <trans-unit id="5184373289520493569" datatype="html">
         <source> OK </source>
-        <target state="translated"> OK </target>
+        <target state="needs-l10n"> OK </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/injectables/derived/derived-injectable.component.html</context>
           <context context-type="linenumber">36,38</context>
@@ -388,7 +404,7 @@
       </trans-unit>
       <trans-unit id="8425931046140534756" datatype="html">
         <source>Injectable</source>
-        <target state="translated">Parameter</target>
+        <target state="needs-l10n">Parameter</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/injectables/edit/injectable-edit.component.html</context>
           <context context-type="linenumber">1</context>
@@ -396,7 +412,7 @@
       </trans-unit>
       <trans-unit id="2330577642930707695" datatype="html">
         <source> Cancel </source>
-        <target state="translated"> Abbrechen </target>
+        <target state="needs-l10n"> Abbrechen </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/injectables/edit/injectable-edit.component.html</context>
           <context context-type="linenumber">29,30</context>
@@ -404,7 +420,7 @@
       </trans-unit>
       <trans-unit id="7055168605128539443" datatype="html">
         <source> Reset to default </source>
-        <target state="translated"> Zurücksetzen auf Default </target>
+        <target state="needs-l10n"> Zurücksetzen auf Default </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/injectables/edit/injectable-edit.component.html</context>
           <context context-type="linenumber">35,36</context>
@@ -412,7 +428,7 @@
       </trans-unit>
       <trans-unit id="6249484391846924804" datatype="html">
         <source> Confirm </source>
-        <target state="translated"> Bestätigen </target>
+        <target state="needs-l10n"> Bestätigen </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/injectables/edit/injectable-edit.component.html</context>
           <context context-type="linenumber">40,41</context>
@@ -440,7 +456,7 @@
       </trans-unit>
       <trans-unit id="3323738821005716587" datatype="html">
         <source> Synchronize </source>
-        <target state="translated"> Synchronisieren </target>
+        <target state="needs-l10n"> Synchronisieren </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/injectables/injectables.component.html</context>
           <context context-type="linenumber">15,16</context>
@@ -448,7 +464,7 @@
       </trans-unit>
       <trans-unit id="6377077490852004087" datatype="html">
         <source>Reset ALL injectables to the project defaults</source>
-        <target state="translated">ALLE Parameter auf die Werte des Projekts zurücksetzen</target>
+        <target state="needs-l10n">ALLE Parameter auf die Werte des Projekts zurücksetzen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/injectables/injectables.component.html</context>
           <context context-type="linenumber">21</context>
@@ -456,7 +472,7 @@
       </trans-unit>
       <trans-unit id="5478121364779850827" datatype="html">
         <source> Reset </source>
-        <target state="translated"> Zurücksetzen </target>
+        <target state="needs-l10n"> Zurücksetzen </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/injectables/injectables.component.html</context>
           <context context-type="linenumber">22,23</context>
@@ -472,7 +488,7 @@
       </trans-unit>
       <trans-unit id="137933292152025813" datatype="html">
         <source>Injectables missing</source>
-        <target state="translated">Fehlende Parameter</target>
+        <target state="needs-l10n">Fehlende Parameter</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/injectables/injectables.component.html</context>
           <context context-type="linenumber">32</context>
@@ -480,7 +496,7 @@
       </trans-unit>
       <trans-unit id="7903708214595871514" datatype="html">
         <source>Injectables ahead</source>
-        <target state="translated">Überzählige Parameter</target>
+        <target state="needs-l10n">Überzählige Parameter</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/injectables/injectables.component.html</context>
           <context context-type="linenumber">35</context>
@@ -488,7 +504,7 @@
       </trans-unit>
       <trans-unit id="8728259718173346897" datatype="html">
         <source> Group </source>
-        <target state="translated"> Gruppe </target>
+        <target state="needs-l10n"> Gruppe </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/injectables/injectables.component.html</context>
           <context context-type="linenumber">43,44</context>
@@ -515,7 +531,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/list-view/project-list-view.component.html</context>
-          <context context-type="linenumber">9</context>
+          <context context-type="linenumber">12</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scenarios/edit/scenario-edit.component.html</context>
@@ -523,12 +539,12 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scenarios/list-view/scenario-list-view.component.html</context>
-          <context context-type="linenumber">6</context>
+          <context context-type="linenumber">9</context>
         </context-group>
       </trans-unit>
       <trans-unit id="9052308171857853266" datatype="html">
         <source>Used in</source>
-        <target state="translated">Verwendung</target>
+        <target state="needs-l10n">Verwendung</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/injectables/injectables.component.html</context>
           <context context-type="linenumber">50</context>
@@ -550,52 +566,36 @@
           <context context-type="linenumber">71</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="1571190680532015078" datatype="html">
-        <source>EDIT</source>
-        <target state="translated">BEARBEITEN</target>
+      <trans-unit id="8922225247012082592" datatype="html">
+        <source>edit injectable</source>
+        <target state="translated">Parameter editieren</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/injectables/injectables.component.html</context>
-          <context context-type="linenumber">90</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/projects/grid-view/project-grid-view.component.html</context>
-          <context context-type="linenumber">55</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/projects/list-view/project-list-view.component.html</context>
-          <context context-type="linenumber">23</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/scenarios/grid-view/scenario-grid-view.component.html</context>
-          <context context-type="linenumber">48</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/scenarios/list-view/scenario-list-view.component.html</context>
-          <context context-type="linenumber">23</context>
+          <context context-type="linenumber">92</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="575919591041213158" datatype="html">
-        <source>VIEW</source>
-        <target state="translated">ANZEIGEN</target>
+      <trans-unit id="4977008440023469877" datatype="html">
+        <source>view injectable</source>
+        <target state="translated">Parameter anzeigen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/injectables/injectables.component.html</context>
-          <context context-type="linenumber">91</context>
+          <context context-type="linenumber">98</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="3885497195825665706" datatype="html">
-        <source>Next</source>
-        <target state="translated">Weiter</target>
+      <trans-unit id="971768123782235078" datatype="html">
+        <source>next page</source>
+        <target state="translated">Nächste Seite</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/injectables/injectables.component.html</context>
-          <context context-type="linenumber">105</context>
+          <context context-type="linenumber">111</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/projects.component.html</context>
-          <context context-type="linenumber">125</context>
+          <context context-type="linenumber">130</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scenarios/scenarios.component.html</context>
-          <context context-type="linenumber">43</context>
+          <context context-type="linenumber">42</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/welcome/welcome.component.html</context>
@@ -607,7 +607,7 @@
         <target state="translated">Parameter zurücksetzen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/injectables/injectables.component.ts</context>
-          <context context-type="linenumber">147</context>
+          <context context-type="linenumber">149</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1174742967773905375" datatype="html">
@@ -615,7 +615,7 @@
         <target state="translated">&lt;p&gt;Möchtest du wirklich ALLE Parameterwerte auf die Projektwerte zurücksetzen?&lt;/p&gt;</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/injectables/injectables.component.ts</context>
-          <context context-type="linenumber">148</context>
+          <context context-type="linenumber">150</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4182663129220865337" datatype="html">
@@ -623,7 +623,7 @@
         <target state="translated">Parameter synchronisieren</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/injectables/injectables.component.ts</context>
-          <context context-type="linenumber">166</context>
+          <context context-type="linenumber">168</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4074932449099889903" datatype="html">
@@ -633,7 +633,7 @@
                             &lt;p&gt;Dieser Schritt könnte notwendig sein, falls dein Szenario aufgrund von Änderungen am Modul nicht mehr aktuell ist.&lt;/p&gt;</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/injectables/injectables.component.ts</context>
-          <context context-type="linenumber">167,168</context>
+          <context context-type="linenumber">169,170</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5248717555542428023" datatype="html">
@@ -641,7 +641,7 @@
         <target state="translated">Nutzername</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/login/login.component.html</context>
-          <context context-type="linenumber">9</context>
+          <context context-type="linenumber">8</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1431416938026210429" datatype="html">
@@ -649,7 +649,7 @@
         <target state="translated">Passwort</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/login/login.component.html</context>
-          <context context-type="linenumber">13</context>
+          <context context-type="linenumber">12</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2336550011721758066" datatype="html">
@@ -657,7 +657,7 @@
         <target state="translated">Einloggen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/login/login.component.html</context>
-          <context context-type="linenumber">19</context>
+          <context context-type="linenumber">18</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7384886250050852335" datatype="html">
@@ -726,7 +726,7 @@
       </trans-unit>
       <trans-unit id="8347549683781782622" datatype="html">
         <source> Choose </source>
-        <target state="translated"> Auswählen </target>
+        <target state="needs-l10n"> Auswählen </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/profile/profile.component.html</context>
           <context context-type="linenumber">44,46</context>
@@ -734,10 +734,10 @@
       </trans-unit>
       <trans-unit id="8626615958100222841" datatype="html">
         <source> Change password </source>
-        <target state="translated"> Passwort ändern </target>
+        <target state="needs-l10n"> Passwort ändern </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/profile/profile.component.html</context>
-          <context context-type="linenumber">53,55</context>
+          <context context-type="linenumber">56,58</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4809196861118879526" datatype="html">
@@ -745,7 +745,7 @@
         <target state="translated">Passwort</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/profile/profile.component.html</context>
-          <context context-type="linenumber">59</context>
+          <context context-type="linenumber">62</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3330329515985411103" datatype="html">
@@ -753,7 +753,7 @@
         <target state="translated">Passwort bestätigen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/profile/profile.component.html</context>
-          <context context-type="linenumber">69</context>
+          <context context-type="linenumber">72</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6671956963490165282" datatype="html">
@@ -761,7 +761,7 @@
         <target state="translated">SPEICHERN</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/profile/profile.component.html</context>
-          <context context-type="linenumber">82</context>
+          <context context-type="linenumber">85</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3068896303489252695" datatype="html">
@@ -769,7 +769,7 @@
         <target state="translated">Die Passwörter stimmen nicht überein!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/profile/profile.component.ts</context>
-          <context context-type="linenumber">73</context>
+          <context context-type="linenumber">77</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8944347410649491943" datatype="html">
@@ -777,7 +777,7 @@
         <target state="translated">benutzt von</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/profile/profile.component.ts</context>
-          <context context-type="linenumber">89</context>
+          <context context-type="linenumber">92</context>
         </context-group>
       </trans-unit>
       <trans-unit id="9036126799658096833" datatype="html">
@@ -785,7 +785,7 @@
         <target state="translated">nicht in Benutzung</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/profile/profile.component.ts</context>
-          <context context-type="linenumber">92</context>
+          <context context-type="linenumber">95</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6571379991795261784" datatype="html">
@@ -805,11 +805,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/list-view/project-list-view.component.html</context>
-          <context context-type="linenumber">6</context>
+          <context context-type="linenumber">9</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/projects.component.html</context>
-          <context context-type="linenumber">34</context>
+          <context context-type="linenumber">36</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3715596725146409911" datatype="html">
@@ -837,7 +837,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/list-view/project-list-view.component.html</context>
-          <context context-type="linenumber">7</context>
+          <context context-type="linenumber">10</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5134772740340426911" datatype="html">
@@ -912,48 +912,52 @@
           <context context-type="linenumber">41</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="841311519047609428" datatype="html">
-        <source>DELETE</source>
-        <target state="translated">LÖSCHEN</target>
+      <trans-unit id="7008917062689913044" datatype="html">
+        <source>edit project</source>
+        <target state="needs-l10n">Projekt editieren</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/grid-view/project-grid-view.component.html</context>
-          <context context-type="linenumber">57</context>
+          <context context-type="linenumber">56</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/list-view/project-list-view.component.html</context>
-          <context context-type="linenumber">24</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/scenarios/grid-view/scenario-grid-view.component.html</context>
-          <context context-type="linenumber">49</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/scenarios/list-view/scenario-list-view.component.html</context>
-          <context context-type="linenumber">24</context>
+          <context context-type="linenumber">29</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="3798666071296316798" datatype="html">
-        <source>ARCHIVE</source>
-        <target state="translated">ARCHIVIEREN</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/projects/grid-view/project-grid-view.component.html</context>
-          <context context-type="linenumber">62</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/projects/list-view/project-list-view.component.html</context>
-          <context context-type="linenumber">26</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="7788477311016200310" datatype="html">
-        <source>UNARCHIVE</source>
-        <target state="translated">DEARCHIVIEREN</target>
+      <trans-unit id="2722297763120162666" datatype="html">
+        <source>archive project</source>
+        <target state="translated">Projekt archivieren</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/grid-view/project-grid-view.component.html</context>
           <context context-type="linenumber">63</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/list-view/project-list-view.component.html</context>
-          <context context-type="linenumber">27</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3152378338000336968" datatype="html">
+        <source>move project out of archive</source>
+        <target state="translated">Projekt aus dem Archiv holen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/projects/grid-view/project-grid-view.component.html</context>
+          <context context-type="linenumber">70</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/projects/list-view/project-list-view.component.html</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8410103143337970453" datatype="html">
+        <source>remove project</source>
+        <target state="needs-l10n">Projekt löschen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/projects/grid-view/project-grid-view.component.html</context>
+          <context context-type="linenumber">74</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/projects/list-view/project-list-view.component.html</context>
+          <context context-type="linenumber">45</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1176318297155147332" datatype="html">
@@ -961,7 +965,7 @@
         <target state="translated">NEUES PROJEKT</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/list-view/project-list-view.component.html</context>
-          <context context-type="linenumber">1</context>
+          <context context-type="linenumber">3</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8953033926734869941" datatype="html">
@@ -969,15 +973,15 @@
         <target state="translated">Name</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/list-view/project-list-view.component.html</context>
-          <context context-type="linenumber">5</context>
+          <context context-type="linenumber">8</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/projects.component.html</context>
-          <context context-type="linenumber">33</context>
+          <context context-type="linenumber">35</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scenarios/list-view/scenario-list-view.component.html</context>
-          <context context-type="linenumber">5</context>
+          <context context-type="linenumber">8</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2392488717875840729" datatype="html">
@@ -985,7 +989,7 @@
         <target state="translated">Nutzer</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/list-view/project-list-view.component.html</context>
-          <context context-type="linenumber">8</context>
+          <context context-type="linenumber">11</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5737287568482767307" datatype="html">
@@ -993,7 +997,7 @@
         <target state="translated">Raster</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/projects.component.html</context>
-          <context context-type="linenumber">11</context>
+          <context context-type="linenumber">13</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scenarios/scenarios.component.html</context>
@@ -1005,7 +1009,7 @@
         <target state="translated">Liste</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/projects.component.html</context>
-          <context context-type="linenumber">15</context>
+          <context context-type="linenumber">17</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scenarios/scenarios.component.html</context>
@@ -1017,7 +1021,7 @@
         <target state="translated">Filteroptionen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/projects.component.html</context>
-          <context context-type="linenumber">22</context>
+          <context context-type="linenumber">24</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7699622144571229146" datatype="html">
@@ -1025,7 +1029,7 @@
         <target state="translated">Sortieren nach</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/projects.component.html</context>
-          <context context-type="linenumber">31</context>
+          <context context-type="linenumber">33</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3973931101896534797" datatype="html">
@@ -1033,7 +1037,7 @@
         <target state="translated">Datum</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/projects.component.html</context>
-          <context context-type="linenumber">35</context>
+          <context context-type="linenumber">37</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2525017606401395273" datatype="html">
@@ -1041,7 +1045,7 @@
         <target state="translated">Nach Nutzern filtern</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/projects.component.html</context>
-          <context context-type="linenumber">52</context>
+          <context context-type="linenumber">54</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3409343810964569363" datatype="html">
@@ -1049,7 +1053,7 @@
         <target state="translated">Nach Codes filtern</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/projects.component.html</context>
-          <context context-type="linenumber">64</context>
+          <context context-type="linenumber">66</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8778889504400358984" datatype="html">
@@ -1057,15 +1061,15 @@
         <target state="translated">Nach Datum filtern</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/projects.component.html</context>
-          <context context-type="linenumber">87</context>
+          <context context-type="linenumber">89</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1910227132918837305" datatype="html">
         <source> Archive </source>
-        <target state="translated"> Archiv </target>
+        <target state="needs-l10n"> Archiv </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/projects.component.html</context>
-          <context context-type="linenumber">97,98</context>
+          <context context-type="linenumber">99,100</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4360220382396712859" datatype="html">
@@ -1073,15 +1077,15 @@
         <target state="translated">Möchtest du das Szenario wirklich löschen?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/projects.component.html</context>
-          <context context-type="linenumber">132</context>
+          <context context-type="linenumber">135</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1073405541539664672" datatype="html">
         <source>Warning: Only the project, its scenarios and parameters will be deleted. All possibly generated data will remain. </source>
-        <target state="translated">Warnung: Nur das Projekt, seine Szenarien und  Parameter werden gelöscht. Alle möglichen bereits generierten Daten bleiben bestehen. </target>
+        <target state="translated">Warnung: Nur das Projekt, seine Szenarien und Parameter werden gelöscht. Alle möglichen bereits generierten Daten bleiben bestehen. </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/projects/projects.component.html</context>
-          <context context-type="linenumber">133</context>
+          <context context-type="linenumber">136</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5674286808255988565" datatype="html">
@@ -1160,12 +1164,36 @@
           <context context-type="linenumber">8</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="165367370131525870" datatype="html">
+        <source>edit scenario</source>
+        <target state="needs-l10n">Szenario bearbeiten</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/scenarios/grid-view/scenario-grid-view.component.html</context>
+          <context context-type="linenumber">50</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/scenarios/list-view/scenario-list-view.component.html</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1639373288839939346" datatype="html">
+        <source>remove scenario</source>
+        <target state="translated">Szenario löschen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/scenarios/grid-view/scenario-grid-view.component.html</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/scenarios/list-view/scenario-list-view.component.html</context>
+          <context context-type="linenumber">32</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="7299925505510679593" datatype="html">
         <source>NEW SCENARIO</source>
         <target state="translated">NEUES SZENARIO</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scenarios/list-view/scenario-list-view.component.html</context>
-          <context context-type="linenumber">1</context>
+          <context context-type="linenumber">3</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3326877877555410533" datatype="html">
@@ -1173,11 +1201,11 @@
         <target state="translated">Gestartet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scenarios/list-view/scenario-list-view.component.html</context>
-          <context context-type="linenumber">7</context>
+          <context context-type="linenumber">10</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
-          <context context-type="linenumber">140</context>
+          <context context-type="linenumber">145</context>
         </context-group>
       </trans-unit>
       <trans-unit id="340430316261570792" datatype="html">
@@ -1185,11 +1213,11 @@
         <target state="translated">Beendet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scenarios/list-view/scenario-list-view.component.html</context>
-          <context context-type="linenumber">8</context>
+          <context context-type="linenumber">11</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
-          <context context-type="linenumber">144</context>
+          <context context-type="linenumber">149</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4648900870671159218" datatype="html">
@@ -1197,7 +1225,7 @@
         <target state="translated">Erfolg</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scenarios/list-view/scenario-list-view.component.html</context>
-          <context context-type="linenumber">9</context>
+          <context context-type="linenumber">12</context>
         </context-group>
       </trans-unit>
       <trans-unit id="814017859461999578" datatype="html">
@@ -1209,7 +1237,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
-          <context context-type="linenumber">111</context>
+          <context context-type="linenumber">116</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4083337005045748464" datatype="html">
@@ -1221,7 +1249,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
-          <context context-type="linenumber">118,117</context>
+          <context context-type="linenumber">123,122</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1470503036790362672" datatype="html">
@@ -1237,15 +1265,15 @@
         <target state="translated">Möchtest du das Szenario wirklich löschen?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scenarios/scenarios.component.html</context>
-          <context context-type="linenumber">48</context>
+          <context context-type="linenumber">47</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4501064058637828925" datatype="html">
         <source>Warning: Only the scenario and its parameters will be deleted. All possibly generated data will remain. </source>
-        <target state="translated">Warnung: Nur das aktuelle Szenario und seine Parameter werden gelöscht. Alle möglichen bereits generierten Daten bleiben bestehen. </target>
+        <target state="needs-l10n">Warnung: Nur das aktuelle Szenario und seine Parameter werden gelöscht. Alle möglichen bereits generierten Daten bleiben bestehen. </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scenarios/scenarios.component.html</context>
-          <context context-type="linenumber">49</context>
+          <context context-type="linenumber">48</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8690363635392782556" datatype="html">
@@ -1269,35 +1297,35 @@
         <target state="translated">Voraussetzungen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
-          <context context-type="linenumber">45</context>
+          <context context-type="linenumber">47</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
-          <context context-type="linenumber">149</context>
+          <context context-type="linenumber">154</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7945679445123282949" datatype="html">
         <source>Scenario Steps</source>
-        <target state="translated">Schritte im Szenario</target>
+        <target state="needs-l10n">Schritte im Szenario</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
-          <context context-type="linenumber">64</context>
+          <context context-type="linenumber">67</context>
         </context-group>
       </trans-unit>
       <trans-unit id="130226598652315169" datatype="html">
         <source> RUN CALCULATIONS </source>
-        <target state="translated"> LAUF STARTEN </target>
+        <target state="needs-l10n"> LAUF STARTEN </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
-          <context context-type="linenumber">71,72</context>
+          <context context-type="linenumber">74,75</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7505135807628753400" datatype="html">
         <source> ABORT </source>
-        <target state="translated"> ABBRECHEN </target>
+        <target state="needs-l10n"> ABBRECHEN </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
-          <context context-type="linenumber">78,79</context>
+          <context context-type="linenumber">81,82</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8623743869781630699" datatype="html">
@@ -1305,7 +1333,7 @@
         <target state="translated">Schritt entfernen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
-          <context context-type="linenumber">132</context>
+          <context context-type="linenumber">137</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2983011121187737336" datatype="html">
@@ -1313,7 +1341,7 @@
         <target state="translated">ziehen, um die Größe des Logs zu ändern</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
-          <context context-type="linenumber">188</context>
+          <context context-type="linenumber">196</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3705918312308938784" datatype="html">
@@ -1321,7 +1349,7 @@
         <target state="translated">Log minimieren/einblenden</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
-          <context context-type="linenumber">195</context>
+          <context context-type="linenumber">204</context>
         </context-group>
       </trans-unit>
       <trans-unit id="592961936173487580" datatype="html">
@@ -1329,7 +1357,7 @@
         <target state="translated">Log anzeigen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/steps/steps.component.html</context>
-          <context context-type="linenumber">196</context>
+          <context context-type="linenumber">205</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8186358391139835352" datatype="html">
