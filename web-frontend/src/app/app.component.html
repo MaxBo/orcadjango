@@ -116,7 +116,8 @@
     <mat-card id="active-project"
               routerLink="/projects"
               routerLinkActive="active-link"
-              [matTooltip]="(settings.activeProject$ | async)?.description"
+              [matTooltip]="(settings.activeProject$ | async)? (settings.activeProject$.value?.name + '\n\n' + settings.activeProject$.value?.description): ''"
+              matTooltipClass="multiLineTooltip"
               matTooltipPosition="right"
               [style.border-bottom-color]="settings.getUser(settings.activeProject$.value?.user)?.profile?.color || 'grey'"
               [routerLinkActiveOptions]="{exact: false}">
@@ -150,12 +151,13 @@
                 routerLink="/scenarios"
                 routerLinkActive="active-link"
                 class="grid-preview-card"
-                [matTooltip]="(settings.activeScenario$ | async)?.description"
+                [matTooltip]="(settings.activeScenario$ | async)? (settings.activeScenario$.value?.name + '\n\n' + settings.activeScenario$.value?.description): ''"
+                matTooltipClass="multiLineTooltip"
                 matTooltipPosition="right"
                 [routerLinkActiveOptions]="{exact: false}">
         <ng-container *ngIf="settings.activeScenario$ | async; else noScenario">
           <mat-card-header>
-            <mat-card-title>
+            <mat-card-title [title]="settings.activeScenario$.value?.name">
 <!--              Scenario <br>-->
               {{settings.activeScenario$.value?.name}}
             </mat-card-title>
