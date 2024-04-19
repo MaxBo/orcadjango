@@ -18,22 +18,26 @@
       </mat-button-toggle>
     </mat-button-toggle-group>
   </div>
-  <ng-container [ngSwitch]="viewType">
-    <app-scenario-grid-view *ngSwitchCase="'grid-view'"
-                            [scenarios]="scenarios"
-                            (onCreateScenario)="onCreateScenario()"
-                            (onDeleteScenario)="deleteScenario($event)"
-                            (onEditScenario)="editScenario($event)"
-                            (onScenarioSelected)="selectScenario($event)">
-    </app-scenario-grid-view>
-    <app-scenario-list-view *ngSwitchCase="'list-view'"
-                            [scenarios]="scenarios"
-                            (onCreateScenario)="onCreateScenario()"
-                            (onDeleteScenario)="deleteScenario($event)"
-                            (onEditScenario)="editScenario($event)"
-                            (onScenarioSelected)="selectScenario($event)">
-    </app-scenario-list-view>
-  </ng-container>
+  <div id="scenario-view-wrapper">
+    <div id="scenario-view">
+      <ng-container [ngSwitch]="viewType">
+        <app-scenario-grid-view *ngSwitchCase="'grid-view'"
+                                [scenarios]="scenarios"
+                                (onCreateScenario)="onCreateScenario()"
+                                (onDeleteScenario)="deleteScenario($event)"
+                                (onEditScenario)="editScenario($event)"
+                                (onScenarioSelected)="selectScenario($event)">
+        </app-scenario-grid-view>
+        <app-scenario-list-view *ngSwitchCase="'list-view'"
+                                [scenarios]="scenarios"
+                                (onCreateScenario)="onCreateScenario()"
+                                (onDeleteScenario)="deleteScenario($event)"
+                                (onEditScenario)="editScenario($event)"
+                                (onScenarioSelected)="selectScenario($event)">
+        </app-scenario-list-view>
+      </ng-container>
+    </div>
+  </div>
 </div>
 <button *ngIf="settings.activeScenario$ | async"
         mat-icon-button

@@ -1,0 +1,11 @@
+#scenario-view-wrapper {
+  background-color: #f4f4f4bd;
+  padding: 10px 5px;
+  height: calc(100vh - 165px);
+}
+
+#scenario-view {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+}
