@@ -29,22 +29,30 @@
           <mat-icon style="color: grey;">filter_alt</mat-icon>
         </ng-template>
       </mat-button-toggle>
-      <mat-form-field style="margin-bottom: -20px;">
+      <mat-form-field style="margin-right: 10px; margin-bottom: -20px; max-width: 200px;">
+        <input type="text" matInput
+               i18n-placeholder placeholder="Search"
+               [(ngModel)]="filterStr"
+               (keyup)="filterName()">
+        <mat-icon matPrefix  style="color: grey;">search</mat-icon>
+      </mat-form-field>
+      <mat-form-field style="margin-bottom: -20px; max-width: 200px;">
         <mat-label i18n>Sort by</mat-label>
         <mat-select [value]="sortAttr" (selectionChange)="this.setSortAttr($event.value || 'name')">
           <mat-option value="name" i18n>Name</mat-option>
           <mat-option value="code" i18n>Code</mat-option>
           <mat-option value="date" i18n>Date</mat-option>
         </mat-select>
+        <button matSuffix
+                mat-mini-fab
+                color="accent"
+                class="flat micro"
+                [title]="sortTitle(sortDescending)"
+                (click)="setSortDescending(!sortDescending); $event.stopPropagation();"
+                style="margin: 0 5px;">
+          <mat-icon>{{sortDescending? 'arrow_downward': 'arrow_upward'}}</mat-icon>
+        </button>
       </mat-form-field>
-      <button mat-mini-fab
-              color="accent"
-              class="flat micro"
-              [title]="sortTitle(sortDescending)"
-              (click)="setSortDescending(!sortDescending)"
-              style="margin-left: 5px;">
-        <mat-icon>{{sortDescending? 'arrow_downward': 'arrow_upward'}}</mat-icon>
-      </button>
     </div>
   </div>
   <div id="filter-view" [ngClass]="{'expanded': showFilters}">
@@ -104,7 +112,7 @@
     <div id="project-view-wrapper">
       <div id="project-view">
         <app-project-grid-view *ngSwitchCase="'grid-view'"
-                               [projects]="filteredProjects"
+                               [projects]="listedProjects"
                                (onCreateProject)="onCreateProject()"
                                (onDeleteProject)="deleteProject($event)"
                                (onEditProject)="editProject($event)"
@@ -112,7 +120,7 @@
                                (onProjectSelected)="selectProject($event)">
         </app-project-grid-view>
         <app-project-list-view *ngSwitchCase="'list-view'"
-                               [projects]="filteredProjects"
+                               [projects]="listedProjects"
                                (onCreateProject)="onCreateProject()"
                                (onDeleteProject)="deleteProject($event)"
                                (onEditProject)="editProject($event)"
