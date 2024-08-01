@@ -275,7 +275,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
   }
 
   filterName(): void {
-    this.listedProjects = this.filteredProjects.filter(p => p.name.toLowerCase().includes(this.filterStr || ''));
+    this.listedProjects = this.filteredProjects.filter(p => p.name.toLowerCase().includes(this.filterStr || '') || p.code?.toLowerCase().includes(this.filterStr || ''));
   }
 
   filter(): void {
