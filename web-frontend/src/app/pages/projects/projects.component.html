@@ -19,6 +19,14 @@
       </mat-button-toggle>
     </mat-button-toggle-group>
     <div style="display: flex; margin-left: auto; align-items: center;">
+      <mat-form-field appearance="outline" class="rounded thin"
+                      style="margin-right: 10px; margin-bottom: -20px; max-width: 200px;">
+        <input type="text" matInput
+               i18n-placeholder placeholder="Search"
+               [(ngModel)]="filterStr"
+               (keyup)="filterName()">
+        <mat-icon matPrefix style="color: grey;">search</mat-icon>
+      </mat-form-field>
       <mat-button-toggle style="margin-right: 10px;"
                          (click)="setShowFilters(!showFilters)">
         <ng-container i18n>Filter Options</ng-container>
@@ -29,13 +37,6 @@
           <mat-icon style="color: grey;">filter_alt</mat-icon>
         </ng-template>
       </mat-button-toggle>
-      <mat-form-field style="margin-right: 10px; margin-bottom: -20px; max-width: 200px;">
-        <input type="text" matInput
-               i18n-placeholder placeholder="Search"
-               [(ngModel)]="filterStr"
-               (keyup)="filterName()">
-        <mat-icon matPrefix  style="color: grey;">search</mat-icon>
-      </mat-form-field>
       <mat-form-field style="margin-bottom: -20px; max-width: 200px;">
         <mat-label i18n>Sort by</mat-label>
         <mat-select [value]="sortAttr" (selectionChange)="this.setSortAttr($event.value || 'name')">
