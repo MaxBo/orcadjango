@@ -23,6 +23,14 @@
                 matTooltipClass="multiLineTooltip"
                 matTooltipPosition="right"
                 [style.border-bottom-color]="settings.getUser(project.user)?.profile?.color || 'grey'">
+        <button *ngIf="settings.activeProject$.value?.id === project.id"
+                mat-icon-button
+                class="next"
+                (click)="$event.stopPropagation();"
+                routerLink="/scenarios"
+                i18n-title title="next page">
+          <mat-icon>navigate_next</mat-icon>
+        </button>
         <mat-card-header style="cursor: pointer"
                          (click)="onProjectSelected.emit(project)">
           <app-user-preview *ngIf="project.user"

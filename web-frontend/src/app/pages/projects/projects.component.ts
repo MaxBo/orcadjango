@@ -17,6 +17,7 @@ import * as moment from "moment";
 })
 export class ProjectsComponent extends PageComponent implements OnInit{
   protected projects: Project[] = [];
+  protected listedProjects: Project[] = [];
   protected filteredProjects: Project[] = [];
   protected showFilters = false;
   protected viewType: 'list-view' | 'grid-view' = 'grid-view';
@@ -28,6 +29,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
   protected filterArchive = false;
   protected filterUsers: number[] = [];
   protected filterCodes: string[] = [];
+  protected filterStr?: string = '';
   protected filterDate?: Moment;
   protected filterDateOperator: '<' | '>' | '=' = '>';
   @ViewChild('deleteProjectTemplate') deleteProjectTemplate?: TemplateRef<any>;
@@ -195,13 +197,17 @@ export class ProjectsComponent extends PageComponent implements OnInit{
   setSortAttr(attr: string): void {
     this.sortAttr = attr;
     this.cookies.set('project-sortAttr', this.sortAttr);
-    this.sortProjects();
+    this.listedProjects = this.sortProjects();
+    if (this.filterStr)
+      this.filterName();
   }
 
   setSortDescending(descending: boolean): void {
     this.sortDescending = descending;
     this.cookies.set('project-sortDescending', descending.toString());
-    this.sortProjects();
+    this.listedProjects = this.sortProjects();
+    if (this.filterStr)
+      this.filterName();
   }
 
   sortTitle(descending: boolean): string {
@@ -261,10 +267,15 @@ export class ProjectsComponent extends PageComponent implements OnInit{
     this.filter();
   }
 
-  sortProjects(): void {
+  sortProjects(): Project[] {
     this.isLoading$.next(true);
-    this.filteredProjects = sortBy(this.filteredProjects, this.sortAttr, { reverse: this.sortDescending, lowerCase: this.sortAttr === 'name' });
+    const sorted = sortBy(this.filteredProjects, this.sortAttr, { reverse: this.sortDescending, lowerCase: this.sortAttr === 'name' });
     this.isLoading$.next(false);
+    return sorted;
+  }
+
+  filterName(): void {
+    this.listedProjects = this.filteredProjects.filter(p => p.name.toLowerCase().includes(this.filterStr || '') || p.code?.toLowerCase().includes(this.filterStr || ''));
   }
 
   filter(): void {
@@ -288,7 +299,11 @@ export class ProjectsComponent extends PageComponent implements OnInit{
           )
       ));
     }
-    this.sortProjects();
+    this.filteredProjects = this.sortProjects();
+    if (this.filterStr)
+      this.filterName();
+    else
+      this.listedProjects = this.filteredProjects;
   }
 
   getUniqueValues(objects: any[], attribute: string): any[] {

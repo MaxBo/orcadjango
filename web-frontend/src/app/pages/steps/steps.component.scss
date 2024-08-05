@@ -208,16 +208,20 @@
 }
 
 #minimize-log {
-  background-color: white;
+  //background-color: white;
   position: absolute;
   right: 20px;
-  top: -9px;
+  top: -13px;
   cursor: pointer;
   display: flex;
   span {
-    margin: 0 10px;
+    padding: 0 5px;
+    margin-right: 5px;
     text-transform: uppercase;
-    background-color: rgba(255, 255, 255, 0.6);
+    height: 20px;
+    align-self: center;
+    //background-color: white;
+    background-color: rgba(255, 255, 255, 0.9);
   }
   button {
     border-radius: 2px;

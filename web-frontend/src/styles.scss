@@ -197,3 +197,30 @@ mat-expansion-panel.borderless {
   box-shadow: none !important;
   background: none;
 }
+
+.mat-form-field-appearance-outline {
+  .mat-mdc-text-field-wrapper {
+    background-color: rgba(255, 255, 255, 0.63);
+  }
+}
+.mat-mdc-form-field.rounded {
+  .mat-mdc-text-field-wrapper {
+    border-radius: 40px;
+  }
+  .mdc-notched-outline__leading {
+    border-top-left-radius: 40px!important;
+    border-bottom-left-radius: 40px!important;
+    width: 40px!important;
+  }
+  .mdc-notched-outline__trailing {
+    border-top-right-radius: 40px!important;
+    border-bottom-right-radius : 40px!important;
+  }
+}
+.mat-mdc-form-field.thin {
+  .mat-mdc-text-field-wrapper {
+    max-height: 40px;
+    align-items: center;
+  }
+}
+

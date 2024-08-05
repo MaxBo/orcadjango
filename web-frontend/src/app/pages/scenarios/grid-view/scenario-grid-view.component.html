@@ -22,6 +22,14 @@
                 matTooltipClass="multiLineTooltip"
                 matTooltipPosition="right"
                 [ngClass]="{'selected': settings.activeScenario$.value?.id === scenario.id}">
+        <button *ngIf="settings.activeScenario$.value?.id === scenario.id"
+                mat-icon-button
+                class="next"
+                (click)="$event.stopPropagation();"
+                routerLink="/injectables"
+                i18n-title title="next page">
+          <mat-icon>navigate_next</mat-icon>
+        </button>
         <mat-card-header style="cursor: pointer"
                          (click)="onScenarioSelected.emit(scenario)">
           <mat-card-title [title]="scenario.name">{{scenario.name}}</mat-card-title>
