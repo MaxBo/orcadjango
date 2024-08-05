@@ -52,3 +52,11 @@
 .grid-preview-card.selected {
   border: 3px solid salmon;
 }
+
+button.next {
+  position: absolute;
+  right: 5px;
+  width: 30px;
+  height: 30px;
+  padding: 2px;
+}
