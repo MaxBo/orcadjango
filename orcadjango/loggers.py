@@ -54,14 +54,15 @@ class ScenarioHandler(WebSocketHandler):
     def emit(self, record):
         from orcaserver.models import LogEntry
         message = record.getMessage()
+        status = getattr(record, 'status', {})
         LogEntry.objects.create(
             scenario_id=self.scenario.id,
             message=message,
             timestamp=timezone.now(),
-            level=record.levelname
+            level=record.levelname,
+            status=status
         )
         record.scenario = self.scenario.name
-        status = getattr(record, 'status', {})
         try:
             send(self.room, message, log_type='log_message',
                  level=record.levelname, status=status)

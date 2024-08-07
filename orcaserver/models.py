@@ -224,6 +224,7 @@ class LogEntry(models.Model):
     message = models.TextField(blank=True)
     level = models.TextField(default='INFO')
     timestamp = models.DateTimeField()
+    status = models.JSONField(null=True, blank=True)
 
 
 class Run(models.Model):
