@@ -27,7 +27,7 @@
                (keyup)="filterName()">
         <mat-icon matPrefix style="color: grey;">search</mat-icon>
       </mat-form-field>
-      <mat-button-toggle style="margin-right: 10px;"
+      <mat-button-toggle id="filter-button"
                          (click)="setShowFilters(!showFilters)">
         <ng-container i18n>Filter Options</ng-container>
         <ng-container *ngIf="(filterByCodes || filterByUsers || filterByDate || filterArchive) else noFilter" >
