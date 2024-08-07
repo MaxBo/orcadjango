@@ -35,9 +35,17 @@ export class ScenariosComponent extends PageComponent implements OnInit {
         this.scenarios = [];
       }
       else {
+        this.setLoading(true);
+        let initLoad = true;
         this.scenUpdateSub = timer(0, 5000).pipe(switchMap(() =>
           this.rest.getScenarios({ project: project }))
-        ).subscribe(scenarios => this.scenarios = scenarios);
+        ).subscribe(scenarios => {
+          this.scenarios = scenarios;
+          if (initLoad) {
+            initLoad = false;
+            this.setLoading(false);
+          }
+        });
       }
     }));
   }
