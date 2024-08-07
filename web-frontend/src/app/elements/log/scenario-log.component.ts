@@ -38,7 +38,6 @@ export class ScenarioLogComponent implements OnDestroy, AfterViewInit {
     this.rest.getScenarioLogs(this.settings.activeScenario$.value, { level: environment.loglevel, nLast: environment.maxLogs }).subscribe(
       logs => {
         logs.forEach(log => this.addLogEntry(log));
-        this.cdref.detectChanges();
         this.scrollToBottom(true);
       });
   }
@@ -72,8 +71,11 @@ export class ScenarioLogComponent implements OnDestroy, AfterViewInit {
 
   scrollToBottom(forced= true): void {
     // if not forced: scroll automatically to bottom if already close to bottom, do not if manually scrolled up
-    if (forced || Math.abs(this.logEl.nativeElement.scrollHeight - this.logEl.nativeElement.scrollTop) < 500)
-      this.logEl.nativeElement.scrollTo(0, this.logEl.nativeElement.scrollHeight);
+    if (forced || Math.abs(this.logEl.nativeElement.scrollHeight - this.logEl.nativeElement.scrollTop) < 500) {
+      // scrollHeight is updated with delay > force change detection
+      this.cdref.detectChanges();
+      this.logEl.nativeElement.scrollTo(0, this.logEl.nativeElement.scrollHeight + 100);
+    }
   }
 
   ngOnDestroy() {
