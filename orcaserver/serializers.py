@@ -233,7 +233,7 @@ class ScenarioLogSerializer(serializers.ModelSerializer):
     timestamp = serializers.DateTimeField(format="%d.%m.%Y %H:%M:%S")
     class Meta:
         model = LogEntry
-        fields = ('scenario', 'message', 'timestamp', 'level')
+        fields = ('scenario', 'message', 'timestamp', 'level', 'status')
 
 
 class RunSerializer(serializers.ModelSerializer):
