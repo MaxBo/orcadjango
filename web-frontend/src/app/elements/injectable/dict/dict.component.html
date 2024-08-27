@@ -22,7 +22,9 @@
       <td style="padding-right: 3px; vertical-align: top;">{{key}}</td>
       <td style="max-width: 120px;"
           title="{{values[i]}}">  <!-- white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"-->
-        <i>{{values[i]}}</i>
+        <div style="max-height: 120px; overflow-y: auto; overflow-x: hidden; margin-right: -10px;">
+          <i>{{values[i]}}</i>
+        </div>
       </td>
     </tr>
   </table>
