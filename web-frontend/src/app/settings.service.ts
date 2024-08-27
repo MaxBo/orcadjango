@@ -24,6 +24,7 @@ export class SettingsService {
   siteSettings?: SiteSettings;
   onStepStatusChange = new EventEmitter<{
     step: string, success: boolean, finished: boolean, started: boolean, timestamp: string}>;
+  runFinished = new EventEmitter<{success: boolean}>;
   private readonly wsURL: string;
   private retries = 0;
 
@@ -151,6 +152,7 @@ export class SettingsService {
           if (status.finished) {
             scenario.last_run.finished = logEntry.timestamp;
             scenario.is_running = false;
+            this.runFinished.emit({success: status.success})
           }
           if (status.success !== undefined) {
             scenario.last_run.success = status.success;
