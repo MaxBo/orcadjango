@@ -70,13 +70,7 @@ export class StepsComponent extends InjectablesComponent {
             }
           );
           this.rest.getScenarioSteps(scenario).subscribe(steps => {
-            this.scenarioSteps = steps.map(s => {
-              this._assign_step_meta(s);
-              let stepExt: ScenarioStepExt = <ScenarioStepExt> s;
-              stepExt.requiredSteps = this.getRequiredSteps(s);
-              stepExt.injList = this.getInjectables(s);
-              return stepExt;
-            })
+            this.updateScenarioSteps(steps);
             this.scenarioSteps = sortBy(this.scenarioSteps, 'order');
             this._scenStepNames = steps.map(s => s.name);
             this._updateActiveStepsCount();
@@ -86,6 +80,16 @@ export class StepsComponent extends InjectablesComponent {
         });
       });
     }));
+  }
+
+  updateScenarioSteps(steps: ScenarioStep[]) {
+    this.scenarioSteps = steps.map(s => {
+      this._assign_step_meta(s);
+      let stepExt: ScenarioStepExt = <ScenarioStepExt> s;
+      stepExt.requiredSteps = this.getRequiredSteps(s);
+      stepExt.injList = this.getInjectables(s);
+      return stepExt;
+    })
   }
 
   private _updateActiveStepsCount(): void {
@@ -222,6 +226,20 @@ export class StepsComponent extends InjectablesComponent {
           step.active = false;
       }
     })
+    this.settings.runFinished.subscribe(status => {
+      this.reloadInjectables();
+    })
+  }
+
+  reloadInjectables(): void {
+    if (!this.settings.activeScenario$)
+      return;
+    this.setLoading(true);
+    this.rest.getScenarioInjectables(this.settings.activeScenario$.value!).subscribe(injectables => {
+      this.injectables = injectables;
+      this.updateScenarioSteps(this.scenarioSteps);
+      this.setLoading(false);
+    });
   }
 
   onResizeDrag(event: any): void {

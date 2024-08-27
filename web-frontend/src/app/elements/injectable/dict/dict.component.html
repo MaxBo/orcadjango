@@ -19,8 +19,11 @@
 <ng-template #preview>
   <table class="dict-table">
     <tr *ngFor="let key of keys; let i = index;">
-      <td style="padding-right: 3px;">{{key}}</td>
-      <td><i>{{values[i]}}</i></td>
+      <td style="padding-right: 3px; vertical-align: top;">{{key}}</td>
+      <td style="max-width: 120px;"
+          title="{{values[i]}}">  <!-- white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"-->
+        <i>{{values[i]}}</i>
+      </td>
     </tr>
   </table>
 </ng-template>
