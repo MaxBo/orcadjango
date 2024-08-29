@@ -174,11 +174,20 @@
                   <td style="min-width: 200px;" *ngIf="injectable.value !== undefined">
                     <injectable [injectable]="injectable"></injectable>
                   </td>
-                  <td>
-                    <button mat-button [disabled]="settings.activeScenario$.value?.is_running"
-                            (click)="editInjectable(injectable)">
-                      <ng-container *ngIf="injectable.editable">EDIT</ng-container>
-                      <ng-container *ngIf="!injectable.editable">SHOW</ng-container>
+                  <td style="display: flex;">
+                    <button mat-icon-button class="micro"
+                            *ngIf="injectable.editable"
+                            style="margin:auto;"
+                            [disabled]="settings.activeScenario$.value?.is_running"
+                            (click)="editInjectable(injectable);" i18n-title title="edit injectable">
+                      <mat-icon class="material-icons-outlined">edit</mat-icon>
+                    </button>
+                    <button mat-icon-button class="micro"
+                            *ngIf="!injectable.editable"
+                            style="margin:auto;"
+                            [disabled]="settings.activeScenario$.value?.is_running"
+                            (click)="editInjectable(injectable);" i18n-title title="view injectable">
+                      <mat-icon class="material-icons-outlined">remove_red_eye</mat-icon>
                     </button>
                   </td>
                 </tr>

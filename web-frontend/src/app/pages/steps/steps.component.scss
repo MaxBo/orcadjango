@@ -15,7 +15,7 @@
   }
 
   .group-panel {
-    border: 4px solid white;
+    border: 4px solid rgba(255, 255, 255, 0.5490196078);
   }
 
   .group-panel.mat-expanded {
@@ -34,7 +34,7 @@
   }
 
   .scenario-step-item {
-    border: 4px solid white;
+    border: 4px solid rgba(255, 255, 255, 0.5490196078);
     ::ng-deep .mat-expansion-panel-body {
       padding: 16px 24px 16px !important;
     }
