@@ -2,6 +2,7 @@
   <div *ngIf="!choices.length; else selectHint" i18n>no choices available</div>
   <ng-template #selectHint><div i18n>Select one</div></ng-template>
   <mat-radio-group [(ngModel)]="_value"
+                   class="choice-group"
                    (change)="onValueChanged()">
     <mat-radio-button *ngFor="let choice of choices; let i = index"
                       [value]="choice">
