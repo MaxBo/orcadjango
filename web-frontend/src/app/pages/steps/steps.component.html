@@ -32,12 +32,11 @@
               <mat-expansion-panel class="available-step-item"
                                    *ngFor="let step of availableSteps[group]"
                                    [cdkDragData]="step" cdkDrag
-                                   [title]="(step.title || step.name)"
                                    [matTooltip]="settings.activeScenario$.value?.is_running? curRunninMsg: (_scenStepNames.indexOf(step.name) >= 0)? alreadyInMsg: ''"
                                    matTooltipPosition="right"
                                    [cdkDragDisabled]="settings.activeScenario$.value?.is_running || _scenStepNames.indexOf(step.name) >= 0">
                 <div class="drag-placeholder" *cdkDragPlaceholder></div>
-                <mat-expansion-panel-header>
+                <mat-expansion-panel-header [title]="(step.title || step.name)">
                   <mat-panel-title>
                     {{step.title || step.name}}
                   </mat-panel-title>
@@ -101,6 +100,9 @@
                                (cdkDragEntered)="onStepDragEnter($event)">
             <div class="drag-placeholder" *cdkDragPlaceholder></div>
             <mat-expansion-panel-header>
+              <div class="sub-title">
+                {{formatGroupName(step.group || '')}}
+              </div>
               <mat-panel-title [title]="step.title || step.name">
                 <div>
                   {{step.title || step.name}}
