@@ -55,6 +55,7 @@ export class InjectablesComponent extends PageComponent implements OnInit {
           // this.groups = [...new Set(injectables.map(injectable => injectable.group))].sort();
           this.groupedInjectables = {};
           injectables.forEach(_inj => {
+            if (_inj.scope == 'step') return;
             const group = _inj.group || 'general';
             if (!this.groupedInjectables![group])
               this.groupedInjectables![group] = [];
