@@ -55,7 +55,7 @@ export class StepsComponent extends InjectablesComponent {
           steps = sortBy(steps, 'group');
           steps.forEach(step => {
             // remove number in brackets from group name, that is just used to order the groups
-            const group = (step.group || '').replace(/ *\([0-9\w]*\) */g, "");
+            const group = this.formatGroupName(step.group || '');
             if (!this.stepGroups.includes(group)) {
               this.stepGroups.push(group);
               this.availableSteps[group] = [];
@@ -80,6 +80,10 @@ export class StepsComponent extends InjectablesComponent {
         });
       });
     }));
+  }
+
+  formatGroupName(groupName: string): string {
+    return groupName.replace(/ *\([0-9\w]*\) */g, "");
   }
 
   updateScenarioSteps(steps: ScenarioStep[]) {

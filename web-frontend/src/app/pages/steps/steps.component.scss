@@ -69,6 +69,15 @@
     position: relative;
     height: calc(100% - 55px); //minus header and padding-bottom
   }
+
+  .sub-title {
+    position: absolute;
+    top: 0px;
+    left: 3px;
+    color: grey;
+    text-transform: uppercase;
+    font-size: 10px;
+  }
 }
 
 ::ng-deep #available-steps {
