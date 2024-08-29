@@ -13,11 +13,39 @@
   > .mat-expansion-panel{
     margin-bottom: 10px;
   }
+
+  .group-panel {
+    border: 4px solid rgba(255, 255, 255, 0.5490196078);
+  }
+
+  .group-panel.mat-expanded {
+    border: 4px solid #ffb9b1;
+    .group-header {
+      background-color: #ffb9b1
+    ;
+      border-radius: 0;
+    }
+  }
 }
 #scenario-steps {
   width: 600px;
   tr:hover {
     background-color: #ffeeee;
+  }
+
+  .scenario-step-item {
+    border: 4px solid rgba(255, 255, 255, 0.5490196078);
+    ::ng-deep .mat-expansion-panel-body {
+      padding: 16px 24px 16px !important;
+    }
+  }
+
+  .scenario-step-item.mat-expanded {
+    border: 4px solid #ffb9b1;
+    .mat-expansion-panel-header {
+      background-color: #ffb9b1;
+      border-radius: 0;
+    }
   }
 }
 
@@ -249,3 +277,4 @@
   width: calc(100% - 20px);
   height: 100%;
 }
+

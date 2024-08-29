@@ -253,6 +253,7 @@ class InjectableSerializer(serializers.Serializer):
     datatype = serializers.SerializerMethodField()
     multi = serializers.SerializerMethodField()
     choices = serializers.SerializerMethodField()
+    scope = serializers.SerializerMethodField()
     editable_keys = serializers.SerializerMethodField()
     group = serializers.CharField(source='meta.group', required=False,
                                   allow_blank=True)
@@ -272,6 +273,9 @@ class InjectableSerializer(serializers.Serializer):
 
     def get_regex_help(self, obj):
         return obj.meta.get('regex_help', '').strip().replace('\n', ' ')
+
+    def get_scope(self, obj):
+        return obj.meta.get('scope', 'global')
 
     def get_datatype(self, obj):
         if 'list' in obj.datatype.lower():

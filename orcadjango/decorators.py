@@ -44,6 +44,12 @@ def meta(**kwargs):
             usually for injectables that serve as inputs for steps/injectables
             but should not be changed by the user (e.g. precalculated choices or
             constants)
+        scope: str, 'step' | 'global', injectables only
+            scope in which the injectable is operated,
+            atm only controls the visibility of the injectable
+            (planned: values are stored differently: per scenario resp. per step)
+            step - visible only in the steps where it is used
+            global - visible everywhere, defaults to 'global'
     """
     def decorator(func):
         name = func.__name__

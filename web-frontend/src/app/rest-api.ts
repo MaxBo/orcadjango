@@ -88,6 +88,7 @@ export interface Inj {
   regex_help?: string,
   group?: string,
   datatype: 'str' | 'int' | 'list' | 'float' | 'bool' | 'dict' | 'geometry',
+  scope: 'step' | 'global',
   multi?: boolean,
   editable_keys?: boolean,
   choices?: any[] | Record<string, string>
