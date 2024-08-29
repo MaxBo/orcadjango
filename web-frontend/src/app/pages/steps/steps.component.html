@@ -18,8 +18,8 @@
       <mat-divider class="accordion-border"></mat-divider>
       <div class="accordion-wrapper">
         <mat-accordion>
-          <mat-expansion-panel *ngFor="let group of stepGroups">
-            <mat-expansion-panel-header>
+          <mat-expansion-panel class="group-panel" *ngFor="let group of stepGroups">
+            <mat-expansion-panel-header class="group-header">
               <mat-panel-title class="group-title">
                 {{group}}
               </mat-panel-title>
