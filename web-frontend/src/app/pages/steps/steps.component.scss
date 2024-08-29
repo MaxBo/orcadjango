@@ -63,6 +63,7 @@
   }
   .accordion-wrapper {
     overflow-y: auto;
+    overflow-x: hidden;
     padding-right: 10px;
     padding-bottom: 5px;
     position: relative;
@@ -71,6 +72,7 @@
 }
 
 ::ng-deep #available-steps {
+  overflow-y: hidden;
   .group-title {
     //font-size: 18px;
     //letter-spacing: 0.8px;
