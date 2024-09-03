@@ -46,7 +46,7 @@
                   <ng-container i18n>Prerequisites</ng-container>:<br>
                   <ng-container *ngFor="let required of step.requiredSteps; let last = last;">
                     <ng-container *ngIf="required">
-                      <u [matTooltip]="required?.description"
+                      <u [matTooltip]="required?.descEscaped"
                          matTooltipPosition="right" style="cursor: help;">
                         {{required.title || required.name}}
                       </u>
@@ -156,7 +156,7 @@
               <ng-container i18n>Prerequisites</ng-container>:
               <ng-container *ngFor="let required of step.requiredSteps; let last = last;">
                 <ng-container *ngIf="required">
-                  <u [matTooltip]="required?.description"
+                  <u [matTooltip]="required?.descEscaped"
                      matTooltipPosition="right" style="cursor: help;">
                     {{required.title || required.name}}
                   </u>
