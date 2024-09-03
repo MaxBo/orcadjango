@@ -7,10 +7,12 @@ import { showAPIError } from "../../elements/simple-dialog/simple-dialog.compone
 
 interface StepExt extends Step {
   requiredSteps: (Step | undefined)[];
+  descEscaped: string;
 }
 
 interface ScenarioStepExt extends ScenarioStep {
   requiredSteps: (Step | undefined)[];
+  descEscaped: string;
   injList: ScenarioInjectable[];
 }
 
@@ -62,6 +64,7 @@ export class StepsComponent extends InjectablesComponent {
             }
             let stepExt: StepExt = <StepExt> step;
             stepExt.requiredSteps = this.getRequiredSteps(step);
+            stepExt.descEscaped = (stepExt.description || '').replace(/<[^>]*>/g, '')
             this.availableSteps[group].push(stepExt);
           })
           Object.keys(this.availableSteps).forEach(group => {
@@ -92,6 +95,7 @@ export class StepsComponent extends InjectablesComponent {
       let stepExt: ScenarioStepExt = <ScenarioStepExt> s;
       stepExt.requiredSteps = this.getRequiredSteps(s);
       stepExt.injList = this.getInjectables(s);
+      stepExt.descEscaped = (stepExt.description || '').replace(/<[^>]*>/g, '');
       return stepExt;
     })
   }

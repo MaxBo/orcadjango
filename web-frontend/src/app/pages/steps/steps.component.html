@@ -46,7 +46,7 @@
                   <ng-container i18n>Prerequisites</ng-container>:<br>
                   <ng-container *ngFor="let required of step.requiredSteps; let last = last;">
                     <ng-container *ngIf="required">
-                      <u [matTooltip]="required?.description"
+                      <u [matTooltip]="required?.descEscaped"
                          matTooltipPosition="right" style="cursor: help;">
                         {{required.title || required.name}}
                       </u>
@@ -156,7 +156,7 @@
               <ng-container i18n>Prerequisites</ng-container>:
               <ng-container *ngFor="let required of step.requiredSteps; let last = last;">
                 <ng-container *ngIf="required">
-                  <u [matTooltip]="required?.description"
+                  <u [matTooltip]="required?.descEscaped"
                      matTooltipPosition="right" style="cursor: help;">
                     {{required.title || required.name}}
                   </u>
@@ -176,17 +176,15 @@
                   <td style="min-width: 200px;" *ngIf="injectable.value !== undefined">
                     <injectable [injectable]="injectable"></injectable>
                   </td>
-                  <td style="display: flex;">
+                  <td>
                     <button mat-icon-button class="micro"
                             *ngIf="injectable.editable"
-                            style="margin:auto;"
                             [disabled]="settings.activeScenario$.value?.is_running"
                             (click)="editInjectable(injectable);" i18n-title title="edit injectable">
                       <mat-icon class="material-icons-outlined">edit</mat-icon>
                     </button>
                     <button mat-icon-button class="micro"
                             *ngIf="!injectable.editable"
-                            style="margin:auto;"
                             [disabled]="settings.activeScenario$.value?.is_running"
                             (click)="editInjectable(injectable);" i18n-title title="view injectable">
                       <mat-icon class="material-icons-outlined">remove_red_eye</mat-icon>
