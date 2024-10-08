@@ -3,6 +3,7 @@ import { RestService, ScenarioLogEntry } from "../../rest-api";
 import { SettingsService } from "../../settings.service";
 import { environment } from "../../../environments/environment";
 import { Subscription } from "rxjs";
+import { CookieService } from "ngx-cookie-service";
 
 @Component({
   selector: 'app-scenario-log',
@@ -13,13 +14,22 @@ export class ScenarioLogComponent implements OnDestroy, AfterViewInit {
   @Input() height: string = '200px';
   @Input() fetchOldLogs: boolean = true;
   @ViewChild('log') logEl!: ElementRef;
+  // fetched old logs
+  logs: ScenarioLogEntry[] = [];
+  // visible log entries
   entries: ScenarioLogEntry[] = [];
   private subscriptions: Subscription[] = [];
+  logLevel = 'INFO';
 
-  constructor(private rest: RestService, private settings: SettingsService, private cdref: ChangeDetectorRef) {
+  constructor(private rest: RestService, private settings: SettingsService, private cdref: ChangeDetectorRef,
+              protected cookies: CookieService) {
   }
 
   ngAfterViewInit(): void {
+    this.logLevel = this.settings.logLevel$.value;
+    this.settings.logLevel$.subscribe(logLevel => {
+      this.changeLogLevel(logLevel);
+    })
     this.subscriptions.push(this.settings.onScenarioLogMessage.subscribe(
       entry => {
         this.addLogEntry(entry);
@@ -32,11 +42,19 @@ export class ScenarioLogComponent implements OnDestroy, AfterViewInit {
     }));
   }
 
+  changeLogLevel(level: string): void {
+    this.logLevel = level;
+    this.entries = [];
+    this.logs.forEach(log => this.addLogEntry(log));
+    this.scrollToBottom(true);
+  }
+
   fetchLogs() {
     if (!this.settings.activeScenario$.value)
       return;
-    this.rest.getScenarioLogs(this.settings.activeScenario$.value, { level: environment.loglevel, nLast: environment.maxLogs }).subscribe(
+    this.rest.getScenarioLogs(this.settings.activeScenario$.value, { level: 'DEBUG', nLast: environment.maxLogs }).subscribe(
       logs => {
+        this.logs = logs;
         logs.forEach(log => this.addLogEntry(log));
         this.scrollToBottom(true);
       });
@@ -45,7 +63,7 @@ export class ScenarioLogComponent implements OnDestroy, AfterViewInit {
   addLogEntry(entry: ScenarioLogEntry, options?: { intermediateDots?: boolean }): void {
     const lastEntry = this.entries[this.entries.length - 1];
     // then skip
-    if (environment.loglevel === 'INFO' && entry.level === 'DEBUG') {
+    if (this.logLevel === 'INFO' && entry.level === 'DEBUG') {
       // show debug messages that are skipped in info level as a dotted progress indicator in log
       if (options?.intermediateDots) {
         if (lastEntry.level === 'INTER')
