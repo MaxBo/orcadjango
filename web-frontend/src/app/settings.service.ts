@@ -11,6 +11,7 @@ import { MaterialCssVarsService } from "angular-material-css-vars";
 export class SettingsService {
   activeProject$ = new BehaviorSubject<Project | undefined>(undefined);
   activeScenario$ = new BehaviorSubject<Scenario | undefined>(undefined);
+  logLevel$ = new BehaviorSubject<string>('INFO');
   user$ = new BehaviorSubject<User | undefined>(undefined);
   module$ = new BehaviorSubject<Module | undefined>(undefined);
   moduleInjectables: Inj[] = [];
@@ -30,6 +31,8 @@ export class SettingsService {
 
   constructor(private cookies: CookieService, private rest: RestService, private auth: AuthService,
               private router: Router, private materialCssVarsService: MaterialCssVarsService) {
+    let logLevel = this.cookies.get('loglevel') || 'INFO';
+    this.logLevel$.next(logLevel);
     this.activeScenario$.subscribe(scenario => {
       this.disconnect();
       this.connect();
@@ -181,5 +184,10 @@ export class SettingsService {
     if (user.last_name)
       realName += user.last_name + ' ';
     return realName? `${realName}(${user.username})`: user.username;
+  }
+
+  setLogLevel(level: string): void {
+    this.logLevel$.next(level);
+    this.cookies.set('loglevel', level);
   }
 }

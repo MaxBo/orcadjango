@@ -221,6 +221,13 @@
     <div #logContainer style="width: 100%;" [style.height]="logHeight + 'px'"
          [style.display]="showLog? 'block': 'none'">
       <app-scenario-log height="100%"></app-scenario-log>
+      <mat-form-field id="loglevel-select">
+        <!-- <mat-label i18n>Log-Level</mat-label>-->
+        <mat-select [value]="settings.logLevel$.value" (selectionChange)="settings.setLogLevel($event.value)">
+          <mat-option value="INFO">INFO</mat-option>
+          <mat-option value="DEBUG">DEBUG</mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
   </div>
 </div>
