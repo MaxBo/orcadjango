@@ -6,6 +6,8 @@ import json
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+LOGGING['handlers']['console']['level'] = 'DEBUG'
+
 SECRET_KEY = os.environ.get('SECRET_KEY')
 DB_NAME = os.environ.get('DB_NAME')
 DB_USER = os.environ.get('DB_USER')

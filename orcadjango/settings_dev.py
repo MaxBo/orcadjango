@@ -6,8 +6,6 @@ INSTALLED_APPS.extend([
     'corsheaders'
 ])
 
-LOGGING['handlers']['console']['level'] = 'DEBUG'
-
 CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_SECURE = False
 
