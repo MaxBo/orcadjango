@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
 import { BaseInjectableComponent } from "../injectable.component";
 import { Feature, Map, View } from 'ol';
 import { GeoJSON, WKT } from "ol/format";
@@ -19,8 +19,11 @@ import { register } from 'ol/proj/proj4'
 import proj4 from 'proj4';
 import { createBox } from "ol/interaction/Draw";
 
-proj4.defs("EPSG:25832", "+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs");
-proj4.defs("EPSG:3044", "+proj=utm +zone=32 +ellps=GRS80 +towgs84=565.04,49.91,465.84,1.9848,-1.7439,9.0587,4.0772 +units=m +no_defs +type=crs");
+proj4.defs("EPSG:25832","+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs");
+proj4.defs("EPSG:25833","+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs");
+proj4.defs("EPSG:3044","+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs");
+// proj4.defs("EPSG:3044", "+proj=utm +zone=32 +ellps=GRS80 +towgs84=565.04,49.91,465.84,1.9848,-1.7439,9.0587,4.0772 +units=m +no_defs +axis=neu +type=crs");
+proj4.defs("EPSG:3045","+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu +type=crs");
 register(proj4);
 
 @Component({
