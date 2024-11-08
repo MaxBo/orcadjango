@@ -93,12 +93,18 @@ export class InjectablesComponent extends PageComponent implements OnInit {
 
   editInjectable(injectable: ScenarioInjectable): void {
     if (injectable.editable) {
-      const mInj = this.settings.moduleInjectables.find(inj => inj.name === injectable.name);
+      let defaultValue = undefined;
+      const projectInj = this.settings.activeProject$?.value?.injectables.find(pInj => pInj.name === injectable.name);
+      if (projectInj) {
+        defaultValue = projectInj.value;
+      }
+      else
+        defaultValue = this.settings.moduleInjectables.find(inj => inj.name === injectable.name)?.value;
       const dialogRef = this.dialog.open(InjectableEditDialogComponent, {
         panelClass: 'absolute',
         minWidth: '400px',
         disableClose: true,
-        data: { injectable: injectable, defaultValue: mInj?.value }
+        data: { injectable: injectable, defaultValue: defaultValue, isProjectInj: !!projectInj }
       });
       dialogRef.componentInstance.valueConfirmed.subscribe((value) => {
         dialogRef.componentInstance.setLoading(true);

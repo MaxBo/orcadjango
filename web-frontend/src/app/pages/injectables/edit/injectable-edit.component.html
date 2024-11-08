@@ -29,10 +29,16 @@
     Cancel
   </button>
   <button mat-button
-          *ngIf="defaultValue != undefined"
+          *ngIf="!isProjectInj && (defaultValue != undefined)"
           color="primary"
           (click)="resetToDefault()" i18n>
-    Reset to default
+    Reset to module default
+  </button>
+  <button mat-button
+          *ngIf="isProjectInj"
+          color="primary"
+          (click)="resetToDefault()" i18n>
+    Reset to project value
   </button>
   <button mat-button
           color="primary"

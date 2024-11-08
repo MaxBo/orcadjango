@@ -14,13 +14,15 @@ export class InjectableEditDialogComponent {
   protected errors: Record<string, string> = {};
   protected injectable: ScenarioInjectable;
   protected defaultValue: any;
+  protected isProjectInj: boolean;
   isLoading$ = new BehaviorSubject<boolean>(false);
   @Output() valueConfirmed = new EventEmitter<any>();
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: { injectable: ScenarioInjectable, defaultValue: any }, protected settings: SettingsService) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { injectable: ScenarioInjectable, defaultValue: any, isProjectInj: boolean }, protected settings: SettingsService) {
     this.injectable = data.injectable;
     this.defaultValue = data.defaultValue;
     this.value = data.injectable.value;
+    this.isProjectInj = data.isProjectInj;
   }
 
   setLoading(loading: boolean) {
