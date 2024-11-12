@@ -69,9 +69,14 @@ class ScenarioViewSet(viewsets.ModelViewSet):
         steps_available = manager.get_step_names()
         for step in active_steps:
             if step.name not in steps_available:
-                msg = _('There are steps selected that can not be found in the '
-                       'module. Your project seems not to be up to date '
-                       'with the module. Please remove those steps.')
+                msg = _(f'The step "{step.name}"steps can not be found in the '
+                       'module definition. Your project seems not to be up to '
+                       'date with the module. Please remove this step.')
+                return Response({'message': msg}, status.HTTP_400_BAD_REQUEST)
+            if step.name not in orca.orca._STEPS.keys():
+                msg = _(f'The step "{step.name}" can not be found in the module'
+                       '. The module definition is not in line with the '
+                       'available orca scripts. Please contact your admin.')
                 return Response({'message': msg}, status.HTTP_400_BAD_REQUEST)
             meta = manager.get_step_meta(step.name)
             required = list(set(meta.get('injectables')) & set(injectables_available))
