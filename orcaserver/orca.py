@@ -112,7 +112,16 @@ class OrcaManager(ModuleSingleton):
     def get_step_names(self):
         return self.__generic_instance.orca.list_steps()
 
-    def get_injectable_names(self):
+    def get_injectable_names(self, hidden=True):
+        '''
+        hidden: bool
+            include injectables marked as hidden in list
+        '''
+        inj_names = self.__generic_instance.orca.list_injectables()
+        if not hidden:
+            vis_injs = [i for i in inj_names if not
+                        (self.get_injectable_meta(i) or {}).get('hidden')]
+            return vis_injs
         return self.__generic_instance.orca.list_injectables()
 
     def _get_orca_meta(self):

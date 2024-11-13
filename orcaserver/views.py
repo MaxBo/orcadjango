@@ -171,11 +171,9 @@ class InjectableViewSet(viewsets.ViewSet):
         module_name = kwargs['module_pk']
         module = Module.objects.get(name=module_name)
         orca_manager = OrcaManager(module.path)
-        names = orca_manager.get_injectable_names()
+        names = orca_manager.get_injectable_names(hidden=False)
         for inj in names:
             meta = orca_manager.get_injectable_meta(inj)
-            if not meta or meta.get('hidden'):
-                continue
             # that's a little weird, but we create injectables to be able
             # to use the same functions as in scenario injectable serialization
             data_class = meta.get('data_class')
@@ -198,7 +196,15 @@ class ScenarioInjectableViewSet(viewsets.ModelViewSet):
     serializer_class = ScenarioInjectableSerializer
 
     def get_queryset(self):
-        return self.queryset.filter(scenario=self.kwargs['scenario_pk'])
+        scenario = Scenario.objects.get(id=self.kwargs['scenario_pk'])
+        queryset = self.queryset.filter(scenario=scenario)
+        orca_manager = OrcaManager(scenario.project.module)
+        mod_injs = orca_manager.get_injectable_names(hidden=False)
+        scen_injs = [i.name for i in queryset]
+        if (set(mod_injs) != set(scen_injs)):
+            scenario.recreate_injectables(keep_values=True)
+            queryset = self.queryset.filter(scenario=scenario)
+        return queryset
 
 
 class ModuleViewSet(viewsets.ModelViewSet):
