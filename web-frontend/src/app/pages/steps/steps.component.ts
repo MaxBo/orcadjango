@@ -181,6 +181,24 @@ export class StepsComponent extends InjectablesComponent {
     return this.injectables.filter(inj => step.injectables?.includes(inj.name));
   }
 
+  toggleAllActive(active: boolean): void {
+    this.stepsLoading$.next(true);
+    const observables: Observable<ScenarioStep>[] = [];
+    this.stepsLoading$.next(true);
+    this.scenarioSteps.forEach((step: ScenarioStep) => {
+      if (step.active != active)
+        observables.push(this.rest.patchScenarioStep(step, { active: active }));
+    });
+    forkJoin(observables).subscribe((scenarioSteps) => {
+      scenarioSteps.forEach(res => {
+        const step = this.scenarioSteps.find(step => step.id == res.id);
+        if (step) step.active = res.active;
+      })
+      this._updateActiveStepsCount();
+      this.stepsLoading$.next(false);
+    })
+  }
+
   toggleActive(active: boolean, step: ScenarioStep): void {
     this.stepsLoading$.next(true);
     this.rest.patchScenarioStep(step, { active: active }).subscribe(patched => {
