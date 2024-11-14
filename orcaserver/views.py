@@ -69,9 +69,14 @@ class ScenarioViewSet(viewsets.ModelViewSet):
         steps_available = manager.get_step_names()
         for step in active_steps:
             if step.name not in steps_available:
-                msg = _('There are steps selected that can not be found in the '
-                       'module. Your project seems not to be up to date '
-                       'with the module. Please remove those steps.')
+                msg = _(f'The step "{step.name}"steps can not be found in the '
+                       'module definition. Your project seems not to be up to '
+                       'date with the module. Please remove this step.')
+                return Response({'message': msg}, status.HTTP_400_BAD_REQUEST)
+            if step.name not in orca.orca._STEPS.keys():
+                msg = _(f'The step "{step.name}" can not be found in the module'
+                       '. The module definition is not in line with the '
+                       'available orca scripts. Please contact your admin.')
                 return Response({'message': msg}, status.HTTP_400_BAD_REQUEST)
             meta = manager.get_step_meta(step.name)
             required = list(set(meta.get('injectables')) & set(injectables_available))
@@ -166,11 +171,9 @@ class InjectableViewSet(viewsets.ViewSet):
         module_name = kwargs['module_pk']
         module = Module.objects.get(name=module_name)
         orca_manager = OrcaManager(module.path)
-        names = orca_manager.get_injectable_names()
+        names = orca_manager.get_injectable_names(hidden=False)
         for inj in names:
             meta = orca_manager.get_injectable_meta(inj)
-            if not meta or meta.get('hidden'):
-                continue
             # that's a little weird, but we create injectables to be able
             # to use the same functions as in scenario injectable serialization
             data_class = meta.get('data_class')
@@ -193,7 +196,15 @@ class ScenarioInjectableViewSet(viewsets.ModelViewSet):
     serializer_class = ScenarioInjectableSerializer
 
     def get_queryset(self):
-        return self.queryset.filter(scenario=self.kwargs['scenario_pk'])
+        scenario = Scenario.objects.get(id=self.kwargs['scenario_pk'])
+        queryset = self.queryset.filter(scenario=scenario)
+        orca_manager = OrcaManager(scenario.project.module)
+        mod_injs = orca_manager.get_injectable_names(hidden=False)
+        scen_injs = [i.name for i in queryset]
+        if (set(mod_injs) != set(scen_injs)):
+            scenario.recreate_injectables(keep_values=True)
+            queryset = self.queryset.filter(scenario=scenario)
+        return queryset
 
 
 class ModuleViewSet(viewsets.ModelViewSet):

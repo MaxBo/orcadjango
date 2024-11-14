@@ -32,7 +32,8 @@ export class ScenarioLogComponent implements OnDestroy, AfterViewInit {
     })
     this.subscriptions.push(this.settings.onScenarioLogMessage.subscribe(
       entry => {
-        this.addLogEntry(entry);
+        this.logs.push(entry);
+        this.addLogLine(entry);
         this.scrollToBottom();
       }));
     this.subscriptions.push(this.settings.activeScenario$.subscribe( scenario => {
@@ -45,7 +46,7 @@ export class ScenarioLogComponent implements OnDestroy, AfterViewInit {
   changeLogLevel(level: string): void {
     this.logLevel = level;
     this.entries = [];
-    this.logs.forEach(log => this.addLogEntry(log));
+    this.logs.forEach(log => this.addLogLine(log));
     this.scrollToBottom(true);
   }
 
@@ -55,12 +56,12 @@ export class ScenarioLogComponent implements OnDestroy, AfterViewInit {
     this.rest.getScenarioLogs(this.settings.activeScenario$.value, { level: 'DEBUG', nLast: environment.maxLogs }).subscribe(
       logs => {
         this.logs = logs;
-        logs.forEach(log => this.addLogEntry(log));
+        logs.forEach(log => this.addLogLine(log));
         this.scrollToBottom(true);
       });
   }
 
-  addLogEntry(entry: ScenarioLogEntry, options?: { intermediateDots?: boolean }): void {
+  addLogLine(entry: ScenarioLogEntry, options?: { intermediateDots?: boolean }): void {
     const lastEntry = this.entries[this.entries.length - 1];
     // then skip
     if (this.logLevel === 'INFO' && entry.level === 'DEBUG') {
@@ -69,7 +70,7 @@ export class ScenarioLogComponent implements OnDestroy, AfterViewInit {
         if (lastEntry.level === 'INTER')
           lastEntry.message += '.';
         else
-          this.addLogEntry({
+          this.addLogLine({
             message: '.',
             level: 'INTER'
           })

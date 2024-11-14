@@ -7,12 +7,18 @@
              [(ngModel)]="filterString"
              (keyup)="filterEntries()">
     </mat-form-field>
-    <mat-checkbox [(ngModel)]="filterChecked"
-                  (change)="filterEntries()"
-                  style="align-self: center; margin-left: auto;" i18n>
+    <mat-slide-toggle [(ngModel)]="filterChecked"
+                      (change)="filterEntries()"
+                      style="align-self: center; margin-left: auto;" i18n>
       Show checked only
-    </mat-checkbox>
+    </mat-slide-toggle>
   </div>
+  <mat-checkbox [checked]="checkedCount === choices.length"
+                style="margin: 10px 0 -10px 14px;"
+                [indeterminate]="checkedCount > 0 && checkedCount < choices.length"
+                (change)="setAll()" i18n>
+    (Un)check all
+  </mat-checkbox>
   <table mat-table [dataSource]="tableData" matSort>
     <ng-container matColumnDef="checked">
       <th mat-header-cell *matHeaderCellDef></th>

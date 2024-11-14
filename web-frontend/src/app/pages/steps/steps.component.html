@@ -65,6 +65,15 @@
       <div class="steps-heading">
         <h2 i18n>Scenario Steps</h2>
         <div style="margin-left: auto; margin-right: 10px;">
+          <mat-slide-toggle #stepsToggle
+                            id="toggle-all"
+                            i18n-title title="Turn all steps on/off"
+                            [checked]="activeStepsCount > 0"
+                            [ngClass]="{'half-checked': (activeStepsCount > 0) && (activeStepsCount < scenarioSteps.length) }"
+                            color="accent"
+                            [disabled]="settings.activeScenario$.value?.is_running"
+                            (change)="toggleAllActive()">
+          </mat-slide-toggle>
           <button mat-flat-button
                   color="primary"
                   *ngIf="!settings.activeScenario$.value?.is_running"
@@ -131,7 +140,8 @@
                                     color="accent"
                                     (click)="$event.stopPropagation();"
                                     [disabled]="settings.activeScenario$.value?.is_running"
-                                    (change)="toggleActive($event.checked, step)" >
+                                    (change)="toggleActive($event.checked, step)"
+                                    i18n-title title="Turn step on/off">
                   </mat-slide-toggle>
                   <button mat-icon-button
                           [disabled]="settings.activeScenario$.value?.is_running"

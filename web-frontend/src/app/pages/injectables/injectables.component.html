@@ -6,7 +6,8 @@
   <div style="display: flex;">
     <h1 style="margin: 16px 0;" i18n>Injectables</h1>
     <div style="margin-left: auto; align-self: center;">
-      <button mat-flat-button
+      <button *ngIf="injectableMismatch"
+              mat-flat-button
               color="accent"
               (click)="synchronize()"
               style="margin-right: 10px;"

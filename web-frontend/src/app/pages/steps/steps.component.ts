@@ -4,6 +4,7 @@ import { CdkDragDrop, CdkDropList, moveItemInArray } from "@angular/cdk/drag-dro
 import { InjectablesComponent, sortBy } from "../injectables/injectables.component";
 import { BehaviorSubject, forkJoin, Observable } from "rxjs";
 import { showAPIError } from "../../elements/simple-dialog/simple-dialog.component";
+import { MatSlideToggle } from "@angular/material/slide-toggle";
 
 interface StepExt extends Step {
   requiredSteps: (Step | undefined)[];
@@ -39,6 +40,7 @@ export class StepsComponent extends InjectablesComponent {
   @ViewChild('logContainer') logContainer!: ElementRef;
   @ViewChild('scenarioStepList') scenarioStepList!: CdkDropList;
   @ViewChild('previewContainer') previewContainer!: ElementRef;
+  @ViewChild('stepsToggle') stepsToggle!: MatSlideToggle;
 
   // constructor(private rest: RestService, private settings: UserSettingsService)
   override ngOnInit() {
@@ -179,6 +181,27 @@ export class StepsComponent extends InjectablesComponent {
 
   getInjectables(step: ScenarioStep): ScenarioInjectable[] {
     return this.injectables.filter(inj => step.injectables?.includes(inj.name));
+  }
+
+  toggleAllActive(): void {
+    this.stepsLoading$.next(true);
+    const active = this.activeStepsCount !== this.scenarioSteps.length;
+    // toggle reacts sluggishly to change of variable "activeStepsCount" -> force toggle
+    if (this.stepsToggle.checked !== active) this.stepsToggle.toggle();
+    const observables: Observable<ScenarioStep>[] = [];
+    this.stepsLoading$.next(true);
+    this.scenarioSteps.forEach((step: ScenarioStep) => {
+      if (step.active != active)
+        observables.push(this.rest.patchScenarioStep(step, { active: active }));
+    });
+    forkJoin(observables).subscribe((scenarioSteps) => {
+      scenarioSteps.forEach(res => {
+        const step = this.scenarioSteps.find(step => step.id == res.id);
+        if (step) step.active = res.active;
+      })
+      this._updateActiveStepsCount();
+      this.stepsLoading$.next(false);
+    })
   }
 
   toggleActive(active: boolean, step: ScenarioStep): void {

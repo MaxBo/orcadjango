@@ -50,10 +50,12 @@
       <mat-form-field style="float: right;">
         <mat-label>EPSG Code</mat-label>
         <mat-select (selectionChange)="changeSrid($event.value)" [value]="wktSrid">
-          <mat-option [value]="3044">3044</mat-option>
           <mat-option [value]="3857">3857</mat-option>
           <mat-option [value]="4326">4326</mat-option>
           <mat-option [value]="25832">25832</mat-option>
+          <mat-option [value]="25833">25833</mat-option>
+          <mat-option [value]="3044">3044</mat-option>
+          <mat-option [value]="3045">3045</mat-option>
         </mat-select>
       </mat-form-field>
     </div>

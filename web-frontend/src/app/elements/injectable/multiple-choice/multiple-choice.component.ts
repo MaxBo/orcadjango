@@ -24,16 +24,17 @@ export class MultipleChoiceComponent extends BaseInjectableComponent implements 
   @ViewChild(MatSort) sort!: MatSort;
   protected tableData!: MatTableDataSource<any>;
   protected columns: string[] = [];
-  protected active: boolean[] = [];
   protected filterString = '';
   protected filterChecked = false;
 
   protected readonly Object = Object;
+  checkedCount: number = 0;
+  allChecked: boolean = false;
 
   ngOnInit() {
-    this.active = Array(this.choices.length).fill(true);
     let tableData: Choice[] = this.choices.map((choice, i) => {return { name: choice, description: this.choiceLabels? this.choiceLabels[i] || '-': undefined, checked: this.values.indexOf(choice) > -1 }})
     this.tableData = new MatTableDataSource(tableData);
+    this.updateCheckedCount();
     this.columns = ['checked', 'name'];
     if (this.choiceLabels) this.columns.push('description');
     this.tableData.filterPredicate = (record, filter) => {
@@ -49,6 +50,11 @@ export class MultipleChoiceComponent extends BaseInjectableComponent implements 
 
   onValueChanged(value: boolean, choice: Choice){
     choice.checked = value;
+    this.emitValues();
+    this.updateCheckedCount();
+  }
+
+  emitValues() {;
     let values: any[] = [];
     this.tableData.data.forEach(d => {
       if (d.checked)
@@ -62,5 +68,20 @@ export class MultipleChoiceComponent extends BaseInjectableComponent implements 
   filterEntries(): void {
     // assign value '--override--' to force call of filterPredicate even when filter string is empty
     this.tableData.filter = this.filterString || '--override--';
+  }
+
+  setAll(): void {
+    const check = (this.checkedCount !== this.choices.length);
+    this.tableData.data.forEach(d => { d.checked = check });
+    this.emitValues();
+    this.updateCheckedCount();
+    this.filterEntries();
+  }
+
+  updateCheckedCount(): void {
+    this.checkedCount = 0;
+    this.tableData.data.forEach(d => {
+      if (d.checked) this.checkedCount += 1;
+    })
   }
 }

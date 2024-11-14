@@ -29,11 +29,13 @@
 }
 #scenario-steps {
   width: 600px;
+  opacity: 1;
   tr:hover {
     background-color: #ffeeee;
   }
 
   .scenario-step-item {
+    opacity: 1;
     border: 4px solid rgba(255, 255, 255, 0.5490196078);
     ::ng-deep .mat-expansion-panel-body {
       padding: 16px 24px 16px !important;
@@ -49,8 +51,19 @@
   }
 }
 
+#toggle-all {
+  margin-right: 10px;
+}
+
+#toggle-all.half-checked {
+  filter: saturate(0);
+}
+
 #scenario-steps.deactivated {
   pointer-events: none;
+  .scenario-step-item {
+    opacity: 0.7;
+  }
 }
 
 #available-steps, #scenario-steps {
