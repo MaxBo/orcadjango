@@ -76,9 +76,11 @@
 }
 
 #available-steps .accordion-wrapper {
-  border: 1px solid lightgrey;
-  border-bottom-width: 0;
-  border-right-width: 0;
+  border-top: 1px solid lightgrey;
+
+  .group-panel {
+    border-left: 1px solid lightgrey;
+  }
 }
 
 #available-steps, #scenario-steps {
@@ -95,7 +97,7 @@
     padding-right: 10px;
     padding-bottom: 5px;
     position: relative;
-    //height: calc(100% - 55px); //minus header and padding-bottom
+    height: calc(100% - 55px); //minus header and padding-bottom
   }
 
   .sub-title {
