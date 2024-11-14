@@ -2,6 +2,15 @@
   display: flex;
   height: 50px;
   align-items: center;
+  margin-bottom: -7px;
+  padding-bottom: 7px;
+  .tab {
+    border: 1px solid lightgrey;
+    padding: 5px 13px 10px 13px;
+    border-radius: 4px;
+    border-bottom: 0;
+    margin-bottom: -13px;
+  }
   h2 {
     margin: 0;
   }
@@ -66,9 +75,15 @@
   }
 }
 
+#available-steps .accordion-wrapper {
+  border: 1px solid lightgrey;
+  border-bottom-width: 0;
+  border-right-width: 0;
+}
+
 #available-steps, #scenario-steps {
   .accordion-border {
-    width: calc(100% - 20px);
+    width: calc(100% - 10px);
     margin: 0;
   }
   .mat-accordion {
@@ -80,7 +95,7 @@
     padding-right: 10px;
     padding-bottom: 5px;
     position: relative;
-    height: calc(100% - 55px); //minus header and padding-bottom
+    //height: calc(100% - 55px); //minus header and padding-bottom
   }
 
   .sub-title {
