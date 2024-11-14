@@ -4,6 +4,7 @@ import { CdkDragDrop, CdkDropList, moveItemInArray } from "@angular/cdk/drag-dro
 import { InjectablesComponent, sortBy } from "../injectables/injectables.component";
 import { BehaviorSubject, forkJoin, Observable } from "rxjs";
 import { showAPIError } from "../../elements/simple-dialog/simple-dialog.component";
+import { MatSlideToggle } from "@angular/material/slide-toggle";
 
 interface StepExt extends Step {
   requiredSteps: (Step | undefined)[];
@@ -39,6 +40,7 @@ export class StepsComponent extends InjectablesComponent {
   @ViewChild('logContainer') logContainer!: ElementRef;
   @ViewChild('scenarioStepList') scenarioStepList!: CdkDropList;
   @ViewChild('previewContainer') previewContainer!: ElementRef;
+  @ViewChild('stepsToggle') stepsToggle!: MatSlideToggle;
 
   // constructor(private rest: RestService, private settings: UserSettingsService)
   override ngOnInit() {
@@ -181,8 +183,11 @@ export class StepsComponent extends InjectablesComponent {
     return this.injectables.filter(inj => step.injectables?.includes(inj.name));
   }
 
-  toggleAllActive(active: boolean): void {
+  toggleAllActive(): void {
     this.stepsLoading$.next(true);
+    const active = this.activeStepsCount !== this.scenarioSteps.length;
+    // toggle reacts sluggishly to change of variable "activeStepsCount" -> force toggle
+    if (this.stepsToggle.checked !== active) this.stepsToggle.toggle();
     const observables: Observable<ScenarioStep>[] = [];
     this.stepsLoading$.next(true);
     this.scenarioSteps.forEach((step: ScenarioStep) => {
