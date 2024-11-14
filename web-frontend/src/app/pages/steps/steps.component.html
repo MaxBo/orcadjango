@@ -73,7 +73,7 @@
                             i18n-title title="Turn all steps on/off"
                             [checked]="activeStepsCount > 0"
                             [ngClass]="{'half-checked': (activeStepsCount > 0) && (activeStepsCount < scenarioSteps.length) }"
-                            color="accent"
+                            color="primary"
                             [disabled]="settings.activeScenario$.value?.is_running"
                             (change)="toggleAllActive()">
           </mat-slide-toggle>
@@ -139,7 +139,7 @@
                 </div>
                 <div style="margin-left: auto; display: flex; align-items: center;">
                   <mat-slide-toggle [checked]="step.active"
-                                    color="accent"
+                                    color="primary"
                                     (click)="$event.stopPropagation();"
                                     [disabled]="settings.activeScenario$.value?.is_running"
                                     (change)="toggleActive($event.checked, step)"
