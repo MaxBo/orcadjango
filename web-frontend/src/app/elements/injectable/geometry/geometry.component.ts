@@ -11,7 +11,8 @@ import VectorLayer from "ol/layer/Vector";
 import { Fill, Stroke, Style } from "ol/style";
 import VectorSource from "ol/source/Vector";
 import { Vector } from "ol/layer";
-import { Draw, Select, Snap, DragPan, defaults as interactionDefaults } from "ol/interaction";
+import { Draw, Select, Snap, DragPan, MouseWheelZoom, defaults as interactionDefaults } from "ol/interaction";
+import { platformModifierKeyOnly } from 'ol/events/condition.js';
 import { click, always } from 'ol/events/condition';
 import { FullScreen } from "ol/control";
 import { FeatureLike } from "ol/Feature";
@@ -86,7 +87,7 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
         projection: `EPSG:${this.mapSrid}`
       }),
       controls: this.edit? undefined: [],
-      interactions: interactionDefaults({dragPan: false}).extend([
+      interactions: interactionDefaults({ dragPan: false, mouseWheelZoom: false }).extend([
         new DragPan({
           condition: function (mapBrowserEvent) {
             // drag map on left, middle and right click
@@ -95,6 +96,9 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
               mapBrowserEvent.originalEvent.button < 3
             );
           },
+        }),
+        new MouseWheelZoom({
+          condition: this.edit? undefined: platformModifierKeyOnly,
         }),
       ]),
     });
@@ -180,12 +184,12 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
     this.map.addInteraction(snap);
 
     // WKT does not support circle geoms, ToDo: transform circle into poly and update on map
-/*    const circle = new Draw({
-      source: source,
-      type: 'Circle'
-    });
-    this.featureLayer.set('circle', circle);
-    this.map.addInteraction(circle);*/
+    /*    const circle = new Draw({
+          source: source,
+          type: 'Circle'
+        });
+        this.featureLayer.set('circle', circle);
+        this.map.addInteraction(circle);*/
 
     const square = new Draw({
       source: source,
@@ -212,7 +216,7 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
       multi: true
     });
     select.on('select', event => {
-       this.featuresSelected = select.getFeatures().getLength() > 0;
+      this.featuresSelected = select.getFeatures().getLength() > 0;
     })
     this.featureLayer.set('select', select);
     this.map.addInteraction(select);

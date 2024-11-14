@@ -13,9 +13,10 @@
     </div>
     <div id="available-steps">
       <div class="steps-heading">
-        <h2 i18n>Available Steps</h2>
+        <div class="tab">
+          <h2 i18n>Available Steps</h2>
+        </div>
       </div>
-      <mat-divider class="accordion-border"></mat-divider>
       <div class="accordion-wrapper">
         <mat-accordion>
           <mat-expansion-panel class="group-panel" *ngFor="let group of stepGroups">
@@ -63,7 +64,9 @@
 
     <div id="scenario-steps" [ngClass]="{'deactivated': (stepsLoading$ | async)}" style="min-width: 700px">
       <div class="steps-heading">
-        <h2 i18n>Scenario Steps</h2>
+        <div class="tab">
+          <h2 i18n>Scenario Steps</h2>
+        </div>
         <div style="margin-left: auto; margin-right: 10px;">
           <mat-slide-toggle #stepsToggle
                             id="toggle-all"
@@ -91,7 +94,6 @@
         </div>
       </div>
       <div #previewContainer></div>
-      <mat-divider class="accordion-border"></mat-divider>
       <div class="accordion-wrapper">
         <mat-accordion cdkDropList
                        id="scenarioStepList"

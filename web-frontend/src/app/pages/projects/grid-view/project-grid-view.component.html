@@ -1,18 +1,18 @@
+<mat-card id="new-grid-card"
+          class="grid-preview-card"
+          title="Create new Project"
+          i18n-title
+          (click)="onCreateProject.emit(true)">
+  <mat-card-header>
+    <mat-card-title i18n>New Project</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-icon class="material-symbols-outlined">
+      add
+    </mat-icon>
+  </mat-card-content>
+</mat-card>
 <div class="card-grid">
-  <mat-card id="new-grid-card"
-            class="grid-preview-card"
-            title="Create new Project"
-            i18n-title
-            (click)="onCreateProject.emit(true)">
-    <mat-card-header>
-      <mat-card-title i18n>New Project</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <mat-icon class="material-symbols-outlined">
-        add
-      </mat-icon>
-    </mat-card-content>
-  </mat-card>
   <div fxLayout="row wrap"
        fxLayoutAlign="start start"
        fxLayoutGap="20px 20px grid">
@@ -24,12 +24,13 @@
                 matTooltipPosition="right"
                 [style.border-bottom-color]="settings.getUser(project.user)?.profile?.color || 'grey'">
         <button *ngIf="settings.activeProject$.value?.id === project.id"
-                mat-icon-button
+                mat-mini-fab
+                color="primary"
                 class="next"
                 (click)="$event.stopPropagation();"
-                routerLink="/scenarios"
-                i18n-title title="next page">
-          <mat-icon>navigate_next</mat-icon>
+                i18n-title title="next page"
+                routerLink="/scenarios">
+          <mat-icon>arrow_forward</mat-icon>
         </button>
         <mat-card-header style="cursor: pointer"
                          (click)="onProjectSelected.emit(project)">
