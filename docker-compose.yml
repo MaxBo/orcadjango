@@ -1,0 +1,30 @@
+services:
+
+    web:
+      restart: unless-stopped
+      env_file: .env
+        #      build: .
+      image: miraculix-dev
+      ports:
+        - "${EXT_PORT}:8000"
+      links:
+        - redis:redis
+      volumes:
+        - ../miraculix-orca/extractiontools/src/extractiontools:/opt/project/extractiontools
+        - ./public:/orcadjango/public
+#      depends_on:
+#        - migration
+
+#    migration:
+#      image: miraculix-dev
+#      command: bash -c "/opt/.venv/bin/python -m pip install -r /tools/extractiontools/requirements.txt"
+#      volumes:
+#        - ../miraculix-orca/:/tools
+
+    redis:
+      restart: unless-stopped
+      image: redis:latest
+      volumes:
+        - ./redisdata:/data
+
+
