@@ -108,3 +108,5 @@ venv.bak/
 *.wpu
 
 orcadjango/static
+redisdata/
+.idea/
