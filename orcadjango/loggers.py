@@ -12,11 +12,16 @@ from redis.exceptions import ConnectionError as RedisConnectionError
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from django.utils import timezone
+from django import db
 
 import logging
 logger = logging.getLogger(__name__)
 
 channel_layer = channels.layers.get_channel_layer()
+
+def clear_db_connections():
+    for conn in db.connections.all():
+        conn.close_if_unusable_or_obsolete()
 
 def send(channel: str, message: str, log_type: str='log_message',
          status=None, **kwargs):
@@ -52,6 +57,7 @@ class ScenarioHandler(WebSocketHandler):
         self.room = f'scenario_{scenario.id}'
 
     def emit(self, record):
+        clear_db_connections()
         from orcaserver.models import LogEntry
         message = record.getMessage()
         status = getattr(record, 'status', {})
