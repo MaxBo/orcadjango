@@ -12,6 +12,7 @@ services:
       volumes:
         - ../miraculix-orca/extractiontools/src/extractiontools:/opt/project/extractiontools
         - ./public:/orcadjango/public
+        - ./results:/root/gis
 #      depends_on:
 #        - migration
 

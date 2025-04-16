@@ -108,5 +108,6 @@ venv.bak/
 *.wpu
 
 orcadjango/static
+results/
 redisdata/
 .idea/

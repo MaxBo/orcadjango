@@ -18,6 +18,11 @@
   cursor: pointer;
 }
 
+mat-radio-button:not(.mat-mdc-radio-checked) .avatar-preview.in-use {
+  border-color: grey;
+  opacity: 0.6;
+}
+
 .mat-mdc-radio-checked .avatar-preview {
   border-color: $primary;
 }
