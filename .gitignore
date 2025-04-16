@@ -111,3 +111,5 @@ orcadjango/static
 results/
 redisdata/
 .idea/
+/.pgpass
+/pwd

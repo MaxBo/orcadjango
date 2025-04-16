@@ -11,9 +11,9 @@
     <ng-template #initialsOnly>{{initials}}</ng-template>
   </div>
   <ng-template #avatarImage>
-    <img class="user-prev"
+    <div class="user-prev"
          [style.background-image]="'url(' + avatar?.image + ')'"
          [style.border-width]="borderWidth"
-         [style.border-color]="color">
+         [style.border-color]="color"></div>
   </ng-template>
 </div>

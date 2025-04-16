@@ -137,8 +137,9 @@ class Injectable(NameModel):
         if not self.scenario:
             return dummy
         try:
-            meta = OrcaManager(self.scenario.project.module)\
-                .get_injectable_meta(self.name) or dummy
+            manager = OrcaManager(self.scenario.project.module)
+            orca = manager.get_instance(self.scenario.orca_id)
+            meta = manager.get_injectable_meta(self.name, instance=orca.orca) or dummy
         # there is a rare possibility that scenario is deleted right at this moment.
         # injectable will follow but there is a short period where this might
         # cause an exception

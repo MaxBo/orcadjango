@@ -39,7 +39,7 @@
           <app-scenario-status-preview [scenario]="scenario" style="margin-left: auto;"></app-scenario-status-preview>
         </mat-card-header>
         <mat-card-content style="cursor: pointer" (click)="onScenarioSelected.emit(scenario)">
-          <p *ngIf="scenario.description">
+          <p class="scenario-description" *ngIf="scenario.description">
             {{scenario.description}}
           </p>
           <ng-container *ngIf="scenario.is_running else notRunningCard">

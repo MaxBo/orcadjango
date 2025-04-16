@@ -199,6 +199,7 @@ class ScenarioInjectableViewSet(viewsets.ModelViewSet):
         scenario = Scenario.objects.get(id=self.kwargs['scenario_pk'])
         queryset = self.queryset.filter(scenario=scenario)
         orca_manager = OrcaManager(scenario.project.module)
+        apply_injectables(scenario)
         mod_injs = orca_manager.get_injectable_names(hidden=False)
         scen_injs = [i.name for i in queryset]
         if (set(mod_injs) != set(scen_injs)):
