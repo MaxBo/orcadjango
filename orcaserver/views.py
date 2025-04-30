@@ -1,5 +1,4 @@
 from rest_framework import viewsets
-from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -19,7 +18,9 @@ from orcaserver.orca import OrcaManager
 from orcadjango.loggers import ScenarioHandler
 from .injectables import OrcaTypeMap
 
+
 def apply_injectables(scenario):
+
     orca_manager = OrcaManager(scenario.project.module)
     orca = orca_manager.get_instance(scenario.orca_id)
     inj_names = orca_manager.get_injectable_names()
