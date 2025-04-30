@@ -18,7 +18,8 @@ RUN apt -y update \
     && apt -y install binutils libproj-dev libgeos-dev \
     && apt -y install libsqlite3-mod-spatialite libsqlite3-dev \
     && apt -y install osmium-tool \
-    && apt -y install default-jre
+    && apt -y install default-jre \
+    && apt -y install xxd
 
 RUN wget -O /tmp/osmosis.tar https://github.com/openstreetmap/osmosis/releases/download/0.49.2/osmosis-0.49.2.tar \
     && tar xvf /tmp/osmosis.tar -C /opt \

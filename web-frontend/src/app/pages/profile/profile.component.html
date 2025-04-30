@@ -27,8 +27,9 @@
         <mat-radio-button *ngFor="let avatar of settings.avatars"
                           [matTooltip]="getAvatarTooltip(avatar)"
                           [value]="avatar.id">
-          <img class="avatar-preview"
-               [style.background-image]="'url(' + avatar.image + ')'">
+          <div class="avatar-preview"
+               [ngClass]="{'in-use': avatar.users.length > 0 }"
+               [style.background-image]="'url(' + avatar.image + ')'"></div>
         </mat-radio-button>
       </mat-radio-group>
       <div >

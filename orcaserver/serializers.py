@@ -307,7 +307,7 @@ class ScenarioInjectableSerializer(InjectableSerializer,
 
     class Meta:
         model = Injectable
-        fields = ('id', 'name', 'title', 'group', 'order', 'scenario', 'value', 'multi',
+        fields = ('id', 'name', 'title', 'group', 'order', 'scenario', 'value', 'multi', 'scope',
                   'datatype', 'editable_keys', 'parents', 'description', 'editable', 'choices',
                   'unique', 'regex_help')
         read_only_fields = ('scenario', 'parents', 'name', 'editable',

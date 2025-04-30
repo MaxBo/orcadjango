@@ -12,6 +12,10 @@ services:
       volumes:
         - ../miraculix-orca/extractiontools/src/extractiontools:/opt/project/extractiontools
         - ./public:/orcadjango/public
+        - ./results:/root/gis
+      secrets:
+        - osmosis_pwd
+        - .pgpass
 #      depends_on:
 #        - migration
 
@@ -27,4 +31,9 @@ services:
       volumes:
         - ./redisdata:/data
 
+secrets:
+  osmosis_pwd:
+    file: pwd
+  .pgpass:
+    file: .pgpass
 

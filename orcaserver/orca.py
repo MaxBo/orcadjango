@@ -149,8 +149,9 @@ class OrcaManager(ModuleSingleton):
             'required': required,
         }
 
-    def get_injectable_meta(self, injectable: str):
-        orca_injectables = self.__generic_instance.orca.list_injectables()
+    def get_injectable_meta(self, injectable: str, instance=None):
+        orca = instance or self.__generic_instance.orca
+        orca_injectables = orca.list_injectables()
         orca_meta = self._get_orca_meta()
         # defaults (required by serializer)
         desc = {
@@ -165,9 +166,9 @@ class OrcaManager(ModuleSingleton):
         if _meta.get('hidden'):
             return {'hidden': True}
         if _meta.get('refresh') == 'always':
-            value = self.__generic_instance.orca.get_injectable(injectable)
+            value = orca.get_injectable(injectable)
         else:
-            value = self.__generic_instance.orca._injectable_backup.get(injectable)
+            value = orca._injectable_backup.get(injectable)
         datatype_class = type(value)
         datatype = datatype_class.__name__
         desc['datatype'] = datatype
@@ -193,11 +194,11 @@ class OrcaManager(ModuleSingleton):
             choices = desc.get('choices')
             # choices are derived from another injectable
             if callable(choices):
-                c_meta = self.__generic_instance.orca.meta.get(choices.__name__)
+                c_meta = orca.meta.get(choices.__name__)
                 if c_meta and c_meta.get('refresh') == 'always':
-                    choices = self.__generic_instance.orca.get_injectable(choices.__name__)
+                    choices = orca.get_injectable(choices.__name__)
                 else:
-                    choices = self.__generic_instance.orca._injectable_backup.get(choices.__name__)
+                    choices = orca._injectable_backup.get(choices.__name__)
                 desc['choices'] = choices
             desc['parameters'] = list(sig.parameters.keys())
 
