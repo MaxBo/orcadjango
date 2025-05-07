@@ -8,6 +8,9 @@ RUN mkdir -p /etc/apt/keyrings
 RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
 RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
 
+RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list
+
 RUN apt -y update \
     && apt -y upgrade \
     && apt -y install git wget zip \
@@ -19,7 +22,8 @@ RUN apt -y update \
     && apt -y install libsqlite3-mod-spatialite libsqlite3-dev \
     && apt -y install osmium-tool \
     && apt -y install default-jre \
-    && apt -y install xxd
+    && apt -y install xxd \
+    && apt -y install postgresql-client
 
 RUN wget -O /tmp/osmosis.tar https://github.com/openstreetmap/osmosis/releases/download/0.49.2/osmosis-0.49.2.tar \
     && tar xvf /tmp/osmosis.tar -C /opt \
