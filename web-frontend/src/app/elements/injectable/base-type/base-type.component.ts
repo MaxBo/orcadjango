@@ -18,16 +18,16 @@ export class BaseTypeComponent extends BaseInjectableComponent implements OnInit
   ngOnInit() {
     if (!this.type) {
       if (this.choices)
-        this.type = 'choice'
+        this.type = 'choice';
       else switch (typeof this.value) {
         case 'number':
           this.type = (this.step <= 1)? 'float': 'int';
           break;
         case 'boolean':
-          this.type = 'bool'
+          this.type = 'bool';
           break;
         default:
-          this.type = 'str'
+          this.type = 'str';
       }
     }
     // force integer as input if type is determined as int
@@ -38,5 +38,9 @@ export class BaseTypeComponent extends BaseInjectableComponent implements OnInit
     // ToDo: make own injectable components for these types
     if (this.type === 'dataframe' || this.type === 'dataset')
       this.value = JSON.stringify(this.value);
+  }
+
+  toBool(value: any): boolean {
+    return value === true || value === 'true' || value === 'True' || value === 1;
   }
 }

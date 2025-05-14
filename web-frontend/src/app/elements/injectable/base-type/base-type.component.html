@@ -17,7 +17,7 @@
     <div style="display: flex;">
       <div style="padding: 0 10px" i18n>no</div>
       <mat-slide-toggle color="primary"
-                        [checked]="$any(value)"
+                        [checked]="toBool(value)"
                         (change)="valueChanged.emit($event.checked)">
       </mat-slide-toggle>
       <div style="padding: 0 10px" i18n>yes</div>
