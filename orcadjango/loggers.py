@@ -13,11 +13,14 @@ from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from django.utils import timezone
 from django import db
+import re
 
 import logging
 logger = logging.getLogger(__name__)
 
 channel_layer = channels.layers.get_channel_layer()
+
+IGNORE_MESSAGE_FILTER = ['^registering injectable', '^(start|finish): call function to provide injectable']
 
 def clear_db_connections():
     for conn in db.connections.all():
@@ -56,7 +59,17 @@ class ScenarioHandler(WebSocketHandler):
         self.scenario = scenario
         self.room = f'scenario_{scenario.id}'
 
+    @staticmethod
+    def _do_ignore(record) -> bool:
+        message = record.getMessage()
+        for expr in IGNORE_MESSAGE_FILTER:
+            if re.search(expr, message):
+                return True
+        return False
+
     def emit(self, record):
+        if self._do_ignore(record):
+            return
         clear_db_connections()
         from orcaserver.models import LogEntry
         message = record.getMessage()

@@ -1,3 +1,4 @@
+import os
 import threading
 import importlib
 import logging
@@ -246,7 +247,9 @@ class OrcaWrapper():
         spec.loader.exec_module(orca)
         # append a logger
         orca.logger = logging.getLogger(str(id(orca)))
-        orca.logger.setLevel(logging.DEBUG)
+
+        debug = os.environ.get('LOG_LEVEL', 'DEBUG')
+        orca.logger.setLevel(logging.DEBUG if debug.upper() == 'DEBUG' else logging.INFO)
         sys.modules['orca'] = orca
         from orcadjango import decorators
         importlib.reload(decorators)
