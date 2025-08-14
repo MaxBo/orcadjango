@@ -163,5 +163,10 @@
 
 <ng-template #deleteProjectTemplate>
   <p i18n>Do you really want to delete the project?</p>
-  <p i18n>Warning: Only the project, its scenarios and parameters will be deleted. All possibly generated data will remain. </p>
+  <p i18n><i><b>Warning</b>: Only the project, its scenarios and parameters will be deleted. All possibly generated data will remain.</i></p>
+</ng-template>
+
+<ng-template #archiveProjectTemplate>
+  <p i18n>Do you want to move the project into the archive?</p>
+  <p i18n><i>Note: This will not delete anything. It just marks the project as archived to clean up the project list. All possibly connected data sources remain untouched. </i></p>
 </ng-template>

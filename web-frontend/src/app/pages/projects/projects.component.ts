@@ -1,7 +1,7 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { formatProject, Inj, Project, RestService, User } from "../../rest-api";
 import { ProjectEditDialogComponent, ProjectEditDialogData } from "./edit/project-edit.component";
-import { MatDialog } from "@angular/material/dialog";
+import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import { SettingsService } from "../../settings.service";
 import { ConfirmDialogComponent } from "../../elements/confirm-dialog/confirm-dialog.component";
 import { CookieService } from "ngx-cookie-service";
@@ -34,6 +34,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
   protected filterDateOperator: '<' | '>' | '=' = '>';
   protected filterOperatorTooltip = '';
   @ViewChild('deleteProjectTemplate') deleteProjectTemplate?: TemplateRef<any>;
+  @ViewChild('archiveProjectTemplate') archiveProjectTemplate?: TemplateRef<any>;
 
   constructor(private rest: RestService, private dialog: MatDialog, protected settings: SettingsService,
               private cookies: CookieService) {
@@ -181,10 +182,33 @@ export class ProjectsComponent extends PageComponent implements OnInit{
   }
 
   archiveProject(project: Project, archive: boolean): void {
-    this.rest.patchProject(project, { archived: archive }).subscribe(patched => {
-      project.archived = archive;
-      this.filter();
-    });
+    const _this = this;
+    let dialogRef: MatDialogRef<any>;
+    function patch() {
+      _this.rest.patchProject(project, {archived: archive}).subscribe(patched => {
+        project.archived = archive;
+        if (dialogRef) dialogRef.close();
+        _this.filter();
+      });
+    }
+    if (archive) {
+      dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        panelClass: 'absolute',
+        width: '300px',
+        disableClose: true,
+        data: {
+          title: $localize`Archive Project`,
+          subtitle: project.name,
+          template: this.archiveProjectTemplate,
+          closeOnConfirm: false
+        }
+      });
+      dialogRef.componentInstance.confirmed.subscribe(() => {
+        patch()
+      })
+    }
+    else
+      patch()
   }
 
   selectProject(project: Project): void {
