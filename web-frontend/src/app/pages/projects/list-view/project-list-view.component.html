@@ -1,7 +1,12 @@
-<button color="primary" style="margin-bottom: 5px;"
+<button *ngIf="!isArchive"
+        color="primary" style="margin-bottom: 5px;"
         mat-flat-button (click)="onCreateProject.emit(true)">
   + <ng-container i18n>NEW PROJECT</ng-container>
 </button>
+<div *ngIf="isArchive" style="margin-left: 4px; display: flex;">
+  <mat-icon style="margin-right: 4px;">folder_zip</mat-icon>
+  <h2 i18n>Archive</h2>
+</div>
 <table *ngIf="projects.length > 0" class="striped">
   <thead>
     <tr>

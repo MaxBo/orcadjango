@@ -14,6 +14,7 @@ export class ProjectGridViewComponent {
   @Output() onArchiveProject = new EventEmitter<{ project: Project, archive: boolean }>();
   @Output() onCreateProject = new EventEmitter<boolean>();
   @Input() projects: Project[] = [];
+  @Input() isArchive: boolean = true;
 
   constructor(protected settings: SettingsService) {}
 

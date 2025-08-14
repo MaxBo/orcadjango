@@ -152,6 +152,20 @@ button.micro {
   padding: 3px !important;
 }
 
+.mat-button-toggle {
+  .mat-icon {
+    margin-right: 4px;
+    margin-top: -1px;
+  }
+}
+
+.mat-button-toggle.slim {
+  height: 40px;
+  .mat-button-toggle-label-content {
+    margin-top: -4px;
+  }
+}
+
 mat-card {
 
   .mat-mdc-card-header-text {
