@@ -12,8 +12,11 @@
     align-items: center;
   }
   mat-form-field {
-    margin-right: 10px;
+    margin-right: 16px;
     margin-bottom: -20px;
+  }
+  .mat-mdc-checkbox {
+    //margin-right: -2px;
   }
 }
 

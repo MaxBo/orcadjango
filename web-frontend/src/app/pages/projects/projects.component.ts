@@ -32,6 +32,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
   protected filterStr?: string = '';
   protected filterDate?: Moment;
   protected filterDateOperator: '<' | '>' | '=' = '>';
+  protected filterOperatorTooltip = '';
   @ViewChild('deleteProjectTemplate') deleteProjectTemplate?: TemplateRef<any>;
 
   constructor(private rest: RestService, private dialog: MatDialog, protected settings: SettingsService,
@@ -52,6 +53,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
     this.filterArchive = this.cookies.get('project-filterArchive') === 'true';
     // @ts-ignore
     this.filterDateOperator = this.cookies.get('project-filterDateOperator') || '>';
+    this.setFilterOperatorToolTip();
     const cookieUsers = this.cookies.get('project-filterUsers');
     this.filterUsers = cookieUsers? cookieUsers.split(',').map(u => Number(u)): [];
     const cookieCodes = this.cookies.get('project-filterCodes');
@@ -246,7 +248,12 @@ export class ProjectsComponent extends PageComponent implements OnInit{
   setNextFilterOperator(): void {
     this.filterDateOperator = (this.filterDateOperator === '=')? '>' : (this.filterDateOperator === '>')? '<': '=';
     this.cookies.set('project-filterDateOperator', this.filterDateOperator.toString());
+    this.setFilterOperatorToolTip();
     this.filter();
+  }
+
+  setFilterOperatorToolTip(): void {
+    this.filterOperatorTooltip = (this.filterDateOperator === '=')? $localize`date is at selection`: (this.filterDateOperator === '>')? $localize`date is after selection`: $localize`date is before selection`;
   }
 
   setFilterUsers(users: number[]): void {

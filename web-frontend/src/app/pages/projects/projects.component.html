@@ -41,6 +41,7 @@
       </mat-form-field>
       <mat-button-toggle id="filter-button"
                          class="slim"
+                         i18n-title title="toggle visibility of filter settings"
                          [checked]="showFilters"
                          (click)="setShowFilters(!showFilters)">
         <ng-container *ngIf="(filterByCodes || filterByUsers || filterByDate) else noFilter" >
@@ -55,6 +56,7 @@
         <mat-label i18n>Sort by</mat-label>
         <mat-select [value]="sortAttr" (selectionChange)="this.setSortAttr($event.value || 'name')">
           <mat-option value="name" i18n>Name</mat-option>
+          <mat-option value="user" i18n>User</mat-option>
           <mat-option value="code" i18n>Code</mat-option>
           <mat-option value="date" i18n>Date</mat-option>
         </mat-select>
@@ -72,7 +74,8 @@
   </div>
   <div id="filter-view" [ngClass]="{'expanded': showFilters}">
     <div>
-      <mat-checkbox [checked]="filterByUsers" (change)="setFilterByUsers(!filterByUsers)"></mat-checkbox>
+      <mat-checkbox i18n-title title="de/activate filter"
+                    [checked]="filterByUsers" (change)="setFilterByUsers(!filterByUsers)"></mat-checkbox>
       <mat-form-field>
         <mat-label i18n>Filter by Users</mat-label>
         <mat-select multiple [disabled]="!filterByUsers"
@@ -84,7 +87,8 @@
           </mat-option>
         </mat-select>
       </mat-form-field>
-      <mat-checkbox [checked]="filterByCodes" (change)="setFilterByCodes(!filterByCodes)"></mat-checkbox>
+      <mat-checkbox i18n-title title="de/activate filter"
+                    [checked]="filterByCodes" (change)="setFilterByCodes(!filterByCodes)"></mat-checkbox>
       <mat-form-field>
         <mat-label i18n>Filter by codes</mat-label>
         <mat-select multiple [disabled]="!filterByCodes"
@@ -96,7 +100,8 @@
           </mat-option>
         </mat-select>
       </mat-form-field>
-      <mat-checkbox [checked]="filterByDate"
+      <mat-checkbox i18n-title title="de/activate filter"
+                    [checked]="filterByDate"
                     (change)="setFilterByDate(!filterByDate)"></mat-checkbox>
       <mat-form-field>
         <mat-label i18n>Filter by date</mat-label>
@@ -110,6 +115,7 @@
                 matPrefix
                 color="accent"
                 class="flat micro"
+                i18n-title title="{{filterOperatorTooltip}}"
                 [value]="filterDateOperator"
                 [disabled]="!filterByDate"
                 (click)="setNextFilterOperator()"
