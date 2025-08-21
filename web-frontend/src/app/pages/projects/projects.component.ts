@@ -1,7 +1,7 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { formatProject, Inj, Project, RestService, User } from "../../rest-api";
 import { ProjectEditDialogComponent, ProjectEditDialogData } from "./edit/project-edit.component";
-import { MatDialog } from "@angular/material/dialog";
+import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import { SettingsService } from "../../settings.service";
 import { ConfirmDialogComponent } from "../../elements/confirm-dialog/confirm-dialog.component";
 import { CookieService } from "ngx-cookie-service";
@@ -32,7 +32,9 @@ export class ProjectsComponent extends PageComponent implements OnInit{
   protected filterStr?: string = '';
   protected filterDate?: Moment;
   protected filterDateOperator: '<' | '>' | '=' = '>';
+  protected filterOperatorTooltip = '';
   @ViewChild('deleteProjectTemplate') deleteProjectTemplate?: TemplateRef<any>;
+  @ViewChild('archiveProjectTemplate') archiveProjectTemplate?: TemplateRef<any>;
 
   constructor(private rest: RestService, private dialog: MatDialog, protected settings: SettingsService,
               private cookies: CookieService) {
@@ -52,6 +54,7 @@ export class ProjectsComponent extends PageComponent implements OnInit{
     this.filterArchive = this.cookies.get('project-filterArchive') === 'true';
     // @ts-ignore
     this.filterDateOperator = this.cookies.get('project-filterDateOperator') || '>';
+    this.setFilterOperatorToolTip();
     const cookieUsers = this.cookies.get('project-filterUsers');
     this.filterUsers = cookieUsers? cookieUsers.split(',').map(u => Number(u)): [];
     const cookieCodes = this.cookies.get('project-filterCodes');
@@ -179,10 +182,33 @@ export class ProjectsComponent extends PageComponent implements OnInit{
   }
 
   archiveProject(project: Project, archive: boolean): void {
-    this.rest.patchProject(project, { archived: archive }).subscribe(patched => {
-      project.archived = archive;
-      this.filter();
-    });
+    const _this = this;
+    let dialogRef: MatDialogRef<any>;
+    function patch() {
+      _this.rest.patchProject(project, {archived: archive}).subscribe(patched => {
+        project.archived = archive;
+        if (dialogRef) dialogRef.close();
+        _this.filter();
+      });
+    }
+    if (archive) {
+      dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        panelClass: 'absolute',
+        width: '300px',
+        disableClose: true,
+        data: {
+          title: $localize`Archive Project`,
+          subtitle: project.name,
+          template: this.archiveProjectTemplate,
+          closeOnConfirm: false
+        }
+      });
+      dialogRef.componentInstance.confirmed.subscribe(() => {
+        patch()
+      })
+    }
+    else
+      patch()
   }
 
   selectProject(project: Project): void {
@@ -246,7 +272,12 @@ export class ProjectsComponent extends PageComponent implements OnInit{
   setNextFilterOperator(): void {
     this.filterDateOperator = (this.filterDateOperator === '=')? '>' : (this.filterDateOperator === '>')? '<': '=';
     this.cookies.set('project-filterDateOperator', this.filterDateOperator.toString());
+    this.setFilterOperatorToolTip();
     this.filter();
+  }
+
+  setFilterOperatorToolTip(): void {
+    this.filterOperatorTooltip = (this.filterDateOperator === '=')? $localize`date is at selection`: (this.filterDateOperator === '>')? $localize`date is after selection`: $localize`date is before selection`;
   }
 
   setFilterUsers(users: number[]): void {
@@ -282,8 +313,11 @@ export class ProjectsComponent extends PageComponent implements OnInit{
   filter(): void {
     this.isLoading$.next(true);
     this.filteredProjects = this.projects.filter(p => p.archived === this.filterArchive);
+    // this.filteredProjects.forEach(p => { if (p.user == undefined) p.user = -1 });
     if (this.filterByUsers && this.filterUsers.length) {
-      this.filteredProjects = this.filteredProjects.filter(p => (p.user !== undefined) && this.filterUsers.includes(p.user)) || [];
+      this.filteredProjects = this.filteredProjects.filter(
+        p => (p.user == undefined && this.filterUsers.includes(-1)) ||
+          (p.user !== undefined && this.filterUsers.includes(p.user))) || [];
     }
     if (this.filterByCodes && this.filterCodes.length) {
       this.filteredProjects = this.filteredProjects.filter(p => p.code && this.filterCodes.includes(p.code)) || [];
@@ -310,4 +344,6 @@ export class ProjectsComponent extends PageComponent implements OnInit{
   getUniqueValues(objects: any[], attribute: string): any[] {
     return Array.from(new Set(objects.filter(o => !!o[attribute]).map(o => o[attribute]))).sort();
   }
+
+  protected readonly sortBy = sortBy;
 }

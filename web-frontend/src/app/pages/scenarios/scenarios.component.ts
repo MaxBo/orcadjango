@@ -87,7 +87,7 @@ export class ScenariosComponent extends PageComponent implements OnInit {
       width: '300px',
       disableClose: true,
       data: {
-        title: $localize `Remove Project`,
+        title: $localize `Remove Scenario`,
         subtitle: scenario.name,
         template: this.deleteScenarioTemplate,
         closeOnConfirm: false
