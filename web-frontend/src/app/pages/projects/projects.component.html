@@ -81,7 +81,8 @@
         <mat-select multiple [disabled]="!filterByUsers"
                     [value]="filterUsers"
                     (selectionChange)="setFilterUsers($event.value)">
-          <mat-option *ngFor="let user of settings.users"
+          <mat-option [value]="-1" i18n>no user</mat-option>
+          <mat-option *ngFor="let user of sortBy(settings.users, 'username', {lowerCase: true})"
                       [value]="user.id">
             {{settings.getUserName(user.id)}}
           </mat-option>

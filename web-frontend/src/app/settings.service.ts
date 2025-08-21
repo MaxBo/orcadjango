@@ -183,7 +183,9 @@ export class SettingsService {
       realName += user.first_name + ' ';
     if (user.last_name)
       realName += user.last_name + ' ';
-    return realName? `${realName}(${user.username})`: user.username;
+    let repr = user.username;
+    if (realName) repr += ` (${realName})`;
+    return repr;
   }
 
   setLogLevel(level: string): void {

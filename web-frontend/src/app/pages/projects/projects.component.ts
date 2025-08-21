@@ -313,8 +313,11 @@ export class ProjectsComponent extends PageComponent implements OnInit{
   filter(): void {
     this.isLoading$.next(true);
     this.filteredProjects = this.projects.filter(p => p.archived === this.filterArchive);
+    // this.filteredProjects.forEach(p => { if (p.user == undefined) p.user = -1 });
     if (this.filterByUsers && this.filterUsers.length) {
-      this.filteredProjects = this.filteredProjects.filter(p => (p.user !== undefined) && this.filterUsers.includes(p.user)) || [];
+      this.filteredProjects = this.filteredProjects.filter(
+        p => (p.user == undefined && this.filterUsers.includes(-1)) ||
+          (p.user !== undefined && this.filterUsers.includes(p.user))) || [];
     }
     if (this.filterByCodes && this.filterCodes.length) {
       this.filteredProjects = this.filteredProjects.filter(p => p.code && this.filterCodes.includes(p.code)) || [];
@@ -341,4 +344,6 @@ export class ProjectsComponent extends PageComponent implements OnInit{
   getUniqueValues(objects: any[], attribute: string): any[] {
     return Array.from(new Set(objects.filter(o => !!o[attribute]).map(o => o[attribute]))).sort();
   }
+
+  protected readonly sortBy = sortBy;
 }
