@@ -29,6 +29,7 @@ if hosts:
 # GDAL configuration
 if os.name == 'nt':
     lib_path = os.path.join(sys.exec_prefix, 'Library')
+    os.environ['USE_PATH_FOR_GDAL_PYTHON'] = 'YES'
     if (os.path.exists(os.path.join(lib_path, 'share', 'gdal'))
             and os.path.exists(os.path.join(lib_path, 'share', 'proj')) ):
         os.environ['GDAL_DATA'] = os.path.join(lib_path, 'share', 'gdal')
