@@ -19,6 +19,7 @@ import { FeatureLike } from "ol/Feature";
 import { register } from 'ol/proj/proj4'
 import proj4 from 'proj4';
 import { createBox } from "ol/interaction/Draw";
+import ImageTile from 'ol/ImageTile.js';
 
 proj4.defs("EPSG:25832","+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs");
 proj4.defs("EPSG:25833","+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs");
@@ -73,12 +74,20 @@ export class GeometryComponent extends BaseInjectableComponent implements AfterV
   }
 
   initMap() {
+    const source =  new OSM({
+      crossOrigin: 'anonymous',
+      tileLoadFunction: (tile, src) => {
+        const img = (tile as ImageTile).getImage() as HTMLImageElement;
+        img.referrerPolicy = 'strict-origin-when-cross-origin'; // or 'origin'
+        img.src = src;
+      },
+    })
     this.map = new Map({
       target: this.mapId,
       layers: [
         new TileLayer({
           className: 'bw',
-          source: new OSM({ attributions: [] }),
+          source: source,
         }),
       ],
       view: new View({
